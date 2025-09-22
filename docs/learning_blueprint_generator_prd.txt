@@ -1,0 +1,138 @@
+<context>
+# Overview  
+The Learning Blueprint Generator is a web application designed for learning designers, instructional designers, and corporate training managers. It addresses the challenge of manually creating comprehensive learning design blueprints by leveraging a locally hosted Qwen3:30b-a3b LLM to generate structured, exportable blueprints. This solution saves time, ensures consistency, and produces production-ready, high-quality outputs.
+
+# Core Features
+
+1. **Authentication System**
+
+   * **What it does**: Provides secure login and session management.
+   * **Why it's important**: Protects user data and ensures authorized access.
+   * **How it works**: Integrates with Supabase Auth; includes protected routes, automatic token refresh, and session expiry handling.
+
+2. **Static Questions Wizard (Step 1)**
+
+   * **What it does**: Collects foundational input through 5 predefined questions.
+   * **Why it's important**: Forms the basis for generating dynamic questions and the final blueprint.
+   * **How it works**: Multi-step form with debounced auto-save and validation.
+
+3. **Dynamic Questions Generation (Step 2)**
+
+   * **What it does**: Produces additional context-specific questions using the LLM.
+   * **Why it's important**: Ensures the questionnaire is tailored and relevant.
+   * **How it works**: Local Qwen3:30b-a3b API generates JSON-validated questions with retry mechanisms on failure.
+
+4. **Dynamic Questions Wizard (Step 3)**
+
+   * **What it does**: Collects answers for the dynamic questions.
+   * **Why it's important**: Captures user-specific context to inform the final blueprint.
+   * **How it works**: Section-based display with multiple input types, auto-save, navigation, and progress tracking.
+
+5. **Blueprint Generation (Step 4)**
+
+   * **What it does**: Generates the final blueprint in JSON and Markdown.
+   * **Why it's important**: Produces actionable learning design artifacts.
+   * **How it works**: LLM aggregates all answers; includes error recovery and progress feedback.
+
+6. **Blueprint Display & Dashboard**
+
+   * **What it does**: Renders blueprint in Markdown and interactive dashboard.
+   * **Why it's important**: Enhances usability and visualizes insights.
+   * **How it works**: Recharts and Framer Motion for animated KPIs and charts.
+
+7. **Export Functionality**
+
+   * **What it does**: Allows download as PDF, Markdown, or JSON.
+   * **Why it's important**: Supports offline use, sharing, and integration.
+   * **How it works**: jsPDF + html2pdf for PDFs; direct downloads for Markdown and JSON.
+
+8. **State Management & Resume Capability**
+
+   * **What it does**: Persists progress and tracks versions.
+   * **Why it's important**: Prevents data loss and supports iterative work.
+   * **How it works**: Zustand + React Query on frontend; Supabase stores versioned data.
+
+# User Experience
+
+* **User Personas**: Learning designers, instructional designers, corporate training managers.
+* **Key User Flows**: Login/signup → Dashboard → Static Questions → Dynamic Questions → Blueprint → Export.
+* **UI/UX Considerations**: Mobile and desktop responsive, section-based wizards, progress indicators, animated LLM loading, error messaging with recovery options.
+
+</context>
+
+<PRD>
+# Technical Architecture  
+- **Frontend**: Next.js 14 (App Router), Tailwind CSS + Shadcn/UI, Zustand + React Query, React Hook Form + Zod, Recharts + Framer Motion.
+- **Backend**: Node.js API routes, Supabase PostgreSQL, Supabase Auth, Ollama REST API integration (local Qwen3:30b-a3b).
+- **Database Schema**: `users` table; `blueprint_generator` table storing static/dynamic answers and blueprint outputs.
+- **Infrastructure**: Local Ollama server, Supabase cloud, frontend deployed on Vercel/Netlify.
+- **API & Integrations**: JSON schema enforcement, error handling, retries for LLM workflows.
+
+# Development Roadmap
+
+### Phase 1: Foundation
+
+* Authentication system and session management
+* Database schema creation
+* Base UI scaffolding with routing
+
+### Phase 2: Core Functionality
+
+* Static questions wizard with auto-save and validation
+* LLM integration for dynamic question generation
+* Dynamic questions display with section navigation and persistence
+
+### Phase 3: Blueprint Generation
+
+* Aggregate static and dynamic answers
+* Generate blueprint in JSON + Markdown using live LLM
+* Dashboard rendering and visualization
+* Export functionality (PDF, Markdown, JSON)
+
+### Phase 4: Production-Ready Testing
+
+**All tests use live components; no mocks or stubs.**
+
+1. **End-to-End Tests**: Full workflow from login → static → dynamic → blueprint → dashboard → export.
+2. **Database Validation**: CRUD operations, foreign key integrity, auto-save/versioning.
+3. **LLM Integration**: Validate real-time dynamic questions and blueprint generation; JSON and Markdown structure checks.
+4. **UI/UX Validation**: Multi-device responsiveness, navigation, progress indicators, resume capability.
+5. **Performance Testing**: <100ms static interactions, <30s dynamic generation, <60s blueprint generation, <2s dashboard load; 50+ concurrent users.
+6. **Security & Privacy**: Auth flows, user isolation, RLS enforcement, API input validation, audit logging.
+7. **Export Verification**: PDFs, Markdown, JSON; formatting, completeness, cross-device consistency.
+8. **Error Recovery**: Network failures, LLM timeouts, session expiry.
+
+### Phase 5: Polish & Launch
+
+* Optimize frontend & backend performance
+* UI/UX refinements and accessibility improvements
+* Final QA and production readiness certification
+
+# Logical Dependency Chain
+
+1. Authentication + Database → foundational layer
+2. Static Questions Wizard → first visible, functional frontend
+3. LLM Integration → dynamic question generation
+4. Dynamic Questions Wizard → input handling, progress, persistence
+5. Blueprint Generation → JSON + Markdown, dashboard visualization
+6. Export Functionality → PDF, Markdown, JSON
+7. Production-Ready Testing → validate all workflows, performance, security
+8. Polish & Launch → final optimizations and readiness
+
+# Risks and Mitigations
+
+* LLM Availability: fallback local/cloud hybrid
+* Database Performance: indexing, caching, monitoring
+* Load Handling: pre-production load tests
+* Security: audits, RLS, token management
+* Error Recovery: retry mechanisms for network and LLM issues
+
+# Appendix
+
+* TypeScript strict mode, ESLint/Prettier, Husky pre-commit hooks
+* Monitoring: Sentry, Vercel Analytics, Supabase metrics
+* KPIs: blueprint success >95%, session completion >80%, error rate <2%
+* Testing Summary: live DB, live LLM, real UI flows, end-to-end validation; production-ready tests, no mocks or stubs.
+
+</PRD>
+

@@ -1,0 +1,93 @@
+{
+	"meta": {
+		"generatedAt": "2025-09-22T13:00:07.404Z",
+		"tasksAnalyzed": 10,
+		"totalTasks": 10,
+		"analysisCount": 10,
+		"thresholdScore": 5,
+		"projectName": "Taskmaster",
+		"usedResearch": true
+	},
+	"complexityAnalysis": [
+		{
+			"taskId": 1,
+			"taskTitle": "Setup Project Foundation and Development Environment",
+			"complexityScore": 4,
+			"recommendedSubtasks": 9,
+			"expansionPrompt": "Break down the project foundation setup into granular configuration steps, separating Next.js initialization, TypeScript configuration, UI library setup, linting tools, git hooks, environment variables, folder structure creation, and path aliases. Each subtask should be independently executable and verifiable.",
+			"reasoning": "This is a foundational task with well-documented steps, but involves integrating multiple tools (Next.js 14, TypeScript, Tailwind, Shadcn/UI, ESLint, Prettier, Husky). While each individual step is straightforward, the integration and proper configuration requires attention to detail. The complexity is moderate due to potential version conflicts and configuration dependencies."
+		},
+		{
+			"taskId": 2,
+			"taskTitle": "Implement Supabase Authentication System",
+			"complexityScore": 8,
+			"recommendedSubtasks": 11,
+			"expansionPrompt": "Decompose the Supabase authentication implementation into client setup, server-side configuration, middleware creation, authentication components, hooks development, route protection, session management, token refresh logic, error handling, and state integration. Focus on SSR considerations and security best practices for each subtask.",
+			"reasoning": "Authentication systems are inherently complex, especially with SSR requirements in Next.js 14. This involves multiple layers: client/server Supabase clients, middleware for route protection, React components and hooks, session persistence, and automatic token refresh. The complexity is high due to security implications and the need for seamless user experience across server and client boundaries."
+		},
+		{
+			"taskId": 3,
+			"taskTitle": "Design and Implement Database Schema",
+			"complexityScore": 6,
+			"recommendedSubtasks": 9,
+			"expansionPrompt": "Split database schema implementation into schema design and validation, table creation with constraints, index optimization, RLS policy development and testing, database function creation, migration script development, type generation setup, CRUD helper implementation, and performance testing. Each subtask should include validation steps.",
+			"reasoning": "Database schema design requires careful planning and has long-term implications. The complexity is moderate-high due to the need for proper normalization, constraint design, RLS policies for security, and integration with TypeScript types. The JSONB fields add flexibility but require careful validation and querying strategies."
+		},
+		{
+			"taskId": 4,
+			"taskTitle": "Build Static Questions Wizard with Auto-Save",
+			"complexityScore": 7,
+			"recommendedSubtasks": 10,
+			"expansionPrompt": "Break down the wizard implementation into schema definition and validation, individual step components, navigation logic, auto-save hook development, progress tracking, form state management, validation error handling, transition animations, persistence layer integration, and user experience testing. Focus on state consistency and user flow optimization.",
+			"reasoning": "Multi-step forms with auto-save functionality involve complex state management, validation across steps, and user experience considerations. The debounced auto-save mechanism requires careful implementation to avoid conflicts and data loss. Integration with Zod validation and React Hook Form adds robustness but increases complexity."
+		},
+		{
+			"taskId": 5,
+			"taskTitle": "Integrate Ollama API for Dynamic Question Generation",
+			"complexityScore": 9,
+			"recommendedSubtasks": 9,
+			"expansionPrompt": "Decompose LLM integration into Ollama client service creation, API route implementation, prompt engineering and testing, JSON schema validation, retry mechanism with exponential backoff, error handling and timeout management, response caching system, request queuing, and quality assurance testing. Emphasize reliability and consistency in LLM outputs.",
+			"reasoning": "LLM integration is highly complex due to the unpredictable nature of AI responses, need for robust error handling, and requirement for consistent JSON output. Prompt engineering is both an art and science, requiring iterative testing. The retry logic, timeout handling, and response validation are critical for production reliability."
+		},
+		{
+			"taskId": 6,
+			"taskTitle": "Create Dynamic Questions Wizard with Section Navigation",
+			"complexityScore": 8,
+			"recommendedSubtasks": 11,
+			"expansionPrompt": "Split dynamic form creation into JSON interpretation logic, individual input component development, section navigation system, dynamic validation implementation, form persistence hook, progress tracking system, accessibility implementation, keyboard navigation, state normalization, conflict resolution, and comprehensive testing across input types.",
+			"reasoning": "Dynamic form rendering based on JSON schemas is complex due to the need to handle multiple input types, maintain state consistency, and provide good UX. The accessibility requirements, auto-save with conflict resolution, and section-based navigation add significant complexity. The form must be flexible enough to handle various question structures while maintaining performance."
+		},
+		{
+			"taskId": 7,
+			"taskTitle": "Implement Blueprint Generation with LLM",
+			"complexityScore": 9,
+			"recommendedSubtasks": 9,
+			"expansionPrompt": "Break down blueprint generation into answer aggregation logic, prompt template design and optimization, API route implementation, JSON schema validation, Markdown generation, streaming progress implementation, error handling and fallbacks, versioning system, and comprehensive testing with various input combinations. Focus on prompt engineering and output consistency.",
+			"reasoning": "Blueprint generation is the core functionality requiring sophisticated prompt engineering to ensure consistent, high-quality outputs. The aggregation of static and dynamic answers, streaming progress updates, and dual-format output (JSON/Markdown) add complexity. Handling LLM variability and ensuring structured output requires extensive testing and fallback mechanisms."
+		},
+		{
+			"taskId": 8,
+			"taskTitle": "Build Interactive Dashboard with Data Visualization",
+			"complexityScore": 7,
+			"recommendedSubtasks": 11,
+			"expansionPrompt": "Decompose dashboard development into responsive layout design, KPI card components with animations, chart component implementation (timeline, pie, bar), interactive tooltip and legend systems, drill-down functionality, dashboard state management, filter and view controls, export functionality, performance optimization, and cross-device testing.",
+			"reasoning": "Data visualization dashboards require careful attention to UX, performance, and responsiveness. Multiple chart types with interactive features, animations, and drill-down capabilities increase complexity. The need for real-time data updates, responsive design across devices, and smooth animations requires optimization and testing across various scenarios."
+		},
+		{
+			"taskId": 9,
+			"taskTitle": "Develop Export Functionality for Multiple Formats",
+			"complexityScore": 6,
+			"recommendedSubtasks": 9,
+			"expansionPrompt": "Split export functionality into service class architecture, PDF generation with styling and charts, Markdown export with proper formatting, JSON export with metadata, export preview system, batch processing capability, format validation, cross-device compatibility testing, and error handling for various edge cases.",
+			"reasoning": "Export functionality involves multiple formats with different requirements and potential compatibility issues. PDF generation with embedded charts and proper styling is moderately complex. The need for cross-device compatibility and handling various data structures adds complexity, but established libraries help reduce implementation difficulty."
+		},
+		{
+			"taskId": 10,
+			"taskTitle": "Implement State Management and Resume Capability",
+			"complexityScore": 8,
+			"recommendedSubtasks": 10,
+			"expansionPrompt": "Break down state management into Zustand store design and implementation, React Query integration, persistence middleware development, resume workflow implementation, version conflict resolution, optimistic update handling, undo/redo system, state debugging tools, performance optimization, and comprehensive state synchronization testing.",
+			"reasoning": "Comprehensive state management with multiple stores, persistence, and resume capability is highly complex. The coordination between Zustand stores and React Query, handling optimistic updates, conflict resolution, and undo/redo functionality requires sophisticated state architecture. The resume workflow adds complexity in detecting and restoring incomplete sessions reliably."
+		}
+	]
+}

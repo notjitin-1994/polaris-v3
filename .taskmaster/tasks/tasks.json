@@ -1,0 +1,1254 @@
+{
+  "master": {
+    "tasks": [
+      {
+        "id": 1,
+        "title": "Setup Project Foundation and Development Environment",
+        "description": "Initialize Next.js 14 project with App Router, configure TypeScript strict mode, setup Tailwind CSS with Shadcn/UI, configure ESLint/Prettier, and implement Husky pre-commit hooks",
+        "details": "1. Create Next.js 14 project: `npx create-next-app@14.2.5 learning-blueprint-generator --typescript --app --tailwind --eslint`\n2. Install Shadcn/UI: `npx shadcn-ui@latest init` with New York style and CSS variables\n3. Configure tsconfig.json with strict mode: `\"strict\": true, \"strictNullChecks\": true`\n4. Setup ESLint with Next.js config and Prettier integration\n5. Install and configure Husky: `npm install -D husky lint-staged`\n6. Create .env.local with placeholders for SUPABASE_URL, SUPABASE_ANON_KEY, OLLAMA_API_URL\n7. Setup folder structure: /app, /components, /lib, /hooks, /store, /types\n8. Configure path aliases in tsconfig.json: `\"@/*\": [\"./src/*\"]`",
+        "testStrategy": "Verify build succeeds with `npm run build`, ensure TypeScript strict mode catches type errors, validate ESLint/Prettier formatting on pre-commit, confirm Shadcn/UI components render correctly",
+        "priority": "high",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Initialize Next.js 14 Project with App Router",
+            "description": "Create a new Next.js 14 project using create-next-app with TypeScript, App Router, Tailwind CSS, and ESLint preconfigured",
+            "dependencies": [],
+            "details": "Run `npx create-next-app@14.2.5 learning-blueprint-generator --typescript --app --tailwind --eslint` to create the project foundation. Verify the project structure includes app directory, TypeScript configuration, and initial Tailwind setup. Navigate to project directory and ensure initial build succeeds with `npm run dev`.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 2,
+            "title": "Configure TypeScript Strict Mode",
+            "description": "Update tsconfig.json to enable strict TypeScript compilation settings for better type safety",
+            "dependencies": [
+              "1.1"
+            ],
+            "details": "Modify tsconfig.json to include strict mode settings: `\"strict\": true`, `\"strictNullChecks\": true`, `\"noImplicitAny\": true`, `\"noImplicitReturns\": true`. Test compilation with `npx tsc --noEmit` to ensure no type errors exist in the initial codebase.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 3,
+            "title": "Setup Tailwind CSS Configuration",
+            "description": "Configure Tailwind CSS with custom theme settings and verify integration with Next.js",
+            "dependencies": [
+              "1.1"
+            ],
+            "details": "Verify tailwind.config.ts includes app directory in content paths. Test Tailwind classes work by adding utility classes to the default page component. Ensure CSS purging works correctly by building the project and checking output CSS size.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 4,
+            "title": "Install and Configure Shadcn/UI",
+            "description": "Setup Shadcn/UI component library with New York style and CSS variables configuration",
+            "dependencies": [
+              "1.1",
+              "1.3"
+            ],
+            "details": "Run `npx shadcn-ui@latest init` and select New York style, CSS variables for theming, and configure components.json. Install a test component like Button with `npx shadcn-ui@latest add button` and verify it renders correctly in the application.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 5,
+            "title": "Setup ESLint Configuration",
+            "description": "Configure ESLint with Next.js recommended rules and additional strict linting rules",
+            "dependencies": [
+              "1.1"
+            ],
+            "details": "Extend the existing .eslintrc.json with additional rules: `@typescript-eslint/no-unused-vars`, `@typescript-eslint/no-explicit-any`, and `react-hooks/exhaustive-deps`. Install additional ESLint plugins if needed and run `npm run lint` to verify configuration works correctly.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 6,
+            "title": "Configure Prettier Integration",
+            "description": "Install and configure Prettier with ESLint integration for consistent code formatting",
+            "dependencies": [
+              "1.5"
+            ],
+            "details": "Install Prettier and ESLint-Prettier integration: `npm install -D prettier eslint-config-prettier eslint-plugin-prettier`. Create .prettierrc with formatting rules (semicolons, single quotes, trailing commas). Update ESLint config to extend prettier configuration and test formatting with `npm run lint --fix`.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 7,
+            "title": "Install and Configure Husky Pre-commit Hooks",
+            "description": "Setup Husky with lint-staged to run ESLint and Prettier on pre-commit",
+            "dependencies": [
+              "1.5",
+              "1.6"
+            ],
+            "details": "Install Husky and lint-staged: `npm install -D husky lint-staged`. Initialize Husky with `npx husky init`. Create pre-commit hook to run lint-staged. Configure lint-staged in package.json to run ESLint and Prettier on staged TypeScript and JavaScript files. Test pre-commit hook by making a commit.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 8,
+            "title": "Create Project Folder Structure",
+            "description": "Establish organized folder structure for components, utilities, hooks, and types",
+            "dependencies": [
+              "1.1"
+            ],
+            "details": "Create directory structure: `/components` (with ui, forms, layout subdirectories), `/lib` (utilities and configurations), `/hooks` (custom React hooks), `/store` (state management), `/types` (TypeScript type definitions). Add index.ts files where appropriate for clean imports.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 9,
+            "title": "Setup Environment Variables and Path Aliases",
+            "description": "Configure environment variables template and TypeScript path aliases for clean imports",
+            "dependencies": [
+              "1.1",
+              "1.2"
+            ],
+            "details": "Create .env.local with placeholder variables: `SUPABASE_URL=`, `SUPABASE_ANON_KEY=`, `OLLAMA_API_URL=`. Update tsconfig.json with path aliases: `\"@/*\": [\"./src/*\"]`, `\"@/components/*\": [\"./components/*\"]`, `\"@/lib/*\": [\"./lib/*\"]`. Test aliases work by importing a component using the @ syntax.",
+            "status": "pending",
+            "testStrategy": ""
+          }
+        ]
+      },
+      {
+        "id": 2,
+        "title": "Implement Supabase Authentication System",
+        "description": "Setup Supabase client, implement authentication with protected routes, automatic token refresh, and session management using Next.js 14 middleware",
+        "details": "1. Install Supabase: `npm install @supabase/supabase-js@2.45.0 @supabase/ssr@0.5.0`\n2. Create Supabase client with SSR support in /lib/supabase/client.ts and /lib/supabase/server.ts\n3. Implement middleware.ts for protected routes using createServerClient\n4. Create auth components: LoginForm, SignupForm, AuthProvider using React Context\n5. Implement auth hooks: useAuth, useSession with automatic refresh\n6. Setup protected route wrapper component with redirect logic\n7. Create /app/(auth)/login and /app/(auth)/signup pages\n8. Implement session expiry handling with refresh token rotation\n9. Add auth state to Zustand store for client-side state management",
+        "testStrategy": "Test login/signup flows with real Supabase instance, verify middleware redirects unauthenticated users, confirm token refresh works after expiry, validate session persistence across page refreshes",
+        "priority": "high",
+        "dependencies": [
+          1
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Install and Configure Supabase Dependencies",
+            "description": "Install required Supabase packages and set up environment variables for Next.js 14 SSR compatibility",
+            "dependencies": [],
+            "details": "1. Install Supabase packages: `npm install @supabase/supabase-js@2.45.0 @supabase/ssr@0.5.0`\n2. Create `.env.local` file with Supabase credentials:\n   - NEXT_PUBLIC_SUPABASE_URL\n   - NEXT_PUBLIC_SUPABASE_ANON_KEY\n   - SUPABASE_SERVICE_ROLE_KEY (for server-side operations)\n3. Update next.config.js to handle Supabase domains for images\n4. Create types/supabase.ts for TypeScript database types\n5. Verify connection to Supabase project and test basic client initialization",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 2,
+            "title": "Create Server-Side Supabase Client Configuration",
+            "description": "Implement server-side Supabase client with SSR support for secure backend operations",
+            "dependencies": [
+              "2.1"
+            ],
+            "details": "1. Create `/lib/supabase/server.ts` with createServerClient from @supabase/ssr\n2. Implement cookie handling for server components using Next.js cookies() function\n3. Add proper TypeScript types for server client\n4. Create utility functions for server-side authentication checks\n5. Implement error handling for server-side Supabase operations\n6. Add logging for debugging server-side auth issues\n7. Test server client in a sample API route to verify functionality",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 3,
+            "title": "Create Browser-Side Supabase Client Configuration",
+            "description": "Implement client-side Supabase client for browser operations and real-time subscriptions",
+            "dependencies": [
+              "2.1"
+            ],
+            "details": "1. Create `/lib/supabase/client.ts` with createBrowserClient from @supabase/ssr\n2. Configure client for browser environment with proper cookie handling\n3. Implement real-time subscription utilities for auth state changes\n4. Add client-side error handling and retry logic\n5. Create utilities for client-side session management\n6. Implement browser client refresh mechanisms\n7. Add TypeScript interfaces for client operations",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 4,
+            "title": "Implement Authentication Middleware",
+            "description": "Create Next.js 14 middleware for route protection and automatic session refresh",
+            "dependencies": [
+              "2.2",
+              "2.3"
+            ],
+            "details": "1. Create `middleware.ts` in project root using createServerClient\n2. Implement session validation and refresh logic in middleware\n3. Define protected and public route patterns using matcher config\n4. Add redirect logic for unauthenticated users to login page\n5. Implement cookie refresh mechanism to prevent session expiry\n6. Add middleware logging for debugging authentication flows\n7. Handle edge cases like expired tokens and invalid sessions\n8. Test middleware with various authentication scenarios",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 5,
+            "title": "Create Authentication Context and Provider",
+            "description": "Implement React Context for global authentication state management across the application",
+            "dependencies": [
+              "2.3"
+            ],
+            "details": "1. Create `/contexts/AuthContext.tsx` with React.createContext\n2. Implement AuthProvider component with user state management\n3. Add authentication methods: login, logout, signup, resetPassword\n4. Implement session monitoring with Supabase onAuthStateChange\n5. Create loading states for authentication operations\n6. Add error handling and user feedback mechanisms\n7. Implement automatic token refresh in the context\n8. Add TypeScript interfaces for auth context types\n9. Test context provider with mock authentication scenarios",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 6,
+            "title": "Build Login Form Component",
+            "description": "Create comprehensive login form with validation, error handling, and social authentication options",
+            "dependencies": [
+              "2.5"
+            ],
+            "details": "1. Create `/components/auth/LoginForm.tsx` with React Hook Form\n2. Implement form validation using Zod schema for email/password\n3. Add login functionality using Supabase signInWithPassword\n4. Implement social login buttons for Google and GitHub OAuth\n5. Add loading states and error message display\n6. Implement \"Remember me\" functionality with persistent sessions\n7. Add password visibility toggle and form accessibility\n8. Create forgot password link and email validation\n9. Style form with consistent design system",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 7,
+            "title": "Build Signup Form Component",
+            "description": "Create user registration form with email verification and comprehensive validation",
+            "dependencies": [
+              "2.5"
+            ],
+            "details": "1. Create `/components/auth/SignupForm.tsx` with React Hook Form\n2. Implement validation schema with password strength requirements\n3. Add signup functionality using Supabase signUp method\n4. Implement email confirmation flow and verification handling\n5. Add terms of service and privacy policy checkboxes\n6. Create password confirmation field with matching validation\n7. Add social signup options consistent with login form\n8. Implement success message for email verification sent\n9. Handle signup errors and duplicate email scenarios",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 8,
+            "title": "Develop Authentication Hooks",
+            "description": "Create custom React hooks for authentication operations and session management",
+            "dependencies": [
+              "2.5"
+            ],
+            "details": "1. Create `/hooks/useAuth.ts` hook with authentication methods\n2. Implement `useSession.ts` hook for current user session access\n3. Add `useAuthCallback.ts` for handling OAuth redirects\n4. Create `useAuthGuard.ts` for component-level route protection\n5. Implement automatic session refresh logic in hooks\n6. Add loading and error states management\n7. Create `useLogout.ts` with cleanup and redirect functionality\n8. Add TypeScript return types for all authentication hooks\n9. Implement hook error handling and retry mechanisms",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 9,
+            "title": "Create Protected Route Wrapper Component",
+            "description": "Implement higher-order component for protecting routes and handling unauthorized access",
+            "dependencies": [
+              "2.4",
+              "2.8"
+            ],
+            "details": "1. Create `/components/auth/ProtectedRoute.tsx` wrapper component\n2. Implement authentication check using useAuth hook\n3. Add loading spinner for authentication verification\n4. Create redirect logic to login page for unauthenticated users\n5. Implement role-based access control for different user types\n6. Add optional redirect parameter to return after login\n7. Handle edge cases like token expiry during navigation\n8. Create public route wrapper for login/signup pages\n9. Add error boundaries for authentication failures",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 10,
+            "title": "Implement Session Management and Token Refresh",
+            "description": "Create comprehensive session handling with automatic token refresh and expiry management",
+            "dependencies": [
+              "2.4",
+              "2.8"
+            ],
+            "details": "1. Create `/lib/auth/sessionManager.ts` for session operations\n2. Implement automatic token refresh before expiry\n3. Add session persistence across browser tabs and windows\n4. Create session expiry warning notifications\n5. Implement graceful logout on token refresh failure\n6. Add session monitoring for concurrent login detection\n7. Create session cleanup on logout and browser close\n8. Implement refresh token rotation for enhanced security\n9. Add session analytics and monitoring hooks",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 11,
+            "title": "Integrate Authentication with Zustand Store",
+            "description": "Connect Supabase authentication state with Zustand store for global state management",
+            "dependencies": [
+              "2.5",
+              "2.10"
+            ],
+            "details": "1. Create `/stores/authStore.ts` with Zustand for auth state\n2. Implement authentication actions in Zustand store\n3. Connect Supabase auth events to store state updates\n4. Add user profile data management in auth store\n5. Implement authentication persistence middleware\n6. Create selectors for auth state consumption\n7. Add auth loading and error states to store\n8. Implement store hydration from server-side sessions\n9. Add auth store debugging and development tools\n10. Test store integration with authentication components",
+            "status": "pending",
+            "testStrategy": ""
+          }
+        ]
+      },
+      {
+        "id": 3,
+        "title": "Design and Implement Database Schema",
+        "description": "Create PostgreSQL database schema in Supabase with users and blueprint_generator tables, implement Row Level Security (RLS) policies, and setup database migrations",
+        "details": "1. Create SQL migration for users table extension (if needed beyond Supabase auth.users)\n2. Design blueprint_generator table:\n```sql\nCREATE TABLE blueprint_generator (\n  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,\n  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,\n  version INTEGER DEFAULT 1,\n  static_answers JSONB,\n  dynamic_questions JSONB,\n  dynamic_answers JSONB,\n  blueprint_json JSONB,\n  blueprint_markdown TEXT,\n  status TEXT CHECK (status IN ('draft', 'generating', 'completed', 'error')),\n  created_at TIMESTAMPTZ DEFAULT NOW(),\n  updated_at TIMESTAMPTZ DEFAULT NOW()\n);\n```\n3. Create indexes: user_id, status, created_at\n4. Implement RLS policies for user isolation\n5. Create database functions for versioning and auto-update timestamps\n6. Setup Supabase client types generation: `npx supabase gen types typescript`\n7. Create database helper functions in /lib/db for CRUD operations",
+        "testStrategy": "Validate table creation and constraints, test RLS policies ensure user data isolation, verify foreign key relationships, test versioning logic with multiple saves",
+        "priority": "high",
+        "dependencies": [
+          2
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Schema Design and Analysis",
+            "description": "Analyze requirements and design complete database schema with entity relationships, data types, and constraints documentation",
+            "dependencies": [],
+            "details": "1. Document entity relationship diagram (ERD) for users and blueprint_generator tables\n2. Define data types for JSONB fields (static_answers, dynamic_questions, dynamic_answers, blueprint_json)\n3. Plan foreign key relationships and cascade behaviors\n4. Design table naming conventions and column constraints\n5. Create schema validation checklist\n6. Document performance considerations for JSONB queries\n7. Plan data migration strategy from existing data (if any)",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 2,
+            "title": "Create Users Table Extension",
+            "description": "Analyze Supabase auth.users table and create extension table if additional user fields are needed",
+            "dependencies": [
+              "3.1"
+            ],
+            "details": "1. Examine default Supabase auth.users schema and available fields\n2. Determine if user profile extension is needed beyond auth.users\n3. Create user_profiles table if additional fields required (avatar, preferences, etc.)\n4. Implement foreign key relationship to auth.users(id)\n5. Add RLS policies for user_profiles table\n6. Test user creation and profile linking\n7. Validate cascade delete behavior when user is deleted",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 3,
+            "title": "Create Blueprint Generator Table with Constraints",
+            "description": "Implement the main blueprint_generator table with all columns, constraints, and validation rules",
+            "dependencies": [
+              "3.1"
+            ],
+            "details": "1. Create blueprint_generator table with UUID primary key\n2. Add user_id foreign key with CASCADE delete\n3. Implement CHECK constraints for status field\n4. Add NOT NULL constraints for required fields\n5. Create auto-generated timestamps (created_at, updated_at)\n6. Add JSONB columns with proper default values\n7. Test table creation and constraint validation\n8. Verify foreign key relationships work correctly",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 4,
+            "title": "Create Database Indexes for Performance",
+            "description": "Design and implement optimized indexes for common query patterns on blueprint_generator table",
+            "dependencies": [
+              "3.3"
+            ],
+            "details": "1. Create index on user_id for user-specific queries\n2. Create index on status for filtering by blueprint status\n3. Create index on created_at for chronological sorting\n4. Create composite index on (user_id, status) for filtered user queries\n5. Add GIN indexes on JSONB columns for JSON queries\n6. Test query performance with sample data\n7. Document index usage patterns and maintenance",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 5,
+            "title": "Implement Row Level Security Policies",
+            "description": "Create and test RLS policies to ensure users can only access their own blueprint data",
+            "dependencies": [
+              "3.3"
+            ],
+            "details": "1. Enable RLS on blueprint_generator table\n2. Create policy for users to SELECT their own records only\n3. Create policy for users to INSERT records with their user_id\n4. Create policy for users to UPDATE their own records only\n5. Create policy for users to DELETE their own records only\n6. Test RLS policies with multiple user accounts\n7. Verify policy performance doesn't impact query speed\n8. Document security model and policy logic",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 6,
+            "title": "Create Database Functions and Triggers",
+            "description": "Implement database functions for versioning, automatic timestamp updates, and data validation",
+            "dependencies": [
+              "3.3"
+            ],
+            "details": "1. Create function for automatic updated_at timestamp trigger\n2. Create versioning function to increment version on updates\n3. Create function for JSONB validation if needed\n4. Create trigger for updated_at on blueprint_generator table\n5. Create trigger for version increment on data updates\n6. Test all functions and triggers with sample operations\n7. Add error handling and validation in functions\n8. Document function usage and parameters",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 7,
+            "title": "Create Database Migration Scripts",
+            "description": "Develop versioned migration scripts for all database changes with rollback capabilities",
+            "dependencies": [
+              "3.2",
+              "3.3",
+              "3.4",
+              "3.5",
+              "3.6"
+            ],
+            "details": "1. Create initial migration script for all table creations\n2. Create separate migration for indexes\n3. Create migration for RLS policies\n4. Create migration for functions and triggers\n5. Test migration scripts on clean database\n6. Create rollback scripts for each migration\n7. Test rollback functionality\n8. Document migration order and dependencies",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 8,
+            "title": "Generate TypeScript Types",
+            "description": "Setup Supabase CLI and generate TypeScript types for database schema integration",
+            "dependencies": [
+              "3.7"
+            ],
+            "details": "1. Run `npx supabase gen types typescript` command\n2. Configure type generation in project build process\n3. Create custom types for JSONB field structures\n4. Generate types for database functions and stored procedures\n5. Test type safety in TypeScript code\n6. Setup automatic type regeneration on schema changes\n7. Document type usage patterns for developers\n8. Validate generated types match actual database schema",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 9,
+            "title": "Implement Database CRUD Helper Functions",
+            "description": "Create TypeScript helper functions in /lib/db for all database operations with error handling",
+            "dependencies": [
+              "3.8"
+            ],
+            "details": "1. Create /lib/db directory structure\n2. Implement createBlueprint() function with validation\n3. Implement getBlueprintsByUser() with filtering options\n4. Implement updateBlueprint() with version management\n5. Implement deleteBlueprint() function\n6. Add error handling and type safety to all functions\n7. Create helper functions for JSONB operations\n8. Test all CRUD operations with sample data\n9. Add JSDoc documentation for all functions",
+            "status": "pending",
+            "testStrategy": ""
+          }
+        ]
+      },
+      {
+        "id": 4,
+        "title": "Build Static Questions Wizard with Auto-Save",
+        "description": "Implement multi-step form wizard for 5 predefined questions using React Hook Form, Zod validation, debounced auto-save to Supabase, and progress tracking",
+        "details": "1. Install dependencies: `npm install react-hook-form@7.52.0 @hookform/resolvers@3.9.0 zod@3.23.0`\n2. Define static questions schema with Zod:\n```typescript\nconst staticQuestionsSchema = z.object({\n  learningObjective: z.string().min(10),\n  targetAudience: z.string().min(5),\n  deliveryMethod: z.enum(['online', 'hybrid', 'in-person']),\n  duration: z.number().min(1),\n  assessmentType: z.string()\n});\n```\n3. Create StepWizard component with Framer Motion transitions\n4. Implement useAutoSave hook with 2-second debounce using lodash.debounce\n5. Create form steps as separate components with consistent UI\n6. Add progress indicator showing current step and completion percentage\n7. Implement navigation with validation before proceeding\n8. Store form state in Zustand and sync with Supabase\n9. Handle draft creation and updates in blueprint_generator table",
+        "testStrategy": "Test form validation rules trigger correctly, verify auto-save fires after 2 seconds of inactivity, confirm data persists across page refreshes, validate step navigation with incomplete data",
+        "priority": "high",
+        "dependencies": [
+          3
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Setup Dependencies and Project Structure",
+            "description": "Install required dependencies and create the basic folder structure for the static questions wizard components",
+            "dependencies": [],
+            "details": "Install react-hook-form@7.52.0, @hookform/resolvers@3.9.0, zod@3.23.0, lodash.debounce, and framer-motion. Create folder structure: /components/wizard/static-questions/ with subfolders for steps, hooks, and types. Setup TypeScript interfaces for wizard props and step configuration.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 2,
+            "title": "Define Zod Schema and Validation Rules",
+            "description": "Create comprehensive Zod schema for all 5 static questions with proper validation rules and error messages",
+            "dependencies": [
+              "4.1"
+            ],
+            "details": "Define staticQuestionsSchema with validation for learningObjective (min 10 chars), targetAudience (min 5 chars), deliveryMethod enum, duration (min 1), and assessmentType. Add custom validation messages and field-level validation rules. Create TypeScript types from schema using z.infer.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 3,
+            "title": "Create Individual Step Components",
+            "description": "Build separate React components for each of the 5 question steps with consistent UI and validation",
+            "dependencies": [
+              "4.2"
+            ],
+            "details": "Create LearningObjectiveStep, TargetAudienceStep, DeliveryMethodStep, DurationStep, and AssessmentTypeStep components. Each component should use React Hook Form's useFormContext, display validation errors, and follow consistent UI patterns with proper accessibility attributes.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 4,
+            "title": "Implement Step Wizard Navigation Logic",
+            "description": "Build the main StepWizard component with navigation controls and step validation before proceeding",
+            "dependencies": [
+              "4.3"
+            ],
+            "details": "Create StepWizard component with next/previous navigation, step validation using React Hook Form's trigger method, and conditional navigation based on form validity. Implement goToStep function for direct navigation and handle edge cases for first/last steps.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 5,
+            "title": "Develop Auto-Save Hook with Debouncing",
+            "description": "Create useAutoSave custom hook that saves form data to Supabase with 2-second debounce delay",
+            "dependencies": [
+              "4.2"
+            ],
+            "details": "Implement useAutoSave hook using lodash.debounce with 2-second delay. Hook should watch for form value changes, handle save states (saving, saved, error), and provide conflict resolution. Include error handling and retry logic for failed saves.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 6,
+            "title": "Create Progress Indicator Component",
+            "description": "Build visual progress indicator showing current step position and completion percentage",
+            "dependencies": [
+              "4.4"
+            ],
+            "details": "Create ProgressIndicator component with step numbers, completion states, and animated progress bar. Show current step, completed steps, and overall completion percentage. Include step labels and clickable navigation for completed steps.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 7,
+            "title": "Implement Form State Management",
+            "description": "Setup Zustand store for wizard state management and integration with React Hook Form",
+            "dependencies": [
+              "4.5"
+            ],
+            "details": "Create wizardStore with Zustand for managing current step, form data, save states, and navigation history. Implement actions for updating form data, changing steps, and handling auto-save status. Integrate with React Hook Form for seamless state synchronization.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 8,
+            "title": "Add Validation Error Handling",
+            "description": "Implement comprehensive error handling for form validation and display user-friendly error messages",
+            "dependencies": [
+              "4.4",
+              "4.7"
+            ],
+            "details": "Create error handling system that captures Zod validation errors, React Hook Form errors, and Supabase save errors. Display errors inline for fields, show step-level error summaries, and implement error recovery mechanisms. Add toast notifications for save errors.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 9,
+            "title": "Integrate Framer Motion Transitions",
+            "description": "Add smooth animations and transitions between wizard steps using Framer Motion",
+            "dependencies": [
+              "4.6"
+            ],
+            "details": "Implement Framer Motion animations for step transitions with slide effects, progress bar animations, and loading states. Create reusable motion variants for consistent animation patterns. Add accessibility preferences respect for reduced motion settings.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 10,
+            "title": "Setup Supabase Persistence and Testing",
+            "description": "Integrate with Supabase blueprint_generator table and implement comprehensive testing for the wizard",
+            "dependencies": [
+              "4.8",
+              "4.9"
+            ],
+            "details": "Create Supabase integration for saving draft blueprints to blueprint_generator table. Implement draft creation, updates, and retrieval. Add comprehensive tests for form validation, auto-save functionality, step navigation, data persistence, and user flow scenarios. Include E2E tests for complete wizard journey.",
+            "status": "pending",
+            "testStrategy": ""
+          }
+        ]
+      },
+      {
+        "id": 5,
+        "title": "Integrate Ollama API for Dynamic Question Generation",
+        "description": "Setup local Ollama server integration with Qwen3:30b-a3b model, implement API routes for dynamic question generation with JSON schema validation and retry logic",
+        "details": "1. Create Ollama service class in /lib/ollama/client.ts\n2. Implement API route /app/api/generate-questions/route.ts\n3. Define JSON schema for dynamic questions:\n```typescript\nconst dynamicQuestionSchema = z.object({\n  sections: z.array(z.object({\n    title: z.string(),\n    questions: z.array(z.object({\n      id: z.string(),\n      question: z.string(),\n      type: z.enum(['text', 'select', 'multiselect', 'scale']),\n      options: z.array(z.string()).optional(),\n      required: z.boolean()\n    }))\n  }))\n});\n```\n4. Implement prompt engineering for consistent output\n5. Add retry logic with exponential backoff (3 attempts)\n6. Create error handling for LLM timeouts and invalid responses\n7. Implement response caching to avoid duplicate API calls\n8. Add request queuing to handle concurrent requests",
+        "testStrategy": "Test with live Ollama instance, validate JSON schema compliance, verify retry mechanism on failures, test timeout handling (30s limit), ensure consistent question quality",
+        "priority": "high",
+        "dependencies": [
+          4
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Setup Ollama Client Service Class",
+            "description": "Create the core Ollama service class in /lib/ollama/client.ts with connection management and basic model communication",
+            "dependencies": [],
+            "details": "Initialize OllamaClient class with configuration for Qwen3:30b-a3b model, implement connection testing, create base chat method, configure model parameters (temperature, max_tokens), and establish health check endpoint for service availability",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 2,
+            "title": "Define JSON Schema Validation",
+            "description": "Implement comprehensive Zod schema for dynamic question generation with strict validation rules",
+            "dependencies": [],
+            "details": "Create dynamicQuestionSchema with sections array, question objects containing id/question/type/options/required fields, implement validation for question types (text/select/multiselect/scale), add schema refinements for conditional option requirements, and create type definitions from schema",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 3,
+            "title": "Implement Prompt Engineering System",
+            "description": "Design and implement prompt templates for consistent JSON output generation from Ollama",
+            "dependencies": [
+              "5.2"
+            ],
+            "details": "Create system prompts for question generation, implement few-shot examples for consistent formatting, design prompt templates for different question types, add context injection for learning objectives, and implement prompt validation to ensure output consistency",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 4,
+            "title": "Create API Route Structure",
+            "description": "Implement the main API route /app/api/generate-questions/route.ts with request handling and response formatting",
+            "dependencies": [
+              "5.1",
+              "5.2"
+            ],
+            "details": "Create POST handler for question generation requests, implement request body validation, integrate Ollama client service, add response formatting and JSON schema validation, implement basic error responses, and add request logging for debugging",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 5,
+            "title": "Implement Retry Logic with Exponential Backoff",
+            "description": "Add robust retry mechanism with exponential backoff for handling LLM failures and timeouts",
+            "dependencies": [
+              "5.1"
+            ],
+            "details": "Implement retry decorator with 3-attempt limit, create exponential backoff algorithm (1s, 2s, 4s delays), add jitter to prevent thundering herd, implement retry conditions for specific error types, and create retry status logging for monitoring",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 6,
+            "title": "Add Error Handling and Timeout Management",
+            "description": "Implement comprehensive error handling for LLM timeouts, invalid responses, and service failures",
+            "dependencies": [
+              "5.5"
+            ],
+            "details": "Set 30-second timeout for LLM requests, implement error classification (timeout/validation/service), create custom error types for different failure modes, add graceful degradation for partial failures, implement error logging and monitoring hooks",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 7,
+            "title": "Implement Response Caching System",
+            "description": "Create caching layer to avoid duplicate API calls and improve response times for similar requests",
+            "dependencies": [
+              "5.4"
+            ],
+            "details": "Implement Redis-based caching with request hash keys, create cache key generation from request parameters, set appropriate TTL values (15 minutes), implement cache invalidation strategies, add cache hit/miss metrics, and create cache warming for common requests",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 8,
+            "title": "Add Request Queuing Mechanism",
+            "description": "Implement request queuing system to handle concurrent requests and prevent API overload",
+            "dependencies": [
+              "5.4",
+              "5.6"
+            ],
+            "details": "Create request queue with Bull/BullMQ, implement priority-based queuing, set concurrency limits (max 3 concurrent LLM calls), add queue monitoring and status endpoints, implement queue overflow handling, and create request deduplication logic",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 9,
+            "title": "Comprehensive Testing and Quality Assurance",
+            "description": "Create comprehensive test suite for all Ollama integration components and validate LLM output quality",
+            "dependencies": [
+              "5.3",
+              "5.4",
+              "5.7",
+              "5.8"
+            ],
+            "details": "Write unit tests for Ollama client service, create integration tests with live Ollama instance, implement JSON schema compliance validation tests, test retry mechanism with simulated failures, validate timeout handling, test caching behavior, verify queue processing, and create output quality assessment metrics",
+            "status": "pending",
+            "testStrategy": ""
+          }
+        ]
+      },
+      {
+        "id": 6,
+        "title": "Create Dynamic Questions Wizard with Section Navigation",
+        "description": "Build dynamic form renderer supporting multiple input types, section-based navigation, auto-save functionality, and progress tracking for LLM-generated questions",
+        "details": "1. Create DynamicFormRenderer component that interprets question JSON\n2. Implement input components for each type: TextInput, SelectInput, MultiSelectInput, ScaleInput\n3. Build SectionNavigator with collapsible sections using Radix UI Accordion\n4. Implement dynamic form validation based on question requirements\n5. Create useFormPersistence hook for auto-save with conflict resolution\n6. Add visual progress indicators per section and overall\n7. Implement keyboard navigation and accessibility (ARIA labels)\n8. Handle dynamic form state in Zustand with normalized structure\n9. Create answer aggregation logic for blueprint generation\n10. Add loading states and skeleton screens during data fetching",
+        "testStrategy": "Test all input types render correctly, verify section navigation maintains form state, confirm auto-save works for dynamic fields, validate accessibility with screen readers",
+        "priority": "medium",
+        "dependencies": [
+          5
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Define JSON Schema and TypeScript Interfaces",
+            "description": "Create comprehensive TypeScript interfaces and JSON schema validation for dynamic questions structure, including all input types and section configurations",
+            "dependencies": [],
+            "details": "1. Define QuestionSchema interface with fields: id, type, label, required, validation, options, section\n2. Create InputType enum for 'text', 'select', 'multiselect', 'scale'\n3. Define SectionSchema interface with title, description, questions array\n4. Create FormSchema interface combining sections and metadata\n5. Implement JSON schema validation using Zod\n6. Add type guards for runtime type checking\n7. Export all types for use across components",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 2,
+            "title": "Build Core DynamicFormRenderer Component",
+            "description": "Create the main form renderer component that interprets JSON schema and orchestrates the entire dynamic form experience",
+            "dependencies": [
+              "6.1"
+            ],
+            "details": "1. Create DynamicFormRenderer functional component\n2. Accept formSchema prop and parse JSON structure\n3. Initialize React Hook Form with dynamic schema\n4. Set up form context provider for child components\n5. Implement error boundary for malformed JSON\n6. Add prop validation and default values\n7. Handle form submission and data aggregation\n8. Integrate with loading states and error handling",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 3,
+            "title": "Implement Individual Input Components",
+            "description": "Create reusable input components for each supported question type with consistent API and styling",
+            "dependencies": [
+              "6.1",
+              "6.2"
+            ],
+            "details": "1. Create TextInput component with validation feedback\n2. Build SelectInput with single selection and custom options\n3. Implement MultiSelectInput with checkbox or tag interface\n4. Create ScaleInput with customizable range and labels\n5. Add common props interface: label, required, error, value, onChange\n6. Implement consistent styling with Tailwind CSS\n7. Add input-specific validation and formatting\n8. Include accessibility attributes and ARIA labels",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 4,
+            "title": "Build Section Navigation with Radix UI Accordion",
+            "description": "Implement collapsible section navigation system that maintains form state and provides intuitive user experience",
+            "dependencies": [
+              "6.2",
+              "6.3"
+            ],
+            "details": "1. Install and configure Radix UI Accordion components\n2. Create SectionNavigator component wrapper\n3. Implement section state management (expanded/collapsed)\n4. Add section completion indicators and validation status\n5. Handle accordion keyboard navigation\n6. Preserve section state during form interactions\n7. Add smooth transitions and animations\n8. Implement section jump functionality with progress indicators",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 5,
+            "title": "Implement Dynamic Form Validation System",
+            "description": "Create flexible validation system that adapts to JSON-defined rules and provides real-time feedback",
+            "dependencies": [
+              "6.1",
+              "6.3"
+            ],
+            "details": "1. Build ValidationEngine class to parse JSON validation rules\n2. Implement common validation types: required, minLength, maxLength, pattern\n3. Add input-specific validations (email, number ranges, custom regex)\n4. Create real-time validation with debounced checking\n5. Implement cross-field validation dependencies\n6. Add conditional validation based on other field values\n7. Create validation error message system with internationalization support\n8. Integrate with React Hook Form validation schema",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 6,
+            "title": "Create Form Persistence Hook with Auto-Save",
+            "description": "Develop useFormPersistence hook that automatically saves form data with conflict resolution and offline support",
+            "dependencies": [
+              "6.2"
+            ],
+            "details": "1. Create useFormPersistence custom hook\n2. Implement debounced auto-save with 2-second delay\n3. Add localStorage backup for offline scenarios\n4. Implement conflict resolution for concurrent edits\n5. Create save status indicators (saving, saved, error)\n6. Add manual save functionality with optimistic updates\n7. Handle network failures with retry logic\n8. Implement data versioning and merge strategies",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 7,
+            "title": "Build Progress Tracking System",
+            "description": "Create comprehensive progress indicators showing completion status per section and overall form progress",
+            "dependencies": [
+              "6.4",
+              "6.5"
+            ],
+            "details": "1. Create ProgressTracker component with visual indicators\n2. Calculate completion percentage per section based on required fields\n3. Implement overall progress bar with animated updates\n4. Add section-specific progress badges and checkmarks\n5. Create progress persistence across sessions\n6. Implement progress-based navigation suggestions\n7. Add milestone celebrations and micro-interactions\n8. Include progress export functionality for analytics",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 8,
+            "title": "Implement Accessibility and Keyboard Navigation",
+            "description": "Ensure full accessibility compliance with WCAG 2.1 AA standards and comprehensive keyboard navigation support",
+            "dependencies": [
+              "6.3",
+              "6.4"
+            ],
+            "details": "1. Add comprehensive ARIA labels and descriptions\n2. Implement focus management and tab order\n3. Create keyboard shortcuts for section navigation (Ctrl+Arrow keys)\n4. Add screen reader announcements for form changes\n5. Implement high contrast mode support\n6. Add focus indicators with sufficient color contrast\n7. Create skip links for efficient navigation\n8. Test with screen readers (NVDA, JAWS, VoiceOver)",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 9,
+            "title": "Integrate Zustand State Management",
+            "description": "Implement normalized state structure in Zustand for efficient form data management and real-time updates",
+            "dependencies": [
+              "6.1",
+              "6.6"
+            ],
+            "details": "1. Create Zustand store with normalized form state structure\n2. Implement actions for form updates, section navigation, validation\n3. Add selectors for efficient component re-rendering\n4. Create middleware for persistence and debugging\n5. Implement optimistic updates for better UX\n6. Add state hydration from saved data\n7. Create devtools integration for development\n8. Implement state reset and cleanup functionality",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 10,
+            "title": "Build Answer Aggregation and Conflict Resolution",
+            "description": "Create system to aggregate form answers and resolve conflicts when multiple users edit simultaneously",
+            "dependencies": [
+              "6.6",
+              "6.9"
+            ],
+            "details": "1. Create AnswerAggregator service for combining all responses\n2. Implement conflict detection algorithm comparing timestamps\n3. Build conflict resolution UI with side-by-side comparison\n4. Add automatic merge strategies for non-conflicting changes\n5. Create manual resolution workflow for complex conflicts\n6. Implement answer versioning and history tracking\n7. Add rollback functionality to previous versions\n8. Create conflict notification system with real-time updates",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 11,
+            "title": "Implement Loading States and Comprehensive Testing",
+            "description": "Add skeleton screens, loading indicators, and comprehensive test suite covering all input types and edge cases",
+            "dependencies": [
+              "6.3",
+              "6.4",
+              "6.7"
+            ],
+            "details": "1. Create skeleton components for form loading states\n2. Implement progressive loading for large forms\n3. Add loading indicators for save operations and validation\n4. Create comprehensive Jest test suite for all input components\n5. Add React Testing Library tests for user interactions\n6. Implement end-to-end tests with Playwright\n7. Add accessibility testing with jest-axe\n8. Create performance tests for large forms (100+ questions)\n9. Add visual regression tests for UI consistency\n10. Test error scenarios and edge cases thoroughly",
+            "status": "pending",
+            "testStrategy": ""
+          }
+        ]
+      },
+      {
+        "id": 7,
+        "title": "Implement Blueprint Generation with LLM",
+        "description": "Create blueprint generation service that aggregates all answers and generates comprehensive learning blueprint in JSON and Markdown formats using Ollama API",
+        "details": "1. Create blueprint generation API route /app/api/generate-blueprint/route.ts\n2. Implement answer aggregation from static and dynamic responses\n3. Design comprehensive prompt template for blueprint generation\n4. Define blueprint JSON schema:\n```typescript\nconst blueprintSchema = z.object({\n  title: z.string(),\n  overview: z.string(),\n  learningObjectives: z.array(z.string()),\n  modules: z.array(z.object({\n    title: z.string(),\n    duration: z.number(),\n    topics: z.array(z.string()),\n    activities: z.array(z.string()),\n    assessments: z.array(z.string())\n  })),\n  timeline: z.object({...}),\n  resources: z.array(z.object({...}))\n});\n```\n5. Implement Markdown generation with proper formatting\n6. Add progress streaming using Server-Sent Events\n7. Create fallback templates for error scenarios\n8. Implement blueprint versioning and comparison",
+        "testStrategy": "Generate blueprints with various input combinations, validate JSON structure compliance, verify Markdown formatting, test generation completes within 60 seconds",
+        "priority": "medium",
+        "dependencies": [
+          6
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Implement Answer Aggregation Service",
+            "description": "Create service to collect and aggregate responses from static questions wizard and dynamic questions, preparing unified data structure for blueprint generation",
+            "dependencies": [],
+            "details": "1. Create /lib/services/answerAggregation.ts service class\n2. Implement aggregateStaticAnswers() to collect from static questions form\n3. Implement aggregateDynamicAnswers() to collect from dynamic questions API\n4. Create unified data structure combining both answer types\n5. Add data validation and sanitization before aggregation\n6. Implement caching mechanism for aggregated data\n7. Add logging for aggregation process tracking",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 2,
+            "title": "Design and Optimize Prompt Templates",
+            "description": "Create sophisticated prompt engineering system for consistent blueprint generation with multiple template variations and optimization strategies",
+            "dependencies": [
+              "7.1"
+            ],
+            "details": "1. Create /lib/prompts/blueprintTemplates.ts with base prompt structure\n2. Design system prompt for blueprint generation consistency\n3. Create dynamic prompt injection based on aggregated answers\n4. Implement prompt variations for different learning objectives\n5. Add context-aware prompt optimization based on answer complexity\n6. Create prompt validation and testing framework\n7. Implement A/B testing system for prompt effectiveness\n8. Add prompt versioning for rollback capabilities",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 3,
+            "title": "Implement Blueprint Generation API Route",
+            "description": "Create comprehensive API endpoint that integrates with Ollama API for blueprint generation with proper request handling and response processing",
+            "dependencies": [
+              "7.1",
+              "7.2"
+            ],
+            "details": "1. Create /app/api/generate-blueprint/route.ts with POST handler\n2. Implement Ollama client integration using /api/generate endpoint\n3. Add request body validation using Zod schema\n4. Implement structured JSON output generation with Ollama\n5. Add timeout handling (60 seconds max generation time)\n6. Implement retry logic for failed Ollama requests\n7. Add request rate limiting and queue management\n8. Create comprehensive error response handling",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 4,
+            "title": "Implement JSON Schema Validation System",
+            "description": "Create robust validation system for blueprint JSON output with schema compliance checking and automatic correction mechanisms",
+            "dependencies": [
+              "7.3"
+            ],
+            "details": "1. Define complete blueprintSchema using Zod with nested validation\n2. Implement parseAndValidateBlueprintJSON() function\n3. Create schema compliance checker with detailed error reporting\n4. Add automatic JSON repair for common LLM output issues\n5. Implement fallback schema for partial generation failures\n6. Create validation middleware for API responses\n7. Add schema versioning support for backward compatibility\n8. Implement validation metrics and reporting system",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 5,
+            "title": "Create Markdown Generation Service",
+            "description": "Develop comprehensive Markdown formatting service that converts JSON blueprint to well-structured Markdown with proper formatting and styling",
+            "dependencies": [
+              "7.4"
+            ],
+            "details": "1. Create /lib/services/markdownGenerator.ts service\n2. Implement JSON-to-Markdown conversion with proper heading hierarchy\n3. Add table generation for modules and timeline sections\n4. Create dynamic table of contents generation\n5. Implement code block formatting for technical content\n6. Add Mermaid diagram integration for learning paths\n7. Create exportable PDF-ready Markdown formatting\n8. Add custom styling options and themes support",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 6,
+            "title": "Implement Server-Sent Events Streaming",
+            "description": "Create real-time progress streaming system using SSE to provide live updates during blueprint generation process",
+            "dependencies": [
+              "7.3"
+            ],
+            "details": "1. Implement SSE endpoint /app/api/generate-blueprint/stream\n2. Create streaming progress updates during Ollama generation\n3. Add percentage-based progress tracking system\n4. Implement client-side SSE connection management\n5. Create progress indicator UI components\n6. Add connection failure detection and auto-reconnect\n7. Implement graceful degradation for non-SSE browsers\n8. Add streaming cancellation and cleanup mechanisms",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 7,
+            "title": "Develop Error Handling and Fallback System",
+            "description": "Create comprehensive error handling with intelligent fallback templates and recovery mechanisms for various failure scenarios",
+            "dependencies": [
+              "7.2",
+              "7.4"
+            ],
+            "details": "1. Create /lib/fallbacks/blueprintFallbacks.ts with template system\n2. Implement Ollama connection failure handling\n3. Create fallback blueprint templates based on answer analysis\n4. Add partial generation recovery mechanisms\n5. Implement intelligent error classification and response\n6. Create user-friendly error messages and suggestions\n7. Add automatic retry with exponential backoff\n8. Implement fallback quality scoring and selection",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 8,
+            "title": "Build Blueprint Versioning System",
+            "description": "Create versioning and comparison system for blueprint iterations with diff tracking and rollback capabilities",
+            "dependencies": [
+              "7.4",
+              "7.5"
+            ],
+            "details": "1. Design blueprint version schema with metadata tracking\n2. Implement version storage in Supabase with efficient indexing\n3. Create blueprint comparison algorithm with diff visualization\n4. Add version rollback and restoration functionality\n5. Implement change tracking for blueprint modifications\n6. Create version history UI with timeline visualization\n7. Add collaborative version comments and annotations\n8. Implement version merging for concurrent edits",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 9,
+            "title": "Create Comprehensive Testing Suite",
+            "description": "Develop extensive testing framework covering all blueprint generation scenarios with automated quality validation and performance testing",
+            "dependencies": [
+              "7.3",
+              "7.4",
+              "7.5",
+              "7.6",
+              "7.7",
+              "7.8"
+            ],
+            "details": "1. Create unit tests for all service functions and utilities\n2. Implement integration tests with live Ollama instance\n3. Add end-to-end tests for complete blueprint generation flow\n4. Create test data sets with various input combinations\n5. Implement automated JSON schema compliance testing\n6. Add Markdown formatting validation tests\n7. Create performance tests ensuring 60-second generation limit\n8. Implement load testing for concurrent blueprint generation\n9. Add LLM output consistency validation across multiple runs",
+            "status": "pending",
+            "testStrategy": ""
+          }
+        ]
+      },
+      {
+        "id": 8,
+        "title": "Build Interactive Dashboard with Data Visualization",
+        "description": "Create blueprint dashboard using Recharts for data visualization and Framer Motion for animations, displaying KPIs, timeline charts, and module breakdowns",
+        "details": "1. Install visualization libraries: `npm install recharts@2.12.0 framer-motion@11.3.0`\n2. Create dashboard layout with responsive grid using CSS Grid\n3. Implement KPI cards with animated counters:\n   - Total learning hours\n   - Number of modules\n   - Assessment count\n   - Resource count\n4. Build timeline visualization using Recharts AreaChart\n5. Create module breakdown with interactive PieChart\n6. Implement activity distribution BarChart\n7. Add interactive tooltips and legends\n8. Create drill-down functionality for detailed views\n9. Implement dashboard state management for filters/views\n10. Add export dashboard as image functionality",
+        "testStrategy": "Verify all charts render with real data, test responsive behavior on mobile/tablet/desktop, validate animations perform smoothly, ensure interactive elements work correctly",
+        "priority": "medium",
+        "dependencies": [
+          7
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Install Dependencies and Setup Project Foundation",
+            "description": "Install required visualization and animation libraries, configure TypeScript interfaces for dashboard data structures",
+            "dependencies": [],
+            "details": "1. Install core libraries: `npm install recharts@2.12.0 framer-motion@11.3.0 lucide-react@0.263.1`\n2. Create TypeScript interfaces for dashboard data:\n   - IDashboardData with KPI metrics\n   - IChartData for timeline, pie, and bar charts\n   - IFilterState for dashboard controls\n3. Setup dashboard constants and configuration files\n4. Create utility functions for data formatting and calculations\n5. Configure color themes and chart styling constants",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 2,
+            "title": "Create Responsive Dashboard Layout Foundation",
+            "description": "Build the main dashboard container with CSS Grid layout that adapts to different screen sizes",
+            "dependencies": [
+              "8.1"
+            ],
+            "details": "1. Create Dashboard component with CSS Grid layout\n2. Define responsive breakpoints for mobile, tablet, and desktop\n3. Implement grid areas for header, sidebar, main content, and footer\n4. Add container components: DashboardHeader, DashboardSidebar, MainContent\n5. Setup responsive navigation with collapsible sidebar using Framer Motion\n6. Implement loading states and error boundaries\n7. Add scroll management for dashboard sections",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 3,
+            "title": "Implement Animated KPI Card Components",
+            "description": "Create KPI cards with animated counters displaying total learning hours, modules, assessments, and resources",
+            "dependencies": [
+              "8.2"
+            ],
+            "details": "1. Create KPICard component with Framer Motion animations\n2. Implement useCounterAnimation hook for number animations\n3. Build KPI cards for:\n   - Total learning hours with time formatting\n   - Number of modules with progress indicators\n   - Assessment count with completion rates\n   - Resource count with type breakdown\n4. Add hover effects and micro-interactions\n5. Implement responsive card layouts with CSS Grid\n6. Add loading skeletons and error states for each KPI",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 4,
+            "title": "Build Timeline Visualization with AreaChart",
+            "description": "Create interactive timeline chart showing learning progress over time using Recharts AreaChart",
+            "dependencies": [
+              "8.1"
+            ],
+            "details": "1. Create TimelineChart component using Recharts AreaChart\n2. Implement data transformation functions for timeline data\n3. Configure chart with:\n   - Gradient fill colors for areas\n   - Responsive dimensions and margins\n   - Custom tooltip showing detailed information\n   - Interactive legend with toggle functionality\n4. Add time period filters (7 days, 30 days, 90 days, 1 year)\n5. Implement smooth animations for data updates\n6. Add zoom and pan functionality for large datasets",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 5,
+            "title": "Create Module Breakdown PieChart Component",
+            "description": "Implement interactive pie chart displaying module completion status and progress distribution",
+            "dependencies": [
+              "8.1"
+            ],
+            "details": "1. Create ModulePieChart component using Recharts PieChart\n2. Configure pie chart with:\n   - Custom colors for different module states\n   - Interactive segments with hover effects\n   - Center label showing total modules\n   - Legend with completion percentages\n3. Implement data transformation for module status calculation\n4. Add click handlers for drilling down into specific modules\n5. Create animated transitions between different data views\n6. Add customizable chart size and responsive behavior",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 6,
+            "title": "Implement Activity Distribution BarChart",
+            "description": "Build bar chart component showing activity distribution across different learning categories",
+            "dependencies": [
+              "8.1"
+            ],
+            "details": "1. Create ActivityBarChart component using Recharts BarChart\n2. Configure horizontal bar chart with:\n   - Category labels on Y-axis\n   - Activity counts/hours on X-axis\n   - Color-coded bars by activity type\n   - Grid lines and axis formatting\n3. Implement sorting functionality (by value, alphabetical)\n4. Add animation effects for bar transitions\n5. Create comparison mode for different time periods\n6. Implement responsive design with mobile-optimized layout",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 7,
+            "title": "Add Interactive Tooltips and Legends System",
+            "description": "Create comprehensive tooltip and legend system for all chart components with consistent styling",
+            "dependencies": [
+              "8.4",
+              "8.5",
+              "8.6"
+            ],
+            "details": "1. Create CustomTooltip component with consistent styling\n2. Implement tooltip content for each chart type:\n   - Timeline: date, value, trend information\n   - Pie chart: segment name, value, percentage\n   - Bar chart: category, value, comparison data\n3. Create interactive legends with toggle functionality\n4. Add hover states and animations for legend items\n5. Implement tooltip positioning logic to prevent overflow\n6. Add keyboard navigation support for accessibility",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 8,
+            "title": "Implement Drill-Down Functionality",
+            "description": "Create detailed view system allowing users to drill down from overview charts to detailed data views",
+            "dependencies": [
+              "8.3",
+              "8.5"
+            ],
+            "details": "1. Create DrillDownModal component with detailed data views\n2. Implement click handlers for chart elements:\n   - KPI cards → detailed breakdown tables\n   - Pie chart segments → module detail views\n   - Bar chart bars → activity detail lists\n3. Create breadcrumb navigation for drill-down levels\n4. Add data filtering and search within drill-down views\n5. Implement modal animations with Framer Motion\n6. Create export functionality for detailed views",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 9,
+            "title": "Create Dashboard State Management and Filters",
+            "description": "Implement comprehensive state management for dashboard filters, views, and user preferences",
+            "dependencies": [
+              "8.2"
+            ],
+            "details": "1. Create useDashboardState hook for centralized state management\n2. Implement filter controls:\n   - Date range picker with presets\n   - Module status filters\n   - Activity type filters\n   - User/group filters\n3. Create FilterPanel component with collapsible sections\n4. Add view mode toggles (grid, list, compact)\n5. Implement filter persistence in localStorage\n6. Create reset filters functionality\n7. Add real-time data updates with optimistic UI",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 10,
+            "title": "Add Export Dashboard Functionality",
+            "description": "Implement dashboard export features supporting image, PDF, and data export formats",
+            "dependencies": [
+              "8.7"
+            ],
+            "details": "1. Install export libraries: `npm install html2canvas jspdf react-to-print`\n2. Create ExportMenu component with format options\n3. Implement export functions:\n   - Export as PNG/JPEG image\n   - Export as PDF with multiple pages\n   - Export raw data as CSV/JSON\n4. Add export configuration options (resolution, format, data range)\n5. Create export progress indicators and error handling\n6. Implement batch export for multiple chart views\n7. Add email sharing functionality for exported reports",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 11,
+            "title": "Performance Optimization and Cross-Device Testing",
+            "description": "Optimize dashboard performance and ensure consistent experience across all device types",
+            "dependencies": [
+              "8.9",
+              "8.10"
+            ],
+            "details": "1. Implement chart virtualization for large datasets\n2. Add lazy loading for chart components using React.lazy\n3. Optimize re-renders using React.memo and useMemo\n4. Implement data caching with SWR or React Query\n5. Add performance monitoring and metrics collection\n6. Test responsive behavior on mobile, tablet, and desktop\n7. Validate accessibility compliance (WCAG 2.1)\n8. Optimize bundle size and implement code splitting\n9. Test animation performance on low-end devices\n10. Create comprehensive test suite for dashboard functionality",
+            "status": "pending",
+            "testStrategy": ""
+          }
+        ]
+      },
+      {
+        "id": 9,
+        "title": "Develop Export Functionality for Multiple Formats",
+        "description": "Implement export features for PDF, Markdown, and JSON formats with proper formatting, styling, and cross-device compatibility",
+        "details": "1. Install export libraries: `npm install jspdf@2.5.1 html2pdf.js@0.10.1 file-saver@2.0.5`\n2. Create ExportService class with methods for each format\n3. Implement PDF export:\n   - Custom styling with corporate branding\n   - Page breaks for sections\n   - Header/footer with metadata\n   - Embedded charts as images\n4. Implement Markdown export:\n   - Proper heading hierarchy\n   - Table formatting for structured data\n   - Code blocks for technical content\n5. Implement JSON export:\n   - Pretty printing with 2-space indentation\n   - Include metadata and version info\n6. Create export preview modal\n7. Add batch export functionality\n8. Implement export history tracking",
+        "testStrategy": "Export sample blueprints in all formats, verify PDF renders correctly across devices, validate Markdown syntax, ensure JSON is valid and properly formatted",
+        "priority": "medium",
+        "dependencies": [
+          8
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Setup Export Libraries and Dependencies",
+            "description": "Install and configure export libraries including jsPDF, html2pdf.js, and file-saver with proper version management",
+            "dependencies": [],
+            "details": "Install export libraries: `npm install jspdf@2.5.1 html2pdf.js@0.10.1 file-saver@2.0.5`. Configure TypeScript types and ensure compatibility with Next.js. Set up proper imports and verify library initialization in browser environment.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 2,
+            "title": "Create ExportService Class Architecture",
+            "description": "Design and implement the core ExportService class with base methods and interfaces for all export formats",
+            "dependencies": [
+              "9.1"
+            ],
+            "details": "Create ExportService class in /lib/export/ExportService.ts with methods for each format (exportToPDF, exportToMarkdown, exportToJSON). Define TypeScript interfaces for export options, metadata, and common formatting configurations. Implement base error handling and logging.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 3,
+            "title": "Implement PDF Export with Styling and Charts",
+            "description": "Build comprehensive PDF export functionality with corporate branding, page breaks, headers/footers, and embedded chart images",
+            "dependencies": [
+              "9.2"
+            ],
+            "details": "Implement PDF generation using jsPDF with custom styling templates. Add corporate branding elements, configure automatic page breaks for sections, create header/footer templates with metadata. Integrate html2canvas for embedding charts as images with proper scaling and positioning.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 4,
+            "title": "Implement Markdown Export with Proper Formatting",
+            "description": "Create Markdown export functionality with correct heading hierarchy, table formatting, and code block handling",
+            "dependencies": [
+              "9.2"
+            ],
+            "details": "Build Markdown generator that converts blueprint data to properly formatted Markdown. Implement heading hierarchy (H1-H6), table formatting for structured data, code block formatting for technical content, and proper escaping of special characters. Include front matter metadata.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 5,
+            "title": "Implement JSON Export with Metadata",
+            "description": "Create JSON export functionality with pretty printing, metadata inclusion, and version information",
+            "dependencies": [
+              "9.2"
+            ],
+            "details": "Implement JSON export with pretty printing using 2-space indentation. Include comprehensive metadata (export timestamp, version info, user details). Add JSON schema validation and ensure proper data sanitization before export.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 6,
+            "title": "Create Export Preview Modal System",
+            "description": "Build interactive preview modal that shows export results before download with format-specific previews",
+            "dependencies": [
+              "9.3",
+              "9.4",
+              "9.5"
+            ],
+            "details": "Create ExportPreviewModal component with tabs for each format. Implement PDF preview using embedded viewer, Markdown preview with rendered HTML, and JSON preview with syntax highlighting. Add download buttons and format selection options.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 7,
+            "title": "Implement Batch Export Functionality",
+            "description": "Add capability to export multiple blueprints or all formats simultaneously with progress tracking",
+            "dependencies": [
+              "9.3",
+              "9.4",
+              "9.5"
+            ],
+            "details": "Create batch export functionality that can process multiple blueprints or export all formats simultaneously. Implement progress tracking with visual indicators, queue management for large batches, and ZIP file creation for multiple exports. Add cancel functionality for long-running operations.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 8,
+            "title": "Add Export History Tracking",
+            "description": "Implement export history system to track previous exports with metadata and re-download capabilities",
+            "dependencies": [
+              "9.2"
+            ],
+            "details": "Create export history tracking system using localStorage or database. Store export metadata (timestamp, format, file size, blueprint ID). Build ExportHistory component to display past exports with re-download links and delete functionality. Implement automatic cleanup of old history entries.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 9,
+            "title": "Implement Validation, Error Handling, and Cross-Device Testing",
+            "description": "Add comprehensive validation, error handling, and ensure cross-device compatibility for all export features",
+            "dependencies": [
+              "9.3",
+              "9.4",
+              "9.5",
+              "9.6",
+              "9.7"
+            ],
+            "details": "Implement format validation for all export types, comprehensive error handling with user-friendly messages, and retry mechanisms for failed exports. Test functionality across different devices (mobile, tablet, desktop) and browsers. Add loading states, timeout handling, and graceful degradation for unsupported features.",
+            "status": "pending",
+            "testStrategy": ""
+          }
+        ]
+      },
+      {
+        "id": 10,
+        "title": "Implement State Management and Resume Capability",
+        "description": "Setup comprehensive state management using Zustand with React Query integration, implement session persistence, and create resume workflow for incomplete blueprints",
+        "details": "1. Install state management: `npm install zustand@4.5.0 @tanstack/react-query@5.51.0`\n2. Create Zustand stores:\n   - authStore: user session, tokens\n   - blueprintStore: current blueprint state\n   - uiStore: navigation, modals, notifications\n3. Implement React Query for server state:\n   - Queries for fetching blueprints\n   - Mutations for saving/updating\n   - Optimistic updates\n4. Create persistence middleware for Zustand\n5. Implement resume capability:\n   - Detect incomplete blueprints on login\n   - Show resume prompt with progress info\n   - Restore state to last saved point\n6. Add version conflict resolution\n7. Implement undo/redo functionality\n8. Create state debugging tools for development",
+        "testStrategy": "Test state persistence across browser sessions, verify resume workflow from each step, validate optimistic updates work correctly, ensure no data loss on connection issues",
+        "priority": "low",
+        "dependencies": [
+          9
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Install Dependencies and Setup State Management Foundation",
+            "description": "Install Zustand and React Query packages, create basic folder structure and TypeScript types for state management architecture",
+            "dependencies": [],
+            "details": "1. Install packages: `npm install zustand@4.5.0 @tanstack/react-query@5.51.0`\n2. Create /lib/stores/ directory structure\n3. Define TypeScript interfaces for all store states\n4. Setup QueryClient configuration with default options\n5. Create state management index file for exports",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 2,
+            "title": "Create Core Zustand Stores",
+            "description": "Implement authStore, blueprintStore, and uiStore with proper TypeScript typing and initial state structure",
+            "dependencies": [
+              "10.1"
+            ],
+            "details": "1. Create authStore: user session, tokens, authentication state\n2. Implement blueprintStore: current blueprint state, progress tracking\n3. Build uiStore: navigation state, modal management, notifications\n4. Add proper TypeScript interfaces for each store\n5. Implement basic actions for state updates\n6. Add store composition patterns for cross-store operations",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 3,
+            "title": "Develop Persistence Middleware",
+            "description": "Create custom persistence middleware for Zustand stores with selective state hydration and storage optimization",
+            "dependencies": [
+              "10.2"
+            ],
+            "details": "1. Implement persistence middleware with localStorage/sessionStorage\n2. Add selective state hydration (exclude sensitive data)\n3. Create storage versioning for schema migrations\n4. Implement compression for large blueprint states\n5. Add error handling for storage quota exceeded\n6. Create cleanup mechanisms for old persisted data",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 4,
+            "title": "Setup React Query Integration",
+            "description": "Configure React Query with Zustand stores, implement queries and mutations for blueprint operations with proper error handling",
+            "dependencies": [
+              "10.2"
+            ],
+            "details": "1. Setup QueryClient with Zustand store integration\n2. Create blueprint queries: fetchBlueprints, fetchBlueprintById\n3. Implement mutations: saveBlueprintMutation, updateBlueprintMutation\n4. Add query key factories for consistent caching\n5. Setup error boundaries and retry logic\n6. Implement background refetching strategies",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 5,
+            "title": "Implement Optimistic Updates System",
+            "description": "Create optimistic update handlers for blueprint operations with rollback mechanisms and conflict resolution",
+            "dependencies": [
+              "10.4"
+            ],
+            "details": "1. Implement optimistic updates for blueprint saves\n2. Create rollback mechanisms for failed updates\n3. Add optimistic UI state management\n4. Implement conflict detection and resolution\n5. Create user feedback for optimistic operations\n6. Add retry logic with exponential backoff",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 6,
+            "title": "Create Resume Workflow Detection and Restoration",
+            "description": "Implement system to detect incomplete blueprints on login and provide resume functionality with progress restoration",
+            "dependencies": [
+              "10.3"
+            ],
+            "details": "1. Create incomplete blueprint detection on app initialization\n2. Implement resume prompt UI with progress information\n3. Build state restoration logic for incomplete sessions\n4. Add progress calculation and visualization\n5. Create 'start fresh' vs 'resume' workflow options\n6. Implement data validation before restoration",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 7,
+            "title": "Implement Version Conflict Resolution",
+            "description": "Create system to handle version conflicts when multiple sessions modify the same blueprint with merge strategies",
+            "dependencies": [
+              "10.5"
+            ],
+            "details": "1. Implement version tracking for blueprint states\n2. Create conflict detection mechanisms\n3. Build merge strategies for conflicting changes\n4. Add user interface for conflict resolution\n5. Implement automatic conflict resolution for non-conflicting changes\n6. Create audit trail for version changes",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 8,
+            "title": "Add Undo/Redo Functionality",
+            "description": "Implement comprehensive undo/redo system for blueprint modifications with action history and state snapshots",
+            "dependencies": [
+              "10.2"
+            ],
+            "details": "1. Create action history tracking system\n2. Implement state snapshots for undo/redo operations\n3. Add keyboard shortcuts (Ctrl+Z, Ctrl+Y)\n4. Create undo/redo UI controls\n5. Implement selective undo for specific actions\n6. Add history size limits and cleanup",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 9,
+            "title": "Create State Debugging Tools",
+            "description": "Build development tools for state inspection, time-travel debugging, and performance monitoring",
+            "dependencies": [
+              "10.8"
+            ],
+            "details": "1. Create Redux DevTools integration for Zustand\n2. Implement state logger middleware for development\n3. Add performance monitoring for state updates\n4. Create state snapshot export/import functionality\n5. Build time-travel debugging interface\n6. Add state validation and integrity checks",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 10,
+            "title": "Performance Optimization and Comprehensive Testing",
+            "description": "Optimize state management performance, implement comprehensive testing, and validate state synchronization across all scenarios",
+            "dependencies": [
+              "10.6",
+              "10.7",
+              "10.9"
+            ],
+            "details": "1. Implement state update batching and optimization\n2. Add memoization for expensive store selectors\n3. Create comprehensive unit tests for all stores\n4. Implement integration tests for resume workflow\n5. Test state persistence across browser sessions\n6. Validate optimistic updates and rollbacks\n7. Performance test with large blueprint datasets\n8. Test concurrent user scenarios and conflict resolution",
+            "status": "pending",
+            "testStrategy": ""
+          }
+        ]
+      }
+    ],
+    "metadata": {
+      "created": "2025-09-22T12:58:26.916Z",
+      "updated": "2025-09-22T12:58:26.916Z",
+      "description": "Tasks for master context"
+    }
+  }
+}

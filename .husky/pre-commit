@@ -1,0 +1,5 @@
+#!/usr/bin/env sh
+
+# minimal pre-commit without husky.sh
+command -v npx >/dev/null 2>&1 || { echo >&2 'npx required but not installed.'; exit 1; }
+exec npx --yes lint-staged
