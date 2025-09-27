@@ -1,0 +1,252 @@
+import { Blueprint } from '@/lib/ollama/schema';
+import { DashboardData } from '@/types/dashboard';
+import { ExportData, ExportOptions, ExportResult, ExportMetadata } from './types';
+
+export class MarkdownGenerator {
+  /**
+   * Generate Markdown content from blueprint data
+   */
+  generateMarkdown(data: ExportData, options: ExportOptions): string {
+    const { blueprint, dashboardData, metadata } = data;
+
+    let markdown = '';
+
+    // Add front matter
+    markdown += this.generateFrontMatter(metadata);
+
+    // Add title and overview
+    markdown += this.generateHeader(blueprint, metadata);
+
+    // Add learning objectives
+    markdown += this.generateLearningObjectives(blueprint);
+
+    // Add modules section
+    markdown += this.generateModules(blueprint);
+
+    // Add timeline if available
+    if (blueprint.timeline) {
+      markdown += this.generateTimeline(blueprint.timeline);
+    }
+
+    // Add resources section
+    markdown += this.generateResources(blueprint.resources || []);
+
+    // Add dashboard analytics if available
+    if (options.includeCharts && dashboardData) {
+      markdown += this.generateDashboardAnalytics(dashboardData);
+    }
+
+    // Add footer
+    markdown += this.generateFooter(metadata);
+
+    return markdown;
+  }
+
+  /**
+   * Generate front matter metadata
+   */
+  private generateFrontMatter(metadata: ExportMetadata): string {
+    return `---
+title: "${this.escapeMarkdown(metadata.title)}"
+description: "${this.escapeMarkdown(metadata.description || '')}"
+author: "${this.escapeMarkdown(metadata.author || 'Unknown')}"
+created: ${metadata.createdAt}
+exported: ${metadata.exportedAt}
+version: ${metadata.version}
+${metadata.blueprintId ? `blueprint_id: ${metadata.blueprintId}` : ''}
+---
+
+`;
+  }
+
+  /**
+   * Generate header section
+   */
+  private generateHeader(blueprint: Blueprint, metadata: ExportMetadata): string {
+    return `# ${this.escapeMarkdown(blueprint.title)}
+
+${this.escapeMarkdown(blueprint.overview)}
+
+---
+`;
+  }
+
+  /**
+   * Generate learning objectives section
+   */
+  private generateLearningObjectives(blueprint: Blueprint): string {
+    let markdown = '## Learning Objectives\n\n';
+
+    blueprint.learningObjectives.forEach((objective, index) => {
+      markdown += `${index + 1}. ${this.escapeMarkdown(objective)}\n`;
+    });
+
+    markdown += '\n---\n\n';
+    return markdown;
+  }
+
+  /**
+   * Generate modules section
+   */
+  private generateModules(blueprint: Blueprint): string {
+    let markdown = '## Learning Modules\n\n';
+
+    blueprint.modules.forEach((module, index) => {
+      markdown += `### ${index + 1}. ${this.escapeMarkdown(module.title)}\n\n`;
+      markdown += `**Duration:** ${module.duration} hours\n\n`;
+
+      // Topics
+      markdown += `**Topics:**\n`;
+      module.topics.forEach((topic) => {
+        markdown += `- ${this.escapeMarkdown(topic)}\n`;
+      });
+      markdown += '\n';
+
+      // Activities
+      if (module.activities.length > 0) {
+        markdown += `**Activities:**\n`;
+        module.activities.forEach((activity) => {
+          markdown += `- ${this.escapeMarkdown(activity)}\n`;
+        });
+        markdown += '\n';
+      }
+
+      // Assessments
+      if (module.assessments.length > 0) {
+        markdown += `**Assessments:**\n`;
+        module.assessments.forEach((assessment) => {
+          markdown += `- ${this.escapeMarkdown(assessment)}\n`;
+        });
+        markdown += '\n';
+      }
+
+      markdown += '---\n\n';
+    });
+
+    return markdown;
+  }
+
+  /**
+   * Generate timeline section
+   */
+  private generateTimeline(timeline: Record<string, string>): string {
+    let markdown = '## Timeline\n\n';
+
+    const timelineEntries = Object.entries(timeline);
+    if (timelineEntries.length === 0) {
+      markdown += '*No timeline information available.*\n\n';
+      return markdown;
+    }
+
+    markdown += '| Week | Description |\n';
+    markdown += '|------|-------------|\n';
+
+    timelineEntries.forEach(([week, description]) => {
+      markdown += `| ${this.escapeMarkdown(week)} | ${this.escapeMarkdown(description)} |\n`;
+    });
+
+    markdown += '\n---\n\n';
+    return markdown;
+  }
+
+  /**
+   * Generate resources section
+   */
+  private generateResources(
+    resources: Array<{ name: string; type: string; url?: string }>,
+  ): string {
+    let markdown = '## Resources\n\n';
+
+    if (resources.length === 0) {
+      markdown += '*No resources available.*\n\n';
+      return markdown;
+    }
+
+    markdown += '| Name | Type | URL |\n';
+    markdown += '|------|------|-----|\n';
+
+    resources.forEach((resource) => {
+      const url = resource.url ? `[${this.escapeMarkdown(resource.url)}](${resource.url})` : 'N/A';
+      markdown += `| ${this.escapeMarkdown(resource.name)} | ${this.escapeMarkdown(resource.type)} | ${url} |\n`;
+    });
+
+    markdown += '\n---\n\n';
+    return markdown;
+  }
+
+  /**
+   * Generate dashboard analytics section
+   */
+  private generateDashboardAnalytics(dashboardData: DashboardData): string {
+    let markdown = '## Dashboard Analytics\n\n';
+
+    // KPIs
+    markdown += '### Key Performance Indicators\n\n';
+    markdown += `- **Total Learning Hours:** ${dashboardData.kpis.totalLearningHours}\n`;
+    markdown += `- **Total Modules:** ${dashboardData.kpis.totalModules}\n`;
+    markdown += `- **Completed Modules:** ${dashboardData.kpis.completedModules}\n`;
+    markdown += `- **Total Assessments:** ${dashboardData.kpis.totalAssessments}\n`;
+    markdown += `- **Completed Assessments:** ${dashboardData.kpis.completedAssessments}\n`;
+    markdown += `- **Total Resources:** ${dashboardData.kpis.totalResources}\n`;
+    markdown += `- **Estimated Completion Date:** ${dashboardData.kpis.estimatedCompletionDate}\n\n`;
+
+    // Module breakdown
+    if (dashboardData.modules.length > 0) {
+      markdown += '### Module Progress\n\n';
+      markdown += '| Module | Status | Progress | Estimated Hours |\n';
+      markdown += '|--------|--------|----------|----------------|\n';
+
+      dashboardData.modules.forEach((module) => {
+        markdown += `| ${this.escapeMarkdown(module.title)} | ${module.status} | ${module.progressPercentage}% | ${module.estimatedHours} |\n`;
+      });
+      markdown += '\n';
+    }
+
+    // Activity distribution
+    if (dashboardData.activities.length > 0) {
+      markdown += '### Activity Distribution\n\n';
+      markdown += '| Category | Hours | Percentage |\n';
+      markdown += '|----------|-------|------------|\n';
+
+      dashboardData.activities.forEach((activity) => {
+        markdown += `| ${this.escapeMarkdown(activity.category)} | ${activity.hours} | ${activity.percentage}% |\n`;
+      });
+      markdown += '\n';
+    }
+
+    markdown += '---\n\n';
+    return markdown;
+  }
+
+  /**
+   * Generate footer
+   */
+  private generateFooter(metadata: ExportMetadata): string {
+    return `---
+
+*This document was generated on ${new Date(metadata.exportedAt).toLocaleDateString()} at ${new Date(metadata.exportedAt).toLocaleTimeString()}.*
+*Version: ${metadata.version}*
+`;
+  }
+
+  /**
+   * Escape Markdown special characters
+   */
+  private escapeMarkdown(text: string): string {
+    return text
+      .replace(/\\/g, '\\\\')
+      .replace(/\*/g, '\\*')
+      .replace(/_/g, '\\_')
+      .replace(/`/g, '\\`')
+      .replace(/\[/g, '\\[')
+      .replace(/\]/g, '\\]')
+      .replace(/\(/g, '\\(')
+      .replace(/\)/g, '\\)')
+      .replace(/#/g, '\\#')
+      .replace(/\+/g, '\\+')
+      .replace(/-/g, '\\-')
+      .replace(/\./g, '\\.')
+      .replace(/!/g, '\\!')
+      .replace(/\|/g, '\\|');
+  }
+}

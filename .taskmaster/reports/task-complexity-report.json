@@ -1,9 +1,9 @@
 {
 	"meta": {
-		"generatedAt": "2025-09-22T13:00:07.404Z",
-		"tasksAnalyzed": 10,
-		"totalTasks": 10,
-		"analysisCount": 10,
+		"generatedAt": "2025-09-27T10:54:57.354Z",
+		"tasksAnalyzed": 12,
+		"totalTasks": 12,
+		"analysisCount": 12,
 		"thresholdScore": 5,
 		"projectName": "Taskmaster",
 		"usedResearch": true
@@ -11,83 +11,99 @@
 	"complexityAnalysis": [
 		{
 			"taskId": 1,
-			"taskTitle": "Setup Project Foundation and Development Environment",
-			"complexityScore": 4,
-			"recommendedSubtasks": 9,
-			"expansionPrompt": "Break down the project foundation setup into granular configuration steps, separating Next.js initialization, TypeScript configuration, UI library setup, linting tools, git hooks, environment variables, folder structure creation, and path aliases. Each subtask should be independently executable and verifiable.",
-			"reasoning": "This is a foundational task with well-documented steps, but involves integrating multiple tools (Next.js 14, TypeScript, Tailwind, Shadcn/UI, ESLint, Prettier, Husky). While each individual step is straightforward, the integration and proper configuration requires attention to detail. The complexity is moderate due to potential version conflicts and configuration dependencies."
+			"taskTitle": "Upgrade and Configure Tailwind CSS v4",
+			"complexityScore": 7,
+			"recommendedSubtasks": 6,
+			"expansionPrompt": "Break down the upgrade into: (1) Branch and backup, (2) Install Tailwind v4 and dependencies, (3) Update CSS imports and remove legacy directives, (4) Migrate configuration to CSS-first, (5) Integrate Vite plugin if applicable, (6) Test for new features, content detection, and absence of gradients.",
+			"reasoning": "Major version upgrades require careful migration, dependency updates, and configuration changes. Tailwind v4 introduces a new CSS-first config, automatic content detection, and breaking changes that must be validated. Each step (install, config, migration, testing) is distinct and critical for a robust upgrade."
 		},
 		{
 			"taskId": 2,
-			"taskTitle": "Implement Supabase Authentication System",
-			"complexityScore": 8,
-			"recommendedSubtasks": 11,
-			"expansionPrompt": "Decompose the Supabase authentication implementation into client setup, server-side configuration, middleware creation, authentication components, hooks development, route protection, session management, token refresh logic, error handling, and state integration. Focus on SSR considerations and security best practices for each subtask.",
-			"reasoning": "Authentication systems are inherently complex, especially with SSR requirements in Next.js 14. This involves multiple layers: client/server Supabase clients, middleware for route protection, React components and hooks, session persistence, and automatic token refresh. The complexity is high due to security implications and the need for seamless user experience across server and client boundaries."
+			"taskTitle": "Remove All Gradient Treatments",
+			"complexityScore": 6,
+			"recommendedSubtasks": 5,
+			"expansionPrompt": "Expand into: (1) Audit all specified files for gradients, (2) Remove Tailwind gradient classes, (3) Refactor inline gradients in CSS/JSX, (4) Replace with approved solid or glass tokens, (5) Manual visual verification in light and dark modes.",
+			"reasoning": "Requires a thorough audit and careful refactoring across multiple files, with manual inspection to ensure compliance and no regressions. The need to replace with approved tokens and verify in multiple themes adds complexity."
 		},
 		{
 			"taskId": 3,
-			"taskTitle": "Design and Implement Database Schema",
-			"complexityScore": 6,
-			"recommendedSubtasks": 9,
-			"expansionPrompt": "Split database schema implementation into schema design and validation, table creation with constraints, index optimization, RLS policy development and testing, database function creation, migration script development, type generation setup, CRUD helper implementation, and performance testing. Each subtask should include validation steps.",
-			"reasoning": "Database schema design requires careful planning and has long-term implications. The complexity is moderate-high due to the need for proper normalization, constraint design, RLS policies for security, and integration with TypeScript types. The JSONB fields add flexibility but require careful validation and querying strategies."
+			"taskTitle": "Define and Apply Semantic Design Tokens",
+			"complexityScore": 8,
+			"recommendedSubtasks": 7,
+			"expansionPrompt": "Decompose into: (1) Inventory all color, spacing, and effect usages, (2) Define CSS variables for tokens in globals.css, (3) Map tokens to Tailwind classes, (4) Refactor components to use tokens, (5) Replace hardcoded values, (6) Validate with browser dev tools, (7) Visual consistency review.",
+			"reasoning": "Tokenization is foundational and impacts the entire codebase. It requires inventory, definition, mapping, refactoring, and validation steps, each with significant attention to detail and risk of regressions."
 		},
 		{
 			"taskId": 4,
-			"taskTitle": "Build Static Questions Wizard with Auto-Save",
+			"taskTitle": "Standardize Button Component Patterns",
 			"complexityScore": 7,
-			"recommendedSubtasks": 10,
-			"expansionPrompt": "Break down the wizard implementation into schema definition and validation, individual step components, navigation logic, auto-save hook development, progress tracking, form state management, validation error handling, transition animations, persistence layer integration, and user experience testing. Focus on state consistency and user flow optimization.",
-			"reasoning": "Multi-step forms with auto-save functionality involve complex state management, validation across steps, and user experience considerations. The debounced auto-save mechanism requires careful implementation to avoid conflicts and data loss. Integration with Zod validation and React Hook Form adds robustness but increases complexity."
+			"recommendedSubtasks": 6,
+			"expansionPrompt": "Split into: (1) Audit all button usages, (2) Implement CVA-based button component, (3) Apply semantic tokens and glass effects, (4) Remove legacy button styles, (5) Add accessibility features, (6) Test all variants and states.",
+			"reasoning": "Component standardization with CVA, semantic tokens, and accessibility requires both code and design refactoring, as well as comprehensive testing for all states and variants."
 		},
 		{
 			"taskId": 5,
-			"taskTitle": "Integrate Ollama API for Dynamic Question Generation",
-			"complexityScore": 9,
-			"recommendedSubtasks": 9,
-			"expansionPrompt": "Decompose LLM integration into Ollama client service creation, API route implementation, prompt engineering and testing, JSON schema validation, retry mechanism with exponential backoff, error handling and timeout management, response caching system, request queuing, and quality assurance testing. Emphasize reliability and consistency in LLM outputs.",
-			"reasoning": "LLM integration is highly complex due to the unpredictable nature of AI responses, need for robust error handling, and requirement for consistent JSON output. Prompt engineering is both an art and science, requiring iterative testing. The retry logic, timeout handling, and response validation are critical for production reliability."
+			"taskTitle": "Refactor Form Inputs to Consistent Patterns",
+			"complexityScore": 7,
+			"recommendedSubtasks": 6,
+			"expansionPrompt": "Expand into: (1) Audit all input components, (2) Define standard utility class patterns, (3) Refactor each input type, (4) Remove legacy/inline styles, (5) Ensure accessibility and contrast compliance, (6) Test in Storybook and with a11y tools.",
+			"reasoning": "Standardizing all input types for utility classes, tokens, and accessibility is a broad refactor, requiring careful audit, design, and testing across multiple component types."
 		},
 		{
 			"taskId": 6,
-			"taskTitle": "Create Dynamic Questions Wizard with Section Navigation",
-			"complexityScore": 8,
-			"recommendedSubtasks": 11,
-			"expansionPrompt": "Split dynamic form creation into JSON interpretation logic, individual input component development, section navigation system, dynamic validation implementation, form persistence hook, progress tracking system, accessibility implementation, keyboard navigation, state normalization, conflict resolution, and comprehensive testing across input types.",
-			"reasoning": "Dynamic form rendering based on JSON schemas is complex due to the need to handle multiple input types, maintain state consistency, and provide good UX. The accessibility requirements, auto-save with conflict resolution, and section-based navigation add significant complexity. The form must be flexible enough to handle various question structures while maintaining performance."
+			"taskTitle": "Implement and Apply Glass Effect Utilities",
+			"complexityScore": 5,
+			"recommendedSubtasks": 4,
+			"expansionPrompt": "Break down into: (1) Define glass effect utilities in globals.css, (2) Refactor card, modal, and overlay components to use utilities, (3) Ensure no excessive nesting, (4) Visual and performance validation.",
+			"reasoning": "Utility creation and application is straightforward but requires careful application and validation to avoid performance or visual issues."
 		},
 		{
 			"taskId": 7,
-			"taskTitle": "Implement Blueprint Generation with LLM",
-			"complexityScore": 9,
-			"recommendedSubtasks": 9,
-			"expansionPrompt": "Break down blueprint generation into answer aggregation logic, prompt template design and optimization, API route implementation, JSON schema validation, Markdown generation, streaming progress implementation, error handling and fallbacks, versioning system, and comprehensive testing with various input combinations. Focus on prompt engineering and output consistency.",
-			"reasoning": "Blueprint generation is the core functionality requiring sophisticated prompt engineering to ensure consistent, high-quality outputs. The aggregation of static and dynamic answers, streaming progress updates, and dual-format output (JSON/Markdown) add complexity. Handling LLM variability and ensuring structured output requires extensive testing and fallback mechanisms."
+			"taskTitle": "Standardize Layout, Grid, and Container Patterns",
+			"complexityScore": 6,
+			"recommendedSubtasks": 5,
+			"expansionPrompt": "Decompose into: (1) Audit all layout, grid, and container components, (2) Update to standard class patterns, (3) Replace arbitrary spacing with tokens, (4) Test at multiple breakpoints, (5) Validate with browser dev tools.",
+			"reasoning": "Standardizing layout patterns is a moderate refactor, requiring audit, update, and responsive testing, but is less complex than foundational tokenization."
 		},
 		{
 			"taskId": 8,
-			"taskTitle": "Build Interactive Dashboard with Data Visualization",
-			"complexityScore": 7,
-			"recommendedSubtasks": 11,
-			"expansionPrompt": "Decompose dashboard development into responsive layout design, KPI card components with animations, chart component implementation (timeline, pie, bar), interactive tooltip and legend systems, drill-down functionality, dashboard state management, filter and view controls, export functionality, performance optimization, and cross-device testing.",
-			"reasoning": "Data visualization dashboards require careful attention to UX, performance, and responsiveness. Multiple chart types with interactive features, animations, and drill-down capabilities increase complexity. The need for real-time data updates, responsive design across devices, and smooth animations requires optimization and testing across various scenarios."
+			"taskTitle": "Align Dark Mode Implementation",
+			"complexityScore": 8,
+			"recommendedSubtasks": 7,
+			"expansionPrompt": "Expand into: (1) Audit all components for dark mode support, (2) Replace manual CSS variable swaps with Tailwind dark: variants, (3) Ensure all tokens have dark equivalents, (4) Implement system preference and manual toggling, (5) Test visual consistency, (6) Run automated dark mode tests, (7) Accessibility validation.",
+			"reasoning": "Dark mode alignment is complex due to the need for comprehensive audit, refactor, and testing across all components and states, with both system and manual toggling."
 		},
 		{
 			"taskId": 9,
-			"taskTitle": "Develop Export Functionality for Multiple Formats",
+			"taskTitle": "Extract and Replace Arbitrary Values with Tokens",
 			"complexityScore": 6,
-			"recommendedSubtasks": 9,
-			"expansionPrompt": "Split export functionality into service class architecture, PDF generation with styling and charts, Markdown export with proper formatting, JSON export with metadata, export preview system, batch processing capability, format validation, cross-device compatibility testing, and error handling for various edge cases.",
-			"reasoning": "Export functionality involves multiple formats with different requirements and potential compatibility issues. PDF generation with embedded charts and proper styling is moderately complex. The need for cross-device compatibility and handling various data structures adds complexity, but established libraries help reduce implementation difficulty."
+			"recommendedSubtasks": 5,
+			"expansionPrompt": "Break down into: (1) Search for arbitrary values in codebase, (2) Extract repeated values to tokens, (3) Refactor usages to tokens or Tailwind scale, (4) Document one-off values, (5) Validate with linting and visual inspection.",
+			"reasoning": "Requires codebase-wide search, extraction, and refactoring, but is less risky than foundational tokenization or dark mode overhaul."
 		},
 		{
 			"taskId": 10,
-			"taskTitle": "Implement State Management and Resume Capability",
-			"complexityScore": 8,
-			"recommendedSubtasks": 10,
-			"expansionPrompt": "Break down state management into Zustand store design and implementation, React Query integration, persistence middleware development, resume workflow implementation, version conflict resolution, optimistic update handling, undo/redo system, state debugging tools, performance optimization, and comprehensive state synchronization testing.",
-			"reasoning": "Comprehensive state management with multiple stores, persistence, and resume capability is highly complex. The coordination between Zustand stores and React Query, handling optimistic updates, conflict resolution, and undo/redo functionality requires sophisticated state architecture. The resume workflow adds complexity in detecting and restoring incomplete sessions reliably."
+			"taskTitle": "Audit and Fix Accessibility Gaps",
+			"complexityScore": 7,
+			"recommendedSubtasks": 6,
+			"expansionPrompt": "Expand into: (1) Audit interactive elements for focus-visible and ARIA, (2) Standardize focus ring styles, (3) Add missing ARIA labels, (4) Ensure accessible disabled states, (5) Automated a11y testing, (6) Manual keyboard and screen reader testing.",
+			"reasoning": "Accessibility audits and fixes require both automated and manual review, code changes, and validation to meet standards, making this a high-complexity, multi-step task."
+		},
+		{
+			"taskId": 11,
+			"taskTitle": "Remove Unused CSS and Legacy Styles",
+			"complexityScore": 6,
+			"recommendedSubtasks": 5,
+			"expansionPrompt": "Decompose into: (1) Run PurgeCSS or Tailwind purge, (2) Manually audit globals.css and components, (3) Remove legacy/unused classes, (4) Regression test for visual breakage, (5) Validate bundle size reduction.",
+			"reasoning": "Codebase cleanup is moderately complex, requiring both automated and manual steps, with regression testing to ensure no breakage."
+		},
+		{
+			"taskId": 12,
+			"taskTitle": "Implement Linting and Class Order Enforcement",
+			"complexityScore": 5,
+			"recommendedSubtasks": 4,
+			"expansionPrompt": "Expand into: (1) Configure Prettier and ESLint with plugins, (2) Add custom lint rules for anti-patterns, (3) Integrate linting into CI, (4) Test linting and auto-fix on codebase.",
+			"reasoning": "Linting setup is well-supported by tooling and patterns, but requires configuration, rule customization, CI integration, and validation."
 		}
 	]
 }

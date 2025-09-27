@@ -1,0 +1,74 @@
+'use client';
+
+import React from 'react';
+import { BaseInputProps } from '@/lib/dynamic-form';
+import { isNumberQuestion } from '@/lib/dynamic-form/schema';
+import { InputWrapper, BaseInputField } from './BaseInput';
+
+export const NumberInput: React.FC<BaseInputProps> = ({
+  question,
+  value,
+  onChange,
+  onBlur,
+  error,
+  disabled,
+  className,
+}) => {
+  if (!isNumberQuestion(question)) {
+    console.warn('NumberInput received non-number question:', question);
+    return null;
+  }
+
+  const inputId = `number-${question.id}`;
+
+  const handleChange = (newValue: string) => {
+    const numValue = newValue === '' ? null : parseFloat(newValue);
+    onChange(numValue);
+  };
+
+  return (
+    <InputWrapper
+      question={question}
+      error={error}
+      disabled={disabled}
+      className={className}
+      inputId={inputId}
+    >
+      <BaseInputField
+        id={inputId}
+        name={question.id}
+        type="number"
+        value={value || ''}
+        onChange={handleChange}
+        onBlur={onBlur}
+        disabled={disabled}
+        required={question.required}
+        placeholder={question.placeholder}
+        error={error}
+        min={question.min}
+        max={question.max}
+        step={question.step}
+        aria-label={question.label}
+        aria-describedby={question.helpText ? `${inputId}-help` : undefined}
+      />
+
+      {question.helpText && (
+        <p id={`${inputId}-help`} className="text-sm text-foreground/60 mt-1">
+          {question.helpText}
+        </p>
+      )}
+
+      {(question.min !== undefined || question.max !== undefined) && (
+        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+          {question.min !== undefined && question.max !== undefined
+            ? `Range: ${question.min} - ${question.max}`
+            : question.min !== undefined
+              ? `Minimum: ${question.min}`
+              : `Maximum: ${question.max}`}
+        </p>
+      )}
+    </InputWrapper>
+  );
+};
+
+export default NumberInput;

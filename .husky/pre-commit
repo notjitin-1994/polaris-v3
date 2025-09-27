@@ -1,5 +1,5 @@
 #!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
 
-# minimal pre-commit without husky.sh
-command -v npx >/dev/null 2>&1 || { echo >&2 'npx required but not installed.'; exit 1; }
-exec npx --yes lint-staged
+# Run lint-staged
+npx lint-staged

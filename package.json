@@ -5,8 +5,19 @@
   "scripts": {
     "prepare": "husky"
   },
+  "bin": {
+    "dev-mcp": "scripts/dev-mcp/server.ts"
+  },
   "dependencies": {
     "husky": "^9.1.7",
-    "lint-staged": "^16.2.0"
+    "lint-staged": "^16.2.0",
+    "pg": "^8.16.3"
+  },
+  "type": "module",
+  "devDependencies": {
+    "@modelcontextprotocol/sdk": "^1.18.1",
+    "@types/node": "^24.5.2",
+    "node-fetch": "^3.3.2",
+    "supabase": "^2.40.7"
   }
 }

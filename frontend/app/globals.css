@@ -6,21 +6,344 @@
 }
 
 @theme inline {
+  /* Map existing base colors */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  
+  /* Map semantic color tokens to Tailwind utilities */
+  --color-primary: var(--primary-accent);
+  --color-primary-light: var(--primary-accent-light);
+  --color-primary-dark: var(--primary-accent-dark);
+  --color-secondary: var(--secondary-accent);
+  --color-secondary-light: var(--secondary-accent-light);
+  --color-secondary-dark: var(--secondary-accent-dark);
+  
+  /* Map background semantic tokens */
+  --color-surface: var(--background-surface);
+  --color-paper: var(--background-paper);
+  --color-background-dark: var(--background-dark);
+  
+  /* Map text color tokens */
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-disabled: var(--text-disabled);
+  
+  /* Map state colors */
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-error: var(--error);
+  --color-info: var(--info);
+  
+  /* Map neutral colors */
+  --color-neutral-50: var(--neutral-50);
+  --color-neutral-100: var(--neutral-100);
+  --color-neutral-200: var(--neutral-200);
+  --color-neutral-300: var(--neutral-300);
+  --color-neutral-400: var(--neutral-400);
+  --color-neutral-500: var(--neutral-500);
+  --color-neutral-600: var(--neutral-600);
+  --color-neutral-700: var(--neutral-700);
+  --color-neutral-800: var(--neutral-800);
+  --color-neutral-900: var(--neutral-900);
+  
+  /* Map spacing tokens */
+  --spacing-xs: var(--spacing-xs);
+  --spacing-sm: var(--spacing-sm);
+  --spacing-md: var(--spacing-md);
+  --spacing-lg: var(--spacing-lg);
+  --spacing-xl: var(--spacing-xl);
+  --spacing-2xl: var(--spacing-2xl);
+  
+  /* Map border radius tokens */
+  --radius-sm: var(--radius-sm);
+  --radius-md: var(--radius-md);
+  --radius-lg: var(--radius-lg);
+  --radius-xl: var(--radius-xl);
+  --radius-2xl: var(--radius-2xl);
+  --radius-full: var(--radius-full);
+  
+  /* Map transition duration tokens */
+  --duration-fast: var(--transition-fast);
+  --duration-base: var(--transition-base);
+  --duration-slow: var(--transition-slow);
+  
+  /* Map fonts */
+  --font-heading: var(--font-quicksand);
+  --font-body: var(--font-lato);
 }
 
+/* Dark mode via media query (system preference) */
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #0a0a0a;
     --foreground: #ededed;
+    
+    /* Dark mode color tokens - Brand */
+    --primary-accent: #7bc5c7;
+    --primary-accent-light: #a7dadb;
+    --primary-accent-dark: #5ba0a2;
+    --secondary-accent: #7C69F5;
+    --secondary-accent-light: #9A8BF8;
+    --secondary-accent-dark: #5E4CD2;
+    
+    /* Dark mode color tokens - Backgrounds */
+    --background-dark: #000000;
+    --background-paper: #1a1a1a;
+    --background-surface: #0f0f0f;
+    
+    /* Dark mode color tokens - Text */
+    --text-primary: #f0f0f0;
+    --text-secondary: #b0c5c6;
+    --text-disabled: #6a7a7b;
+    
+    /* Dark mode color tokens - States */
+    --success: #22c55e;
+    --warning: #fbbf24;
+    --error: #f87171;
+    --info: #60a5fa;
+    
+    /* Dark mode color tokens - Neutrals */
+    --neutral-50: #171717;
+    --neutral-100: #262626;
+    --neutral-200: #404040;
+    --neutral-300: #525252;
+    --neutral-400: #737373;
+    --neutral-500: #a3a3a3;
+    --neutral-600: #d4d4d4;
+    --neutral-700: #e5e5e5;
+    --neutral-800: #f5f5f5;
+    --neutral-900: #fafafa;
   }
+}
+
+/* Dark mode via class (manual toggle) */
+.dark {
+  --background: #0a0a0a;
+  --foreground: #ededed;
+  
+  /* Dark mode color tokens - Brand */
+  --primary-accent: #7bc5c7;
+  --primary-accent-light: #a7dadb;
+  --primary-accent-dark: #5ba0a2;
+  --secondary-accent: #7C69F5;
+  --secondary-accent-light: #9A8BF8;
+  --secondary-accent-dark: #5E4CD2;
+  
+  /* Dark mode color tokens - Backgrounds */
+  --background-dark: #000000;
+  --background-paper: #1a1a1a;
+  --background-surface: #0f0f0f;
+  
+  /* Dark mode color tokens - Text */
+  --text-primary: #f0f0f0;
+  --text-secondary: #b0c5c6;
+  --text-disabled: #6a7a7b;
+  
+  /* Dark mode color tokens - States */
+  --success: #22c55e;
+  --warning: #fbbf24;
+  --error: #f87171;
+  --info: #60a5fa;
+  
+  /* Dark mode color tokens - Neutrals */
+  --neutral-50: #171717;
+  --neutral-100: #262626;
+  --neutral-200: #404040;
+  --neutral-300: #525252;
+  --neutral-400: #737373;
+  --neutral-500: #a3a3a3;
+  --neutral-600: #d4d4d4;
+  --neutral-700: #e5e5e5;
+  --neutral-800: #f5f5f5;
+  --neutral-900: #fafafa;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-body), Arial, Helvetica, sans-serif;
 }
+
+h1, h2, h3, h4, h5, h6, .font-heading {
+  font-family: var(--font-heading), system-ui, sans-serif;
+}
+
+/* Smartslate Design Tokens */
+:root {
+  /* Color Tokens - Brand */
+  --primary-accent: #a7dadb;
+  --primary-accent-light: #d0edf0;
+  --primary-accent-dark: #7bc5c7;
+  --secondary-accent: #4F46E5;
+  --secondary-accent-light: #7C69F5;
+  --secondary-accent-dark: #3730A3;
+  
+  /* Color Tokens - Backgrounds */
+  --background-dark: #020C1B;
+  --background-paper: #0d1b2a;
+  --background-surface: #142433;
+  
+  /* Color Tokens - Text */
+  --text-primary: #e0e0e0;
+  --text-secondary: #b0c5c6;
+  --text-disabled: #7a8a8b;
+  
+  /* Color Tokens - States */
+  --success: #10b981;
+  --warning: #f59e0b;
+  --error: #ef4444;
+  --info: #3b82f6;
+  
+  /* Color Tokens - Neutrals */
+  --neutral-50: #fafafa;
+  --neutral-100: #f5f5f5;
+  --neutral-200: #e5e5e5;
+  --neutral-300: #d4d4d4;
+  --neutral-400: #a3a3a3;
+  --neutral-500: #737373;
+  --neutral-600: #525252;
+  --neutral-700: #404040;
+  --neutral-800: #262626;
+  --neutral-900: #171717;
+  
+  /* Spacing Tokens */
+  --spacing-xs: 0.25rem; /* 4px */
+  --spacing-sm: 0.5rem;  /* 8px */
+  --spacing-md: 1rem;    /* 16px */
+  --spacing-lg: 1.5rem;  /* 24px */
+  --spacing-xl: 2rem;    /* 32px */
+  --spacing-2xl: 3rem;   /* 48px */
+  
+  /* Border Radius Tokens */
+  --radius-sm: 0.25rem;
+  --radius-md: 0.375rem;
+  --radius-lg: 0.5rem;
+  --radius-xl: 0.75rem;
+  --radius-2xl: 1rem;
+  --radius-full: 9999px;
+  
+  /* Transition Tokens */
+  --transition-fast: 150ms;
+  --transition-base: 200ms;
+  --transition-slow: 300ms;
+  
+  /* Opacity Tokens */
+  --opacity-disabled: 0.5;
+  --opacity-hover: 0.1;
+  --opacity-glass: 0.05;
+  --opacity-glass-strong: 0.1;
+  --opacity-glass-border: 0.1;
+  --opacity-glass-border-strong: 0.2;
+  --opacity-5: 0.05;
+  --opacity-10: 0.10;
+  --opacity-15: 0.15;
+  --opacity-20: 0.20;
+  --opacity-30: 0.30;
+  --opacity-60: 0.60;
+  --opacity-70: 0.70;
+  --opacity-80: 0.80;
+  
+  /* Common Size Tokens */
+  --size-icon-sm: 14px;
+  --size-input-min: 38px;
+  --size-content-min: 120px;
+  --size-modal-max: 80vh;
+  --size-preview-max: 90vh;
+  --size-auth-min-sm: 460px;
+  --size-auth-min-md: 520px;
+  --size-auth-min-lg: 600px;
+  --size-header-min: 2rem;
+  --size-header-min-md: 2.5rem;
+}
+
+/* Glass Effect Tokens - As specified in styleprd.md */
+.glass {
+  @apply bg-white/5 backdrop-blur-xl border border-white/10 dark:bg-black/5 dark:border-white/10;
+}
+
+.glass-strong {
+  @apply bg-white/10 backdrop-blur-2xl border border-white/20 dark:bg-black/10 dark:border-white/20;
+}
+
+.glass-hover {
+  @apply hover:bg-white/10 hover:border-white/15 dark:hover:bg-black/10 dark:hover:border-white/15;
+}
+
+/* Component utilities */
+.glass-card {
+  @apply bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl dark:bg-black/5 dark:border-white/10;
+}
+
+.icon-btn {
+  @apply inline-block bg-white/10 border border-white/10 rounded-full shadow-sm dark:bg-black/10 dark:border-white/10;
+}
+
+.icon-btn-primary {
+  background: var(--primary-accent);
+  box-shadow: 0 0 0 1px rgba(167, 218, 219, 0.3), 0 6px 20px rgba(167, 218, 219, 0.35);
+}
+
+.card {
+  @apply bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6 transition-all duration-300 ease-in-out hover:bg-white/10 hover:shadow-xl dark:bg-black/5 dark:border-white/10 dark:hover:bg-black/10;
+}
+
+/* Frequently used opacity utilities */
+.glass-5 {
+  @apply bg-white/5 dark:bg-black/5;
+}
+
+.glass-10 {
+  @apply bg-white/10 dark:bg-black/10;
+}
+
+.glass-15 {
+  @apply bg-white/15 dark:bg-black/15;
+}
+
+.glass-20 {
+  @apply bg-white/20 dark:bg-black/20;
+}
+
+.glass-30 {
+  @apply bg-white/30 dark:bg-black/30;
+}
+
+.glass-border-10 {
+  @apply border-white/10 dark:border-white/10;
+}
+
+.glass-border-15 {
+  @apply border-white/15 dark:border-white/15;
+}
+
+.glass-border-20 {
+  @apply border-white/20 dark:border-white/20;
+}
+
+/* Common size utilities using tokens */
+.icon-sm {
+  width: var(--size-icon-sm);
+  height: var(--size-icon-sm);
+}
+
+.min-h-input {
+  min-height: var(--size-input-min);
+}
+
+.min-h-content {
+  min-height: var(--size-content-min);
+}
+
+.max-h-modal {
+  max-height: var(--size-modal-max);
+}
+
+.max-h-preview {
+  max-height: var(--size-preview-max);
+}
+
+/* Overlay utilities */
+.overlay-dark {
+  @apply bg-black/60 dark:bg-black/80;
+}
+
