@@ -23,6 +23,16 @@ export const SelectInput: React.FC<BaseInputProps> = ({
   const inputId = `select-${question.id}`;
   const hasError = !!error;
 
+  const selectClasses = cn(
+    'w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white',
+    'ring-0 transition outline-none',
+    'cursor-pointer appearance-none',
+    hasError
+      ? 'border-red-400/50 focus:border-red-400/50 focus:ring-[1.2px] focus:ring-red-400/50'
+      : 'focus:border-[#d0edf0] focus:ring-[1.2px] focus:ring-[#d0edf0]',
+    disabled && 'cursor-not-allowed disabled:opacity-50'
+  );
+
   return (
     <InputWrapper
       question={question}
@@ -41,27 +51,31 @@ export const SelectInput: React.FC<BaseInputProps> = ({
         required={question.required}
         aria-invalid={hasError}
         aria-describedby={hasError ? `${inputId}-error` : undefined}
-        className={cn(
-          'glass w-full px-3 py-2 rounded-md text-foreground',
-          'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:ring-offset-2 focus-visible:ring-offset-background',
-          'appearance-none cursor-pointer transition-all duration-200',
-          hasError && 'border-error focus-visible:ring-error/50',
-          disabled && 'disabled:opacity-50 cursor-not-allowed',
-        )}
+        className={selectClasses}
+        style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%23a7dadb' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3E%3C/svg%3E")`,
+          backgroundPosition: 'right 0.75rem center',
+          backgroundRepeat: 'no-repeat',
+          backgroundSize: '1.5em 1.5em',
+          paddingRight: '2.5rem',
+        }}
       >
-        {!question.required && <option value="">Select an option...</option>}
+        {!question.required && (
+          <option value="" disabled className="bg-[#0d1b2a] text-white/50">
+            Select an option...
+          </option>
+        )}
         {question.options?.map((option, index) => (
-          <option key={`${option.value}-${index}`} value={option.value} disabled={option.disabled}>
+          <option
+            key={`${option.value}-${index}`}
+            value={option.value}
+            disabled={option.disabled}
+            className="bg-[#0d1b2a] text-white"
+          >
             {option.label}
           </option>
         ))}
       </select>
-
-      {question.helpText && (
-        <p id={`${inputId}-help`} className="text-sm text-foreground/60 mt-1">
-          {question.helpText}
-        </p>
-      )}
     </InputWrapper>
   );
 };

@@ -13,56 +13,49 @@ export function LearningObjectiveStep(): JSX.Element {
   return (
     <div className="space-y-4">
       <div className="space-y-2">
-        <label
-          htmlFor="learningObjective"
-          className="block text-lg font-semibold text-slate-900 dark:text-slate-100"
-        >
-          What is your learning objective?
+        <label htmlFor="learningGap" className="text-primary block text-lg font-semibold">
+          What is the identified learning gap?
         </label>
-        <p className="text-sm text-slate-600 dark:text-slate-400">
-          Describe what you want learners to achieve by the end of this learning experience. Be
-          specific about the skills, knowledge, or behaviors they should gain.
+        <p className="text-secondary text-sm">
+          Describe the skills, knowledge, or behaviors the learners are currently missing that this
+          initiative must address.
         </p>
       </div>
 
       <div className="space-y-2">
         <textarea
-          id="learningObjective"
-          {...register('learningObjective')}
-          className={`
-            w-full min-h-32 p-4 text-base rounded-lg border-2 transition-colors resize-none
-            ${
-              errors.learningObjective
-                ? 'border-red-300 dark:border-red-700 bg-red-50 dark:bg-red-900/20 focus:border-red-500 focus:ring-red-500'
-                : 'border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 focus:border-blue-500 focus:ring-blue-500'
-            }
-            dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500
-          `}
-          placeholder="e.g., By the end of this course, learners will be able to design and implement a responsive web application using React and modern CSS techniques..."
-          aria-invalid={!!errors.learningObjective}
-          aria-describedby={errors.learningObjective ? 'learningObjective-error' : undefined}
+          id="learningGap"
+          {...register('learningGap')}
+          className={`min-h-32 w-full resize-none rounded-lg border-2 p-4 text-base transition-colors ${
+            errors.learningGap
+              ? 'border-red-300 bg-red-50 focus:border-red-500 focus:ring-red-500 dark:border-red-700 dark:bg-red-900/20'
+              : 'border-slate-300 bg-white focus:border-blue-500 focus:ring-blue-500 dark:border-slate-600 dark:bg-slate-800'
+          } placeholder-slate-400 dark:text-slate-100 dark:placeholder-slate-500`}
+          placeholder="e.g., Learners struggle to design data models and apply evidence-based instructional strategies for complex enterprise training."
+          aria-invalid={!!errors.learningGap}
+          aria-describedby={errors.learningGap ? 'learningGap-error' : undefined}
         />
-        {errors.learningObjective && (
+        {errors.learningGap && (
           <p
-            id="learningObjective-error"
-            className="text-sm text-red-600 dark:text-red-400 flex items-center gap-1"
+            id="learningGap-error"
+            className="flex items-center gap-1 text-sm text-red-600 dark:text-red-400"
           >
-            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+            <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
               <path
                 fillRule="evenodd"
                 d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
                 clipRule="evenodd"
               />
             </svg>
-            {errors.learningObjective.message}
+            {errors.learningGap.message}
           </p>
         )}
       </div>
 
-      <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4">
+      <div className="rounded-lg bg-blue-50 p-4 dark:bg-blue-900/20">
         <div className="flex items-start gap-2">
           <svg
-            className="w-5 h-5 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0"
+            className="mt-0.5 h-5 w-5 flex-shrink-0 text-blue-600 dark:text-blue-400"
             fill="currentColor"
             viewBox="0 0 20 20"
           >
@@ -73,10 +66,10 @@ export function LearningObjectiveStep(): JSX.Element {
             />
           </svg>
           <div className="text-sm text-blue-800 dark:text-blue-200">
-            <p className="font-medium mb-1">Tip:</p>
+            <p className="mb-1 font-medium">Tip:</p>
             <p>
-              Focus on observable outcomes. Instead of &quot;understand React&quot;, try &quot;build a complete
-              React application with routing and state management&quot;.
+              Focus on observable outcomes. Instead of &quot;understand React&quot;, try &quot;build
+              a complete React application with routing and state management&quot;.
             </p>
           </div>
         </div>

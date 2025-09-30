@@ -3,6 +3,8 @@ import { Quicksand, Lato } from 'next/font/google';
 import './globals.css';
 import { QueryProvider } from '@/lib/stores/QueryProvider';
 import { ThemeProvider } from '@/components/theme';
+import { AuthProvider } from '@/contexts/AuthContext';
+import { GlobalLayout } from '@/components/layout';
 
 const quicksand = Quicksand({
   variable: '--font-quicksand',
@@ -31,9 +33,33 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              // Apply theme class immediately to prevent flash
+              (function() {
+                try {
+                  const stored = localStorage.getItem('smartslate-theme');
+                  const theme = (stored && ['light', 'dark'].includes(stored)) ? stored : 'dark';
+                  document.documentElement.classList.remove('light', 'dark');
+                  document.documentElement.classList.add(theme);
+                } catch (e) {
+                  // Fallback to dark if localStorage fails
+                  document.documentElement.classList.add('dark');
+                }
+              })();
+            `,
+          }}
+        />
+      </head>
       <body className={`${quicksand.variable} ${lato.variable} antialiased`}>
-        <ThemeProvider defaultTheme="system">
-          <QueryProvider>{children}</QueryProvider>
+        <ThemeProvider defaultTheme="dark">
+          <AuthProvider>
+            <QueryProvider>
+              <GlobalLayout>{children}</GlobalLayout>
+            </QueryProvider>
+          </AuthProvider>
         </ThemeProvider>
       </body>
     </html>

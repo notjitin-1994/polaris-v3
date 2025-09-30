@@ -22,31 +22,31 @@ const formatOptions: Array<{
   {
     format: 'png',
     label: 'PNG Image',
-    icon: <FileImage className="w-4 h-4" />,
+    icon: <FileImage className="h-4 w-4" />,
     description: 'High-quality image of the dashboard',
   },
   {
     format: 'jpg',
     label: 'JPG Image',
-    icon: <FileImage className="w-4 h-4" />,
+    icon: <FileImage className="h-4 w-4" />,
     description: 'Compressed image format',
   },
   {
     format: 'pdf',
     label: 'PDF Document',
-    icon: <FileText className="w-4 h-4" />,
+    icon: <FileText className="h-4 w-4" />,
     description: 'Professional document format',
   },
   {
     format: 'json',
     label: 'JSON Data',
-    icon: <File className="w-4 h-4" />,
+    icon: <File className="h-4 w-4" />,
     description: 'Raw dashboard data',
   },
   {
     format: 'csv',
     label: 'CSV Data',
-    icon: <File className="w-4 h-4" />,
+    icon: <File className="h-4 w-4" />,
     description: 'Spreadsheet-compatible format',
   },
 ];
@@ -83,22 +83,22 @@ export function ExportButton({ data, elementId, className }: ExportButtonProps):
         variant="outline"
         className="flex items-center gap-2"
       >
-        <Download className="w-4 h-4" />
+        <Download className="h-4 w-4" />
         Export Dashboard
-        <ChevronDown className={`w-4 h-4 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+        <ChevronDown className={`h-4 w-4 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
       </Button>
 
       {/* Dropdown Menu */}
       {isOpen && (
         <motion.div
-          className="absolute top-full mt-2 right-0 w-64 bg-white dark:bg-slate-800 rounded-lg shadow-lg border border-slate-200 dark:border-slate-700 z-50"
+          className="glass-strong absolute top-full right-0 z-50 mt-2 w-64 rounded-lg shadow-lg"
           initial={{ opacity: 0, y: -10, scale: 0.95 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: -10, scale: 0.95 }}
           transition={{ duration: 0.2 }}
         >
           <div className="p-2">
-            <div className="px-3 py-2 text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wide">
+            <div className="px-3 py-2 text-xs font-medium tracking-wide text-slate-500 uppercase dark:text-slate-400">
               Export Options
             </div>
             {formatOptions.map((option) => (
@@ -106,7 +106,7 @@ export function ExportButton({ data, elementId, className }: ExportButtonProps):
                 key={option.format}
                 onClick={() => handleExport(option.format)}
                 disabled={isExporting !== null}
-                className="w-full flex items-center gap-3 px-3 py-2 text-sm text-left hover:bg-slate-50 dark:hover:bg-slate-700 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex w-full items-center gap-3 rounded-md px-3 py-2 text-left text-sm transition-colors hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50 dark:hover:bg-slate-700"
               >
                 {option.icon}
                 <div className="flex-1">
@@ -118,14 +118,14 @@ export function ExportButton({ data, elementId, className }: ExportButtonProps):
                   </div>
                 </div>
                 {isExporting === option.format && (
-                  <div className="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
+                  <div className="h-4 w-4 animate-spin rounded-full border-2 border-blue-500 border-t-transparent" />
                 )}
               </button>
             ))}
           </div>
 
           {error && (
-            <div className="px-3 py-2 border-t border-slate-200 dark:border-slate-700">
+            <div className="border-t border-slate-200 px-3 py-2 dark:border-slate-700">
               <p className="text-xs text-red-600 dark:text-red-400">{error}</p>
             </div>
           )}

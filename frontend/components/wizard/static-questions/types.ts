@@ -1,24 +1,20 @@
 import { z } from 'zod';
 
-export const deliveryMethods = ['online', 'hybrid', 'in-person'] as const;
-
+// Canonical static questionnaire fields aligned with dynamic-questions-prompt.md
 export const staticQuestionsSchema = z.object({
-  learningObjective: z
-    .string({ required_error: 'Learning objective is required' })
+  role: z
+    .string({ required_error: 'Role is required' })
+    .min(2, 'Please provide at least 2 characters'),
+  organization: z
+    .string({ required_error: 'Organization is required' })
+    .min(2, 'Please provide at least 2 characters'),
+  learningGap: z
+    .string({ required_error: 'Identified learning gap is required' })
     .min(10, 'Please provide at least 10 characters'),
-  targetAudience: z
-    .string({ required_error: 'Target audience is required' })
-    .min(5, 'Please provide at least 5 characters'),
-  deliveryMethod: z.enum(deliveryMethods, {
-    required_error: 'Please select a delivery method',
-  }),
-  duration: z.coerce
-    .number({ invalid_type_error: 'Duration must be a number' })
-    .int('Duration must be an integer number of hours')
-    .min(1, 'Duration must be at least 1 hour'),
-  assessmentType: z
-    .string({ required_error: 'Assessment type is required' })
+  resources: z
+    .string({ required_error: 'Resources & Budgets are required' })
     .min(3, 'Please provide at least 3 characters'),
+  constraints: z.array(z.string()).min(1, 'Please select at least one constraint'),
 });
 
 export type StaticQuestionsFormValues = z.infer<typeof staticQuestionsSchema>;
@@ -34,41 +30,41 @@ export type WizardStepConfig = {
 
 export const wizardSteps: WizardStepConfig[] = [
   {
-    key: 'learningObjective',
-    label: 'Learning Objective',
-    description: 'Describe what the learner should achieve',
-    fields: ['learningObjective'],
+    key: 'role',
+    label: 'Role',
+    description: 'Your role relevant to this learning initiative',
+    fields: ['role'],
   },
   {
-    key: 'targetAudience',
-    label: 'Target Audience',
-    description: 'Describe who this is intended for',
-    fields: ['targetAudience'],
+    key: 'organization',
+    label: 'Organization',
+    description: 'Organization or team context',
+    fields: ['organization'],
   },
   {
-    key: 'deliveryMethod',
-    label: 'Delivery Method',
-    description: 'Choose how the content will be delivered',
-    fields: ['deliveryMethod'],
+    key: 'learningGap',
+    label: 'Identified Learning Gap',
+    description: 'What skills or knowledge gaps are you addressing?',
+    fields: ['learningGap'],
   },
   {
-    key: 'duration',
-    label: 'Duration',
-    description: 'How many hours will this take?',
-    fields: ['duration'],
+    key: 'resources',
+    label: 'Resources & Budgets',
+    description: 'Available resources, tools, and budget',
+    fields: ['resources'],
   },
   {
-    key: 'assessmentType',
-    label: 'Assessment Type',
-    description: 'How will learning be assessed?',
-    fields: ['assessmentType'],
+    key: 'constraints',
+    label: 'Constraints',
+    description: 'Timeline, delivery, or organizational constraints',
+    fields: ['constraints'],
   },
 ];
 
 export const defaultValues: StaticQuestionsFormValues = {
-  learningObjective: '',
-  targetAudience: '',
-  deliveryMethod: 'online',
-  duration: 1,
-  assessmentType: '',
+  role: '',
+  organization: '',
+  learningGap: '',
+  resources: '',
+  constraints: [],
 };

@@ -8,6 +8,10 @@ import { FormSchema, DynamicFormRendererProps, DynamicFormRef } from '@/lib/dyna
 import { validateFormData } from '@/lib/dynamic-form/validation';
 import { getInputComponent } from './inputs';
 import { cn } from '@/lib/utils';
+import { DynamicFormLayout } from './DynamicFormLayout';
+import { DynamicFormCard } from './DynamicFormCard';
+import { DynamicFormProgress } from './DynamicFormProgress';
+import { DynamicFormButton } from './DynamicFormButton';
 
 // Error boundary component
 class FormErrorBoundary extends React.Component<
@@ -41,14 +45,19 @@ class FormErrorBoundary extends React.Component<
 }
 
 const DefaultErrorFallback: React.FC<{ error: Error }> = ({ error }) => (
-  <div className="p-4 border border-red-200 rounded-lg bg-red-50">
-    <h3 className="text-lg font-semibold text-red-800">Form Error</h3>
-    <p className="text-red-600">
+  <div
+    className="rounded-xl border border-red-400/50 p-6"
+    style={{ backgroundColor: 'rgba(239, 68, 68, 0.1)' }}
+  >
+    <h3 className="mb-2 text-lg font-semibold text-red-400">Form Error</h3>
+    <p className="mb-4 text-white/70">
       There was an error rendering the form. Please try refreshing the page.
     </p>
     <details className="mt-2">
-      <summary className="cursor-pointer text-sm text-red-500">Error Details</summary>
-      <pre className="mt-1 text-xs text-red-400 overflow-auto">{error.message}</pre>
+      <summary className="cursor-pointer text-sm text-red-300">Error Details</summary>
+      <pre className="mt-2 overflow-auto rounded bg-black/20 p-2 text-xs text-red-200">
+        {error.message}
+      </pre>
     </details>
   </div>
 );
@@ -68,76 +77,77 @@ const createZodSchema = (formSchema: FormSchema): z.ZodSchema => {
       return [];
     }
 
-    return section.questions.map((question) => {
-      // Skip undefined questions
-      if (!question || !question.id) {
-        console.warn('Question is not properly defined:', question);
-        return null;
-      }
+    return section.questions
+      .map((question) => {
+        // Skip undefined questions
+        if (!question || !question.id) {
+          console.warn('Question is not properly defined:', question);
+          return null;
+        }
 
-      let fieldSchema: z.ZodTypeAny;
-      const questionLabel = question.label || question.question || question.id || 'This field';
+        let fieldSchema: z.ZodTypeAny;
+        const labelText = question.label || question.id;
+        const requiredMsg = `${labelText} is required`;
 
-      switch (question.type) {
-        case 'text':
-        case 'textarea':
-        case 'email':
-        case 'url':
-          if (question.required) {
-            fieldSchema = z.string().min(1, `${questionLabel} is required`);
-          } else {
-            fieldSchema = z.string().optional();
-          }
-          break;
+        switch (question.type) {
+          case 'text':
+          case 'textarea':
+          case 'email':
+          case 'url':
+            if (question.required) {
+              fieldSchema = z.string().min(1, requiredMsg);
+            } else {
+              fieldSchema = z.string().optional();
+            }
+            break;
 
-        case 'number':
-          if (question.required) {
-            fieldSchema = z.number().min(0, `${questionLabel} is required`);
-          } else {
-            fieldSchema = z.number().optional();
-          }
-          break;
+          case 'number':
+            if (question.required) {
+              fieldSchema = z.number({ required_error: requiredMsg }).min(0, requiredMsg);
+            } else {
+              fieldSchema = z.number().optional();
+            }
+            break;
 
-        case 'select':
-          if (question.required) {
-            fieldSchema = z.string().min(1, `${questionLabel} is required`);
-          } else {
-            fieldSchema = z.string().optional();
-          }
-          break;
+          case 'select':
+            if (question.required) {
+              fieldSchema = z.string().min(1, requiredMsg);
+            } else {
+              fieldSchema = z.string().optional();
+            }
+            break;
 
-        case 'multiselect':
-          if (question.required) {
-            fieldSchema = z.array(z.string()).min(1, `${questionLabel} is required`);
-          } else {
-            fieldSchema = z.array(z.string()).optional();
-          }
-          break;
+          case 'multiselect':
+            if (question.required) {
+              fieldSchema = z.array(z.string()).min(1, requiredMsg);
+            } else {
+              fieldSchema = z.array(z.string()).optional();
+            }
+            break;
 
-        case 'scale':
-          if (question.required) {
-            fieldSchema = z
-              .number()
-              .min(question.scaleConfig?.min || 1, `${questionLabel} is required`);
-          } else {
-            fieldSchema = z.number().optional();
-          }
-          break;
+          case 'scale':
+            if (question.required) {
+              fieldSchema = z.number().min(question.scaleConfig?.min || 1, requiredMsg);
+            } else {
+              fieldSchema = z.number().optional();
+            }
+            break;
 
-        case 'date':
-          if (question.required) {
-            fieldSchema = z.string().min(1, `${questionLabel} is required`);
-          } else {
-            fieldSchema = z.string().optional();
-          }
-          break;
+          case 'date':
+            if (question.required) {
+              fieldSchema = z.string().min(1, requiredMsg);
+            } else {
+              fieldSchema = z.string().optional();
+            }
+            break;
 
-        default:
-          fieldSchema = z.any().optional();
-      }
+          default:
+            fieldSchema = z.any().optional();
+        }
 
-      return [question.id, fieldSchema] as const;
-    }).filter(Boolean); // Remove null entries
+        return [question.id, fieldSchema] as const;
+      })
+      .filter(Boolean); // Remove null entries
   });
 
   return z.object(Object.fromEntries(questionSchemas));
@@ -157,7 +167,7 @@ export const DynamicFormRenderer = React.forwardRef<DynamicFormRef, DynamicFormR
       showProgress = true,
       autoSave = true,
     },
-    ref,
+    ref
   ) => {
     // State management
     const [currentSection, setCurrentSection] = useState<string>(formSchema.sections[0]?.id || '');
@@ -170,7 +180,7 @@ export const DynamicFormRenderer = React.forwardRef<DynamicFormRef, DynamicFormR
     console.log('Current section:', currentSection);
     console.log(
       'Form schema sections:',
-      formSchema.sections.map((s) => s.id),
+      formSchema.sections.map((s) => s.id)
     );
 
     // Create Zod schema for validation
@@ -288,7 +298,7 @@ export const DynamicFormRenderer = React.forwardRef<DynamicFormRef, DynamicFormR
           setIsSubmitting(false);
         }
       },
-      [onSubmit, isSubmitting, trigger],
+      [onSubmit, isSubmitting, trigger]
     );
 
     // Handle manual save
@@ -315,7 +325,7 @@ export const DynamicFormRenderer = React.forwardRef<DynamicFormRef, DynamicFormR
           setCurrentSection(sectionId);
         }
       },
-      [formSchema.sections],
+      [formSchema.sections]
     );
 
     const nextSection = useCallback(() => {
@@ -336,7 +346,7 @@ export const DynamicFormRenderer = React.forwardRef<DynamicFormRef, DynamicFormR
     const progress = useMemo(() => {
       const totalQuestions = formSchema.sections.reduce(
         (acc, section) => acc + section.questions.length,
-        0,
+        0
       );
       const answeredQuestions = Object.keys(formData).filter((key) => {
         const value = formData[key];
@@ -349,6 +359,17 @@ export const DynamicFormRenderer = React.forwardRef<DynamicFormRef, DynamicFormR
         percentage: totalQuestions > 0 ? Math.round((answeredQuestions / totalQuestions) * 100) : 0,
       };
     }, [formData, formSchema.sections]);
+
+    // Section index helpers
+    const currentIndex = useMemo(
+      () => formSchema.sections.findIndex((s) => s.id === currentSection),
+      [formSchema.sections, currentSection]
+    );
+    const isFirstSection = currentIndex <= 0;
+    const isLastSection = currentIndex === formSchema.sections.length - 1;
+    const nextSectionTitle = !isLastSection
+      ? formSchema.sections[currentIndex + 1]?.title || `Section ${currentIndex + 2}`
+      : undefined;
 
     // Expose methods via ref
     React.useImperativeHandle(
@@ -382,200 +403,194 @@ export const DynamicFormRenderer = React.forwardRef<DynamicFormRef, DynamicFormR
         goToSection,
         nextSection,
         previousSection,
-      ],
+      ]
     );
+
+    const currentSectionIndex = formSchema.sections.findIndex((s) => s.id === currentSection);
+    const currentSectionData = formSchema.sections[currentSectionIndex];
 
     return (
       <FormErrorBoundary>
-        <FormProvider {...methods}>
-          <form onSubmit={handleSubmit(handleFormSubmit)} className={cn('space-y-6', className)}>
-            {/* Form title and description */}
-            {formSchema.title && (
-              <div className="space-y-2">
-                <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-                  {formSchema.title}
-                </h1>
-                {formSchema.description && (
-                  <p className="text-lg text-gray-600 dark:text-gray-300">
-                    {formSchema.description}
-                  </p>
-                )}
-              </div>
-            )}
-
-            {/* Progress indicator */}
-            {showProgress && (
-              <div className="space-y-2">
-                <div className="flex justify-between text-sm text-gray-600 dark:text-gray-400">
-                  <span>Progress</span>
-                  <span>{progress.percentage}%</span>
-                </div>
-                <div className="w-full bg-gray-200 rounded-full h-2 dark:bg-gray-700">
-                  <div
-                    className="bg-blue-600 h-2 rounded-full transition-all duration-300"
-                    style={{ width: `${progress.percentage}%` }}
+        <DynamicFormLayout
+          currentSection={currentSectionIndex}
+          totalSections={formSchema.sections.length}
+        >
+          {/* Form Content */}
+          <div className="w-full">
+            <DynamicFormCard>
+              <FormProvider {...methods}>
+                <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-6">
+                  {/* Progress indicator */}
+                  <DynamicFormProgress
+                    currentSection={currentSectionIndex}
+                    totalSections={formSchema.sections.length}
+                    sectionTitle={currentSectionData?.title}
+                    sectionDescription={currentSectionData?.description}
                   />
-                </div>
-              </div>
-            )}
 
-            {/* Form sections */}
-            {formSchema.sections && Array.isArray(formSchema.sections) ? (
-              formSchema.sections.map((section, sectionIndex) => {
-                // Skip undefined sections
-                if (!section || !section.id) {
-                  console.warn('Skipping undefined section at index:', sectionIndex);
-                  return null;
-                }
+                  {/* Form sections */}
+                  {formSchema.sections && Array.isArray(formSchema.sections) ? (
+                    formSchema.sections
+                      .map((section, sectionIndex) => {
+                        // Skip undefined sections
+                        if (!section || !section.id) {
+                          console.warn('Skipping undefined section at index:', sectionIndex);
+                          return null;
+                        }
 
-                const isHidden = currentSection !== section.id;
-                const className = cn('space-y-6', isHidden && 'hidden');
+                        const isHidden = currentSection !== section.id;
+                        const className = cn('space-y-6', isHidden && 'hidden');
 
-                // Debug: Log section visibility
-                console.log(`Section ${section.id}: isHidden=${isHidden}, className=${className}`);
+                        // Debug: Log section visibility
+                        console.log(
+                          `Section ${section.id}: isHidden=${isHidden}, className=${className}`
+                        );
 
-                return (
+                        return (
+                          <div
+                            key={`section-${sectionIndex}-${section.id}`}
+                            className={className}
+                            style={{ display: isHidden ? 'none' : 'block' }}
+                          >
+                            <div className="animate-fade-in-up space-y-6">
+                              {section.questions && Array.isArray(section.questions) ? (
+                                section.questions
+                                  .map((question, questionIndex) => {
+                                    // Skip undefined questions
+                                    if (!question || !question.id) {
+                                      console.warn(
+                                        'Skipping undefined question at index:',
+                                        questionIndex
+                                      );
+                                      return null;
+                                    }
+
+                                    return (
+                                      <div
+                                        key={`question-${sectionIndex}-${questionIndex}-${question.id}`}
+                                        className="space-y-2"
+                                      >
+                                        {/* Render actual input components based on question type (components include their own label/help) */}
+                                        <Controller
+                                          name={question.id}
+                                          control={methods.control}
+                                          render={({ field, fieldState }) => {
+                                            const InputComponent = getInputComponent(question.type);
+                                            return (
+                                              <InputComponent
+                                                key={`input-${sectionIndex}-${questionIndex}-${question.id}`}
+                                                question={question}
+                                                value={field.value}
+                                                onChange={async (value) => {
+                                                  field.onChange(value);
+                                                  await trigger(question.id);
+                                                  // Real-time persist: delegate to onSave if provided
+                                                  try {
+                                                    if (onSave) {
+                                                      await onSave({
+                                                        ...methods.getValues(),
+                                                        [question.id]: value,
+                                                      });
+                                                    }
+                                                  } catch (e) {
+                                                    console.error('Realtime save failed:', e);
+                                                  }
+                                                }}
+                                                onBlur={() => {
+                                                  field.onBlur();
+                                                  trigger(question.id);
+                                                }}
+                                                error={fieldState.error?.message}
+                                                disabled={disabled}
+                                              />
+                                            );
+                                          }}
+                                        />
+                                      </div>
+                                    );
+                                  })
+                                  .filter(Boolean) // Remove null entries
+                              ) : (
+                                <p className="text-gray-500 dark:text-gray-400">
+                                  No questions available in this section.
+                                </p>
+                              )}
+                            </div>
+                          </div>
+                        );
+                      })
+                      .filter(Boolean) // Remove null entries
+                  ) : (
+                    <div className="py-8 text-center">
+                      <p className="text-gray-500 dark:text-gray-400">
+                        No sections available. Please try refreshing the page.
+                      </p>
+                    </div>
+                  )}
+
+                  {/* Action buttons */}
                   <div
-                    key={`section-${sectionIndex}-${section.id}`}
-                    className={className}
-                    // One-off: Dynamic visibility based on condition logic - must use display property for proper hiding
-                    style={{ display: isHidden ? 'none' : 'block' }}
+                    className="flex items-center justify-between pt-6"
+                    style={{
+                      borderTop: '1px solid rgba(255, 255, 255, 0.1)',
+                    }}
                   >
-                    <div className="space-y-2">
-                      <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-                        {section.title || `Section ${sectionIndex + 1}`}
-                      </h2>
-                      {section.description && (
-                        <p className="text-gray-600 dark:text-gray-300">{section.description}</p>
+                    <div className="flex space-x-2">
+                      {!isFirstSection && (
+                        <DynamicFormButton
+                          type="button"
+                          onClick={previousSection}
+                          variant="ghost"
+                          disabled={disabled}
+                        >
+                          Previous
+                        </DynamicFormButton>
                       )}
                     </div>
 
-                    <div className="space-y-4">
-                      {section.questions && Array.isArray(section.questions) ? (
-                        section.questions.map((question, questionIndex) => {
-                          // Skip undefined questions
-                          if (!question || !question.id) {
-                            console.warn('Skipping undefined question at index:', questionIndex);
-                            return null;
-                          }
-
-                          return (
-                            <div key={`question-${sectionIndex}-${questionIndex}-${question.id}`} className="space-y-2">
-                              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                {question.label || question.question || `Question ${questionIndex + 1}`}
-                                {question.required && <span className="text-red-500 ml-1">*</span>}
-                              </label>
-
-                              {question.helpText && (
-                                <p className="text-sm text-gray-500 dark:text-gray-400">
-                                  {question.helpText}
-                                </p>
-                              )}
-
-                              {/* Render actual input components based on question type */}
-                              <Controller
-                                name={question.id}
-                                control={methods.control}
-                                render={({ field, fieldState }) => {
-                                  const InputComponent = getInputComponent(question.type);
-                                  return (
-                                    <InputComponent
-                                      key={`input-${sectionIndex}-${questionIndex}-${question.id}`}
-                                      question={question}
-                                      value={field.value}
-                                      onChange={(value) => {
-                                        field.onChange(value);
-                                        trigger(question.id);
-                                      }}
-                                      onBlur={() => {
-                                        field.onBlur();
-                                        trigger(question.id);
-                                      }}
-                                      error={fieldState.error?.message}
-                                      disabled={disabled}
-                                    />
-                                  );
-                                }}
-                              />
-                            </div>
-                          );
-                        }).filter(Boolean) // Remove null entries
+                    <div className="flex space-x-2">
+                      {isLastSection ? (
+                        <DynamicFormButton
+                          type="submit"
+                          disabled={disabled || isSubmitting}
+                          loading={isSubmitting}
+                          variant="primary"
+                        >
+                          {formSchema.settings?.submitButtonText || 'Submit'}
+                        </DynamicFormButton>
                       ) : (
-                        <p className="text-gray-500 dark:text-gray-400">No questions available in this section.</p>
+                        <DynamicFormButton
+                          type="button"
+                          onClick={nextSection}
+                          variant="primary"
+                          disabled={disabled}
+                        >
+                          Next
+                        </DynamicFormButton>
                       )}
                     </div>
                   </div>
-                );
-              }).filter(Boolean) // Remove null entries
-            ) : (
-              <div className="text-center py-8">
-                <p className="text-gray-500 dark:text-gray-400">No sections available. Please try refreshing the page.</p>
-              </div>
-            )}
 
-            {/* Action buttons */}
-            <div className="flex justify-between items-center pt-6 border-t border-gray-200 dark:border-gray-700">
-              <div className="flex space-x-2">
-                {currentSection !== formSchema.sections[0]?.id && (
-                  <button
-                    type="button"
-                    onClick={previousSection}
-                    className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-                    disabled={disabled}
-                  >
-                    Previous
-                  </button>
-                )}
-
-                {currentSection !== formSchema.sections[formSchema.sections.length - 1]?.id && (
-                  <button
-                    type="button"
-                    onClick={nextSection}
-                    className="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-                    disabled={disabled}
-                  >
-                    Next
-                  </button>
-                )}
-              </div>
-
-              <div className="flex space-x-2">
-                {onSave && (
-                  <button
-                    type="button"
-                    onClick={handleManualSave}
-                    disabled={disabled || isSaving}
-                    className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
-                  >
-                    {isSaving
-                      ? 'Saving...'
-                      : formSchema.settings?.saveButtonText || 'Save Progress'}
-                  </button>
-                )}
-
-                <button
-                  type="submit"
-                  disabled={disabled || isSubmitting || !isValid}
-                  className="px-6 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
-                >
-                  {isSubmitting
-                    ? 'Submitting...'
-                    : formSchema.settings?.submitButtonText || 'Submit Form'}
-                </button>
-              </div>
-            </div>
-
-            {/* Save status */}
-            {lastSaved && (
-              <div className="text-sm text-gray-500 dark:text-gray-400 text-center">
-                Last saved: {lastSaved.toLocaleTimeString()}
-              </div>
-            )}
-          </form>
-        </FormProvider>
+                  {/* Save status */}
+                  {lastSaved && (
+                    <div className="animate-fade-in flex items-center py-2">
+                      <div
+                        className="mr-2 h-2 w-2 rounded-full"
+                        style={{ backgroundColor: '#10b981' }}
+                      />
+                      <span className="text-sm" style={{ color: '#10b981' }}>
+                        All changes saved
+                      </span>
+                    </div>
+                  )}
+                </form>
+              </FormProvider>
+            </DynamicFormCard>
+          </div>
+        </DynamicFormLayout>
       </FormErrorBoundary>
     );
-  },
+  }
 );
 
 DynamicFormRenderer.displayName = 'DynamicFormRenderer';

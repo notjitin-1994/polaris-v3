@@ -1,4 +1,4 @@
-import { Blueprint } from '@/lib/ollama/schema';
+import { AnyBlueprint, isFullBlueprint } from '@/lib/ollama/schema';
 import { DashboardData } from '@/types/dashboard';
 import { ExportData, ExportOptions, ExportResult, ExportMetadata } from './types';
 
@@ -62,10 +62,28 @@ ${metadata.blueprintId ? `blueprint_id: ${metadata.blueprintId}` : ''}
   /**
    * Generate header section
    */
-  private generateHeader(blueprint: Blueprint, metadata: ExportMetadata): string {
-    return `# ${this.escapeMarkdown(blueprint.title)}
+  private generateHeader(blueprint: AnyBlueprint, metadata: ExportMetadata): string {
+    if (isFullBlueprint(blueprint)) {
+      const title = blueprint.metadata?.organization
+        ? `${blueprint.metadata.organization} Learning Blueprint`
+        : 'Learning Blueprint';
+      const parts: string[] = [];
+      if (blueprint.metadata?.role) parts.push(`Role: ${blueprint.metadata.role}`);
+      if (blueprint.instructional_strategy?.cohort_model)
+        parts.push(`Cohort: ${blueprint.instructional_strategy.cohort_model}`);
+      const overview = parts.join(' • ') || 'Auto-generated learning blueprint overview.';
+      return `# ${this.escapeMarkdown(title)}
 
-${this.escapeMarkdown(blueprint.overview)}
+${this.escapeMarkdown(overview)}
+
+---
+`;
+    }
+    // Fallback to canonical blueprint
+    const canonical = blueprint as any;
+    return `# ${this.escapeMarkdown(canonical.title)}
+
+${this.escapeMarkdown(canonical.overview)}
 
 ---
 `;
@@ -74,10 +92,23 @@ ${this.escapeMarkdown(blueprint.overview)}
   /**
    * Generate learning objectives section
    */
-  private generateLearningObjectives(blueprint: Blueprint): string {
+  private generateLearningObjectives(blueprint: AnyBlueprint): string {
+    if (isFullBlueprint(blueprint)) {
+      let markdown = '## Learning Objectives\n\n';
+      const objs = Array.isArray(blueprint.objectives) ? blueprint.objectives : [];
+      if (objs.length === 0) {
+        markdown += '1. Define measurable learning objectives\n\n---\n\n';
+        return markdown;
+      }
+      objs.forEach((o, index) => {
+        markdown += `${index + 1}. ${this.escapeMarkdown(o.title)}\n`;
+      });
+      markdown += '\n---\n\n';
+      return markdown;
+    }
     let markdown = '## Learning Objectives\n\n';
 
-    blueprint.learningObjectives.forEach((objective, index) => {
+    (blueprint as any).learningObjectives.forEach((objective: string, index: number) => {
       markdown += `${index + 1}. ${this.escapeMarkdown(objective)}\n`;
     });
 
@@ -88,16 +119,39 @@ ${this.escapeMarkdown(blueprint.overview)}
   /**
    * Generate modules section
    */
-  private generateModules(blueprint: Blueprint): string {
+  private generateModules(blueprint: AnyBlueprint): string {
+    if (isFullBlueprint(blueprint)) {
+      let markdown = '## Learning Modules\n\n';
+      const outline = Array.isArray(blueprint.content_outline) ? blueprint.content_outline : [];
+      outline.forEach((m, index) => {
+        markdown += `### ${index + 1}. ${this.escapeMarkdown(m.title)}\n\n`;
+        markdown += `**Duration:** ${this.escapeMarkdown(m.duration)}\n\n`;
+        markdown += `**Topics:**\n`;
+        (Array.isArray(m.topics) ? m.topics : []).forEach((topic: string) => {
+          markdown += `- ${this.escapeMarkdown(topic)}\n`;
+        });
+        markdown += '\n';
+        markdown += `**Delivery:** ${this.escapeMarkdown(m.delivery_method)}\n\n`;
+        if (Array.isArray(m.prerequisites) && m.prerequisites.length > 0) {
+          markdown += `**Prerequisites:**\n`;
+          m.prerequisites.forEach((p: string) => {
+            markdown += `- ${this.escapeMarkdown(p)}\n`;
+          });
+          markdown += '\n';
+        }
+        markdown += '---\n\n';
+      });
+      return markdown;
+    }
     let markdown = '## Learning Modules\n\n';
 
-    blueprint.modules.forEach((module, index) => {
+    (blueprint as any).modules.forEach((module: any, index: number) => {
       markdown += `### ${index + 1}. ${this.escapeMarkdown(module.title)}\n\n`;
       markdown += `**Duration:** ${module.duration} hours\n\n`;
 
       // Topics
       markdown += `**Topics:**\n`;
-      module.topics.forEach((topic) => {
+      module.topics.forEach((topic: string) => {
         markdown += `- ${this.escapeMarkdown(topic)}\n`;
       });
       markdown += '\n';
@@ -105,7 +159,7 @@ ${this.escapeMarkdown(blueprint.overview)}
       // Activities
       if (module.activities.length > 0) {
         markdown += `**Activities:**\n`;
-        module.activities.forEach((activity) => {
+        module.activities.forEach((activity: string) => {
           markdown += `- ${this.escapeMarkdown(activity)}\n`;
         });
         markdown += '\n';
@@ -114,7 +168,7 @@ ${this.escapeMarkdown(blueprint.overview)}
       // Assessments
       if (module.assessments.length > 0) {
         markdown += `**Assessments:**\n`;
-        module.assessments.forEach((assessment) => {
+        module.assessments.forEach((assessment: string) => {
           markdown += `- ${this.escapeMarkdown(assessment)}\n`;
         });
         markdown += '\n';
@@ -153,7 +207,7 @@ ${this.escapeMarkdown(blueprint.overview)}
    * Generate resources section
    */
   private generateResources(
-    resources: Array<{ name: string; type: string; url?: string }>,
+    resources: Array<{ name: string; type: string; url?: string }>
   ): string {
     let markdown = '## Resources\n\n';
 

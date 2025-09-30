@@ -50,6 +50,15 @@ export const MultiselectInput: React.FC<BaseInputProps> = ({
   const selectedOptions =
     question.options?.filter((opt) => selectedValues.includes(opt.value)) || [];
 
+  const containerClasses = cn(
+    'w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white',
+    'cursor-pointer ring-0 transition outline-none',
+    hasError
+      ? 'border-red-400/50 focus:border-red-400/50 focus:ring-[1.2px] focus:ring-red-400/50'
+      : 'focus:border-[#d0edf0] focus:ring-[1.2px] focus:ring-[#d0edf0]',
+    disabled && 'cursor-not-allowed disabled:opacity-50'
+  );
+
   return (
     <InputWrapper
       question={question}
@@ -61,12 +70,11 @@ export const MultiselectInput: React.FC<BaseInputProps> = ({
       <div className="relative">
         {/* Selected values display */}
         <div
-          className={cn(
-            'glass min-h-input w-full px-3 py-2 rounded-md cursor-pointer text-foreground',
-            'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:ring-offset-2 focus-visible:ring-offset-background transition-all duration-200',
-            hasError && 'border-error focus-visible:ring-error/50',
-            disabled && 'disabled:opacity-50 cursor-not-allowed',
-          )}
+          className={containerClasses}
+          style={{
+            backgroundColor: 'rgba(255, 255, 255, 0.05)',
+            minHeight: '44px',
+          }}
           onClick={() => !disabled && setIsOpen(!isOpen)}
           onBlur={onBlur}
           tabIndex={disabled ? -1 : 0}
@@ -78,13 +86,17 @@ export const MultiselectInput: React.FC<BaseInputProps> = ({
           aria-describedby={hasError ? `${inputId}-error` : undefined}
         >
           {selectedOptions.length === 0 ? (
-            <span className="text-foreground/50">Select options...</span>
+            <span className="text-white/40">Select options...</span>
           ) : (
             <div className="flex flex-wrap gap-1">
               {selectedOptions.map((option, index) => (
                 <span
                   key={`selected-${option.value}-${index}`}
-                  className="inline-flex items-center px-2 py-1 text-xs font-medium bg-primary/10 text-primary rounded-md"
+                  className="inline-flex items-center rounded-md px-2 py-1 text-xs font-medium"
+                  style={{
+                    backgroundColor: 'rgba(167, 218, 219, 0.15)',
+                    color: '#a7dadb',
+                  }}
                 >
                   {option.label}
                   {!disabled && (
@@ -94,7 +106,8 @@ export const MultiselectInput: React.FC<BaseInputProps> = ({
                         e.stopPropagation();
                         handleRemoveOption(option.value);
                       }}
-                      className="ml-1 text-primary hover:text-primary-dark"
+                      className="ml-1 hover:opacity-70"
+                      style={{ color: '#a7dadb' }}
                       aria-label={`Remove ${option.label}`}
                     >
                       ×
@@ -104,9 +117,10 @@ export const MultiselectInput: React.FC<BaseInputProps> = ({
               ))}
             </div>
           )}
-          <span className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
+          <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
             <svg
-              className="w-5 h-5 text-foreground/40"
+              className="h-5 w-5"
+              style={{ color: '#a7dadb' }}
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -125,17 +139,35 @@ export const MultiselectInput: React.FC<BaseInputProps> = ({
         {isOpen && !disabled && (
           <div
             id={`${inputId}-options`}
-            className="absolute z-10 w-full mt-1 glass rounded-md shadow-lg max-h-60 overflow-auto border border-foreground/10"
+            className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-xl border border-white/10 shadow-lg"
+            style={{
+              backgroundColor: 'rgba(13, 27, 42, 0.95)',
+              backdropFilter: 'blur(12px)',
+            }}
             role="listbox"
           >
             {question.options?.map((option, index) => (
               <div
                 key={`option-${option.value}-${index}`}
                 className={cn(
-                  'px-3 py-2 cursor-pointer hover:bg-foreground/5',
-                  selectedValues.includes(option.value) && 'bg-primary/10',
-                  option.disabled && 'opacity-50 cursor-not-allowed',
+                  'cursor-pointer px-3 py-2 text-white transition-colors',
+                  option.disabled && 'cursor-not-allowed opacity-50'
                 )}
+                style={{
+                  backgroundColor: selectedValues.includes(option.value)
+                    ? 'rgba(167, 218, 219, 0.15)'
+                    : 'transparent',
+                }}
+                onMouseEnter={(e) => {
+                  if (!option.disabled && !selectedValues.includes(option.value)) {
+                    e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.05)';
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (!selectedValues.includes(option.value)) {
+                    e.currentTarget.style.backgroundColor = 'transparent';
+                  }
+                }}
                 onClick={() => !option.disabled && handleToggleOption(option.value)}
                 role="option"
                 aria-selected={selectedValues.includes(option.value)}
@@ -145,13 +177,16 @@ export const MultiselectInput: React.FC<BaseInputProps> = ({
                     type="checkbox"
                     checked={selectedValues.includes(option.value)}
                     onChange={() => {}} // Handled by parent onClick
-                    className="glass h-4 w-4 mr-2 rounded text-primary focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                    className="mr-2 h-4 w-4 rounded transition"
+                    style={{
+                      accentColor: '#a7dadb',
+                    }}
                     disabled={option.disabled}
                   />
                   <span
                     className={cn(
                       'text-sm',
-                      selectedValues.includes(option.value) ? 'font-medium' : 'font-normal',
+                      selectedValues.includes(option.value) ? 'font-medium' : 'font-normal'
                     )}
                   >
                     {option.label}
@@ -163,14 +198,8 @@ export const MultiselectInput: React.FC<BaseInputProps> = ({
         )}
       </div>
 
-      {question.helpText && (
-        <p id={`${inputId}-help`} className="text-sm text-foreground/60 mt-1">
-          {question.helpText}
-        </p>
-      )}
-
       {question.maxSelections && (
-        <p className="text-xs text-foreground/60 mt-1">
+        <p className="mt-1 text-xs text-white/60">
           {selectedValues.length} / {question.maxSelections} selections
         </p>
       )}

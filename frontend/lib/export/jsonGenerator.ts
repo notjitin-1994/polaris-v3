@@ -1,4 +1,4 @@
-import { Blueprint } from '@/lib/ollama/schema';
+import { AnyBlueprint, isFullBlueprint } from '@/lib/ollama/schema';
 import { DashboardData } from '@/types/dashboard';
 import { ExportData, ExportOptions, ExportResult, ExportMetadata } from './types';
 
@@ -25,20 +25,22 @@ export class JSONGenerator {
       },
 
       // Blueprint data
-      blueprint: {
-        title: blueprint.title,
-        overview: blueprint.overview,
-        learningObjectives: blueprint.learningObjectives,
-        modules: blueprint.modules.map((module) => ({
-          title: module.title,
-          duration: module.duration,
-          topics: module.topics,
-          activities: module.activities,
-          assessments: module.assessments,
-        })),
-        timeline: blueprint.timeline || {},
-        resources: blueprint.resources || [],
-      },
+      blueprint: isFullBlueprint(blueprint as AnyBlueprint)
+        ? blueprint
+        : {
+            title: (blueprint as any).title,
+            overview: (blueprint as any).overview,
+            learningObjectives: (blueprint as any).learningObjectives,
+            modules: (blueprint as any).modules.map((module: any) => ({
+              title: module.title,
+              duration: module.duration,
+              topics: module.topics,
+              activities: module.activities,
+              assessments: module.assessments,
+            })),
+            timeline: (blueprint as any).timeline || {},
+            resources: (blueprint as any).resources || [],
+          },
 
       // Dashboard data if available
       dashboard: dashboardData

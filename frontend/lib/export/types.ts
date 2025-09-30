@@ -1,4 +1,4 @@
-import { Blueprint } from '@/lib/ollama/schema';
+import { AnyBlueprint } from '@/lib/ollama/schema';
 import { DashboardData } from '@/types/dashboard';
 
 export type ExportFormat = 'pdf' | 'markdown' | 'json';
@@ -26,7 +26,7 @@ export interface ExportMetadata {
 }
 
 export interface ExportData {
-  blueprint: Blueprint;
+  blueprint: AnyBlueprint;
   dashboardData?: DashboardData;
   metadata: ExportMetadata;
   charts?: {

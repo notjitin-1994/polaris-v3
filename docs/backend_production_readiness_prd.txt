@@ -1,0 +1,540 @@
+<context>
+# Overview  
+The Learning Blueprint Generator enables learning designers, instructional designers, and corporate training managers to produce consistent, high‑quality, exportable learning blueprints with minimal manual effort. It replaces ad‑hoc document authoring with a structured, validated workflow that moves users from authentication through static inputs, dynamic LLM‑generated questions, blueprint generation, dashboard review, and export.
+
+End‑to‑end journey:
+- Login (Supabase Auth) → Authenticated session with protected routes and server‑side checks
+- Static Questions Wizard (5 required questions) → Autosave to `public.blueprint_generator.static_answers`
+- Dynamic Questions Generation (via local Ollama Qwen3:30b-a3b) → JSON schema validation; retries + fallback; persisted to `dynamic_questions` and raw LLM output to `dynamic_questions_raw`
+- Dynamic Questions Wizard (sectioned UI) → Autosave `dynamic_answers`; progress tracking
+- Blueprint Generation (SSE stream) → Aggregate `static_answers` + `dynamic_answers` → LLM generation + schema validation/repair → save `blueprint_json` + `blueprint_markdown` and update `status`
+- Dashboard (view latest + version history) → KPIs, charts, versions
+- Export (PDF/Markdown/JSON) → Download assets and share
+
+# Core Features  
+1. Authentication System (Supabase Auth; protected routes; session refresh)
+   - What: Email/password signup/login via Supabase; session stored in cookies; protected API routes; server‑side auth checks; session refresh.
+   - Why: Secure access, per‑user data isolation; enable RLS enforcement.
+   - How:
+     - Install Supabase client; configure `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`.
+     - Server Components default; protect Client Components only when needed (`"use client"`).
+     - Middleware to gate `/(auth)` routes and protect API handlers; reject API requests with 401/403 JSON (no redirects).
+     - Session refresh using Supabase `auth.onAuthStateChange` on client and `getSession()` server‑side.
+     - Persist `user_profiles` row on first login.
+
+2. Static Questions Wizard (5 questions; autosave; validation)
+   - What: A 5‑step wizard capturing audience, goals, constraints, modality, and assessment approach; strict validation with Zod; autosave after each step.
+   - Why: Seed high‑quality context for dynamic question generation and blueprint accuracy.
+   - How:
+     - React Hook Form + Zod schemas; per‑step validation; Tailwind responsive layout.
+     - Autosave on blur/change with debounced writes to `blueprint_generator.static_answers` and `status='draft'`.
+     - Create or reuse a `blueprint_generator` row keyed by user; expose blueprintId throughout the journey.
+     - Disable Next navigation until current step passes validation; show inline errors.
+
+3. Dynamic Questions Generation (LLM via local Ollama; JSON schema validation; retries and fallback)
+   - What: Generate a tailored set of dynamic questions from static answers using Qwen3:30b-a3b through Ollama; validate and normalize to a predefined schema.
+   - Why: Adapt to diverse learning contexts; reduce manual drafting time.
+   - How:
+     - POST `/api/generate-questions`: validates GenerationInput (new/legacy union) and returns `DynamicQuestions[]`.
+     - Implement MemoryCache (TTL 15m) keyed by `userId+hash(input)`; in‑flight de‑duplication map; SimpleQueue with `concurrency=3`.
+     - Call `OLLAMA_BASE_URL/api/chat` with a system prompt instructing JSON‑only output; set explicit temperature/top_p.
+     - Validate with Zod; if invalid, attempt JSON repair; on failure, return 422 with details.
+     - Retries with exponential backoff (e.g., 2 attempts, base 1.5x); timeout 25s; fallback to a default curated question set.
+
+4. Dynamic Questions Wizard (sectioned inputs; autosave; progress)
+   - What: Multi‑section form rendering `DynamicQuestions[]` into inputs; progress bar; per‑field autosave into `dynamic_answers`.
+   - Why: Capture nuanced details; maintain user momentum with progress and resume.
+   - How:
+     - Render by type (short_text, long_text, select, multi_select, scale, date).
+     - Autosave throttled (500–1000ms) to `dynamic_answers`; show transient “Saved” indicator.
+     - Maintain progress using answered/total; persist stage in state to resume across sessions.
+
+5. Blueprint Generation (SSE streaming; JSON + Markdown; validation and repair strategy)
+   - What: Streaming blueprint creation combining static and dynamic answers; emits incremental progress and final artifacts (JSON + Markdown).
+   - Why: Fast feedback loop; transparent generation process; robust validation.
+   - How:
+     - POST `/api/generate-blueprint` (SSE; Node runtime): aggregate inputs; send structured prompt to Ollama; stream tokens to client.
+     - Parse streaming content into incremental JSON/Markdown; validate JSON with Zod; attempt repair on invalid segments.
+     - If `status='completed'` for the given blueprintId, skip write and emit warning + final content (idempotent).
+
+6. Blueprint Display & Dashboard (charts/KPIs; version history)
+   - What: Dashboard view of latest blueprint; KPIs (objective counts, module durations, assessment coverage); version history with diffing basic stats.
+   - Why: Quick evaluation and iteration; audit trail via versions.
+   - How:
+     - GET `/api/blueprint/:id` returns the latest version for the user.
+     - Recharts for KPIs; Framer Motion for subtle transitions.
+     - Version list with timestamp, status, and version; open any version read‑only; compare KPIs side‑by‑side.
+
+7. Export (PDF via jsPDF/html2pdf; Markdown/JSON downloads)
+   - What: Export blueprint as PDF (rendered from Markdown), raw Markdown, and JSON.
+   - Why: Shareability; downstream processes.
+   - How:
+     - Client‑side PDF: render hidden Markdown to print‑optimized HTML; jsPDF/html2pdf to generate and download.
+     - Provide JSON/Markdown direct downloads (blob URLs); ensure filenames include `title_version_timestamp`.
+
+8. State Management & Resume (Zustand; persisted state; versioning)
+   - What: Lightweight global state for wizard position, transient UI; persistence through `localStorage` plus server state in Postgres.
+   - Why: Resilience across refreshes; consistent UX.
+   - How:
+     - Zustand stores with persistence middleware; namespaced keys per user+blueprintId.
+     - Server is source of truth (Postgres); client state only for UX; reconcile on load.
+
+# User Experience  
+- Personas: Learning Designer (primary), Instructional Designer (reviewer), Training Manager (approver).
+- Key flows:
+  - Onboarding → create first blueprint → complete static questions → generate dynamic questions → complete dynamic wizard → stream blueprint → review dashboard → export.
+- UX specifics:
+  - Responsive (mobile→desktop), keyboard accessible, high‑contrast themes.
+  - Progress indicators for both wizards; autosave feedback; recovery prompts on errors.
+  - Streaming UI with tokenizing “typing” effect; clear warnings/errors; retry affordances.
+  - Accessibility: labeled controls, ARIA roles for live regions (SSE updates), focus management after navigation.
+</context>
+
+<PRD>
+# Technical Architecture  
+- Frontend: Next.js App Router (Server Components by default), Tailwind, Zustand, React Hook Form + Zod, Recharts/Framer Motion.
+- Backend: Next.js API routes (Node runtime for streaming), Supabase Postgres + Auth, Ollama REST API (local Qwen3:30b-a3b).
+- Data models:
+  - public.user_profiles(user_id PK→auth.users, full_name, avatar_url, preferences jsonb, created_at, updated_at)
+  - public.blueprint_generator(
+      id uuid PK default gen_random_uuid(),
+      user_id uuid not null → auth.users(id) on delete cascade,
+      version integer default 1,
+      static_answers jsonb default '{}',
+      dynamic_questions jsonb default '[]',
+      dynamic_questions_raw jsonb default '[]',
+      dynamic_answers jsonb default '{}',
+      blueprint_json jsonb default '{}',
+      blueprint_markdown text null,
+      status text default 'draft' check in ('draft','generating','completed','error'),
+      created_at timestamptz default now(),
+      updated_at timestamptz default now()
+    )
+- RLS:
+  - enable row level security on both tables
+  - policies: select/insert/update/delete only where user_id = auth.uid()
+- Indexes (performance):
+  - user_id, status, created_at
+  - GIN on jsonb: static_answers, dynamic_questions, dynamic_questions_raw, dynamic_answers, blueprint_json
+- Triggers/RPC:
+  - set_updated_at() BEFORE UPDATE
+  - increment_blueprint_version_on_completion() BEFORE UPDATE (version++ only when status transitions to 'completed')
+  - RPC increment_blueprint_version(blueprint_id_input, new_blueprint_json, new_blueprint_markdown, new_static_answers, new_dynamic_answers, new_status) returns updated row
+
+Implementation SQL (illustrative):
+```sql
+-- Tables
+create table if not exists public.user_profiles (
+  user_id uuid primary key references auth.users(id) on delete cascade,
+  full_name text,
+  avatar_url text,
+  preferences jsonb default '{}',
+  created_at timestamptz default now(),
+  updated_at timestamptz default now()
+);
+
+create table if not exists public.blueprint_generator (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null references auth.users(id) on delete cascade,
+  version integer default 1,
+  static_answers jsonb default '{}'::jsonb,
+  dynamic_questions jsonb default '[]'::jsonb,
+  dynamic_questions_raw jsonb default '[]'::jsonb,
+  dynamic_answers jsonb default '{}'::jsonb,
+  blueprint_json jsonb default '{}'::jsonb,
+  blueprint_markdown text null,
+  status text default 'draft' check (status in ('draft','generating','completed','error')),
+  created_at timestamptz default now(),
+  updated_at timestamptz default now()
+);
+
+-- RLS
+alter table public.user_profiles enable row level security;
+alter table public.blueprint_generator enable row level security;
+
+create policy "user_profiles_owner_all"
+on public.user_profiles
+for all
+to authenticated
+using (user_id = auth.uid())
+with check (user_id = auth.uid());
+
+create policy "blueprint_owner_all"
+on public.blueprint_generator
+for all
+to authenticated
+using (user_id = auth.uid())
+with check (user_id = auth.uid());
+
+-- Indexes
+create index if not exists idx_blueprint_user_id on public.blueprint_generator(user_id);
+create index if not exists idx_blueprint_status on public.blueprint_generator(status);
+create index if not exists idx_blueprint_created_at on public.blueprint_generator(created_at);
+create index if not exists idx_blueprint_static_answers_gin on public.blueprint_generator using gin(static_answers);
+create index if not exists idx_blueprint_dynamic_questions_gin on public.blueprint_generator using gin(dynamic_questions);
+create index if not exists idx_blueprint_dynamic_questions_raw_gin on public.blueprint_generator using gin(dynamic_questions_raw);
+create index if not exists idx_blueprint_dynamic_answers_gin on public.blueprint_generator using gin(dynamic_answers);
+create index if not exists idx_blueprint_json_gin on public.blueprint_generator using gin(blueprint_json);
+
+-- Triggers
+create or replace function public.set_updated_at() returns trigger as $$
+begin
+  new.updated_at = now();
+  return new;
+end; $$ language plpgsql;
+
+drop trigger if exists trg_user_profiles_updated_at on public.user_profiles;
+create trigger trg_user_profiles_updated_at before update on public.user_profiles
+for each row execute function public.set_updated_at();
+
+drop trigger if exists trg_blueprint_updated_at on public.blueprint_generator;
+create trigger trg_blueprint_updated_at before update on public.blueprint_generator
+for each row execute function public.set_updated_at();
+
+create or replace function public.increment_blueprint_version_on_completion()
+returns trigger as $$
+begin
+  if (old.status is distinct from new.status) and new.status = 'completed' then
+    new.version = coalesce(old.version, 0) + 1;
+  end if;
+  return new;
+end; $$ language plpgsql;
+
+drop trigger if exists trg_blueprint_version_complete on public.blueprint_generator;
+create trigger trg_blueprint_version_complete before update on public.blueprint_generator
+for each row execute function public.increment_blueprint_version_on_completion();
+
+-- RPC
+create or replace function public.increment_blueprint_version(
+  blueprint_id_input uuid,
+  new_blueprint_json jsonb,
+  new_blueprint_markdown text,
+  new_static_answers jsonb,
+  new_dynamic_answers jsonb,
+  new_status text
+) returns public.blueprint_generator
+language plpgsql
+security definer
+as $$
+declare
+  updated_row public.blueprint_generator;
+begin
+  update public.blueprint_generator
+  set
+    blueprint_json = coalesce(new_blueprint_json, blueprint_json),
+    blueprint_markdown = coalesce(new_blueprint_markdown, blueprint_markdown),
+    static_answers = coalesce(new_static_answers, static_answers),
+    dynamic_answers = coalesce(new_dynamic_answers, dynamic_answers),
+    status = coalesce(new_status, status)
+  where id = blueprint_id_input
+  returning * into updated_row;
+
+  return updated_row;
+end; $$;
+```
+
+- API & Integrations (all JSON; errors have `{ error, details? }`):
+  - POST `/api/generate-questions`
+    - Body (GenerationInput union):
+```json
+{
+  "type": "new",
+  "audience": "Frontline sales reps",
+  "goals": ["Increase product knowledge", "Reduce onboarding time"],
+  "constraints": { "time": "4 weeks", "budget": "medium", "modality": "blended" },
+  "context": "B2B SaaS with complex pricing",
+  "languages": ["en-US"]
+}
+```
+```json
+{
+  "type": "legacy",
+  "static_answers": {
+    "audience": "Frontline sales reps",
+    "goals": ["Increase product knowledge", "Reduce onboarding time"],
+    "constraints": { "time": "4 weeks", "budget": "medium", "modality": "blended" },
+    "context": "B2B SaaS with complex pricing",
+    "languages": ["en-US"]
+  }
+}
+```
+    - Response (success):
+```json
+{
+  "dynamicQuestions": [
+    {
+      "id": "dq_001",
+      "section": "Prerequisites",
+      "type": "multi_select",
+      "label": "Which prerequisite skills are expected?",
+      "options": ["CRM basics", "Negotiation", "Product knowledge"],
+      "required": true
+    }
+  ],
+  "cached": false,
+  "source": "ollama"
+}
+```
+    - Behavior: MemoryCache (15m), in‑flight de‑dup, SimpleQueue(concurrency=3), calls `OLLAMA_BASE_URL/api/chat`, validates JSON schema, returns DynamicQuestions.
+    - Errors: 400 invalid input, 422 validation, 504 timeout, 503 unavailable, 500 generic.
+    - Rate limit: 100 req/10m per userId+IP.
+
+  - POST `/api/generate-dynamic-questions`
+    - Body:
+```json
+{ "blueprintId": "c6a8b3a4-0d8c-4e57-92b4-7f75e1d1f6a2" }
+```
+    - Behavior: fetch blueprint(static_answers), map to legacy input, call Ollama, map to form schema, persist `dynamic_questions` + `dynamic_questions_raw`, `status='draft'`.
+    - Auth: requires session; ensure ownership (`user_id`).
+    - Response (success):
+```json
+{
+  "blueprintId": "c6a8b3a4-0d8c-4e57-92b4-7f75e1d1f6a2",
+  "dynamicQuestions": [ /* ...normalized questions... */ ],
+  "source": "ollama"
+}
+```
+    - Errors: 404 not found, 500 update failure; fallback to default questions when Ollama fails.
+    - Rate limit: 60 req/10m per userId+IP.
+
+  - POST `/api/generate-blueprint` (SSE)
+    - Body:
+```json
+{ "blueprintId": "c6a8b3a4-0d8c-4e57-92b4-7f75e1d1f6a2" }
+```
+    - Behavior: health check Ollama; aggregate static+dynamic answers; stream partial content as SSE events:
+      - event: `progress` `{ "partialBlueprint": { /* partial JSON */ } }`
+      - event: `warning` `{ "message": "Already completed; returning existing" }`
+      - event: `error` `{ "message": "Validation failed", "details": "...", "blueprint": { }, "markdown": "..." }`
+      - event: `complete` `{ "blueprint": { /* full JSON */ }, "markdown": "## Blueprint", "savedBlueprintId": "uuid" }`
+    - Validation: `parseAndValidateBlueprintJSON(fullContent)` against Zod blueprint schema; fallback blueprint+markdown on error.
+    - Idempotency: if `status='completed'`, skip save and send warning; include last saved version in `complete`.
+    - Auth: session required.
+    - Headers: `Content-Type: text/event-stream; Cache-Control: no-cache`.
+    - Runtime: nodejs; dynamic: force-dynamic; heartbeat comments every 20–30s.
+    - Rate limit: 20 req/10m per userId+IP.
+
+  - GET `/api/blueprint/:id`
+    - Returns latest version owned by user with fields:
+```json
+{
+  "id": "uuid",
+  "static_answers": { },
+  "dynamic_questions": [ ],
+  "dynamic_answers": { },
+  "status": "completed",
+  "version": 3,
+  "created_at": "2025-09-27T10:00:00Z",
+  "updated_at": "2025-09-27T10:30:00Z"
+}
+```
+    - Auth: session required; enforce `user_id` match.
+
+- Security:
+  - Auth: enforce in handlers (401/403 JSON) in addition to RLS; do NOT redirect for API routes.
+  - CSRF/CORS: same-origin by default. Validate `Origin`/`Referer` on POST; no cross-origin except explicit allowlist (`CORS_ALLOWLIST`).
+  - Headers (Next config):
+    - CSP: `default-src 'self'; connect-src 'self' ${OLLAMA_BASE_URL}; frame-ancestors 'none'; object-src 'none'; img-src 'self' data: blob:; style-src 'self' 'unsafe-inline'; script-src 'self'`
+    - `Referrer-Policy: strict-origin-when-cross-origin`
+    - `Permissions-Policy: camera=(), microphone=(), geolocation=()`
+    - `X-Content-Type-Options: nosniff`
+    - `X-Frame-Options: DENY`
+    - `Strict-Transport-Security: max-age=31536000; includeSubDomains; preload`
+  - Secrets: use `.env.example` placeholders; never commit values; use `NEXT_PUBLIC_` only when safe.
+  - PII & logs: mask or avoid logging user inputs/answers; enable debug logging only via env; attach opaque `requestId` to logs.
+
+- Resilience & Performance:
+  - Retries with backoff for Ollama; explicit timeouts (25–30s).
+  - Caching + in‑flight de‑dup + queue to protect LLM.
+  - Targets: <100ms static UI interactions, <30s dynamic question generation, <60s blueprint generation, <2s dashboard load, support 50+ concurrent users.
+
+- Observability:
+  - Sentry (server + API routes) with sampling; capture errors and performance traces.
+  - Supabase metrics (query times, RLS hits); per‑request `requestId` correlation.
+  - Optional Vercel Analytics page views; log rate‑limit decisions.
+
+- Environment:
+  - `OLLAMA_BASE_URL`, `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SENTRY_DSN`, `RATE_LIMIT_REDIS_URL` (optional), `CORS_ALLOWLIST` (optional), `OPENROUTER_API_KEY` (optional fallback), `OPENROUTER_BASE_URL` (optional, default `https://openrouter.ai/api/v1`).
+  - Streaming routes must export `runtime='nodejs'` and `dynamic='force-dynamic'`.
+
+- LLM Strategy (Local‑first with fallback):
+  - Primary: Local Ollama Qwen3:30b-a3b at `OLLAMA_BASE_URL`.
+  - If unavailable or slow: fallback to a smaller local model (e.g., Qwen2:7B) with prompt downscaling.
+  - If still failing and `OPENROUTER_API_KEY` is present: fallback to OpenRouter model alias `qwen/qwen2.5-14b` with strict JSON response format.
+  - As last resort: serve curated default dynamic questions and blueprint scaffolding; surface `warning` SSE event.
+
+# Development Roadmap  
+Phase 1: Foundation
+- Supabase Auth integration (login/signup, session refresh, protected routes)
+- Tables, RLS, policies, indexes, triggers/RPC migration set
+- Next.js app structure, baseline UI shell
+
+Phase 2: Core Functionality
+- Static Questions Wizard (5 questions, autosave to `public.blueprint_generator`)
+- POST `/api/generate-questions` with cache/queue/validation
+- Dynamic Questions Wizard scaffolding + persistence
+- POST `/api/generate-dynamic-questions` (LLM, mapping, save)
+
+Phase 3: Blueprint Generation & UI
+- SSE streaming in POST `/api/generate-blueprint` with validation/fallback/save/versioning
+- Dashboard rendering (Markdown + KPIs; versions list)
+- Export: PDF (jsPDF/html2pdf), Markdown/JSON
+
+Phase 4: Production-Ready Testing
+- E2E: login → static → dynamic → blueprint → dashboard → export
+- Load testing to validate performance targets
+- Security validation: headers, CSP, CSRF/CORS, auth/RLS
+- Failure drills: Ollama down, timeouts, invalid JSON
+
+Phase 5: Polish & Launch
+- Rate limiting wired to persistent store (if needed)
+- Observability (Sentry traces + dashboards), log cleanup
+- Accessibility passes; small UX refinements; final QA signoff
+
+# Logical Dependency Chain
+1) Auth + DB + RLS → 2) Static Wizard → 3) LLM Dynamic Generation → 4) Dynamic Wizard Persistence → 5) Blueprint SSE + Save + Versioning → 6) Dashboard/Export → 7) Testing/Perf/Security → 8) Observability/Polish
+
+# Risks and Mitigations  
+- LLM availability/performance → Health checks before calls; queue + cache; retries with backoff; multi‑tier fallback (local smaller model → OpenRouter → defaults).
+- DB performance under load → Proper indexes; query budgets; pagination; load tests; connection pooling.
+- Security/compliance → Strict RLS; header hardening; CSRF/CORS checks; PII logging policy; periodic dependency audits.
+- SSE stability on hosting → Node runtime; heartbeat every 20–30s; proxy timeouts tuned; client reconnection/backoff.
+- Duplicate writes on retries → Idempotency check using blueprint `status` and optional `Idempotency-Key` header; lock per `blueprintId` during save.
+
+# Appendix  
+- Zod schemas (TypeScript excerpts):
+```ts
+import { z } from "zod";
+
+export const ConstraintsSchema = z.object({
+  time: z.string().min(1),
+  budget: z.string().optional(),
+  modality: z.enum(["online", "in-person", "blended"]).optional()
+});
+
+export const StaticAnswersSchema = z.object({
+  audience: z.string().min(2),
+  goals: z.array(z.string().min(2)).min(1),
+  constraints: ConstraintsSchema,
+  context: z.string().min(2),
+  languages: z.array(z.string()).default(["en-US"]) 
+});
+
+export const GenerationInputNew = z.object({
+  type: z.literal("new"),
+  audience: z.string(),
+  goals: z.array(z.string()).min(1),
+  constraints: ConstraintsSchema,
+  context: z.string(),
+  languages: z.array(z.string()).default(["en-US"]) 
+});
+
+export const GenerationInputLegacy = z.object({
+  type: z.literal("legacy"),
+  static_answers: StaticAnswersSchema
+});
+
+export const GenerationInput = z.union([GenerationInputNew, GenerationInputLegacy]);
+
+export const DynamicQuestionSchema = z.object({
+  id: z.string(),
+  section: z.string(),
+  type: z.enum(["short_text", "long_text", "select", "multi_select", "scale", "date"]),
+  label: z.string(),
+  options: z.array(z.string()).optional(),
+  required: z.boolean().default(true),
+  placeholder: z.string().optional(),
+  helpText: z.string().optional(),
+  min: z.number().optional(),
+  max: z.number().optional()
+});
+
+export const DynamicQuestionsSchema = z.array(DynamicQuestionSchema);
+
+export const BlueprintModuleSchema = z.object({
+  title: z.string(),
+  durationMinutes: z.number().int().positive(),
+  objectives: z.array(z.string()).min(1),
+  activities: z.array(z.string()).default([]),
+  assessments: z.array(z.string()).default([])
+});
+
+export const BlueprintSchema = z.object({
+  title: z.string().min(3),
+  overview: z.string().min(10),
+  learningObjectives: z.array(z.string()).min(1),
+  modules: z.array(BlueprintModuleSchema).min(1),
+  timeline: z.string().optional(),
+  resources: z.array(z.string()).optional()
+});
+```
+
+- Example request/response payloads:
+  - `/api/generate-questions` 400 error:
+```json
+{ "error": "Invalid input", "details": "goals must be non-empty" }
+```
+  - `/api/generate-dynamic-questions` 404:
+```json
+{ "error": "Blueprint not found" }
+```
+  - `/api/generate-blueprint` SSE events (sequence):
+```
+event: progress
+data: {"partialBlueprint":{"title":"Sales Onboarding"}}
+
+event: progress
+data: {"partialBlueprint":{"modules":[{"title":"CRM Basics","durationMinutes":45}] }}
+
+event: complete
+data: {"blueprint":{ /* full JSON */ }, "markdown":"# Sales Onboarding ...", "savedBlueprintId":"uuid"}
+```
+
+- Rate limiting (userId+IP):
+  - `/api/generate-questions`: 100 req/10m
+  - `/api/generate-dynamic-questions`: 60 req/10m
+  - `/api/generate-blueprint`: 20 req/10m
+  - 429 response shape: `{ "error": "Too many requests", "details": "Try again later" }`
+
+- CORS/CSRF strategy:
+  - Same‑origin; reject cross‑origin unless `Origin` matches allowlist in `CORS_ALLOWLIST`.
+  - Validate `Origin`/`Referer` on all POST; preflight responses locked down.
+
+- Security headers/CSP (example):
+```txt
+Content-Security-Policy: default-src 'self'; connect-src 'self' {OLLAMA_BASE_URL}; frame-ancestors 'none'; object-src 'none'; img-src 'self' data: blob:; style-src 'self' 'unsafe-inline'; script-src 'self'
+Referrer-Policy: strict-origin-when-cross-origin
+Permissions-Policy: camera=(), microphone=(), geolocation=()
+X-Content-Type-Options: nosniff
+X-Frame-Options: DENY
+Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+```
+
+- SSE runtime constraints:
+  - Node runtime only; `dynamic='force-dynamic'`; disable body parsing; flush headers immediately; heartbeat comment every 20–30s; close on client abort; backpressure handling by chunking tokens.
+
+- Logging/PII controls:
+  - Do not log raw answers; redact with `"[redacted]"`; include `requestId` and timing; debug logs gated by `DEBUG=1`.
+
+- Idempotency:
+  - Read `status`; if `completed`, skip writes and emit `warning`.
+  - Optional `Idempotency-Key` header to deduplicate writes within 10 minutes in MemoryCache/Redis.
+
+- Environment variables reference (.env.example with placeholders only):
+```env
+# Core
+NEXT_PUBLIC_SUPABASE_URL=https://YOUR_PROJECT.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+OLLAMA_BASE_URL=http://localhost:11434
+SENTRY_DSN=
+
+# Optional infra
+RATE_LIMIT_REDIS_URL=redis://localhost:6379
+CORS_ALLOWLIST=http://localhost:3000,https://yourdomain.com
+
+# Optional remote fallback
+OPENROUTER_API_KEY=
+OPENROUTER_BASE_URL=https://openrouter.ai/api/v1
+```
+</PRD>
+

@@ -46,13 +46,11 @@ export function DashboardFilters({ className }: DashboardFiltersProps): JSX.Elem
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
     >
-      <div className="bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-slate-200 dark:border-slate-700 p-6">
-        <div className="flex items-center justify-between mb-6">
+      <div className="glass-card p-6">
+        <div className="mb-6 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Filter className="w-5 h-5 text-slate-600 dark:text-slate-400" />
-            <h3 className="text-lg font-semibold text-foreground">
-              Dashboard Filters
-            </h3>
+            <Filter className="h-5 w-5 text-slate-600 dark:text-slate-400" />
+            <h3 className="text-foreground text-lg font-semibold">Dashboard Filters</h3>
           </div>
           <Button
             variant="outline"
@@ -66,31 +64,27 @@ export function DashboardFilters({ className }: DashboardFiltersProps): JSX.Elem
 
         {/* Date Range Filter */}
         <div className="mb-6">
-          <div className="flex items-center gap-2 mb-3">
-            <Calendar className="w-4 h-4 text-slate-600 dark:text-slate-400" />
-            <h4 className="font-medium text-foreground">Date Range</h4>
+          <div className="mb-3 flex items-center gap-2">
+            <Calendar className="h-4 w-4 text-slate-600 dark:text-slate-400" />
+            <h4 className="text-foreground font-medium">Date Range</h4>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <div>
-              <label className="block text-sm font-medium text-foreground mb-1">
-                Start Date
-              </label>
+              <label className="text-foreground mb-1 block text-sm font-medium">Start Date</label>
               <input
                 type="date"
                 value={filters.dateRange.start}
                 onChange={(e) => updateDateRange('start', e.target.value)}
-                className="glass w-full px-3 py-2 rounded-md text-foreground placeholder:text-foreground/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:opacity-50"
+                className="glass text-foreground placeholder:text-foreground/50 focus-visible:ring-primary/50 focus-visible:ring-offset-background w-full rounded-md px-3 py-2 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:opacity-50"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-foreground mb-1">
-                End Date
-              </label>
+              <label className="text-foreground mb-1 block text-sm font-medium">End Date</label>
               <input
                 type="date"
                 value={filters.dateRange.end}
                 onChange={(e) => updateDateRange('end', e.target.value)}
-                className="glass w-full px-3 py-2 rounded-md text-foreground placeholder:text-foreground/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:opacity-50"
+                className="glass text-foreground placeholder:text-foreground/50 focus-visible:ring-primary/50 focus-visible:ring-offset-background w-full rounded-md px-3 py-2 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:opacity-50"
               />
             </div>
           </div>
@@ -98,22 +92,22 @@ export function DashboardFilters({ className }: DashboardFiltersProps): JSX.Elem
 
         {/* Module Status Filter */}
         <div className="mb-6">
-          <h4 className="font-medium text-foreground mb-3">Module Status</h4>
+          <h4 className="text-foreground mb-3 font-medium">Module Status</h4>
           <div className="flex flex-wrap gap-2">
             {['not_started', 'in_progress', 'completed'].map((status) => (
               <button
                 key={status}
                 onClick={() => toggleFilter('status', status)}
-                className={`px-3 py-1 rounded-full text-sm font-medium transition-colors ${
+                className={`rounded-full px-3 py-1 text-sm font-medium transition-colors ${
                   filters.status.includes(status)
                     ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200'
-                    : 'bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-600'
+                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-slate-700 dark:text-slate-400 dark:hover:bg-slate-600'
                 }`}
               >
                 {status.replace('_', ' ').replace(/\b\w/g, (l) => l.toUpperCase())}
                 {filters.status.includes(status) && (
                   <X
-                    className="w-3 h-3 ml-1 inline"
+                    className="ml-1 inline h-3 w-3"
                     onClick={(e) => {
                       e.stopPropagation();
                       clearFilter('status', status);
@@ -127,22 +121,22 @@ export function DashboardFilters({ className }: DashboardFiltersProps): JSX.Elem
 
         {/* Categories Filter */}
         <div className="mb-6">
-          <h4 className="font-medium text-foreground mb-3">Categories</h4>
+          <h4 className="text-foreground mb-3 font-medium">Categories</h4>
           <div className="flex flex-wrap gap-2">
             {['Technical', 'Business', 'Design', 'Marketing', 'Operations'].map((category) => (
               <button
                 key={category}
                 onClick={() => toggleFilter('categories', category)}
-                className={`px-3 py-1 rounded-full text-sm font-medium transition-colors ${
+                className={`rounded-full px-3 py-1 text-sm font-medium transition-colors ${
                   filters.categories.includes(category)
                     ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
-                    : 'bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-600'
+                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-slate-700 dark:text-slate-400 dark:hover:bg-slate-600'
                 }`}
               >
                 {category}
                 {filters.categories.includes(category) && (
                   <X
-                    className="w-3 h-3 ml-1 inline"
+                    className="ml-1 inline h-3 w-3"
                     onClick={(e) => {
                       e.stopPropagation();
                       clearFilter('categories', category);
@@ -155,26 +149,26 @@ export function DashboardFilters({ className }: DashboardFiltersProps): JSX.Elem
         </div>
 
         {/* Settings */}
-        <div className="border-t border-slate-200 dark:border-slate-700 pt-6">
-          <h4 className="font-medium text-foreground mb-3">Display Settings</h4>
+        <div className="border-t border-slate-200 pt-6 dark:border-slate-700">
+          <h4 className="text-foreground mb-3 font-medium">Display Settings</h4>
           <div className="space-y-4">
             <label className="flex items-center gap-2">
               <input
                 type="checkbox"
                 checked={settings.showAnimations}
                 onChange={(e) => setSettings({ showAnimations: e.target.checked })}
-                className="glass h-4 w-4 rounded text-primary focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                className="glass text-primary focus-visible:ring-primary/50 focus-visible:ring-offset-background h-4 w-4 rounded focus-visible:ring-2 focus-visible:ring-offset-2"
               />
-              <span className="text-sm text-foreground">Show animations</span>
+              <span className="text-foreground text-sm">Show animations</span>
             </label>
             <label className="flex items-center gap-2">
               <input
                 type="checkbox"
                 checked={settings.theme === 'dark'}
                 onChange={(e) => setSettings({ theme: e.target.checked ? 'dark' : 'light' })}
-                className="glass h-4 w-4 rounded text-primary focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                className="glass text-primary focus-visible:ring-primary/50 focus-visible:ring-offset-background h-4 w-4 rounded focus-visible:ring-2 focus-visible:ring-offset-2"
               />
-              <span className="text-sm text-foreground">Dark theme</span>
+              <span className="text-foreground text-sm">Dark theme</span>
             </label>
           </div>
         </div>

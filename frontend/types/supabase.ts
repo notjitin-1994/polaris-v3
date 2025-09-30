@@ -55,6 +55,7 @@ export interface Database {
           status: BlueprintStatus;
           created_at: string;
           updated_at: string;
+          title: string | null;
         };
         Insert: {
           id?: string;
@@ -69,6 +70,7 @@ export interface Database {
           status?: BlueprintStatus;
           created_at?: string;
           updated_at?: string;
+          title?: string | null;
         };
         Update: {
           static_answers?: Json;
@@ -79,6 +81,7 @@ export interface Database {
           blueprint_markdown?: string | null;
           status?: BlueprintStatus;
           updated_at?: string;
+          title?: string | null;
         };
         Relationships: [
           {

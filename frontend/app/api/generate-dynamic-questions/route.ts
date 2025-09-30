@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getSupabaseServerClient } from '@/lib/supabase/server';
 import { OllamaClient } from '@/lib/ollama/client';
 import { generationInputSchema } from '@/lib/ollama/schema';
-import { blueprintFallbackService } from '@/lib/fallbacks/blueprintFallbacks';
 import { mapOllamaToFormSchema } from '@/lib/ollama/schemaMapper';
 import { z } from 'zod';
 
@@ -24,12 +23,17 @@ export async function POST(request: NextRequest): Promise<Response> {
     // Get the blueprint with static answers
     const { data: blueprint, error: blueprintError } = await supabase
       .from('blueprint_generator')
-      .select('id, static_answers, user_id')
+      .select('id, static_answers, dynamic_questions, user_id, status')
       .eq('id', blueprintId)
       .single();
 
     if (blueprintError || !blueprint) {
       return NextResponse.json({ error: 'Blueprint not found' }, { status: 404 });
+    }
+
+    // If already generating or questions exist, short-circuit
+    if (blueprint.status === 'generating') {
+      return NextResponse.json({ success: true, message: 'Already generating' });
     }
 
     // Check if dynamic questions already exist
@@ -46,35 +50,88 @@ export async function POST(request: NextRequest): Promise<Response> {
     }
 
     // Extract static answers and convert to GenerationInput format.
-    // Tests are written against legacy keys (assessmentType, deliveryMethod, etc.).
+    // Prefer new canonical fields (role, organization, learningGap, resources, constraints),
+    // fallback to legacy keys used in earlier versions and tests.
     const sa = (blueprint.static_answers || {}) as Record<string, unknown>;
-    const legacyInput = {
-      assessmentType: (sa.assessmentType as string) ?? (sa.assessment_type as string) ?? 'Formative',
-      deliveryMethod: (sa.deliveryMethod as string) ?? (sa.delivery_method as string) ?? 'Online',
-      duration: (sa.duration as string) ?? '60',
-      learningObjectives: Array.isArray(sa.learningObjectives)
-        ? (sa.learningObjectives as string[])
-        : typeof sa.learningObjective === 'string'
-        ? [sa.learningObjective as string]
-        : ['Learn React'],
-      targetAudience: (sa.targetAudience as string) ?? 'Developers',
-      numSections: 3,
-      questionsPerSection: 4,
+
+    const asString = (v: unknown): string => {
+      if (typeof v === 'string') return v;
+      if (Array.isArray(v)) return v.filter((item) => typeof item === 'string').join(', ');
+      return '';
+    };
+    const firstNonEmpty = (...vals: unknown[]): string => {
+      for (const v of vals) {
+        const s = asString(v).trim();
+        if (s.length > 0) return s;
+      }
+      return '';
     };
 
-    // Validate and normalize to canonical shape via union+transform
-    const validatedInput = generationInputSchema.parse(legacyInput);
+    // Build canonical input, deriving from legacy fields and providing safe fallbacks
+    const canonicalInput = {
+      role: firstNonEmpty(sa.role, 'Learning Professional'),
+      organization: firstNonEmpty(
+        sa.organization,
+        sa.targetAudience,
+        sa.target_audience,
+        'Organization'
+      ),
+      learningGap: firstNonEmpty(
+        sa.learningGap,
+        Array.isArray(sa.learningObjectives)
+          ? (sa.learningObjectives as string[]).join(', ')
+          : asString(sa.learningObjective),
+        'Learning gap not specified'
+      ),
+      resources: firstNonEmpty(
+        sa.resources,
+        sa.deliveryMethod,
+        sa.delivery_method,
+        'Resources not specified'
+      ),
+      constraints: firstNonEmpty(
+        sa.constraints,
+        `${asString(sa.assessmentType) || asString(sa.assessment_type)} ${asString(sa.duration)}`,
+        'Constraints not specified'
+      ),
+      numSections: 5,
+      questionsPerSection: 7,
+    } as const;
 
-    // Generate dynamic questions using Ollama with fallback
+    const input = canonicalInput;
+
+    // Validate and normalize to canonical shape via union+transform
+    const validatedInput = generationInputSchema.parse(input);
+
+    // Mark as generating immediately for dashboard routing
+    await supabase
+      .from('blueprint_generator')
+      .update({ status: 'generating' })
+      .eq('id', blueprintId);
+
+    // Generate dynamic questions using Ollama; no fallbacks allowed
     let dynamicQuestions;
     try {
       const client = new OllamaClient();
-      // Tests expect legacy-shaped input to be passed to generateQuestions
-      dynamicQuestions = await client.generateQuestions(legacyInput as any);
+      dynamicQuestions = await client.generateQuestions(validatedInput);
     } catch (error) {
       console.error('Error generating dynamic questions with Ollama:', error);
-      console.log('Falling back to default questions');
-      dynamicQuestions = await blueprintFallbackService.handleOllamaDynamicQuestionsFailure();
+      // Reset status so the user can retry generation
+      await supabase.from('blueprint_generator').update({ status: 'draft' }).eq('id', blueprintId);
+      return NextResponse.json(
+        { error: 'Failed to generate dynamic questions. Please try again.' },
+        { status: 502 }
+      );
+    }
+
+    // Validate result has sections/questions
+    const maybeSections = (dynamicQuestions as any).sections ?? dynamicQuestions;
+    if (!Array.isArray(maybeSections) || maybeSections.length === 0) {
+      await supabase.from('blueprint_generator').update({ status: 'draft' }).eq('id', blueprintId);
+      return NextResponse.json(
+        { error: 'No dynamic questions generated. Please try again.' },
+        { status: 422 }
+      );
     }
 
     // Map Ollama questions to form schema
@@ -107,14 +164,13 @@ export async function POST(request: NextRequest): Promise<Response> {
       dynamicQuestions: (dynamicQuestions as any).sections ?? dynamicQuestions,
       message: 'Dynamic questions generated successfully',
     });
-
   } catch (error) {
     console.error('Error generating dynamic questions:', error);
 
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { error: 'Invalid request data', details: error.flatten() },
-        { status: 400 },
+        { status: 400 }
       );
     }
 

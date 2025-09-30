@@ -52,14 +52,8 @@ export const NumberInput: React.FC<BaseInputProps> = ({
         aria-describedby={question.helpText ? `${inputId}-help` : undefined}
       />
 
-      {question.helpText && (
-        <p id={`${inputId}-help`} className="text-sm text-foreground/60 mt-1">
-          {question.helpText}
-        </p>
-      )}
-
       {(question.min !== undefined || question.max !== undefined) && (
-        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+        <p className="mt-1 text-xs text-white/60">
           {question.min !== undefined && question.max !== undefined
             ? `Range: ${question.min} - ${question.max}`
             : question.min !== undefined

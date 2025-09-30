@@ -45,35 +45,50 @@ vi.mock('@/lib/fallbacks/blueprintFallbacks', () => ({
     }),
   },
 }));
-vi.mock('@/lib/db/blueprints', () => ({
-  blueprintService: {
-    saveBlueprint: vi.fn(),
-  },
+// Mock server-side supabase/session helpers to avoid Next cookies in test env
+vi.mock('@/lib/supabase/server', () => ({
+  getSupabaseServerClient: vi.fn(async () => ({
+    from: () => ({
+      select: () => ({
+        eq: () => ({
+          eq: () => ({
+            single: async () => ({
+              data: { id: 'bid', user_id: 'test-user-id', static_answers: {}, dynamic_answers: {} },
+              error: null,
+            }),
+          }),
+        }),
+      }),
+    }),
+  })),
+  getServerSession: vi.fn(async () => ({ session: { user: { id: 'test-user-id' } }, error: null })),
 }));
-vi.mock('@/lib/auth/sessionManager', () => ({
-  getSession: vi.fn(),
+// Mock server blueprint service to avoid DB writes in tests
+vi.mock('@/lib/db/blueprints.server', () => ({
+  createServerBlueprintService: vi.fn(async () => ({
+    hasCompletedGeneration: vi.fn(async () => false),
+    saveBlueprint: vi.fn(async () => ({ id: 'saved-id' })),
+  })),
 }));
 
 // Import mocked modules after mocking
 import { OllamaClient } from '@/lib/ollama/client';
 import { answerAggregationService } from '@/lib/services/answerAggregation';
-import { getSession } from '@/lib/auth/sessionManager';
-// import { blueprintFallbackService } from '@/lib/fallbacks/blueprintFallbacks';
+import { getServerSession } from '@/lib/supabase/server';
 
 // Create mock instances
 const mockedOllamaClient = vi.mocked(OllamaClient);
-const mockedGetSession = vi.mocked(getSession);
+const mockedGetServerSession = vi.mocked(getServerSession);
 
 describe('/api/generate-blueprint', () => {
   beforeEach(() => {
     vi.clearAllMocks();
 
     // Setup default mocks
-    getSession.mockResolvedValue({
-      user: { id: 'test-user-id' },
-      accessToken: 'test-token',
-      refreshToken: 'test-refresh-token',
-    });
+    mockedGetServerSession.mockResolvedValue({
+      session: { user: { id: 'test-user-id' } },
+      error: null as any,
+    } as any);
 
     answerAggregationService.getAggregatedAnswers.mockResolvedValue({
       staticResponses: [
@@ -116,7 +131,7 @@ describe('/api/generate-blueprint', () => {
     mockedOllamaClient.mockImplementation(() => mockInstance as unknown as OllamaClient);
 
     // Mock session as null/unauthenticated
-    mockedGetSession.mockResolvedValue(null);
+    mockedGetServerSession.mockResolvedValueOnce({ session: null, error: null } as any);
 
     const request = new NextRequest('http://localhost:3000/api/generate-blueprint', {
       method: 'POST',
@@ -148,7 +163,7 @@ describe('/api/generate-blueprint', () => {
     const mockStream = new ReadableStream({
       start(controller) {
         controller.enqueue(
-          new TextEncoder().encode('{"done": false, "message": {"content": "test"}}'),
+          new TextEncoder().encode('{"done": false, "message": {"content": "test"}}')
         );
         controller.enqueue(new TextEncoder().encode('{"done": true}'));
         controller.close();
@@ -195,7 +210,7 @@ describe('/api/generate-blueprint', () => {
     const mockStream = new ReadableStream({
       start(controller) {
         controller.enqueue(
-          new TextEncoder().encode('{"done": false, "message": {"content": "invalid json"}}'),
+          new TextEncoder().encode('{"done": false, "message": {"content": "invalid json"}}')
         );
         controller.enqueue(new TextEncoder().encode('{"done": true}'));
         controller.close();

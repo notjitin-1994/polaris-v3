@@ -3,26 +3,18 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils';
 
 const buttonVariants = cva(
-  'inline-flex items-center justify-center whitespace-nowrap rounded-lg text-sm font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:pointer-events-none disabled:opacity-50',
+  'inline-flex items-center justify-center whitespace-nowrap rounded-lg text-sm font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary/50 focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:pointer-events-none disabled:opacity-50',
   {
     variants: {
       variant: {
-        primary: 
-          'glass px-6 py-2.5 text-white bg-secondary hover:bg-secondary-dark focus-visible:ring-secondary/50',
+        primary:
+          'px-6 py-2.5 bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm hover:shadow',
         secondary:
-          'glass px-6 py-2.5 text-foreground hover:glass-strong focus-visible:ring-primary/50',
-        ghost: 
-          'px-6 py-2.5 text-foreground hover:glass focus-visible:ring-primary/50',
-        // Keep destructive for compatibility
-        destructive: 
-          'glass px-6 py-2.5 bg-error text-white hover:bg-error/90 focus-visible:ring-error/50',
-        // Legacy variants for backward compatibility - will be removed in subtask 4.5
-        default: 
-          'glass px-6 py-2.5 text-white bg-secondary hover:bg-secondary-dark focus-visible:ring-secondary/50',
-        outline:
-          'glass px-6 py-2.5 border border-foreground/20 text-foreground hover:glass-strong focus-visible:ring-primary/50',
-        link: 
-          'text-foreground underline-offset-4 hover:underline px-2',
+          'px-6 py-2.5 bg-secondary text-secondary-foreground hover:bg-secondary/90 shadow-sm hover:shadow',
+        ghost: 'px-6 py-2.5 text-foreground hover:bg-foreground/5',
+        destructive: 'px-6 py-2.5 bg-error text-white hover:bg-error/90 shadow-sm hover:shadow',
+        outline: 'px-6 py-2.5 border border-neutral-300 text-foreground hover:bg-foreground/5',
+        link: 'text-primary underline-offset-4 hover:underline px-2',
       },
       size: {
         sm: 'text-xs px-4 py-2',
@@ -35,7 +27,7 @@ const buttonVariants = cva(
       variant: 'primary',
       size: 'md',
     },
-  },
+  }
 );
 
 export interface ButtonProps
@@ -47,7 +39,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     return (
       <button ref={ref} className={cn(buttonVariants({ variant, size }), className)} {...props} />
     );
-  },
+  }
 );
 
 Button.displayName = 'Button';

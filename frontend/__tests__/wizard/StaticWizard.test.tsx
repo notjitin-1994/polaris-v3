@@ -36,40 +36,39 @@ describe('Static Questions Wizard', () => {
   it('validates fields and navigates between steps', async () => {
     render(<StepWizard />, { wrapper: Wrapper });
 
-    // On step 1: Learning Objective - submit without filling to trigger validation
+    // On step 1: Role - submit without filling to trigger validation
     fireEvent.click(screen.getByRole('button', { name: /next/i }));
-    expect(await screen.findByText(/at least 10 characters/i)).toBeInTheDocument();
+    expect(await screen.findByText(/at least 2 characters/i)).toBeInTheDocument();
 
     // Fill valid value
-    fireEvent.change(screen.getByLabelText(/learning objective/i), {
-      target: { value: 'Understand Redux deeply' },
+    fireEvent.change(screen.getByLabelText(/what is your role/i), {
+      target: { value: 'Instructional Designer' },
     });
     fireEvent.click(screen.getByRole('button', { name: /next/i }));
     // Wait for step 2 to mount before validating it
-    await screen.findByLabelText(/target audience/i);
+    await screen.findByLabelText(/organization/i);
 
-    // Step 2: Target audience validation on submit
+    // Step 2: Organization validation on submit
     fireEvent.click(screen.getByRole('button', { name: /next/i }));
-    await waitFor(() => expect(screen.getByText(/at least 5 characters/i)).toBeInTheDocument());
-    fireEvent.change(screen.getByLabelText(/target audience/i), {
-      target: { value: 'Frontend devs' },
+    await waitFor(() => expect(screen.getByText(/at least 2 characters/i)).toBeInTheDocument());
+    fireEvent.change(screen.getByLabelText(/organization/i), {
+      target: { value: 'Global L&D' },
     });
     fireEvent.click(screen.getByRole('button', { name: /next/i }));
 
-    // Step 3: Delivery method - wait for radios, pick a value and continue
-    const onlineRadio = await screen.findByDisplayValue('online');
-    fireEvent.click(onlineRadio);
+    // Step 3: Learning Gap - fill and continue
+    const learningGapInput = await screen.findByLabelText(/identified learning gap/i);
+    fireEvent.change(learningGapInput, {
+      target: { value: 'Learners lack foundation in data-driven design' },
+    });
     fireEvent.click(screen.getByRole('button', { name: /next/i }));
 
-    // Step 4: Duration - wait for input and provide value
-    const durationInput = await screen.findByLabelText(
-      /how long should this learning experience be/i,
-    );
-    fireEvent.change(durationInput, { target: { value: '3' } });
+    // Step 4: Resources - wait for input and provide value
+    const resourcesInput = await screen.findByLabelText(/resources and budgets/i);
+    fireEvent.change(resourcesInput, { target: { value: '2 IDs, LMS, $15k' } });
     fireEvent.click(screen.getByRole('button', { name: /next/i }));
 
-    // Step 4: Duration - check that we successfully navigated to step 4
-    // The wizard should be at 80% completion (step 4 of 5)
+    // Step 5: Constraints - check progress indicator appears updated
     expect(screen.getByText(/80% complete/i)).toBeInTheDocument();
     expect(screen.getByText(/step 4 of 5/i)).toBeInTheDocument();
 

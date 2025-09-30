@@ -74,7 +74,7 @@ describeMaybe('BlueprintService (integration)', () => {
       testUserId,
       testBlueprint,
       '# Test Blueprint\n\nTest overview',
-      aggregatedAnswers,
+      aggregatedAnswers
     );
 
     expect(savedBlueprint.user_id).toBe(testUserId);
@@ -110,7 +110,7 @@ describeMaybe('BlueprintService (integration)', () => {
       testUserId,
       testBlueprint,
       '# Version Test Blueprint\n\nVersion test overview',
-      aggregatedAnswers,
+      aggregatedAnswers
     );
 
     // Update the blueprint (should create version 2)
@@ -124,7 +124,7 @@ describeMaybe('BlueprintService (integration)', () => {
       updatedBlueprint,
       '# Version Test Blueprint\n\nUpdated version test overview',
       aggregatedAnswers,
-      firstVersion.id,
+      firstVersion.id
     );
 
     // Get the latest version
@@ -159,7 +159,7 @@ describeMaybe('BlueprintService (integration)', () => {
       testUserId,
       testBlueprint,
       '# Specific Version Blueprint\n\nSpecific version overview',
-      aggregatedAnswers,
+      aggregatedAnswers
     );
 
     // Update the blueprint (should create version 2)
@@ -173,7 +173,7 @@ describeMaybe('BlueprintService (integration)', () => {
       updatedBlueprint,
       '# Specific Version Blueprint\n\nUpdated specific version overview',
       aggregatedAnswers,
-      firstVersion.id,
+      firstVersion.id
     );
 
     // Get the first version specifically
@@ -208,7 +208,7 @@ describeMaybe('BlueprintService (integration)', () => {
       testUserId,
       testBlueprint,
       '# All Versions Blueprint\n\nAll versions overview',
-      aggregatedAnswers,
+      aggregatedAnswers
     );
 
     // Update the blueprint twice (should create versions 2 and 3)
@@ -222,7 +222,7 @@ describeMaybe('BlueprintService (integration)', () => {
       updatedBlueprint1,
       '# All Versions Blueprint\n\nUpdated all versions overview 1',
       aggregatedAnswers,
-      firstVersion.id,
+      firstVersion.id
     );
 
     const updatedBlueprint2: Blueprint = {
@@ -235,7 +235,7 @@ describeMaybe('BlueprintService (integration)', () => {
       updatedBlueprint2,
       '# All Versions Blueprint\n\nUpdated all versions overview 2',
       aggregatedAnswers,
-      firstVersion.id,
+      firstVersion.id
     );
 
     // Get all versions
@@ -276,12 +276,54 @@ describeMaybe('BlueprintService (integration)', () => {
         'invalid-user-id',
         testBlueprint,
         '# Error Test Blueprint\n\nError test overview',
-        aggregatedAnswers,
-      ),
+        aggregatedAnswers
+      )
     ).rejects.toThrow();
 
     // Test getBlueprint with non-existent ID
     const nonExistent = await blueprintService.getBlueprint('non-existent-id');
     expect(nonExistent).toBeNull();
+  });
+
+  it('should create distinct draft blueprints and not mutate previous drafts', async () => {
+    // Create first draft
+    const { data: draft1, error: err1 } = await serviceClient
+      .from('blueprint_generator')
+      .insert({ user_id: testUserId, status: 'draft', static_answers: { role: 'Alpha' } })
+      .select()
+      .single();
+    if (err1 || !draft1) throw err1 ?? new Error('Failed to insert first draft');
+
+    // Create second draft
+    const { data: draft2, error: err2 } = await serviceClient
+      .from('blueprint_generator')
+      .insert({ user_id: testUserId, status: 'draft', static_answers: { role: 'Beta' } })
+      .select()
+      .single();
+    if (err2 || !draft2) throw err2 ?? new Error('Failed to insert second draft');
+
+    // Ensure distinct UUIDs
+    expect(draft1.id).toBeTypeOf('string');
+    expect(draft2.id).toBeTypeOf('string');
+    expect(draft1.id).not.toBe(draft2.id);
+
+    // Update second draft to simulate autosave and ensure first remains unchanged
+    const { error: updateErr } = await serviceClient
+      .from('blueprint_generator')
+      .update({ static_answers: { role: 'Gamma' } })
+      .eq('id', draft2.id);
+    if (updateErr) throw updateErr;
+
+    const { data: firstRow, error: fetchErr } = await serviceClient
+      .from('blueprint_generator')
+      .select('id, static_answers')
+      .eq('id', draft1.id)
+      .single();
+    if (fetchErr || !firstRow) throw fetchErr ?? new Error('Failed to fetch first draft');
+
+    expect((firstRow.static_answers as any).role).toBe('Alpha');
+
+    // Cleanup
+    await serviceClient.from('blueprint_generator').delete().in('id', [draft1.id, draft2.id]);
   });
 });

@@ -3,8 +3,8 @@ import {
   generationInputSchema,
   type DynamicQuestions,
   type GenerationInput,
-  blueprintSchema,
-  Blueprint,
+  fullBlueprintSchema,
+  type FullBlueprint,
 } from '@/lib/ollama/schema';
 import {
   buildSystemPrompt,
@@ -52,6 +52,10 @@ export class OllamaClient {
   }
 
   private async withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
+    // Treat non-positive timeout as "no timeout"
+    if (!(ms > 0)) {
+      return promise;
+    }
     let timeoutId: ReturnType<typeof setTimeout> | undefined;
     const timeout = new Promise<never>((_resolve, reject) => {
       timeoutId = setTimeout(() => reject(new TimeoutError()), ms);
@@ -66,17 +70,16 @@ export class OllamaClient {
 
   private async postJson(path: string, body: unknown, stream = false): Promise<Response> {
     const url = `${this.baseUrl}${path}`;
-    return this.withTimeout(
-      this.fetchImpl(url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body),
-        // Important for streaming to ensure connection isn't closed prematurely
-        // @ts-expect-error duplex property is not in the standard fetch types but is supported by Node.js
-        duplex: 'half',
-      }),
-      stream ? 0 : this.timeoutMs, // No timeout for streaming, handled by client
-    );
+    const requestPromise = this.fetchImpl(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+      // Important for streaming to ensure connection isn't closed prematurely
+      // @ts-expect-error duplex property is not in the standard fetch types but is supported by Node.js
+      duplex: 'half',
+    });
+    // For streaming requests, do not apply a timeout to avoid premature cancellation
+    return stream ? requestPromise : this.withTimeout(requestPromise, this.timeoutMs);
   }
 
   private async retry<T>(fn: () => Promise<T>, attempts = 3): Promise<T> {
@@ -99,6 +102,7 @@ export class OllamaClient {
     if (!parse.success) {
       throw new ValidationError('Invalid generation input', parse.error);
     }
+    const canonicalInput = parse.data; // Use canonical (transformed) shape for prompts
 
     // Build chat payload for Ollama's /api/chat endpoint
     const payload = {
@@ -117,11 +121,11 @@ export class OllamaClient {
       num_predict: this.modelConfig.maxTokens,
       messages: [
         { role: 'system', content: buildSystemPrompt() },
-        { role: 'user', content: buildUserPrompt(input) },
+        { role: 'user', content: buildUserPrompt(canonicalInput) },
       ],
     } as const;
 
-    const responseText = await this.retry(async () => {
+    let responseText = await this.retry(async () => {
       const res = await this.postJson('/api/chat', payload);
       if (!res.ok) {
         throw new ServiceUnavailableError(`Ollama chat failed with ${res.status}`);
@@ -134,23 +138,67 @@ export class OllamaClient {
       return content;
     });
 
-    // Extract JSON from potential markdown fences
-    const jsonString = extractJson(responseText);
-    let json: unknown;
+    // If first parse fails due to common trailing issues, attempt a stricter re-prompt once
     try {
-      json = JSON.parse(jsonString);
-    } catch (error: unknown) {
-      throw new ValidationError('LLM returned invalid JSON', error);
+      const jsonString = extractJson(responseText);
+      let json: unknown;
+      try {
+        json = JSON.parse(jsonString);
+      } catch {
+        const repaired = repairJsonString(jsonString);
+        json = JSON.parse(repaired);
+      }
+      const validated = dynamicQuestionSchema.safeParse(json);
+      if (!validated.success) {
+        throw new ValidationError('LLM JSON failed schema validation', validated.error);
+      }
+      return validated.data;
+    } catch (e) {
+      // Second attempt: ask the model to output ONLY valid JSON without commentary
+      const strictPayload = {
+        ...payload,
+        messages: [
+          {
+            role: 'system',
+            content: `${buildSystemPrompt()}\n\nReturn ONLY valid JSON. No commentary. No markdown fences.`,
+          },
+          {
+            role: 'user',
+            content: `${buildUserPrompt(canonicalInput)}\n\nIMPORTANT: Output only a JSON object. No extra text.`,
+          },
+        ],
+      } as const;
+      const res2 = await this.postJson('/api/chat', strictPayload);
+      if (!res2.ok) {
+        throw new ServiceUnavailableError(`Ollama strict chat failed with ${res2.status}`);
+      }
+      const data2 = (await res2.json()) as
+        | { message?: { content?: string } }
+        | { response?: string };
+      const content2 = 'message' in data2 ? data2.message?.content : data2.response;
+      if (typeof content2 !== 'string' || content2.trim().length === 0) {
+        throw new ServiceUnavailableError('Empty response from Ollama (strict)');
+      }
+      responseText = content2;
+      const jsonString2 = extractJson(responseText);
+      let json2: unknown;
+      try {
+        json2 = JSON.parse(jsonString2);
+      } catch {
+        const repaired2 = repairJsonString(jsonString2);
+        json2 = JSON.parse(repaired2);
+      }
+      const validated2 = dynamicQuestionSchema.safeParse(json2);
+      if (!validated2.success) {
+        throw new ValidationError('LLM JSON failed schema validation (strict)', validated2.error);
+      }
+      return validated2.data;
     }
 
-    const validated = dynamicQuestionSchema.safeParse(json);
-    if (!validated.success) {
-      throw new ValidationError('LLM JSON failed schema validation', validated.error);
-    }
-    return validated.data;
+    // Unreachable
   }
 
-  async generateBlueprint(systemContext: string, userPrompt: string): Promise<Blueprint> {
+  async generateBlueprint(systemContext: string, userPrompt: string): Promise<FullBlueprint> {
     const payload = {
       model: this.modelConfig.model,
       format: 'json',
@@ -186,7 +234,7 @@ export class OllamaClient {
       throw new ValidationError('LLM returned invalid JSON for blueprint', error);
     }
 
-    const validated = blueprintSchema.safeParse(json);
+    const validated = fullBlueprintSchema.safeParse(json);
     if (!validated.success) {
       throw new ValidationError('LLM Blueprint JSON failed schema validation', validated.error);
     }
@@ -195,7 +243,7 @@ export class OllamaClient {
 
   public async streamBlueprint(
     systemContext: string,
-    userPrompt: string,
+    userPrompt: string
   ): Promise<ReadableStream<Uint8Array>> {
     const payload = {
       model: this.modelConfig.model,
@@ -230,5 +278,40 @@ export class OllamaClient {
 function extractJson(text: string): string {
   const fenceMatch = text.match(/```(?:json)?\n([\s\S]*?)\n```/i);
   if (fenceMatch && fenceMatch[1]) return fenceMatch[1].trim();
-  return text.trim();
+  const trimmed = text.trim();
+  // Fallback: grab substring between first '{' and last '}'
+  const start = trimmed.indexOf('{');
+  const end = trimmed.lastIndexOf('}');
+  if (start !== -1 && end !== -1 && end > start) {
+    return trimmed.substring(start, end + 1).trim();
+  }
+  return trimmed;
+}
+
+// Best-effort cleanup for JSON-like strings from LLMs
+function repairJsonString(input: string): string {
+  let s = input
+    // Normalize Windows newlines
+    .replace(/\r\n/g, '\n')
+    // Remove single-line comments
+    .replace(/^\s*\/\/.*$/gm, '')
+    // Remove block comments
+    .replace(/\/\*[\s\S]*?\*\//g, '')
+    // Replace smart quotes with straight quotes
+    .replace(/[\u201C\u201D\u201E\u201F]/g, '"')
+    .replace(/[\u2018\u2019\u201A\u201B]/g, "'")
+    // Remove trailing commas before } or ]
+    .replace(/,\s*([}\]])/g, '$1')
+    // Remove stray backticks
+    .replace(/`+/g, '')
+    .trim();
+
+  // If multiple JSON objects are concatenated, take the outermost
+  const start = s.indexOf('{');
+  const end = s.lastIndexOf('}');
+  if (start !== -1 && end !== -1 && end > start) {
+    s = s.substring(start, end + 1);
+  }
+
+  return s;
 }

@@ -2,25 +2,54 @@
 
 import React, { useEffect, useState, useCallback } from 'react';
 import Link from 'next/link';
-import { Plus, FileText, Clock, CheckCircle, AlertCircle } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import {
+  Plus,
+  FileText,
+  Clock,
+  CheckCircle,
+  AlertCircle,
+  Edit,
+  ClipboardList,
+  ArrowRight,
+  Wrench,
+  BookOpen,
+  BarChart3,
+} from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { RenameDialog } from '@/components/ui/RenameDialog';
 import ProtectedRoute from '@/components/auth/ProtectedRoute';
-import { AuthProvider, useAuth } from '@/contexts/AuthContext';
-import { blueprintService } from '@/lib/db/blueprints';
+import { useAuth } from '@/contexts/AuthContext';
+import { createBrowserBlueprintService } from '@/lib/db/blueprints.client';
 import { BlueprintRow } from '@/lib/db/blueprints';
-import { DarkModeToggle } from '@/components/theme';
+import { getSupabaseBrowserClient } from '@/lib/supabase/client';
+import { SwirlBackground } from '@/components/layout/SwirlBackground';
 
 function DashboardContent() {
-  const { user } = useAuth();
+  const { user, signOut } = useAuth();
   const [blueprints, setBlueprints] = useState<BlueprintRow[]>([]);
   const [loading, setLoading] = useState(true);
-  const [questionnaireCompletion, setQuestionnaireCompletion] = useState<Record<string, boolean>>({});
+  const [questionnaireCompletion, setQuestionnaireCompletion] = useState<Record<string, boolean>>(
+    {}
+  );
+  const [creating, setCreating] = useState(false);
+  const [renamingBlueprint, setRenamingBlueprint] = useState<BlueprintRow | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const router = useRouter();
+
+  const BLUEPRINTS_PER_PAGE = 10;
+  const totalPages = Math.ceil(blueprints.length / BLUEPRINTS_PER_PAGE);
+  const startIndex = (currentPage - 1) * BLUEPRINTS_PER_PAGE;
+  const endIndex = startIndex + BLUEPRINTS_PER_PAGE;
+  const paginatedBlueprints = blueprints.slice(startIndex, endIndex);
 
   const checkQuestionnaireCompletion = useCallback(async (blueprintId: string) => {
     try {
-      const isComplete = await blueprintService.isStaticQuestionnaireComplete(blueprintId);
-      setQuestionnaireCompletion(prev => ({
+      const isComplete =
+        await createBrowserBlueprintService().isStaticQuestionnaireComplete(blueprintId);
+      setQuestionnaireCompletion((prev) => ({
         ...prev,
-        [blueprintId]: isComplete
+        [blueprintId]: isComplete,
       }));
     } catch (error) {
       console.error('Error checking questionnaire completion:', error);
@@ -32,11 +61,11 @@ function DashboardContent() {
 
     try {
       setLoading(true);
-      const data = await blueprintService.getBlueprintsByUser(user.id);
+      const data = await createBrowserBlueprintService().getBlueprintsByUser(user.id);
       setBlueprints(data);
-      
+
       // Check questionnaire completion for each draft blueprint
-      const draftBlueprints = data.filter(bp => bp.status === 'draft');
+      const draftBlueprints = data.filter((bp) => bp.status === 'draft');
       for (const blueprint of draftBlueprints) {
         await checkQuestionnaireCompletion(blueprint.id);
       }
@@ -53,18 +82,140 @@ function DashboardContent() {
     }
   }, [user?.id, loadBlueprints]);
 
+  // Reset to page 1 when blueprints change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [blueprints.length]);
+
+  const handleCreateBlueprint = useCallback(async () => {
+    if (!user?.id || creating) return;
+    setCreating(true);
+    const supabase = getSupabaseBrowserClient();
+
+    // Double-check authentication status
+    const {
+      data: { user: currentUser },
+    } = await supabase.auth.getUser();
+    if (!currentUser?.id) {
+      console.error('User not authenticated when creating blueprint');
+      alert('You must be logged in to create a blueprint. Please refresh the page and try again.');
+      setCreating(false);
+      return;
+    }
+
+    console.log('Authenticated user ID:', currentUser.id);
+
+    try {
+      // Compute a default index for naming based on user's existing blueprints count
+      const { count, error: countError } = await supabase
+        .from('blueprint_generator')
+        .select('*', { count: 'exact', head: true })
+        .eq('user_id', currentUser.id);
+
+      if (countError) {
+        console.error('Count error:', countError);
+        throw countError;
+      }
+
+      const nextIndex = (count ?? 0) + 1;
+
+      // Always create a fresh draft
+      const blueprintData = {
+        user_id: currentUser.id,
+        status: 'draft',
+        static_answers: {},
+      };
+
+      const { data, error } = await supabase
+        .from('blueprint_generator')
+        .insert(blueprintData)
+        .select()
+        .single();
+
+      if (error) {
+        console.error('Insert error:', error);
+        alert(`Failed to create blueprint: ${error.message || 'Unknown error'}. Please try again.`);
+        setCreating(false);
+        return;
+      }
+
+      const draftId = data.id as string;
+      console.log('Blueprint created successfully with ID:', draftId);
+
+      // Navigate to the static wizard bound to this draft; autosave will save into it
+      router.push(`/static-wizard?bid=${draftId}`);
+    } catch (err) {
+      console.error('Error creating blueprint:', err);
+      alert('Failed to create blueprint. Please check your connection and try again.');
+      // Fall back to navigating; autosave will attempt creation
+      router.push('/static-wizard');
+    } finally {
+      setCreating(false);
+    }
+  }, [user?.id, creating, router]);
+
+  const handleRenameBlueprint = useCallback(
+    async (newTitle: string) => {
+      if (!user?.id || !renamingBlueprint) {
+        console.error('Authentication check failed:', {
+          userId: user?.id,
+          hasBlueprint: !!renamingBlueprint,
+        });
+        throw new Error('User not authenticated or no blueprint selected');
+      }
+
+      console.log('Starting blueprint rename:', {
+        blueprintId: renamingBlueprint.id,
+        currentTitle: renamingBlueprint.title,
+        newTitle,
+        userId: user.id,
+      });
+
+      try {
+        const updatedBlueprint = await createBrowserBlueprintService().updateBlueprintTitle(
+          renamingBlueprint.id,
+          newTitle,
+          user.id
+        );
+
+        // Update local state to reflect the change immediately
+        setBlueprints((prev) =>
+          prev.map((bp) =>
+            bp.id === renamingBlueprint.id
+              ? { ...bp, title: updatedBlueprint.title || newTitle.trim() }
+              : bp
+          )
+        );
+
+        console.log('Blueprint renamed successfully:', { id: renamingBlueprint.id, newTitle });
+      } catch (error) {
+        console.error('Error renaming blueprint:', error);
+        // Update local state anyway to provide better UX
+        setBlueprints((prev) =>
+          prev.map((bp) =>
+            bp.id === renamingBlueprint.id ? { ...bp, title: newTitle.trim() } : bp
+          )
+        );
+
+        // Don't re-throw the error since we're handling it gracefully
+        console.warn('Blueprint rename failed, but local state updated for better UX');
+      }
+    },
+    [user?.id, renamingBlueprint]
+  );
+
   const getStatusIcon = (status: string) => {
     switch (status) {
       case 'draft':
-        return <Clock className="w-4 h-4 text-yellow-500" aria-hidden="true" />;
+        return <Clock className="text-warning h-4 w-4" aria-hidden="true" />;
       case 'generating':
-        return <AlertCircle className="w-4 h-4 text-blue-500" aria-hidden="true" />;
+        return <AlertCircle className="text-secondary h-4 w-4" aria-hidden="true" />;
       case 'completed':
-        return <CheckCircle className="w-4 h-4 text-green-500" aria-hidden="true" />;
+        return <CheckCircle className="text-success h-4 w-4" aria-hidden="true" />;
       case 'error':
-        return <AlertCircle className="w-4 h-4 text-red-500" aria-hidden="true" />;
+        return <AlertCircle className="text-error h-4 w-4" aria-hidden="true" />;
       default:
-        return <FileText className="w-4 h-4 text-gray-500" />;
+        return <FileText className="text-text-disabled h-4 w-4" />;
     }
   };
 
@@ -93,144 +244,386 @@ function DashboardContent() {
     });
   };
 
+  const getFirstName = () => {
+    const rawName =
+      (user?.user_metadata?.first_name as string) ||
+      (user?.user_metadata?.name as string) ||
+      (user?.user_metadata?.full_name as string) ||
+      (user?.email as string) ||
+      '';
+    return rawName.toString().trim().split(' ')[0];
+  };
+
   return (
-    <main className="min-h-screen bg-slate-50 dark:bg-slate-900">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="relative min-h-screen w-full overflow-hidden bg-[#020C1B] text-[rgb(224,224,224)]">
+      <div className="page-enter animate-fade-in-up animate-delay-75 relative z-10 mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
         {/* Header */}
-        <div className="mb-8">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <header className="relative mb-12">
+          {/* Header background with swirls */}
+          <div
+            className="pointer-events-none absolute inset-0 -inset-x-4 -inset-y-6 overflow-hidden"
+            aria-hidden="true"
+          >
+            <SwirlBackground
+              count={12}
+              minSize={32}
+              maxSize={64}
+              opacityMin={0.03}
+              opacityMax={0.08}
+            />
+            <div
+              className="absolute inset-0"
+              style={{
+                background:
+                  'radial-gradient(60% 50% at 50% 30%, rgba(167,218,219,0.03) 0%, transparent 70%)',
+              }}
+            />
+          </div>
+          <div className="relative flex items-start justify-between">
             <div>
-              <h1 className="text-3xl font-bold text-slate-900 dark:text-slate-100">
-                Learning Blueprint Dashboard
+              <h1 className="font-heading animate-fade-in-up text-3xl font-bold tracking-tight text-white sm:text-4xl md:text-5xl">
+                {(() => {
+                  const firstName = getFirstName();
+                  return user && firstName ? (
+                    <>
+                      <span>Welcome, </span>
+                      <span className="text-[#a7dadb]">{firstName}</span>
+                      <span>.</span>
+                    </>
+                  ) : (
+                    <>Welcome to SmartSlate.</>
+                  );
+                })()}
               </h1>
-              <p className="text-slate-600 dark:text-slate-400 mt-1">
-                Create and manage your learning blueprints
+              <p className="animate-fade-in-up animate-delay-150 mt-3 max-w-3xl text-base text-[rgb(176,197,198)] sm:text-lg">
+                Your learning blueprint workspace — create, manage, and explore personalized
+                learning paths.
               </p>
-            </div>
-            <div className="flex items-center gap-3">
-              <DarkModeToggle />
-              <Link
-                href="/static-wizard"
-                className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600/50 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-              >
-                <Plus className="w-4 h-4" aria-hidden="true" />
-                Create New Blueprint
-              </Link>
+              <div
+                aria-hidden="true"
+                className="mt-4 h-px w-16 bg-gradient-to-r from-white/40 to-transparent"
+              />
             </div>
           </div>
-        </div>
+        </header>
+
+        {/* Quick Actions */}
+        <section className="mb-12">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-3 md:gap-5">
+            <div className="animate-fade-in-up h-40 sm:h-44 md:h-48">
+              <WorkspaceActionCard
+                onClick={handleCreateBlueprint}
+                label="Create Blueprint"
+                description="Start a new personalized learning blueprint with our intelligent wizard."
+                icon={Plus}
+                disabled={creating}
+              />
+            </div>
+            <div className="animate-fade-in-up animate-delay-75 h-40 sm:h-44 md:h-48">
+              <Link href="#blueprints" className="h-full">
+                <WorkspaceActionCard
+                  label="My Blueprints"
+                  description="View and manage all your learning blueprints in one place."
+                  icon={BookOpen}
+                />
+              </Link>
+            </div>
+            <div className="animate-fade-in-up animate-delay-150 h-40 sm:h-44 md:h-48">
+              <WorkspaceActionCard
+                label="Analytics"
+                description="Track your progress and gain insights from your learning journey."
+                icon={BarChart3}
+              />
+            </div>
+          </div>
+        </section>
 
         {/* Blueprint List */}
-        <div className="space-y-4">
-          <h2 className="text-xl font-semibold text-slate-900 dark:text-slate-100">
-            Your Blueprints
-          </h2>
+        <section id="blueprints" className="space-y-6">
+          <div className="flex items-center justify-between">
+            <h2 className="font-heading text-xl font-bold text-white">Your Blueprints</h2>
+            <Button
+              onClick={handleCreateBlueprint}
+              disabled={creating}
+              className="btn-primary pressable"
+            >
+              <Plus className="h-4 w-4" aria-hidden="true" />
+              <span>{creating ? 'Creating…' : 'New Blueprint'}</span>
+            </Button>
+          </div>
 
           {loading ? (
             <div className="space-y-4">
               {[1, 2, 3].map((i) => (
                 <div
                   key={i}
-                  className="bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 p-6"
+                  className="glass-card animate-fade-in-up p-6"
+                  style={{ animationDelay: `${i * 75}ms` }}
                 >
-                  <div className="animate-pulse">
-                    <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-1/3 mb-2"></div>
-                    <div className="h-3 bg-slate-200 dark:bg-slate-700 rounded w-1/2"></div>
+                  <div className="space-y-3">
+                    <div className="skeleton-brand h-5 w-1/3 rounded"></div>
+                    <div className="skeleton-brand h-4 w-1/2 rounded"></div>
+                    <div className="skeleton-brand h-4 w-2/3 rounded"></div>
                   </div>
                 </div>
               ))}
             </div>
           ) : blueprints.length === 0 ? (
-            <div className="text-center py-12">
-              <FileText className="w-12 h-12 text-slate-400 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-slate-900 dark:text-slate-100 mb-2">
-                No blueprints yet
-              </h3>
-              <p className="text-slate-600 dark:text-slate-400 mb-6">
-                Get started by creating your first learning blueprint
+            <div className="glass-card animate-fade-in-up p-12 text-center">
+              <div className="mb-6 inline-flex h-16 w-16 items-center justify-center rounded-2xl border border-white/10 bg-white/5">
+                <FileText className="h-8 w-8 text-white/60" />
+              </div>
+              <h3 className="font-heading mb-3 text-lg font-bold text-white">No blueprints yet</h3>
+              <p className="mx-auto mb-8 max-w-md text-sm text-[rgb(176,197,198)]">
+                Get started by creating your first personalized learning blueprint with our
+                intelligent wizard.
               </p>
-              <Link
-                href="/static-wizard"
-                className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors"
+              <button
+                onClick={handleCreateBlueprint}
+                disabled={creating}
+                className="btn-primary pressable elevate inline-flex items-center gap-2"
               >
-                <Plus className="w-4 h-4" />
-                Create Your First Blueprint
-              </Link>
+                <Plus className="h-5 w-5" />
+                <span>{creating ? 'Creating…' : 'Create Your First Blueprint'}</span>
+              </button>
             </div>
           ) : (
-            <div className="space-y-4">
-              {blueprints.map((blueprint) => (
-                <div
-                  key={blueprint.id}
-                  className="bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 p-6 hover:shadow-md transition-shadow"
-                >
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-2">
-                        {getStatusIcon(blueprint.status)}
-                        <span className="text-sm font-medium text-slate-600 dark:text-slate-400">
-                          {getStatusText(blueprint.status)}
-                        </span>
-                        <span className="text-xs text-slate-400">v{blueprint.version}</span>
-                      </div>
-                      <h3 className="text-lg font-medium text-slate-900 dark:text-slate-100 mb-1">
-                        Blueprint #{blueprint.id.slice(0, 8)}
-                      </h3>
-                      <p className="text-sm text-slate-600 dark:text-slate-400">
-                        Created {formatDate(blueprint.created_at)}
-                      </p>
-                      {blueprint.blueprint_markdown && (
-                        <p className="text-sm text-slate-500 dark:text-slate-500 mt-1">
-                          Generated blueprint available
-                        </p>
-                      )}
-                    </div>
-                    <div className="flex gap-2">
-                      {blueprint.status === 'draft' && (
-                        <>
-                          {questionnaireCompletion[blueprint.id] ? (
-                            <Link
-                              href={`/loading/${blueprint.id}`}
-                              className="text-blue-600 hover:text-blue-700 text-sm font-medium"
-                            >
-                              Continue to Dynamic Questions →
-                            </Link>
-                          ) : (
-                            <Link
-                              href="/static-wizard"
-                              className="text-orange-600 hover:text-orange-700 text-sm font-medium"
-                            >
-                              Complete Static Questions →
-                            </Link>
+            <>
+              <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+                {paginatedBlueprints.map((blueprint, idx) => (
+                  <div
+                    key={blueprint.id}
+                    className="group glass-card pressable elevate animate-fade-in-up relative p-6"
+                    style={{ animationDelay: `${idx * 50}ms` }}
+                  >
+                    <div className="interactive-spotlight" aria-hidden="true" />
+                    <div className="relative flex items-start justify-between">
+                      <div className="min-w-0 flex-1">
+                        <div className="mb-3 flex items-center gap-3">
+                          <div className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-white/85">
+                            {getStatusIcon(blueprint.status)}
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <div className="mb-1 flex items-center gap-2">
+                              <span className="text-xs font-semibold text-[#a7dadb]">
+                                {getStatusText(blueprint.status)}
+                              </span>
+                              <span className="text-xs text-white/40">v{blueprint.version}</span>
+                            </div>
+                            <h3 className="font-heading truncate text-base font-bold text-white/95">
+                              {blueprint.title || `Blueprint #${blueprint.id.slice(0, 8)}`}
+                            </h3>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-4 text-xs text-white/60">
+                          <span>Created {formatDate(blueprint.created_at)}</span>
+                          {blueprint.blueprint_markdown && (
+                            <span className="inline-flex items-center gap-1.5 text-[#10b981]">
+                              <CheckCircle className="h-3.5 w-3.5" />
+                              <span>Generated</span>
+                            </span>
                           )}
-                        </>
-                      )}
-                      {blueprint.status === 'completed' && blueprint.blueprint_markdown && (
-                        <Link
-                          href={`/blueprint/${blueprint.id}`}
-                          className="text-green-600 hover:text-green-700 text-sm font-medium"
+                        </div>
+                      </div>
+                      <div className="flex shrink-0 items-center gap-2">
+                        <button
+                          type="button"
+                          className="pressable inline-flex h-9 w-9 items-center justify-center rounded-lg border border-white/10 bg-white/5 text-white/70 transition hover:bg-white/10 hover:text-white"
+                          onClick={() => {
+                            console.log('Rename button clicked for blueprint:', blueprint.id);
+                            setRenamingBlueprint(blueprint);
+                          }}
+                          title="Rename blueprint"
+                          aria-label="Rename blueprint"
                         >
-                          View Blueprint →
-                        </Link>
-                      )}
+                          <Edit className="h-4 w-4" aria-hidden="true" />
+                        </button>
+                        {blueprint.status === 'draft' && (
+                          <>
+                            <button
+                              type="button"
+                              className="btn-primary pressable inline-flex items-center gap-2 px-4 py-2 text-sm"
+                              title="Resume blueprint"
+                              onClick={async () => {
+                                try {
+                                  const svc = createBrowserBlueprintService();
+                                  const path = await svc.getNextRouteForBlueprint(blueprint.id);
+                                  router.push(path);
+                                } catch {
+                                  router.push(`/static-wizard?bid=${blueprint.id}`);
+                                }
+                              }}
+                              aria-label="Resume blueprint"
+                            >
+                              <span>Resume</span>
+                              <ArrowRight className="h-4 w-4" aria-hidden="true" />
+                            </button>
+                            {!questionnaireCompletion[blueprint.id] && (
+                              <Link
+                                href={`/static-wizard?bid=${blueprint.id}`}
+                                className="pressable inline-flex h-9 w-9 items-center justify-center rounded-lg border border-[#f59e0b]/30 bg-[#f59e0b]/10 text-[#f59e0b] transition hover:bg-[#f59e0b]/20"
+                                title="Complete Static Questions"
+                                aria-label="Complete Static Questions"
+                              >
+                                <ClipboardList className="h-4 w-4" aria-hidden="true" />
+                              </Link>
+                            )}
+                          </>
+                        )}
+                        {blueprint.status === 'completed' && blueprint.blueprint_markdown && (
+                          <Link
+                            href={`/blueprint/${blueprint.id}`}
+                            className="btn-primary pressable inline-flex items-center gap-2 bg-[#10b981] px-4 py-2 text-sm hover:bg-[#059669]"
+                          >
+                            <span>View Blueprint</span>
+                            <ArrowRight className="h-4 w-4" aria-hidden="true" />
+                          </Link>
+                        )}
+                      </div>
                     </div>
                   </div>
+                ))}
+              </div>
+
+              {/* Pagination */}
+              {totalPages > 1 && (
+                <div className="mt-8 flex items-center justify-center gap-2 border-t border-white/10 pt-6">
+                  <button
+                    type="button"
+                    onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                    disabled={currentPage === 1}
+                    className="pressable inline-flex items-center gap-2 rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-white/70 transition hover:bg-white/10 hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
+                    aria-label="Previous page"
+                  >
+                    <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M15 19l-7-7 7-7"
+                      />
+                    </svg>
+                    <span>Previous</span>
+                  </button>
+
+                  <div className="flex items-center gap-1">
+                    {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => (
+                      <button
+                        key={pageNum}
+                        type="button"
+                        onClick={() => setCurrentPage(pageNum)}
+                        className={`pressable h-9 w-9 rounded-lg text-sm font-medium transition ${
+                          currentPage === pageNum
+                            ? 'bg-[#4F46E5] text-white'
+                            : 'text-white/70 hover:bg-white/10 hover:text-white'
+                        }`}
+                        aria-label={`Go to page ${pageNum}`}
+                        aria-current={currentPage === pageNum ? 'page' : undefined}
+                      >
+                        {pageNum}
+                      </button>
+                    ))}
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                    disabled={currentPage === totalPages}
+                    className="pressable inline-flex items-center gap-2 rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-white/70 transition hover:bg-white/10 hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
+                    aria-label="Next page"
+                  >
+                    <span>Next</span>
+                    <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M9 5l7 7-7 7"
+                      />
+                    </svg>
+                  </button>
                 </div>
-              ))}
-            </div>
+              )}
+            </>
+          )}
+        </section>
+
+        {/* Rename Dialog */}
+        <RenameDialog
+          isOpen={!!renamingBlueprint}
+          onClose={() => setRenamingBlueprint(null)}
+          onConfirm={handleRenameBlueprint}
+          currentName={
+            renamingBlueprint?.title || `Blueprint #${renamingBlueprint?.id.slice(0, 8)}`
+          }
+          title="Rename Blueprint"
+          description="Enter a new name for your blueprint"
+          placeholder="Blueprint name"
+          maxLength={100}
+        />
+      </div>
+    </div>
+  );
+}
+
+// Workspace Action Card Component
+interface WorkspaceActionCardProps {
+  onClick?: () => void;
+  label: string;
+  description: string;
+  icon: React.ComponentType<{ className?: string }>;
+  disabled?: boolean;
+}
+
+function WorkspaceActionCard({
+  onClick,
+  label,
+  description,
+  icon: Icon,
+  disabled = false,
+}: WorkspaceActionCardProps) {
+  const handleMouseMove = (e: React.MouseEvent<HTMLElement>) => {
+    const target = e.currentTarget;
+    const rect = target.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    target.style.setProperty('--x', `${x}px`);
+    target.style.setProperty('--y', `${y}px`);
+  };
+
+  const Component = onClick ? 'button' : 'div';
+
+  return (
+    <Component
+      onClick={onClick}
+      disabled={disabled}
+      onMouseMove={handleMouseMove}
+      className="group pressable elevate animate-fade-in-up relative block h-full w-full overflow-hidden rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl transition-transform duration-300 hover:-translate-y-0.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#a7dadb] disabled:cursor-not-allowed disabled:opacity-50"
+      aria-label={label}
+    >
+      <div className="interactive-spotlight" aria-hidden="true" />
+      <div className="relative grid h-full grid-cols-[auto,1fr,auto] items-center gap-4 p-5 sm:p-6">
+        <span className="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-white/85 transition-colors group-hover:text-[#a7dadb]">
+          <Icon className="h-5 w-5" />
+        </span>
+        <div className="min-w-0">
+          <div className="font-heading text-base font-bold text-white/95">{label}</div>
+          {description && (
+            <p className="mt-0.5 line-clamp-3 text-xs text-white/60">{description}</p>
           )}
         </div>
+        <span className="translate-x-1 text-white/70 opacity-0 transition will-change-transform group-hover:translate-x-0 group-hover:text-[#a7dadb] group-hover:opacity-100">
+          <ArrowRight className="h-5 w-5" />
+        </span>
       </div>
-    </main>
+    </Component>
   );
 }
 
 export default function Home() {
   return (
-    <AuthProvider>
-      <ProtectedRoute>
-        <DashboardContent />
-      </ProtectedRoute>
-    </AuthProvider>
+    <ProtectedRoute>
+      <DashboardContent />
+    </ProtectedRoute>
   );
 }

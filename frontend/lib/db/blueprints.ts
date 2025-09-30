@@ -1,4 +1,5 @@
-import { getSupabaseBrowserClient } from '@/lib/supabase/client';
+// Note: Consumers should provide an initialized Supabase client.
+import type { SupabaseClient } from '@supabase/supabase-js';
 import { Database } from '@/types/supabase';
 import { Blueprint } from '@/lib/ollama/schema';
 import { AggregatedAnswer } from '@/lib/services/answerAggregation';
@@ -7,7 +8,11 @@ export type BlueprintInsert = Database['public']['Tables']['blueprint_generator'
 export type BlueprintRow = Database['public']['Tables']['blueprint_generator']['Row'];
 
 export class BlueprintService {
-  private supabase = getSupabaseBrowserClient();
+  private supabase: SupabaseClient<Database>;
+
+  constructor(supabase: SupabaseClient<Database>) {
+    this.supabase = supabase;
+  }
 
   /**
    * Saves a new blueprint or updates an existing one, incrementing the version.
@@ -23,7 +28,7 @@ export class BlueprintService {
     blueprintJson: Blueprint,
     blueprintMarkdown: string,
     aggregatedAnswers: AggregatedAnswer,
-    existingBlueprintId?: string,
+    existingBlueprintId?: string
   ): Promise<BlueprintRow> {
     const staticAnswers = aggregatedAnswers.staticResponses;
     const dynamicAnswers = aggregatedAnswers.dynamicResponses;
@@ -42,8 +47,14 @@ export class BlueprintService {
       });
 
       if (error) {
-        console.error('Error incrementing blueprint version:', error);
-        throw new Error(error.message);
+        console.error('Error incrementing blueprint version:', {
+          blueprintId: existingBlueprintId,
+          error: error.message || error,
+          errorCode: error.code,
+          errorDetails: error.details,
+          errorHint: error.hint,
+        });
+        throw new Error(error.message || 'Failed to increment blueprint version');
       }
       // The RPC returns a single blueprint row if successful
       return data as BlueprintRow;
@@ -64,8 +75,14 @@ export class BlueprintService {
         .single();
 
       if (error) {
-        console.error('Error saving new blueprint:', error);
-        throw new Error(error.message);
+        console.error('Error saving new blueprint:', {
+          userId,
+          error: error.message || error,
+          errorCode: error.code,
+          errorDetails: error.details,
+          errorHint: error.hint,
+        });
+        throw new Error(error.message || 'Failed to save new blueprint');
       }
       return data;
     }
@@ -91,8 +108,15 @@ export class BlueprintService {
 
     if (error && error.code !== 'PGRST116') {
       // PGRST116 is 'No rows found'
-      console.error('Error fetching blueprint:', error);
-      throw new Error(error.message);
+      console.error('Error fetching blueprint:', {
+        blueprintId,
+        version,
+        error: error.message || error,
+        errorCode: error.code,
+        errorDetails: error.details,
+        errorHint: error.hint,
+      });
+      throw new Error(error.message || 'Failed to fetch blueprint');
     }
     return data;
   }
@@ -110,8 +134,14 @@ export class BlueprintService {
       .order('version', { ascending: true });
 
     if (error) {
-      console.error('Error fetching blueprint versions:', error);
-      throw new Error(error.message);
+      console.error('Error fetching blueprint versions:', {
+        blueprintId,
+        error: error.message || error,
+        errorCode: error.code,
+        errorDetails: error.details,
+        errorHint: error.hint,
+      });
+      throw new Error(error.message || 'Failed to fetch blueprint versions');
     }
     return data || [];
   }
@@ -129,8 +159,14 @@ export class BlueprintService {
       .order('created_at', { ascending: false });
 
     if (error) {
-      console.error('Error fetching blueprints by user:', error);
-      throw new Error(error.message);
+      console.error('Error fetching blueprints by user:', {
+        userId,
+        error: error.message || error,
+        errorCode: error.code,
+        errorDetails: error.details,
+        errorHint: error.hint,
+      });
+      throw new Error(error.message || 'Failed to fetch blueprints by user');
     }
     return data || [];
   }
@@ -143,7 +179,7 @@ export class BlueprintService {
    */
   public async createBlueprintDraft(
     userId: string,
-    staticAnswers: Record<string, unknown>,
+    staticAnswers: Record<string, unknown>
   ): Promise<BlueprintRow> {
     const { data, error } = await this.supabase
       .from('blueprint_generator')
@@ -161,8 +197,14 @@ export class BlueprintService {
       .single();
 
     if (error) {
-      console.error('Error creating blueprint draft:', error);
-      throw new Error(error.message);
+      console.error('Error creating blueprint draft:', {
+        userId,
+        error: error.message || error,
+        errorCode: error.code,
+        errorDetails: error.details,
+        errorHint: error.hint,
+      });
+      throw new Error(error.message || 'Failed to create blueprint draft');
     }
     return data;
   }
@@ -180,9 +222,16 @@ export class BlueprintService {
       .eq('status', 'completed')
       .single();
 
-    if (error && error.code !== 'PGRST116') { // PGRST116 is "not found"
-      console.error('Error checking blueprint completion status:', error);
-      throw new Error(error.message);
+    if (error && error.code !== 'PGRST116') {
+      // PGRST116 is "not found"
+      console.error('Error checking blueprint completion status:', {
+        blueprintId,
+        error: error.message || error,
+        errorCode: error.code,
+        errorDetails: error.details,
+        errorHint: error.hint,
+      });
+      throw new Error(error.message || 'Failed to check blueprint completion status');
     }
 
     return !!data;
@@ -210,20 +259,30 @@ export class BlueprintService {
     }
 
     const answers = data.static_answers as Record<string, unknown>;
-    
-    // Check if all required fields are present and not empty
-    const requiredFields = [
+
+    const isNonEmpty = (v: unknown) => v !== null && v !== undefined && String(v).trim() !== '';
+
+    // Canonical fields in the new schema
+    const canonicalComplete = [
+      'role',
+      'organization',
+      'learningGap',
+      'resources',
+      'constraints',
+    ].every((k) => isNonEmpty(answers[k]));
+
+    if (canonicalComplete) return true;
+
+    // Legacy fields used in previous versions (fallback)
+    const legacyComplete = [
       'learningObjective',
-      'targetAudience', 
+      'targetAudience',
       'deliveryMethod',
       'duration',
-      'assessmentType'
-    ];
+      'assessmentType',
+    ].every((k) => isNonEmpty(answers[k]));
 
-    return requiredFields.every(field => {
-      const value = answers[field];
-      return value !== null && value !== undefined && value !== '';
-    });
+    return legacyComplete;
   }
 
   /**
@@ -240,8 +299,14 @@ export class BlueprintService {
       .order('version', { ascending: false });
 
     if (fetchError) {
-      console.error('Error fetching blueprint versions:', fetchError);
-      throw new Error(fetchError.message);
+      console.error('Error fetching blueprint versions:', {
+        blueprintId,
+        error: fetchError.message || fetchError,
+        errorCode: fetchError.code,
+        errorDetails: fetchError.details,
+        errorHint: fetchError.hint,
+      });
+      throw new Error(fetchError.message || 'Failed to fetch blueprint versions');
     }
 
     if (!allVersions || allVersions.length <= 1) {
@@ -249,15 +314,15 @@ export class BlueprintService {
     }
 
     // Find the latest completed version
-    const latestCompleted = allVersions.find(v => v.status === 'completed');
+    const latestCompleted = allVersions.find((v) => v.status === 'completed');
     if (!latestCompleted) {
       return 0; // No completed versions to keep
     }
 
     // Delete all other versions (keep only the latest completed)
     const versionsToDelete = allVersions
-      .filter(v => v.id !== latestCompleted.id)
-      .map(v => v.id);
+      .filter((v) => v.id !== latestCompleted.id)
+      .map((v) => v.id);
 
     if (versionsToDelete.length === 0) {
       return 0;
@@ -269,8 +334,15 @@ export class BlueprintService {
       .in('id', versionsToDelete);
 
     if (deleteError) {
-      console.error('Error deleting duplicate generations:', deleteError);
-      throw new Error(deleteError.message);
+      console.error('Error deleting duplicate generations:', {
+        blueprintId,
+        versionsToDelete,
+        error: deleteError.message || deleteError,
+        errorCode: deleteError.code,
+        errorDetails: deleteError.details,
+        errorHint: deleteError.hint,
+      });
+      throw new Error(deleteError.message || 'Failed to delete duplicate generations');
     }
 
     return versionsToDelete.length;
@@ -284,7 +356,7 @@ export class BlueprintService {
    */
   public async updateDynamicQuestions(
     blueprintId: string,
-    dynamicQuestions: unknown[],
+    dynamicQuestions: unknown[]
   ): Promise<BlueprintRow> {
     const { data, error } = await this.supabase
       .from('blueprint_generator')
@@ -297,8 +369,14 @@ export class BlueprintService {
       .single();
 
     if (error) {
-      console.error('Error updating dynamic questions:', error);
-      throw new Error(error.message);
+      console.error('Error updating dynamic questions:', {
+        blueprintId,
+        error: error.message || error,
+        errorCode: error.code,
+        errorDetails: error.details,
+        errorHint: error.hint,
+      });
+      throw new Error(error.message || 'Failed to update dynamic questions');
     }
     return data;
   }
@@ -311,7 +389,7 @@ export class BlueprintService {
    */
   public async updateDynamicAnswers(
     blueprintId: string,
-    dynamicAnswers: Record<string, unknown>,
+    dynamicAnswers: Record<string, unknown>
   ): Promise<BlueprintRow> {
     const { data, error } = await this.supabase
       .from('blueprint_generator')
@@ -324,11 +402,211 @@ export class BlueprintService {
       .single();
 
     if (error) {
-      console.error('Error updating dynamic answers:', error);
-      throw new Error(error.message);
+      console.error('Error updating dynamic answers:', {
+        blueprintId,
+        error: error.message || error,
+        errorCode: error.code,
+        errorDetails: error.details,
+        errorHint: error.hint,
+      });
+      throw new Error(error.message || 'Failed to update dynamic answers');
     }
     return data;
   }
+
+  /**
+   * Updates a blueprint's title.
+   * @param blueprintId The ID of the blueprint to update.
+   * @param title The new title for the blueprint.
+   * @param userId The ID of the user (for security).
+   * @returns The updated blueprint row.
+   */
+  public async updateBlueprintTitle(
+    blueprintId: string,
+    title: string,
+    userId: string
+  ): Promise<BlueprintRow> {
+    console.log('Attempting to update blueprint title:', { blueprintId, title, userId });
+
+    try {
+      // First, check if we can get the current blueprint to see if title column exists
+      const { data: currentBlueprint, error: fetchError } = await this.supabase
+        .from('blueprint_generator')
+        .select('*')
+        .eq('id', blueprintId)
+        .eq('user_id', userId)
+        .single();
+
+      if (fetchError) {
+        console.error('Error fetching current blueprint:', fetchError);
+        throw new Error(fetchError.message || 'Failed to fetch blueprint');
+      }
+
+      console.log('Current blueprint fetched:', currentBlueprint);
+
+      // Check if the title column exists by trying to access it
+      const hasTitleColumn = 'title' in currentBlueprint;
+
+      if (!hasTitleColumn) {
+        console.warn('Title column not found in blueprint, updating local state only');
+        // Return the blueprint with the new title added locally
+        return { ...currentBlueprint, title: title.trim() };
+      }
+
+      // Try to update the title
+      const { data, error } = await this.supabase
+        .from('blueprint_generator')
+        .update({
+          title: title.trim(),
+        })
+        .eq('id', blueprintId)
+        .eq('user_id', userId)
+        .select()
+        .single();
+
+      if (error) {
+        console.error('Error updating blueprint title:', {
+          blueprintId,
+          userId,
+          title: title.trim(),
+          error: error.message || error,
+          errorCode: error.code,
+          errorDetails: error.details,
+          errorHint: error.hint,
+        });
+
+        // If the error is about the title column not existing, return with local title
+        if (error.message?.includes('title') && error.message?.includes('column')) {
+          console.warn('Title column not found in database, using local title');
+          return { ...currentBlueprint, title: title.trim() };
+        }
+
+        throw new Error(error.message || 'Failed to update blueprint title');
+      }
+
+      console.log('Blueprint title updated successfully:', data);
+      return data;
+    } catch (error) {
+      console.error('Exception in updateBlueprintTitle:', error);
+
+      // If it's a schema-related error, try to continue with local title
+      if (
+        error instanceof Error &&
+        error.message?.includes('title') &&
+        error.message?.includes('column')
+      ) {
+        console.warn('Schema error detected, using local title update');
+        // Return the blueprint with the new title added locally
+        const { data } = await this.supabase
+          .from('blueprint_generator')
+          .select('*')
+          .eq('id', blueprintId)
+          .eq('user_id', userId)
+          .single();
+
+        return { ...data, title: title.trim() };
+      }
+      throw error;
+    }
+  }
+
+  /**
+   * Compute the next route the user should be sent to for resuming work
+   * on a blueprint, based on saved progress in the database.
+   *
+   * Flow decision order:
+   * - If completed → view page
+   * - If static answers incomplete → static wizard
+   * - If no dynamic questions yet → loading page (generates them)
+   * - If dynamic answers incomplete → dynamic wizard
+   * - Else → generating page (finalize blueprint)
+   */
+  public async getNextRouteForBlueprint(blueprintId: string): Promise<string> {
+    try {
+      const { data, error } = await this.supabase
+        .from('blueprint_generator')
+        .select(
+          'id, status, static_answers, dynamic_questions, dynamic_answers, blueprint_markdown'
+        )
+        .eq('id', blueprintId)
+        .single();
+
+      if (error || !data) {
+        return `/static-wizard?bid=${blueprintId}`;
+      }
+
+      // 1) Completed → view page
+      if (data.status === 'completed' && data.blueprint_markdown) {
+        return `/blueprint/${blueprintId}`;
+      }
+
+      // 2) Static answers completeness
+      const staticComplete = this.isStaticComplete(
+        data.static_answers as Record<string, unknown> | null | undefined
+      );
+      if (!staticComplete) return `/static-wizard?bid=${blueprintId}`;
+
+      // 3) Dynamic questions presence
+      const hasDynamicQuestions =
+        Array.isArray(data.dynamic_questions) && (data.dynamic_questions as unknown[]).length > 0;
+      if (!hasDynamicQuestions) return `/loading/${blueprintId}`;
+
+      // 4) Dynamic answers completeness
+      const dynamicComplete = this.areDynamicAnswersComplete(
+        data.dynamic_questions as unknown,
+        (data.dynamic_answers as Record<string, unknown> | null | undefined) || {}
+      );
+      if (!dynamicComplete) return `/dynamic-wizard/${blueprintId}`;
+
+      // 5) Final step → generating page
+      return `/generating/${blueprintId}`;
+    } catch {
+      return `/static-wizard?bid=${blueprintId}`;
+    }
+  }
+
+  private isStaticComplete(staticAnswers: Record<string, unknown> | null | undefined): boolean {
+    if (!staticAnswers) return false;
+    const isNonEmpty = (v: unknown) => v !== null && v !== undefined && String(v).trim() !== '';
+    const canonical = ['role', 'organization', 'learningGap', 'resources', 'constraints'];
+    const legacy = [
+      'learningObjective',
+      'targetAudience',
+      'deliveryMethod',
+      'duration',
+      'assessmentType',
+    ];
+    const canonicalComplete = canonical.every((k) => isNonEmpty(staticAnswers[k]));
+    if (canonicalComplete) return true;
+    return legacy.every((k) => isNonEmpty(staticAnswers[k]));
+  }
+
+  private areDynamicAnswersComplete(
+    dynamicQuestions: unknown,
+    dynamicAnswers: Record<string, unknown>
+  ): boolean {
+    try {
+      const sections = Array.isArray(dynamicQuestions) ? (dynamicQuestions as any[]) : [];
+      const requiredIds: string[] = [];
+      for (const section of sections) {
+        const qs = Array.isArray(section?.questions) ? section.questions : [];
+        for (const q of qs) {
+          if (q?.required && q?.id) requiredIds.push(String(q.id));
+        }
+      }
+      // If schema doesn't expose requirements, consider any saved answers as progress
+      if (requiredIds.length === 0) return Object.keys(dynamicAnswers || {}).length > 0;
+
+      const isNonEmpty = (v: unknown) => {
+        if (Array.isArray(v)) return v.length > 0;
+        return v !== null && v !== undefined && String(v).trim() !== '';
+      };
+      return requiredIds.every((id) => isNonEmpty((dynamicAnswers as any)[id]));
+    } catch {
+      return Object.keys(dynamicAnswers || {}).length > 0;
+    }
+  }
 }
 
-export const blueprintService = new BlueprintService();
+// Factory helpers were removed to avoid importing client/server in this shared module.
+// Create instances in client or server modules by passing a pre-configured Supabase client.

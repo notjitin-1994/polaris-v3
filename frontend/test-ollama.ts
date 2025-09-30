@@ -10,7 +10,8 @@ async function testOllama() {
   const client = new OllamaClient({
     baseUrl: process.env.OLLAMA_BASE_URL || 'http://localhost:11434',
     model: process.env.OLLAMA_MODEL || 'qwen3:30b-a3b',
-    timeoutMs: 60000,
+    timeoutMs: 300000,
+    maxTokens: 8192,
   });
 
   // Check health
@@ -26,14 +27,15 @@ async function testOllama() {
   // Generate questions
   console.log('🎯 Generating dynamic questions...');
   const input = {
-    assessmentType: 'Quiz',
-    deliveryMethod: 'Online',
-    duration: '30m',
-    learningObjectives: ['Assess JavaScript fundamentals', 'Test problem-solving skills'],
-    targetAudience: 'Junior Developers',
-    numSections: 2,
-    questionsPerSection: 3,
-  };
+    // Use canonical/new input shape to match prompts
+    role: 'Learning Professional',
+    organization: 'Engineering',
+    learningGap: 'JavaScript fundamentals and problem-solving',
+    resources: 'Online, mentorship',
+    constraints: 'Quiz • 30m',
+    numSections: 5,
+    questionsPerSection: 7,
+  } as any;
 
   console.log('📝 Input:', JSON.stringify(input, null, 2));
   console.log('\n⏳ Generating... (this may take 10-30 seconds)\n');
@@ -46,15 +48,17 @@ async function testOllama() {
 
     console.log('\n📊 Summary:');
     console.log(`- Sections: ${result.sections.length}`);
-    result.sections.forEach((section, i) => {
+    (result.sections as any[]).forEach((section, i) => {
       console.log(`  Section ${i + 1}: "${section.title}" (${section.questions.length} questions)`);
-      section.questions.forEach((q, j) => {
-        console.log(`    ${j + 1}. ${q.question} [${q.type}]`);
+      (section.questions as any[]).forEach((q, j) => {
+        const label = (q as any).question ?? (q as any).question_text;
+        const type = (q as any).type ?? (q as any).input_type;
+        console.log(`    ${j + 1}. ${label} [${type}]`);
       });
     });
   } catch (error) {
-    console.error('❌ Error generating questions:', error.message);
-    console.error('Stack:', error.stack);
+    console.error('❌ Error generating questions:', (error as any).message);
+    console.error('Stack:', (error as any).stack);
   }
 }
 

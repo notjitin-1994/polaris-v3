@@ -44,9 +44,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }): JSX.E
       setUser(newSession?.user ?? null);
       setAuth(newSession?.user ?? null, newSession ?? null);
 
-      // Redirect to dashboard after successful login
+      // Redirect to home after successful login
       if (newSession && !previousSession && typeof window !== 'undefined') {
-        // Check if we're on login/signup page and redirect to dashboard
+        // Check if we're on login/signup page and redirect to home
         if (window.location.pathname === '/login' || window.location.pathname === '/signup') {
           router.push('/');
         }
@@ -94,7 +94,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }): JSX.E
         if (error) throw error;
       },
     }),
-    [user, session, loading, supabase],
+    [user, session, loading, supabase]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

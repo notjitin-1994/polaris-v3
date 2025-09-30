@@ -33,16 +33,16 @@ const CustomTooltip = ({
     const data = payload[0].payload;
     return (
       <motion.div
-        className="bg-white dark:bg-slate-800 p-4 rounded-lg shadow-lg border border-slate-200 dark:border-slate-700"
+        className="glass-card p-4"
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.2 }}
       >
         <p className="text-sm font-medium text-slate-900 dark:text-slate-100">{data.name}</p>
-        <div className="space-y-1 mt-2">
+        <div className="mt-2 space-y-1">
           <p className="text-sm">
             <span
-              className="inline-block w-3 h-3 rounded-full mr-2"
+              className="mr-2 inline-block h-3 w-3 rounded-full"
               // One-off: Dynamic color from chart data - cannot be tokenized as it varies per dataset
               style={{ backgroundColor: data.color }}
             />
@@ -59,7 +59,7 @@ const CustomTooltip = ({
 };
 
 const CustomLegend = ({ payload }: { payload: Array<{ value: string; color: string }> }) => (
-  <div className="flex flex-wrap justify-center gap-4 mt-4">
+  <div className="mt-4 flex flex-wrap justify-center gap-4">
     {payload.map((entry, index) => (
       <motion.div
         key={index}
@@ -69,7 +69,7 @@ const CustomLegend = ({ payload }: { payload: Array<{ value: string; color: stri
         transition={{ delay: index * 0.1 }}
       >
         {/* One-off: Dynamic color from chart legend - data-driven colors */}
-        <div className="w-3 h-3 rounded-full" style={{ backgroundColor: entry.color }} />
+        <div className="h-3 w-3 rounded-full" style={{ backgroundColor: entry.color }} />
         <span className="text-sm text-slate-600 dark:text-slate-400">{entry.value}</span>
       </motion.div>
     ))}
@@ -98,7 +98,7 @@ export function ModuleBreakdownChart({ data, className }: ModuleBreakdownChartPr
       status: string;
       value: number;
       color: string;
-    }>,
+    }>
   );
 
   // Calculate percentages
@@ -152,7 +152,7 @@ export function ModuleBreakdownChart({ data, className }: ModuleBreakdownChartPr
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
-      <div className="flex items-center justify-between mb-6">
+      <div className="mb-6 flex items-center justify-between">
         <div>
           <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100">
             Module Breakdown
@@ -200,7 +200,7 @@ export function ModuleBreakdownChart({ data, className }: ModuleBreakdownChartPr
       </div>
 
       {/* Detailed stats */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
+      <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-3">
         {chartData.map((item) => (
           <motion.div
             key={item.status}
@@ -211,7 +211,7 @@ export function ModuleBreakdownChart({ data, className }: ModuleBreakdownChartPr
           >
             {/* One-off: Dynamic color from visualization data */}
             <div
-              className="w-4 h-4 rounded-full mx-auto mb-2"
+              className="mx-auto mb-2 h-4 w-4 rounded-full"
               style={{ backgroundColor: item.color }}
             />
             <p className="text-sm font-medium text-slate-900 dark:text-slate-100">{item.value}</p>

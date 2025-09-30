@@ -1,4 +1,4 @@
-import { Blueprint } from '@/lib/ollama/schema';
+import { AnyBlueprint, isFullBlueprint } from '@/lib/ollama/schema';
 import { DashboardData } from '@/types/dashboard';
 import {
   ExportData,
@@ -34,10 +34,10 @@ export class ExportService {
    * Export a single blueprint to the specified format
    */
   public async exportBlueprint(
-    blueprint: Blueprint,
+    blueprint: AnyBlueprint,
     options: ExportOptions,
     dashboardData?: DashboardData,
-    metadata?: Partial<ExportMetadata>,
+    metadata?: Partial<ExportMetadata>
   ): Promise<ExportResult> {
     try {
       const exportData: ExportData = {
@@ -63,7 +63,12 @@ export class ExportService {
       }
 
       if (result.success && this.config.enableHistory) {
-        this.addToHistory(result, options.format, blueprint.title);
+        const title = isFullBlueprint(blueprint)
+          ? blueprint.metadata?.organization
+            ? `${blueprint.metadata.organization} Learning Blueprint`
+            : 'Learning Blueprint'
+          : (blueprint as any).title;
+        this.addToHistory(result, options.format, title);
       }
 
       return result;
@@ -82,7 +87,7 @@ export class ExportService {
   public async exportBatch(
     blueprints: Blueprint[],
     options: BatchExportOptions,
-    dashboardDataMap?: Map<string, DashboardData>,
+    dashboardDataMap?: Map<string, DashboardData>
   ): Promise<ExportResult> {
     try {
       const results: ExportResult[] = [];
@@ -250,12 +255,30 @@ export class ExportService {
    * Create metadata for export
    */
   private createMetadata(
-    blueprint: Blueprint,
-    customMetadata?: Partial<ExportMetadata>,
+    blueprint: AnyBlueprint,
+    customMetadata?: Partial<ExportMetadata>
   ): ExportMetadata {
+    if (isFullBlueprint(blueprint)) {
+      const title = blueprint.metadata?.organization
+        ? `${blueprint.metadata.organization} Learning Blueprint`
+        : 'Learning Blueprint';
+      const parts: string[] = [];
+      if (blueprint.metadata?.role) parts.push(`Role: ${blueprint.metadata.role}`);
+      if (blueprint.instructional_strategy?.cohort_model)
+        parts.push(`Cohort: ${blueprint.instructional_strategy.cohort_model}`);
+      const description = parts.join(' • ') || 'Auto-generated learning blueprint overview.';
+      return {
+        title,
+        description,
+        exportedAt: new Date().toISOString(),
+        version: '1.0.0',
+        ...customMetadata,
+      };
+    }
+    const canonical = blueprint as any;
     return {
-      title: blueprint.title,
-      description: blueprint.overview,
+      title: canonical.title,
+      description: canonical.overview,
       exportedAt: new Date().toISOString(),
       version: '1.0.0',
       ...customMetadata,
@@ -309,7 +332,7 @@ export class ExportService {
    */
   private async createZipFile(
     results: ExportResult[],
-    zipFileName?: string,
+    zipFileName?: string
   ): Promise<ExportResult> {
     try {
       const { JSZip } = await import('jszip');

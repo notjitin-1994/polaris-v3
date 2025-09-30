@@ -13,88 +13,64 @@ export function DurationStep(): JSX.Element {
   return (
     <div className="space-y-4">
       <div className="space-y-2">
-        <label
-          htmlFor="duration"
-          className="block text-lg font-semibold text-slate-900 dark:text-slate-100"
-        >
-          How long should this learning experience be?
+        <label htmlFor="role" className="text-primary block text-lg font-semibold">
+          What is your role?
         </label>
-        <p className="text-sm text-slate-600 dark:text-slate-400">
-          Specify the total duration in hours. This helps determine the depth and scope of content.
+        <p className="text-secondary text-sm">
+          Provide your role relevant to this initiative (e.g., L&D Manager, Instructional Designer,
+          Trainer).
         </p>
       </div>
 
       <div className="space-y-2">
-        <div className="relative">
-          <input
-            id="duration"
-            type="number"
-            min={1}
-            step={1}
-            {...register('duration', { valueAsNumber: true })}
-            className={`
-              w-32 p-4 text-center text-2xl font-bold rounded-lg border-2 transition-colors
-              ${
-                errors.duration
-                  ? 'border-red-300 dark:border-red-700 bg-red-50 dark:bg-red-900/20 focus:border-red-500 focus:ring-red-500'
-                  : 'border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 focus:border-blue-500 focus:ring-blue-500'
-              }
-              dark:text-slate-100
-            `}
-            aria-invalid={!!errors.duration}
-            aria-describedby={errors.duration ? 'duration-error' : undefined}
-          />
-          <div className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500">
-            <span className="text-sm font-medium">hours</span>
-          </div>
-        </div>
-
-        {errors.duration && (
+        <input
+          id="role"
+          type="text"
+          {...register('role')}
+          className={`w-full rounded-lg border-2 p-4 text-base transition-colors ${
+            errors.role
+              ? 'border-red-300 bg-red-50 focus:border-red-500 focus:ring-red-500 dark:border-red-700 dark:bg-red-900/20'
+              : 'border-slate-300 bg-white focus:border-blue-500 focus:ring-blue-500 dark:border-slate-600 dark:bg-slate-800'
+          } placeholder-slate-400 dark:text-slate-100 dark:placeholder-slate-500`}
+          placeholder="e.g., Instructional Designer"
+          aria-invalid={!!errors.role}
+          aria-describedby={errors.role ? 'role-error' : undefined}
+        />
+        {errors.role && (
           <p
-            id="duration-error"
-            className="text-sm text-red-600 dark:text-red-400 flex items-center gap-1"
+            id="role-error"
+            className="flex items-center gap-1 text-sm text-red-600 dark:text-red-400"
           >
-            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+            <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
               <path
                 fillRule="evenodd"
-                d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1H9z"
                 clipRule="evenodd"
               />
             </svg>
-            {errors.duration.message}
+            {errors.role.message}
           </p>
         )}
       </div>
 
-      <div className="bg-orange-50 dark:bg-orange-900/20 rounded-lg p-4">
+      <div className="rounded-lg bg-orange-50 p-4 dark:bg-orange-900/20">
         <div className="flex items-start gap-2">
           <svg
-            className="w-5 h-5 text-orange-600 dark:text-orange-400 mt-0.5 flex-shrink-0"
+            className="mt-0.5 h-5 w-5 flex-shrink-0 text-orange-600 dark:text-orange-400"
             fill="currentColor"
             viewBox="0 0 20 20"
           >
             <path
               fillRule="evenodd"
-              d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
+              d="M10 18a8 8 0 100-16 8 8 0 000 16zm3-9a3 3 0 11-6 0 3 3 0 016 0z"
               clipRule="evenodd"
             />
           </svg>
           <div className="text-sm text-orange-800 dark:text-orange-200">
-            <p className="font-medium mb-1">Duration Guidelines:</p>
-            <ul className="space-y-1">
-              <li>
-                • <strong>1-4 hours:</strong> Quick workshop or focused tutorial
-              </li>
-              <li>
-                • <strong>5-12 hours:</strong> Comprehensive course module
-              </li>
-              <li>
-                • <strong>13-40 hours:</strong> Full course or certification program
-              </li>
-              <li>
-                • <strong>40+ hours:</strong> Intensive bootcamp or semester-long course
-              </li>
-            </ul>
+            <p className="mb-1 font-medium">Context:</p>
+            <p>
+              Role influences responsibilities, decision rights, and available levers for change.
+            </p>
           </div>
         </div>
       </div>

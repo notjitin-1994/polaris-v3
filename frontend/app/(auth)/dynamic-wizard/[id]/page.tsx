@@ -4,19 +4,24 @@ import React, { useEffect, useState, use, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
+import { getSupabaseBrowserClient } from '@/lib/supabase/client';
 import ProtectedRoute from '@/components/auth/ProtectedRoute';
-import { AuthProvider } from '@/contexts/AuthContext';
+import { AuthProvider, useAuth } from '@/contexts/AuthContext';
 import { DynamicFormRenderer } from '@/components/dynamic-form';
-import { blueprintService } from '@/lib/db/blueprints';
+import { DynamicQuestionsLoader } from '@/components/wizard/dynamic-questions';
+import { createBrowserBlueprintService } from '@/lib/db/blueprints.client';
 import { BlueprintRow } from '@/lib/db/blueprints';
+import { DarkModeToggle } from '@/components/theme/DarkModeToggle';
+import { UserAvatar } from '@/components/layout/UserAvatar';
+import { SwirlBackground } from '@/components/layout/SwirlBackground';
 
 interface DynamicWizardPageProps {
   params: Promise<{ id: string }>;
 }
 
-export default function DynamicWizardPage({ params }: DynamicWizardPageProps): JSX.Element {
+function DynamicWizardContent({ id }: { id: string }): React.JSX.Element {
   const router = useRouter();
-  const { id } = use(params);
+  const { user } = useAuth();
   const [blueprint, setBlueprint] = useState<BlueprintRow | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -24,18 +29,22 @@ export default function DynamicWizardPage({ params }: DynamicWizardPageProps): J
   const loadBlueprint = useCallback(async () => {
     try {
       setLoading(true);
-      const data = await blueprintService.getBlueprint(id);
+      const svc = createBrowserBlueprintService();
+      const data = await svc.getBlueprint(id);
       if (!data) {
         setError('Blueprint not found');
         return;
       }
-      
+
       // Debug logging
       console.log('Loaded blueprint:', data);
       console.log('Dynamic questions:', data.dynamic_questions);
       console.log('Dynamic questions type:', typeof data.dynamic_questions);
-      console.log('Dynamic questions length:', Array.isArray(data.dynamic_questions) ? data.dynamic_questions.length : 'not an array');
-      
+      console.log(
+        'Dynamic questions length:',
+        Array.isArray(data.dynamic_questions) ? data.dynamic_questions.length : 'not an array'
+      );
+
       setBlueprint(data);
     } catch (error) {
       console.error('Error loading blueprint:', error);
@@ -51,263 +60,308 @@ export default function DynamicWizardPage({ params }: DynamicWizardPageProps): J
 
   if (loading) {
     return (
-      <main className="min-h-screen bg-slate-50 dark:bg-slate-900 flex items-center justify-center p-4">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-slate-600 dark:text-slate-400">Loading dynamic questionnaire...</p>
+      <div className="flex min-h-screen items-center justify-center bg-[#020C1B] p-4">
+        <div className="w-full max-w-2xl">
+          <DynamicQuestionsLoader message="Loading dynamic questionnaire..." statusText="Loading" />
         </div>
-      </main>
+      </div>
     );
   }
 
   if (error || !blueprint) {
     return (
-      <main className="min-h-screen bg-slate-50 dark:bg-slate-900 flex items-center justify-center p-4">
-        <div className="text-center max-w-md">
-          <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-4">
-            Blueprint Not Found
-          </h1>
-          <p className="text-slate-600 dark:text-slate-400 mb-6">
+      <div className="flex min-h-screen items-center justify-center bg-[#020C1B] p-4">
+        <div className="max-w-md text-center">
+          <h1 className="mb-4 text-2xl font-bold text-white">Blueprint Not Found</h1>
+          <p className="mb-6 text-[rgb(176,197,198)]">
             The blueprint you&apos;re looking for doesn&apos;t exist or you don&apos;t have
             permission to access it.
           </p>
           <Link
             href="/"
-            className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors"
+            className="inline-flex items-center gap-2 rounded-lg bg-[#a7dadb] px-4 py-2 font-medium text-[#020C1B] transition-colors hover:bg-[#8bc5c6]"
           >
-            <ArrowLeft className="w-4 h-4" />
+            <ArrowLeft className="h-4 w-4" />
             Back to Dashboard
           </Link>
         </div>
-      </main>
+      </div>
     );
   }
 
   // Check if dynamic questions are available
-  const hasDynamicQuestions = blueprint.dynamic_questions && blueprint.dynamic_questions.length > 0;
+  const hasDynamicQuestions =
+    Array.isArray(blueprint.dynamic_questions) && blueprint.dynamic_questions.length > 0;
 
   if (!hasDynamicQuestions) {
     return (
-      <main className="min-h-screen bg-slate-50 dark:bg-slate-900">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16 lg:py-20">
-          {/* Header */}
-          <div className="mb-8">
-            <div className="flex items-center gap-4 mb-4">
-              <Link
-                href="/"
-                className="inline-flex items-center gap-2 text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100 transition-colors"
-              >
-                <ArrowLeft className="w-4 h-4" />
-                Back to Dashboard
-              </Link>
-            </div>
-            <h1 className="text-3xl font-bold text-slate-900 dark:text-slate-100">
-              Dynamic Questionnaire
-            </h1>
-            <p className="text-slate-600 dark:text-slate-400 mt-1">
-              Blueprint #{blueprint.id.slice(0, 8)} •{' '}
-              {blueprint.static_answers?.learningObjective || 'No learning objective set'}
-            </p>
+      <div className="min-h-screen bg-[#020C1B]">
+        {/* Header with Swirls */}
+        <header className="relative sticky top-0 z-10 overflow-hidden border-b border-white/10 bg-[#020C1B]/80 backdrop-blur-xl">
+          <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
+            <SwirlBackground
+              count={12}
+              minSize={32}
+              maxSize={64}
+              opacityMin={0.03}
+              opacityMax={0.08}
+            />
+            <div
+              className="absolute inset-0"
+              style={{
+                background:
+                  'radial-gradient(60% 50% at 50% 30%, rgba(167,218,219,0.03) 0%, transparent 70%)',
+              }}
+            />
           </div>
 
-          {/* No questions message */}
-          <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-700 p-8 text-center">
-            <div className="max-w-md mx-auto">
-              <div className="inline-flex items-center justify-center w-16 h-16 bg-amber-100 dark:bg-amber-900 rounded-full mb-6">
-                <svg
-                  className="w-8 h-8 text-amber-600 dark:text-amber-400"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"
-                  />
-                </svg>
-              </div>
-
-              <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-4">
-                Dynamic Questions Not Available
-              </h2>
-              <p className="text-slate-600 dark:text-slate-400 mb-8">
-                The dynamic questions for this blueprint haven&apos;t been generated yet. This
-                feature is currently under development.
-              </p>
-
-              <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-6 mb-8">
-                <div className="flex items-start gap-3">
-                  <svg
-                    className="w-5 h-5 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                  <div className="text-left">
-                    <p className="text-sm font-medium text-blue-800 dark:text-blue-200 mb-2">
-                      In a complete implementation, this page would:
-                    </p>
-                    <ul className="text-sm text-blue-700 dark:text-blue-300 space-y-1">
-                      <li>• Generate personalized questions based on your static responses</li>
-                      <li>• Present them in an interactive, multi-step form</li>
-                      <li>• Allow you to provide detailed answers with rich input types</li>
-                      <li>• Save your responses and generate a comprehensive blueprint</li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex flex-col sm:flex-row gap-3 justify-center">
+          <div className="relative mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+            <div className="flex items-start justify-between gap-4">
+              <div className="min-w-0 flex-1">
                 <Link
                   href="/"
-                  className="inline-flex items-center justify-center gap-2 px-6 py-2.5 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow-sm hover:shadow-md transition-all duration-200"
+                  className="pressable mb-4 inline-flex items-center gap-2 text-[rgb(176,197,198)] transition-colors hover:text-[#a7dadb]"
                 >
-                  <ArrowLeft className="w-4 h-4" />
-                  Return to Dashboard
+                  <ArrowLeft className="h-4 w-4" aria-hidden="true" />
+                  <span className="text-sm font-medium">Back to Dashboard</span>
                 </Link>
-                <Link
-                  href="/static-wizard"
-                  className="inline-flex items-center justify-center gap-2 px-6 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
-                >
-                  Create Another Blueprint
-                </Link>
+
+                <h1 className="font-heading mb-2 text-3xl font-bold tracking-tight text-white sm:text-4xl">
+                  Dynamic Questions
+                </h1>
+                <p className="max-w-3xl text-base text-[rgb(176,197,198)]">
+                  Dynamic questions are being generated for your blueprint.
+                </p>
+              </div>
+
+              <div className="flex shrink-0 items-center gap-3">
+                <DarkModeToggle />
+                <UserAvatar user={user} sizeClass="w-8 h-8" />
               </div>
             </div>
           </div>
-        </div>
-      </main>
+        </header>
+
+        <main className="w-full px-4 py-12 sm:px-6 md:py-16 lg:px-8 lg:py-20">
+          <div className="mx-auto max-w-6xl">
+            {/* No questions message */}
+            <div className="rounded-2xl border border-white/10 bg-white/5 p-8 text-center backdrop-blur-sm">
+              <div className="mx-auto max-w-md">
+                <div className="mb-6 inline-flex h-16 w-16 items-center justify-center rounded-full bg-amber-500/10">
+                  <svg
+                    className="h-8 w-8 text-amber-400"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"
+                    />
+                  </svg>
+                </div>
+
+                <h2 className="mb-4 text-2xl font-bold text-white">
+                  Dynamic Questions Not Available
+                </h2>
+                <p className="mb-8 text-[rgb(176,197,198)]">
+                  The dynamic questions for this blueprint haven&apos;t been generated yet. This
+                  feature is currently under development.
+                </p>
+
+                <div className="mb-8 rounded-lg border border-[#a7dadb]/20 bg-[#a7dadb]/10 p-6">
+                  <div className="flex items-start gap-3">
+                    <svg
+                      className="mt-0.5 h-5 w-5 flex-shrink-0 text-[#a7dadb]"
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                    <div className="text-left">
+                      <p className="mb-2 text-sm font-medium text-[#a7dadb]">
+                        In a complete implementation, this page would:
+                      </p>
+                      <ul className="space-y-1 text-sm text-[rgb(176,197,198)]">
+                        <li>• Generate personalized questions based on your static responses</li>
+                        <li>• Present them in an interactive, multi-step form</li>
+                        <li>• Allow you to provide detailed answers with rich input types</li>
+                        <li>• Save your responses and generate a comprehensive blueprint</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex flex-col justify-center gap-3 sm:flex-row">
+                  <Link
+                    href="/"
+                    className="inline-flex items-center justify-center gap-2 rounded-lg bg-[#a7dadb] px-6 py-2.5 text-sm font-medium text-[#020C1B] shadow-sm transition-all duration-200 hover:bg-[#8bc5c6] hover:shadow-md"
+                  >
+                    <ArrowLeft className="h-4 w-4" />
+                    Return to Dashboard
+                  </Link>
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      try {
+                        const supabase = getSupabaseBrowserClient();
+                        const { data: userResp } = await supabase.auth.getUser();
+                        const userId = userResp?.user?.id;
+                        if (!userId) {
+                          router.push('/static-wizard');
+                          return;
+                        }
+                        const { count } = await supabase
+                          .from('blueprint_generator')
+                          .select('*', { count: 'exact', head: true })
+                          .eq('user_id', userId);
+                        const nextIndex = (count ?? 0) + 1;
+                        const { data, error } = await supabase
+                          .from('blueprint_generator')
+                          .insert({
+                            user_id: userId,
+                            status: 'draft',
+                            title: `New Blueprint (${nextIndex})`,
+                            static_answers: {},
+                          })
+                          .select()
+                          .single();
+                        if (error) throw error;
+                        const draftId = data.id as string;
+                        router.push(`/static-wizard?bid=${draftId}`);
+                      } catch (_e) {
+                        router.push('/static-wizard');
+                      }
+                    }}
+                    className="inline-flex items-center justify-center gap-2 rounded-lg border border-white/10 bg-white/5 px-6 py-2.5 text-sm font-medium text-[rgb(176,197,198)] transition-colors hover:bg-white/10"
+                  >
+                    Create Another Blueprint
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
     );
   }
 
   return (
-    <AuthProvider>
-      <ProtectedRoute>
-        <main className="min-h-screen bg-blue-50 dark:bg-slate-900">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16 lg:py-20">
-            {/* Header */}
-            <div className="max-w-6xl mx-auto mb-8">
-              <div className="flex items-center justify-between mb-6">
-                <Link
-                  href="/"
-                  className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
-                >
-                  <ArrowLeft className="w-4 h-4" />
-                  Back to Dashboard
-                </Link>
-                <div className="text-right">
-                  <div className="inline-flex items-center gap-2 px-3 py-1 bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 rounded-full text-xs font-medium">
-                    <div className="w-2 h-2 bg-green-500 rounded-full" />
-                    Draft Blueprint
-                  </div>
-                </div>
-              </div>
+    <div className="min-h-screen bg-[#020C1B]">
+      {/* Header with Swirls */}
+      <header className="relative sticky top-0 z-10 overflow-hidden border-b border-white/10 bg-[#020C1B]/80 backdrop-blur-xl">
+        {/* Header background with swirls */}
+        <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
+          <SwirlBackground
+            count={12}
+            minSize={32}
+            maxSize={64}
+            opacityMin={0.03}
+            opacityMax={0.08}
+          />
+          <div
+            className="absolute inset-0"
+            style={{
+              background:
+                'radial-gradient(60% 50% at 50% 30%, rgba(167,218,219,0.03) 0%, transparent 70%)',
+            }}
+          />
+        </div>
 
-              <div className="text-center">
-                <div className="inline-flex items-center gap-3 mb-4">
-                  <div className="p-3 bg-indigo-100 dark:bg-indigo-900 rounded-full">
-                    <svg
-                      className="w-8 h-8 text-indigo-600 dark:text-indigo-400"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                      />
-                    </svg>
-                  </div>
-                </div>
-                <h1 className="text-3xl sm:text-4xl font-bold text-slate-900 dark:text-slate-100 mb-4">
-                  Dynamic Questionnaire
-                </h1>
-                <p className="text-lg text-slate-600 dark:text-slate-400 max-w-5xl mx-auto">
-                  Blueprint #{blueprint.id.slice(0, 8)} •{' '}
-                  {blueprint.static_answers?.learningObjective || 'No learning objective set'}
-                </p>
-                <div className="mt-4 inline-flex items-center gap-2 px-4 py-2 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded-full text-sm">
-                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                    <path
-                      fillRule="evenodd"
-                      d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                  Answer these personalized questions to complete your learning blueprint
-                </div>
-              </div>
-            </div>
+        <div className="relative mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+          <div className="flex items-start justify-between gap-4">
+            {/* Left side: Back button + Title */}
+            <div className="min-w-0 flex-1">
+              <Link
+                href="/"
+                className="pressable mb-4 inline-flex items-center gap-2 text-[rgb(176,197,198)] transition-colors hover:text-[#a7dadb]"
+              >
+                <ArrowLeft className="h-4 w-4" aria-hidden="true" />
+                <span className="text-sm font-medium">Back to Dashboard</span>
+              </Link>
 
-            {/* Dynamic Form Container */}
-            <div className="max-w-6xl mx-auto">
-              <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-700 overflow-hidden">
-                <div className="p-6 sm:p-8 lg:p-10">
-                  {/* Debug logging for form schema */}
-                  {console.log('Form schema sections:', blueprint.dynamic_questions || [])}
-                  <DynamicFormRenderer
-                    formSchema={{
-                      id: `dynamic-${blueprint.id}`,
-                      title: 'Dynamic Questions',
-                      description: 'Generated questions based on your responses',
-                      sections: blueprint.dynamic_questions || [],
-                      settings: {
-                        allowSaveProgress: true,
-                        autoSaveInterval: 2000,
-                        showProgress: true,
-                        allowSectionJump: true,
-                        submitButtonText: 'Complete Blueprint',
-                        saveButtonText: 'Save Progress',
-                        theme: 'auto',
-                      },
-                    }}
-                    onSubmit={async (answers) => {
-                      try {
-                        // Save dynamic answers to the blueprint
-                        await blueprintService.updateDynamicAnswers(id, answers);
-                        
-                        // Generate the final blueprint
-                        const response = await fetch('/api/generate-blueprint', {
-                          method: 'POST',
-                          headers: {
-                            'Content-Type': 'application/json',
-                          },
-                          body: JSON.stringify({ blueprintId: id }),
-                        });
-
-                        if (!response.ok) {
-                          throw new Error('Failed to generate blueprint');
-                        }
-
-                        // Redirect to dashboard with success message
-                        router.push('/?blueprint=completed');
-                      } catch (error) {
-                        console.error('Error saving dynamic answers:', error);
-                        // Still redirect but show error state
-                        router.push('/?blueprint=error');
-                      }
-                    }}
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* Footer */}
-            <div className="max-w-6xl mx-auto mt-8 text-center">
-              <p className="text-sm text-slate-500 dark:text-slate-400">
-                Your responses are automatically saved as you progress
+              <h1 className="font-heading mb-2 text-3xl font-bold tracking-tight text-white sm:text-4xl">
+                Dynamic Questions
+              </h1>
+              <p className="max-w-3xl text-base text-[rgb(176,197,198)]">
+                Answer these personalized questions based on your learning objectives. Your
+                responses will help us create a comprehensive learning blueprint tailored to your
+                needs.
               </p>
             </div>
+
+            {/* Right side: Controls */}
+            <div className="flex shrink-0 items-center gap-3">
+              <DarkModeToggle />
+              <UserAvatar user={user} sizeClass="w-8 h-8" />
+            </div>
           </div>
-        </main>
+        </div>
+      </header>
+
+      {/* Main Content */}
+      <main className="w-full px-4 py-8 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-6xl">
+          <DynamicFormRenderer
+            formSchema={{
+              id: `dynamic-${blueprint.id}`,
+              title: 'Dynamic Questions',
+              description: 'Generated questions based on your responses',
+              sections: (Array.isArray(blueprint.dynamic_questions)
+                ? blueprint.dynamic_questions
+                : []) as any,
+              settings: {
+                allowSaveProgress: true,
+                autoSaveInterval: 2000,
+                showProgress: true,
+                allowSectionJump: true,
+                submitButtonText: 'Complete Blueprint',
+                saveButtonText: 'Save Progress',
+                theme: 'auto',
+              },
+            }}
+            initialData={(blueprint.dynamic_answers as any) || {}}
+            onSubmit={async (answers) => {
+              try {
+                // Save dynamic answers to the current draft blueprint
+                const svc = createBrowserBlueprintService();
+                await svc.updateDynamicAnswers(id, answers);
+                // Redirect to generating screen which will stream SSE and finalize save
+                router.push(`/generating/${id}`);
+              } catch (error) {
+                console.error('Error saving dynamic answers:', error);
+                router.push('/?blueprint=error');
+              }
+            }}
+            onSave={async (partialAnswers) => {
+              try {
+                // Persist in real-time to the same line item; user is enforced by RLS
+                const svc = createBrowserBlueprintService();
+                await svc.updateDynamicAnswers(id, partialAnswers as any);
+              } catch (e) {
+                console.error('Realtime save error:', e);
+              }
+            }}
+          />
+        </div>
+      </main>
+    </div>
+  );
+}
+
+export default function DynamicWizardPage({ params }: DynamicWizardPageProps): React.JSX.Element {
+  const { id } = use(params);
+
+  return (
+    <AuthProvider>
+      <ProtectedRoute>
+        <DynamicWizardContent id={id} />
       </ProtectedRoute>
     </AuthProvider>
   );

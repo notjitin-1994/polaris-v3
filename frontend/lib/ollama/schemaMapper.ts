@@ -1,25 +1,71 @@
 import type { DynamicQuestions } from './schema';
 import type { FormSchema, Section, Question } from '@/lib/dynamic-form/schema';
 
+// Default semantic section titles used when padding to 5 sections
+const DEFAULT_SECTION_TITLES: string[] = [
+  'Learning Objectives & Outcomes',
+  'Learner Profile & Audience Context',
+  'Resources, Tools, & Support Systems',
+  'Timeline, Constraints, & Delivery Conditions',
+  'Evaluation, Success Metrics & Long-Term Impact',
+];
+
 /**
  * Maps Ollama-generated dynamic questions to the dynamic form schema
  */
 export function mapOllamaToFormSchema(ollamaQuestions: DynamicQuestions): FormSchema {
-  const sections: Section[] = (ollamaQuestions as any).sections.map((section: any, sectionIndex: number) => ({
-    id: `section-${sectionIndex + 1}`,
-    title: section.title,
-    description: section.description ?? '',
-    questions: section.questions.map((question: any) => {
-      // Support both legacy and new question shapes
-      const isLegacy = typeof question.question === 'string' && typeof question.type === 'string';
+  const sections: Section[] = (ollamaQuestions as any).sections.map(
+    (section: any, sectionIndex: number) => ({
+      id: `section-${sectionIndex + 1}`,
+      title: section.title,
+      description: section.description ?? '',
+      questions: section.questions.map((question: any) => {
+        // Support both legacy and new question shapes
+        const isLegacy = typeof question.question === 'string' && typeof question.type === 'string';
 
-      if (isLegacy) {
-        const legacyType = question.type as string;
+        if (isLegacy) {
+          const legacyType = question.type as string;
+          const q: Question = {
+            id: question.id,
+            label: question.question,
+            type: mapLegacyType(legacyType),
+            required: Boolean(question.required),
+            helpText: undefined,
+            placeholder: undefined,
+            validation: [
+              {
+                type: 'required',
+                message: 'This field is required',
+              },
+            ],
+            options:
+              legacyType === 'select' || legacyType === 'multiselect'
+                ? (question.options ?? []).map((option: string) => ({
+                    value: option,
+                    label: option,
+                    disabled: false,
+                  }))
+                : undefined,
+            scaleConfig:
+              legacyType === 'scale'
+                ? {
+                    min: Number.isFinite(question.scaleMin) ? question.scaleMin : 1,
+                    max: Number.isFinite(question.scaleMax) ? question.scaleMax : 10,
+                    step: 1,
+                  }
+                : undefined,
+            metadata: {
+              dataType: legacyType === 'number' ? 'number' : 'string',
+            },
+          };
+          return q;
+        }
+
         const q: Question = {
           id: question.id,
-          label: question.question,
-          type: mapLegacyType(legacyType),
-          required: Boolean(question.required),
+          label: question.question_text,
+          type: mapInputType(question.input_type),
+          required: question.validation?.required ?? true,
           helpText: undefined,
           placeholder: undefined,
           validation: [
@@ -29,66 +75,70 @@ export function mapOllamaToFormSchema(ollamaQuestions: DynamicQuestions): FormSc
             },
           ],
           options:
-            legacyType === 'select' || legacyType === 'multiselect'
-              ? (question.options ?? []).map((option: string) => ({ value: option, label: option, disabled: false }))
+            question.input_type === 'single_select' || question.input_type === 'multi_select'
+              ? (question.options ?? []).map((option: string) => ({
+                  value: option,
+                  label: option,
+                  disabled: false,
+                }))
               : undefined,
           scaleConfig:
-            legacyType === 'scale'
+            question.input_type === 'slider'
               ? {
-                  min: Number.isFinite(question.scaleMin) ? question.scaleMin : 1,
-                  max: Number.isFinite(question.scaleMax) ? question.scaleMax : 10,
+                  min: 1,
+                  max: 10,
                   step: 1,
                 }
               : undefined,
           metadata: {
-            dataType: legacyType === 'number' ? 'number' : 'string',
+            dataType: question.validation?.data_type ?? 'string',
           },
         };
+
         return q;
-      }
+      }),
+      order: sectionIndex,
+      isCollapsible: true,
+      isRequired: true,
+    })
+  );
 
-      const q: Question = {
-        id: question.id,
-        label: question.question_text,
-        type: mapInputType(question.input_type),
-        required: question.validation?.required ?? true,
+  // Guarantee exactly 5 sections by trimming or padding with placeholders
+  const MAX_SECTIONS = 5;
+  const normalizedSections = sections.slice(0, MAX_SECTIONS);
+  if (normalizedSections.length < MAX_SECTIONS) {
+    for (let i = normalizedSections.length; i < MAX_SECTIONS; i++) {
+      const title = DEFAULT_SECTION_TITLES[i] || `Additional Details ${i + 1}`;
+      const placeholderQuestion: Question = {
+        id: `section-${i + 1}-additional-notes`,
+        label: `Provide any additional details for "${title}"`,
+        type: 'textarea',
+        required: false,
         helpText: undefined,
-        placeholder: undefined,
-        validation: [
-          {
-            type: 'required',
-            message: 'This field is required',
-          },
-        ],
-        options:
-          question.input_type === 'single_select' || question.input_type === 'multi_select'
-            ? (question.options ?? []).map((option: string) => ({ value: option, label: option, disabled: false }))
-            : undefined,
-        scaleConfig:
-          question.input_type === 'slider'
-            ? {
-                min: 1,
-                max: 10,
-                step: 1,
-              }
-            : undefined,
-        metadata: {
-          dataType: question.validation?.data_type ?? 'string',
-        },
-      };
+        placeholder: 'Add details here',
+        validation: [],
+        options: undefined,
+        scaleConfig: undefined,
+        metadata: { generated: true, placeholder: true },
+      } as Question;
 
-      return q;
-    }),
-    order: sectionIndex,
-    isCollapsible: true,
-    isRequired: true,
-  }));
+      normalizedSections.push({
+        id: `section-${i + 1}`,
+        title,
+        description: '',
+        questions: [placeholderQuestion],
+        order: i,
+        isCollapsible: true,
+        isRequired: true,
+      });
+    }
+  }
 
   return {
     id: 'dynamic-questionnaire',
     title: 'Dynamic Learning Questionnaire',
     description: 'Comprehensive questionnaire to gather insights for learning blueprint generation',
-    sections,
+    sections: normalizedSections,
     settings: {
       allowSaveProgress: true,
       autoSaveInterval: 2000,
@@ -149,11 +199,11 @@ export function mapFormResponsesToOllamaFormat(
   formResponses: Record<string, any>
 ): Record<string, any> {
   const mappedResponses: Record<string, any> = {};
-  
+
   for (const [questionId, response] of Object.entries(formResponses)) {
     // Extract the actual question ID (remove section prefix if present)
     const cleanQuestionId = questionId.replace(/^section-\d+-/, '');
-    
+
     // Map response based on type
     if (Array.isArray(response)) {
       // Multi-select responses
@@ -166,6 +216,6 @@ export function mapFormResponsesToOllamaFormat(
       mappedResponses[cleanQuestionId] = response;
     }
   }
-  
+
   return mappedResponses;
 }

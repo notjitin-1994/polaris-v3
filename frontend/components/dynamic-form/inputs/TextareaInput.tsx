@@ -23,6 +23,16 @@ export const TextareaInput: React.FC<BaseInputProps> = ({
   const inputId = `textarea-${question.id}`;
   const hasError = !!error;
 
+  const textareaClasses = cn(
+    'w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white placeholder-white/40',
+    'ring-0 transition outline-none',
+    'min-h-[120px] resize-none',
+    hasError
+      ? 'border-red-400/50 focus:border-red-400/50 focus:ring-[1.2px] focus:ring-red-400/50'
+      : 'focus:border-[#d0edf0] focus:ring-[1.2px] focus:ring-[#d0edf0]',
+    disabled && 'cursor-not-allowed disabled:opacity-50'
+  );
+
   return (
     <InputWrapper
       question={question}
@@ -40,27 +50,19 @@ export const TextareaInput: React.FC<BaseInputProps> = ({
         disabled={disabled}
         required={question.required}
         placeholder={question.placeholder}
-        rows={question.rows}
+        rows={question.rows || 4}
         maxLength={question.maxLength}
         aria-invalid={hasError}
         aria-describedby={hasError ? `${inputId}-error` : undefined}
-        className={cn(
-          'glass w-full px-3 py-2 rounded-md text-foreground placeholder:text-foreground/50',
-          'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:ring-offset-2 focus-visible:ring-offset-background',
-          'resize-vertical transition-all duration-200',
-          hasError && 'border-error focus-visible:ring-error/50',
-          disabled && 'disabled:opacity-50 cursor-not-allowed',
-        )}
+        className={textareaClasses}
+        style={{
+          backgroundColor: 'rgba(255, 255, 255, 0.05)',
+          color: '#e0e0e0',
+        }}
       />
 
-      {question.helpText && (
-        <p id={`${inputId}-help`} className="text-sm text-foreground/60 mt-1">
-          {question.helpText}
-        </p>
-      )}
-
       {question.maxLength && (
-        <p className="text-xs text-foreground/60 mt-1">
+        <p className="mt-1 text-xs text-white/60">
           {typeof value === 'string' ? value.length : 0} / {question.maxLength} characters
         </p>
       )}
