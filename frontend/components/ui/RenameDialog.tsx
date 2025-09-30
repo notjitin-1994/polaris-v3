@@ -113,26 +113,27 @@ export function RenameDialog({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm"
+      className="animate-fade-in fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-md"
       onClick={handleBackdropClick}
     >
-      <div className="glass-strong mx-4 w-full max-w-md overflow-hidden rounded-2xl">
+      <div className="glass-strong animate-scale-in mx-4 w-full max-w-md overflow-hidden rounded-2xl shadow-2xl">
         {/* Header */}
-        <div className="border-b border-white/10 p-6">
+        <div className="border-b border-white/10 bg-gradient-to-b from-white/5 to-transparent p-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
-              <div className="bg-primary/10 flex h-10 w-10 items-center justify-center rounded-full">
+              <div className="bg-primary/10 border-primary/20 flex h-10 w-10 items-center justify-center rounded-full border">
                 <Edit3 className="text-primary h-5 w-5" />
               </div>
               <div>
-                <h2 className="text-foreground text-xl font-semibold">{title}</h2>
-                <p className="text-foreground/70 text-sm">{description}</p>
+                <h2 className="font-heading text-xl font-semibold text-white">{title}</h2>
+                <p className="text-sm text-white/60">{description}</p>
               </div>
             </div>
             <button
               onClick={onClose}
               disabled={isLoading}
-              className="text-foreground/50 hover:text-foreground/80 transition-colors disabled:opacity-50"
+              className="pressable inline-flex h-8 w-8 items-center justify-center rounded-lg text-white/50 transition-colors hover:bg-white/10 hover:text-white/80 disabled:cursor-not-allowed disabled:opacity-50"
+              aria-label="Close dialog"
             >
               <X className="h-5 w-5" />
             </button>
@@ -146,7 +147,7 @@ export function RenameDialog({
             <div>
               <label
                 htmlFor="blueprint-name"
-                className="text-foreground mb-2 block text-sm font-medium"
+                className="mb-2 block text-sm font-medium text-white/90"
               >
                 Blueprint Name
               </label>
@@ -159,19 +160,24 @@ export function RenameDialog({
                 placeholder={placeholder}
                 maxLength={maxLength}
                 disabled={isLoading}
-                className="bg-background/50 text-foreground placeholder-foreground/50 focus:ring-primary/50 focus:border-primary w-full rounded-lg border border-neutral-200 px-4 py-3 transition-all focus:ring-2 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 dark:border-neutral-700"
+                className="focus:border-primary/50 focus:ring-primary/20 w-full rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-white placeholder-white/40 backdrop-blur-sm transition-all focus:ring-2 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
               />
               <div className="mt-2 flex justify-between">
-                <div className="text-foreground/60 text-xs">
+                <div className="text-xs text-white/50">
                   {newName.length}/{maxLength} characters
                 </div>
-                {hasChanges && <div className="text-primary text-xs">Changes will be saved</div>}
+                {hasChanges && (
+                  <div className="text-primary flex items-center gap-1 text-xs">
+                    <span className="bg-primary inline-block h-1.5 w-1.5 animate-pulse rounded-full" />
+                    Changes will be saved
+                  </div>
+                )}
               </div>
             </div>
 
             {/* Error Message */}
             {error && (
-              <div className="text-error bg-error/10 flex items-center space-x-2 rounded-lg px-3 py-2 text-sm">
+              <div className="bg-error/10 border-error/20 text-error flex items-center space-x-2 rounded-lg border px-3 py-2.5 text-sm">
                 <AlertCircle className="h-4 w-4 flex-shrink-0" />
                 <span>{error}</span>
               </div>
@@ -202,14 +208,14 @@ export function RenameDialog({
         </div>
 
         {/* Keyboard shortcuts hint */}
-        <div className="px-6 pb-4">
-          <div className="text-foreground/50 bg-background/30 rounded-lg px-3 py-2 text-xs">
-            <span className="font-medium">Tip:</span> Press{' '}
-            <kbd className="bg-background/50 text-foreground/70 rounded border px-1.5 py-0.5">
+        <div className="border-t border-white/10 bg-gradient-to-t from-white/5 to-transparent px-6 py-4">
+          <div className="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-xs text-white/60">
+            <span className="font-medium text-white/80">Tip:</span> Press{' '}
+            <kbd className="rounded border border-white/20 bg-white/10 px-1.5 py-0.5 font-mono text-xs text-white/70">
               Esc
             </kbd>{' '}
             to cancel,{' '}
-            <kbd className="bg-background/50 text-foreground/70 rounded border px-1.5 py-0.5">
+            <kbd className="rounded border border-white/20 bg-white/10 px-1.5 py-0.5 font-mono text-xs text-white/70">
               Cmd+Enter
             </kbd>{' '}
             to save

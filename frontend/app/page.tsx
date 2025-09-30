@@ -9,12 +9,14 @@ import {
   Clock,
   CheckCircle,
   AlertCircle,
-  Edit,
+  Pencil,
   ClipboardList,
   ArrowRight,
   Wrench,
   BookOpen,
   BarChart3,
+  Play,
+  Eye,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { RenameDialog } from '@/components/ui/RenameDialog';
@@ -23,7 +25,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { createBrowserBlueprintService } from '@/lib/db/blueprints.client';
 import { BlueprintRow } from '@/lib/db/blueprints';
 import { getSupabaseBrowserClient } from '@/lib/supabase/client';
-import { SwirlBackground } from '@/components/layout/SwirlBackground';
+import { StandardHeader } from '@/components/layout/StandardHeader';
 
 function DashboardContent() {
   const { user, signOut } = useAuth();
@@ -254,59 +256,33 @@ function DashboardContent() {
     return rawName.toString().trim().split(' ')[0];
   };
 
+  const dashboardTitle = (() => {
+    const firstName = getFirstName();
+    return user && firstName ? (
+      <h1 className="font-heading text-3xl font-bold tracking-tight text-white sm:text-4xl md:text-5xl">
+        <span>Welcome, </span>
+        <span className="text-[#a7dadb]">{firstName}</span>
+        <span>.</span>
+      </h1>
+    ) : (
+      <h1 className="font-heading text-3xl font-bold tracking-tight text-white sm:text-4xl md:text-5xl">
+        Welcome to SmartSlate.
+      </h1>
+    );
+  })();
+
   return (
     <div className="relative min-h-screen w-full overflow-hidden bg-[#020C1B] text-[rgb(224,224,224)]">
-      <div className="page-enter animate-fade-in-up animate-delay-75 relative z-10 mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-        {/* Header */}
-        <header className="relative mb-12">
-          {/* Header background with swirls */}
-          <div
-            className="pointer-events-none absolute inset-0 -inset-x-4 -inset-y-6 overflow-hidden"
-            aria-hidden="true"
-          >
-            <SwirlBackground
-              count={12}
-              minSize={32}
-              maxSize={64}
-              opacityMin={0.03}
-              opacityMax={0.08}
-            />
-            <div
-              className="absolute inset-0"
-              style={{
-                background:
-                  'radial-gradient(60% 50% at 50% 30%, rgba(167,218,219,0.03) 0%, transparent 70%)',
-              }}
-            />
-          </div>
-          <div className="relative flex items-start justify-between">
-            <div>
-              <h1 className="font-heading animate-fade-in-up text-3xl font-bold tracking-tight text-white sm:text-4xl md:text-5xl">
-                {(() => {
-                  const firstName = getFirstName();
-                  return user && firstName ? (
-                    <>
-                      <span>Welcome, </span>
-                      <span className="text-[#a7dadb]">{firstName}</span>
-                      <span>.</span>
-                    </>
-                  ) : (
-                    <>Welcome to SmartSlate.</>
-                  );
-                })()}
-              </h1>
-              <p className="animate-fade-in-up animate-delay-150 mt-3 max-w-3xl text-base text-[rgb(176,197,198)] sm:text-lg">
-                Your learning blueprint workspace — create, manage, and explore personalized
-                learning paths.
-              </p>
-              <div
-                aria-hidden="true"
-                className="mt-4 h-px w-16 bg-gradient-to-r from-white/40 to-transparent"
-              />
-            </div>
-          </div>
-        </header>
+      {/* Header */}
+      <StandardHeader
+        title={dashboardTitle}
+        subtitle="Your learning blueprint workspace — create, manage, and explore personalized learning paths."
+        showDecorativeLine={true}
+        sticky={false}
+        user={user}
+      />
 
+      <div className="page-enter animate-fade-in-up animate-delay-75 relative z-10 mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
         {/* Quick Actions */}
         <section className="mb-12">
           <div className="grid grid-cols-1 gap-4 md:grid-cols-3 md:gap-5">
@@ -436,13 +412,13 @@ function DashboardContent() {
                           title="Rename blueprint"
                           aria-label="Rename blueprint"
                         >
-                          <Edit className="h-4 w-4" aria-hidden="true" />
+                          <Pencil className="h-4 w-4" aria-hidden="true" />
                         </button>
                         {blueprint.status === 'draft' && (
                           <>
                             <button
                               type="button"
-                              className="btn-primary pressable inline-flex items-center gap-2 px-4 py-2 text-sm"
+                              className="btn-primary pressable inline-flex h-9 w-9 items-center justify-center rounded-lg"
                               title="Resume blueprint"
                               onClick={async () => {
                                 try {
@@ -455,8 +431,7 @@ function DashboardContent() {
                               }}
                               aria-label="Resume blueprint"
                             >
-                              <span>Resume</span>
-                              <ArrowRight className="h-4 w-4" aria-hidden="true" />
+                              <Play className="h-4 w-4" aria-hidden="true" />
                             </button>
                             {!questionnaireCompletion[blueprint.id] && (
                               <Link
@@ -473,10 +448,11 @@ function DashboardContent() {
                         {blueprint.status === 'completed' && blueprint.blueprint_markdown && (
                           <Link
                             href={`/blueprint/${blueprint.id}`}
-                            className="btn-primary pressable inline-flex items-center gap-2 bg-[#10b981] px-4 py-2 text-sm hover:bg-[#059669]"
+                            className="btn-primary pressable inline-flex h-9 w-9 items-center justify-center rounded-lg bg-[#10b981] hover:bg-[#059669]"
+                            title="View Blueprint"
+                            aria-label="View Blueprint"
                           >
-                            <span>View Blueprint</span>
-                            <ArrowRight className="h-4 w-4" aria-hidden="true" />
+                            <Eye className="h-4 w-4" aria-hidden="true" />
                           </Link>
                         )}
                       </div>
@@ -558,8 +534,8 @@ function DashboardContent() {
           }
           title="Rename Blueprint"
           description="Enter a new name for your blueprint"
-          placeholder="Blueprint name"
-          maxLength={100}
+          placeholder="Starmap for Professional Development and Career Growth Path"
+          maxLength={80}
         />
       </div>
     </div>

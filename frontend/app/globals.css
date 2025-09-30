@@ -850,9 +850,9 @@ button:focus-visible {
 
 /* Table responsive wrapper */
 .blueprint-content table {
-  display: block;
-  overflow-x: auto;
-  white-space: nowrap;
+  width: 100%;
+  border-collapse: collapse;
+  /* Let the wrapper handle horizontal overflow to preserve proper table layout */
 }
 
 @media (max-width: 640px) {
