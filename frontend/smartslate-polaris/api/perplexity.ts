@@ -1,0 +1,222 @@
+import type { VercelRequest, VercelResponse } from '@vercel/node';
+
+// Get Perplexity configuration from environment
+const PERPLEXITY_API_KEY =
+  process.env.PERPLEXITY_API_KEY || process.env.VITE_PERPLEXITY_API_KEY || '';
+const PERPLEXITY_BASE_URL =
+  process.env.PERPLEXITY_BASE_URL ||
+  process.env.VITE_PERPLEXITY_BASE_URL ||
+  'https://api.perplexity.ai';
+const PERPLEXITY_MODEL =
+  process.env.PERPLEXITY_MODEL || process.env.VITE_PERPLEXITY_MODEL || 'sonar-pro';
+
+// Performance monitoring
+const logPerformance = (operation: string, startTime: number) => {
+  const duration = Date.now() - startTime;
+  console.log(`[API Performance] ${operation}: ${duration}ms`);
+  return duration;
+};
+
+function normalizePerplexityModel(input?: string): string {
+  const requested = (input || '').trim().toLowerCase();
+
+  // Accept canonical current model ids as-is
+  const canonical = new Set(['sonar', 'sonar-pro', 'sonar-reasoning', 'sonar-reasoning-pro']);
+  if (canonical.has(requested)) return requested;
+
+  // Normalize common variants (spaces/underscores → hyphens)
+  const normalized = requested.replace(/\s+/g, '-').replace(/_/g, '-');
+  if (canonical.has(normalized)) return normalized;
+
+  // Map legacy or alias names to current ids
+  if (
+    requested === 'sonar pro' ||
+    requested === 'sonar-large' ||
+    requested === 'sonar medium' ||
+    requested === 'sonar-medium'
+  ) {
+    return 'sonar-pro';
+  }
+  if (requested === 'sonar reasoning' || requested === 'sonar-reasoning') {
+    return 'sonar-reasoning';
+  }
+  if (requested === 'sonar reasoning pro' || requested === 'sonar-reasoning-pro') {
+    return 'sonar-reasoning-pro';
+  }
+
+  // Map deprecated llama-3.1 sonar ids to current equivalents
+  if (requested.startsWith('llama-3.1-sonar-small')) return 'sonar';
+  if (requested.startsWith('llama-3.1-sonar-large')) return 'sonar-pro';
+
+  // Fallback to safe default
+  return 'sonar-pro';
+}
+
+// Temporary hardcoded key - this should be removed in production
+const HARDCODED_KEY = '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';
+
+export default async function handler(req: VercelRequest, res: VercelResponse) {
+  const startTime = Date.now();
+
+  // Generate request ID early for tracking throughout the request lifecycle
+  const requestId =
+    (req.headers['x-request-id'] as string) ||
+    `req_${Date.now()}_${Math.random().toString(36).slice(2, 10)}`;
+
+  // Enhanced CORS with caching headers
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Request-ID');
+  res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Method not allowed' });
+  }
+
+  try {
+    const apiKey = PERPLEXITY_API_KEY || HARDCODED_KEY;
+
+    if (!apiKey) {
+      console.error('Perplexity API key not configured');
+      return res.status(500).json({ error: 'Perplexity API key not configured' });
+    }
+
+    // Extract and normalize request body (Vercel can pass stringified JSON in prod)
+    let body: any = req.body;
+    if (typeof body === 'string') {
+      try {
+        body = JSON.parse(body);
+      } catch (e) {
+        console.error('Invalid JSON body string:', body);
+        return res.status(400).json({ error: 'Invalid JSON body' });
+      }
+    }
+    // Destructure with defaults
+    let { messages, model, temperature = 0.2, max_tokens = 4096 } = body || {};
+    // Coerce numeric fields if they came as strings
+    if (typeof temperature === 'string') {
+      const t = parseFloat(temperature);
+      if (!Number.isNaN(t)) temperature = t;
+    }
+    if (typeof max_tokens === 'string') {
+      const mt = parseInt(max_tokens, 10);
+      if (!Number.isNaN(mt)) max_tokens = mt;
+    }
+
+    if (!messages || !Array.isArray(messages)) {
+      console.error('Invalid request body - messages missing or not an array:', req.body);
+      return res.status(400).json({ error: 'Messages array is required' });
+    }
+
+    // Validate message format
+    for (const msg of messages) {
+      if (!msg.role || !msg.content) {
+        console.error('Invalid message format - missing role or content:', msg);
+        return res.status(400).json({ error: 'Each message must have role and content' });
+      }
+      if (msg.role !== 'user' && msg.role !== 'assistant') {
+        console.error(
+          'Invalid message role - only "user" and "assistant" are supported:',
+          msg.role
+        );
+        return res.status(400).json({ error: 'Message role must be "user" or "assistant"' });
+      }
+    }
+
+    // Make request to Perplexity API with a server-side timeout below platform max
+    const controller = new AbortController();
+    const SERVER_TIMEOUT_MS = Number(process.env.PPLX_SERVER_TIMEOUT_MS || 75000);
+    const timeoutId = setTimeout(() => controller.abort(), SERVER_TIMEOUT_MS);
+
+    const requestPayload = {
+      model: normalizePerplexityModel(model || PERPLEXITY_MODEL),
+      messages,
+      temperature,
+      max_tokens,
+    };
+
+    // Enhanced logging with request ID for tracing
+    console.log('[Perplexity API] Request:', {
+      requestId,
+      url: `${PERPLEXITY_BASE_URL}/chat/completions`,
+      model: requestPayload.model,
+      messageCount: messages.length,
+      temperature,
+      max_tokens,
+      timestamp: new Date().toISOString(),
+    });
+
+    const response = await fetch(`${PERPLEXITY_BASE_URL}/chat/completions`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(requestPayload),
+      signal: controller.signal,
+    });
+
+    clearTimeout(timeoutId);
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('Perplexity API error:', response.status, errorText);
+      return res.status(response.status).json({
+        error: `Perplexity API error: ${response.statusText}`,
+        details: errorText,
+      });
+    }
+
+    const data = await response.json();
+
+    // Log performance metrics
+    const duration = logPerformance(`Perplexity API call (${requestPayload.model})`, startTime);
+
+    // Add performance metadata to response
+    const enhancedResponse = {
+      ...(typeof data === 'object' && data !== null ? data : {}),
+      metadata: {
+        requestId,
+        model: requestPayload.model,
+        duration,
+        timestamp: new Date().toISOString(),
+      },
+    };
+
+    res.status(200).json(enhancedResponse);
+  } catch (error) {
+    // Enhanced error handling with request tracking
+    const duration = Date.now() - startTime;
+
+    if (error instanceof Error && error.name === 'AbortError') {
+      console.error('[Perplexity API] Timeout:', {
+        requestId,
+        duration,
+        timeout: Number(process.env.PPLX_SERVER_TIMEOUT_MS || 75000),
+      });
+      return res.status(504).json({
+        error: 'Upstream timeout',
+        details: 'Perplexity request exceeded server timeout',
+        requestId,
+        duration,
+      });
+    }
+
+    console.error('[Perplexity API] Error:', {
+      requestId,
+      error: error instanceof Error ? error.message : 'Unknown error',
+      duration,
+    });
+
+    res.status(500).json({
+      error: 'Internal server error',
+      details: error instanceof Error ? error.message : 'Unknown error',
+      requestId,
+      duration,
+    });
+  }
+}
