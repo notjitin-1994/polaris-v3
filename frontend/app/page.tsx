@@ -6,17 +6,11 @@ import { useRouter } from 'next/navigation';
 import {
   Plus,
   FileText,
-  Clock,
-  CheckCircle,
-  AlertCircle,
-  Pencil,
-  ClipboardList,
   ArrowRight,
-  Wrench,
   BookOpen,
   BarChart3,
-  Play,
-  Eye,
+  ChevronLeft,
+  ChevronRight,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { RenameDialog } from '@/components/ui/RenameDialog';
@@ -26,6 +20,7 @@ import { createBrowserBlueprintService } from '@/lib/db/blueprints.client';
 import { BlueprintRow } from '@/lib/db/blueprints';
 import { getSupabaseBrowserClient } from '@/lib/supabase/client';
 import { StandardHeader } from '@/components/layout/StandardHeader';
+import { BlueprintCard } from '@/components/dashboard/BlueprintCard';
 
 function DashboardContent() {
   const { user, signOut } = useAuth();
@@ -37,9 +32,10 @@ function DashboardContent() {
   const [creating, setCreating] = useState(false);
   const [renamingBlueprint, setRenamingBlueprint] = useState<BlueprintRow | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const [pageInput, setPageInput] = useState('');
   const router = useRouter();
 
-  const BLUEPRINTS_PER_PAGE = 10;
+  const BLUEPRINTS_PER_PAGE = 4;
   const totalPages = Math.ceil(blueprints.length / BLUEPRINTS_PER_PAGE);
   const startIndex = (currentPage - 1) * BLUEPRINTS_PER_PAGE;
   const endIndex = startIndex + BLUEPRINTS_PER_PAGE;
@@ -206,45 +202,59 @@ function DashboardContent() {
     [user?.id, renamingBlueprint]
   );
 
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case 'draft':
-        return <Clock className="text-warning h-4 w-4" aria-hidden="true" />;
-      case 'generating':
-        return <AlertCircle className="text-secondary h-4 w-4" aria-hidden="true" />;
-      case 'completed':
-        return <CheckCircle className="text-success h-4 w-4" aria-hidden="true" />;
-      case 'error':
-        return <AlertCircle className="text-error h-4 w-4" aria-hidden="true" />;
-      default:
-        return <FileText className="text-text-disabled h-4 w-4" />;
-    }
-  };
+  const handleDeleteBlueprint = useCallback(
+    async (blueprintId: string) => {
+      if (!user?.id) {
+        console.error('User not authenticated');
+        return;
+      }
 
-  const getStatusText = (status: string) => {
-    switch (status) {
-      case 'draft':
-        return 'Draft';
-      case 'generating':
-        return 'Generating';
-      case 'completed':
-        return 'Completed';
-      case 'error':
-        return 'Error';
-      default:
-        return 'Unknown';
-    }
-  };
+      // Confirm deletion
+      if (
+        !confirm('Are you sure you want to delete this blueprint? This action cannot be undone.')
+      ) {
+        return;
+      }
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    });
-  };
+      try {
+        const supabase = getSupabaseBrowserClient();
+        const { error } = await supabase
+          .from('blueprint_generator')
+          .delete()
+          .eq('id', blueprintId)
+          .eq('user_id', user.id);
+
+        if (error) {
+          console.error('Delete error:', error);
+          alert('Failed to delete blueprint. Please try again.');
+          return;
+        }
+
+        // Remove from local state
+        setBlueprints((prev) => prev.filter((bp) => bp.id !== blueprintId));
+        console.log('Blueprint deleted successfully:', blueprintId);
+      } catch (err) {
+        console.error('Error deleting blueprint:', err);
+        alert('Failed to delete blueprint. Please try again.');
+      }
+    },
+    [user?.id]
+  );
+
+  const handleResumeBlueprint = useCallback(
+    async (blueprintId: string) => {
+      try {
+        const svc = createBrowserBlueprintService();
+        const path = await svc.getNextRouteForBlueprint(blueprintId);
+        router.push(path);
+      } catch (error) {
+        console.error('Error determining next route:', error);
+        // Fallback to static wizard
+        router.push(`/static-wizard?bid=${blueprintId}`);
+      }
+    },
+    [router]
+  );
 
   const getFirstName = () => {
     const rawName =
@@ -365,158 +375,117 @@ function DashboardContent() {
             </div>
           ) : (
             <>
-              <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+              <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
                 {paginatedBlueprints.map((blueprint, idx) => (
-                  <div
+                  <BlueprintCard
                     key={blueprint.id}
-                    className="group glass-card pressable elevate animate-fade-in-up relative p-6"
-                    style={{ animationDelay: `${idx * 50}ms` }}
-                  >
-                    <div className="interactive-spotlight" aria-hidden="true" />
-                    <div className="relative flex items-start justify-between">
-                      <div className="min-w-0 flex-1">
-                        <div className="mb-3 flex items-center gap-3">
-                          <div className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-white/85">
-                            {getStatusIcon(blueprint.status)}
-                          </div>
-                          <div className="min-w-0 flex-1">
-                            <div className="mb-1 flex items-center gap-2">
-                              <span className="text-xs font-semibold text-[#a7dadb]">
-                                {getStatusText(blueprint.status)}
-                              </span>
-                              <span className="text-xs text-white/40">v{blueprint.version}</span>
-                            </div>
-                            <h3 className="font-heading truncate text-base font-bold text-white/95">
-                              {blueprint.title || `Blueprint #${blueprint.id.slice(0, 8)}`}
-                            </h3>
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-4 text-xs text-white/60">
-                          <span>Created {formatDate(blueprint.created_at)}</span>
-                          {blueprint.blueprint_markdown && (
-                            <span className="inline-flex items-center gap-1.5 text-[#10b981]">
-                              <CheckCircle className="h-3.5 w-3.5" />
-                              <span>Generated</span>
-                            </span>
-                          )}
-                        </div>
-                      </div>
-                      <div className="flex shrink-0 items-center gap-2">
-                        <button
-                          type="button"
-                          className="pressable inline-flex h-9 w-9 items-center justify-center rounded-lg border border-white/10 bg-white/5 text-white/70 transition hover:bg-white/10 hover:text-white"
-                          onClick={() => {
-                            console.log('Rename button clicked for blueprint:', blueprint.id);
-                            setRenamingBlueprint(blueprint);
-                          }}
-                          title="Rename blueprint"
-                          aria-label="Rename blueprint"
-                        >
-                          <Pencil className="h-4 w-4" aria-hidden="true" />
-                        </button>
-                        {blueprint.status === 'draft' && (
-                          <>
-                            <button
-                              type="button"
-                              className="btn-primary pressable inline-flex h-9 w-9 items-center justify-center rounded-lg"
-                              title="Resume blueprint"
-                              onClick={async () => {
-                                try {
-                                  const svc = createBrowserBlueprintService();
-                                  const path = await svc.getNextRouteForBlueprint(blueprint.id);
-                                  router.push(path);
-                                } catch {
-                                  router.push(`/static-wizard?bid=${blueprint.id}`);
-                                }
-                              }}
-                              aria-label="Resume blueprint"
-                            >
-                              <Play className="h-4 w-4" aria-hidden="true" />
-                            </button>
-                            {!questionnaireCompletion[blueprint.id] && (
-                              <Link
-                                href={`/static-wizard?bid=${blueprint.id}`}
-                                className="pressable inline-flex h-9 w-9 items-center justify-center rounded-lg border border-[#f59e0b]/30 bg-[#f59e0b]/10 text-[#f59e0b] transition hover:bg-[#f59e0b]/20"
-                                title="Complete Static Questions"
-                                aria-label="Complete Static Questions"
-                              >
-                                <ClipboardList className="h-4 w-4" aria-hidden="true" />
-                              </Link>
-                            )}
-                          </>
-                        )}
-                        {blueprint.status === 'completed' && blueprint.blueprint_markdown && (
-                          <Link
-                            href={`/blueprint/${blueprint.id}`}
-                            className="btn-primary pressable inline-flex h-9 w-9 items-center justify-center rounded-lg bg-[#10b981] hover:bg-[#059669]"
-                            title="View Blueprint"
-                            aria-label="View Blueprint"
-                          >
-                            <Eye className="h-4 w-4" aria-hidden="true" />
-                          </Link>
-                        )}
-                      </div>
-                    </div>
-                  </div>
+                    blueprint={blueprint}
+                    index={idx}
+                    onRename={(bp) => {
+                      console.log('Rename button clicked for blueprint:', bp.id);
+                      setRenamingBlueprint(bp);
+                    }}
+                    onResume={handleResumeBlueprint}
+                    onDelete={handleDeleteBlueprint}
+                    questionnaireComplete={!!questionnaireCompletion[blueprint.id]}
+                  />
                 ))}
               </div>
 
               {/* Pagination */}
               {totalPages > 1 && (
                 <div className="mt-8 flex items-center justify-center gap-2 border-t border-white/10 pt-6">
+                  {/* Previous Button */}
                   <button
                     type="button"
                     onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                     disabled={currentPage === 1}
-                    className="pressable inline-flex items-center gap-2 rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-white/70 transition hover:bg-white/10 hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
+                    className="pressable flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 bg-white/5 text-white/70 transition hover:bg-white/10 hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
                     aria-label="Previous page"
                   >
-                    <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M15 19l-7-7 7-7"
-                      />
-                    </svg>
-                    <span>Previous</span>
+                    <ChevronLeft className="h-5 w-5" />
                   </button>
 
+                  {/* Page Numbers (max 3 visible) */}
                   <div className="flex items-center gap-1">
-                    {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => (
-                      <button
-                        key={pageNum}
-                        type="button"
-                        onClick={() => setCurrentPage(pageNum)}
-                        className={`pressable h-9 w-9 rounded-lg text-sm font-medium transition ${
-                          currentPage === pageNum
-                            ? 'bg-[#4F46E5] text-white'
-                            : 'text-white/70 hover:bg-white/10 hover:text-white'
-                        }`}
-                        aria-label={`Go to page ${pageNum}`}
-                        aria-current={currentPage === pageNum ? 'page' : undefined}
-                      >
-                        {pageNum}
-                      </button>
-                    ))}
+                    {(() => {
+                      const maxVisible = 3;
+                      let startPage = Math.max(1, currentPage - Math.floor(maxVisible / 2));
+                      const endPage = Math.min(totalPages, startPage + maxVisible - 1);
+
+                      if (endPage - startPage + 1 < maxVisible) {
+                        startPage = Math.max(1, endPage - maxVisible + 1);
+                      }
+
+                      return Array.from(
+                        { length: endPage - startPage + 1 },
+                        (_, i) => startPage + i
+                      ).map((pageNum) => (
+                        <button
+                          key={pageNum}
+                          type="button"
+                          onClick={() => setCurrentPage(pageNum)}
+                          className={`pressable h-10 w-10 rounded-lg text-sm font-medium transition ${
+                            currentPage === pageNum
+                              ? 'bg-secondary text-white'
+                              : 'text-white/70 hover:bg-white/10 hover:text-white'
+                          }`}
+                          aria-label={`Go to page ${pageNum}`}
+                          aria-current={currentPage === pageNum ? 'page' : undefined}
+                        >
+                          {pageNum}
+                        </button>
+                      ));
+                    })()}
                   </div>
 
+                  {/* Page Input */}
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    pattern="[0-9]*"
+                    value={pageInput}
+                    onChange={(e) => setPageInput(e.target.value.replace(/\D/g, ''))}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        const targetPage = parseInt(pageInput, 10);
+                        if (!isNaN(targetPage)) {
+                          if (targetPage >= 1 && targetPage <= totalPages) {
+                            setCurrentPage(targetPage);
+                          } else {
+                            setCurrentPage(totalPages);
+                          }
+                          setPageInput('');
+                        }
+                      }
+                    }}
+                    onBlur={() => {
+                      const targetPage = parseInt(pageInput, 10);
+                      if (!isNaN(targetPage)) {
+                        if (targetPage >= 1 && targetPage <= totalPages) {
+                          setCurrentPage(targetPage);
+                        } else if (targetPage > totalPages) {
+                          setCurrentPage(totalPages);
+                        }
+                        setPageInput('');
+                      } else if (pageInput) {
+                        setPageInput('');
+                      }
+                    }}
+                    placeholder={`${currentPage}`}
+                    className="focus:border-primary focus:ring-primary/50 h-10 w-16 rounded-lg border border-white/10 bg-white/5 px-3 text-center text-sm font-medium text-white placeholder:text-white/40 focus:ring-2 focus:outline-none"
+                    aria-label="Go to page number"
+                  />
+
+                  {/* Next Button */}
                   <button
                     type="button"
                     onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
                     disabled={currentPage === totalPages}
-                    className="pressable inline-flex items-center gap-2 rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-white/70 transition hover:bg-white/10 hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
+                    className="pressable flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 bg-white/5 text-white/70 transition hover:bg-white/10 hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
                     aria-label="Next page"
                   >
-                    <span>Next</span>
-                    <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M9 5l7 7-7 7"
-                      />
-                    </svg>
+                    <ChevronRight className="h-5 w-5" />
                   </button>
                 </div>
               )}

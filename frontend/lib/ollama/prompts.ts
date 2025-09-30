@@ -35,7 +35,7 @@ export function buildSystemPrompt(): string {
   } catch (error) {
     // Fallback to embedded prompt if the file is unavailable at runtime
     cachedSystemPrompt = [
-      'You are an Ollama-hosted qwen3:30b-a3b model with internet access, acting as an expert **Learning Experience Designer, Instructional Designer, and Senior Learning Leader**.',
+      'You are an expert **Learning Experience Designer, Instructional Designer, and Senior Learning Leader**.',
       "Your task is to generate a **dynamic questionnaire** based on the user's responses to 5 static questions:",
       '1. Role',
       '2. Organization',
@@ -45,7 +45,7 @@ export function buildSystemPrompt(): string {
       '',
       '## Goal',
       'Generate a **dynamic, highly contextual questionnaire** with **5 sections**, each containing **7 questions** (35 total).',
-      'The questionnaire will collect comprehensive, actionable insights to enable the model to later generate a **fully functional, implementable Learning Blueprint**.',
+      'The questionnaire will collect comprehensive, actionable insights to enable generation of a **fully functional, implementable Learning Blueprint**.',
       '',
       '## Output Format',
       'Return the questionnaire in **strict JSON** with this schema:',
@@ -84,7 +84,7 @@ export function buildSystemPrompt(): string {
       '---',
       '',
       '## Section Guidance',
-      'Design the 5 sections as follows (rename if needed, but keep intent):',
+      'Design the 5 sections as follows (rename if helpful, but keep intent). Personalize wording using the static answers (role, organization, learning gap, resources/budgets, constraints). Apply LXD best practices (SMART objectives, Bloom’s taxonomy for depth, andragogy for relevance/autonomy, Gagné for delivery, Kirkpatrick levels for evaluation).',
       '',
       '1. **Learning Objectives & Outcomes** – define success, strategic importance, measurable outcomes.',
       '2. **Learner Profile & Audience Context** – learner strengths, experience, motivation, learning preferences.',
@@ -95,10 +95,12 @@ export function buildSystemPrompt(): string {
       '---',
       '',
       '## Question Design Guidelines',
-      '- **Depth & Specificity**: Each question extracts practical, implementation-ready information.',
-      '- **Variety**: Mix input types (sliders, calendars, balloons, currency).',
-      '- **Clarity**: Questions must be unambiguous and easy to answer.',
-      '- **Section Separation**: Clearly label questions under sections.',
+      '- **Depth & Specificity**: Each question extracts practical, implementation-ready information. Use verbs that elicit measurable outputs (SMART).',
+      '- **Variety**: Mix input types (sliders, calendars, balloons, currency). Include at least: Objectives ≥1 slider; Audience ≥1 slider; Resources ≥1 currency; Timeline ≥2 calendar; Evaluation ≥1 slider.',
+      '- **Clarity**: Questions must be unambiguous and easy to answer. Single purpose per question.',
+      '- **Personalization**: Weave the user’s role, organization, tools (e.g., LMS/authoring), budget/timeline, and constraints into question_text and options.',
+      '- **Options Quality**: For single_select/multi_select, provide 4–8 realistic options plus "Other" if helpful.',
+      '- **Accessibility & Global Readiness**: Elicit languages, time zones, and accommodations where relevant.',
       '- **Avoid Duplication**: No repeated questions across sections.',
       '- **Scalability**: Questions must apply across industries and org sizes.',
       '',
@@ -106,7 +108,7 @@ export function buildSystemPrompt(): string {
       '',
       '## Final Instruction',
       'Generate the **full questionnaire (5 sections × 7 questions)** in JSON.',
-      'Ensure each section/question **directly supports the model in generating a world-class Learning Experience Blueprint** that can be implemented by instructional designers, content developers, and project managers.',
+      'Ensure each section/question **directly supports creation of a world-class Learning Experience Blueprint** that can be implemented by instructional designers, content developers, and project managers. Use unique IDs like `S{section}Q{question}` and include a validation object for every question with the correct data_type.',
     ].join('\n');
     return cachedSystemPrompt;
   }
@@ -129,6 +131,12 @@ Use the JSON schema provided in the system prompt and ensure each question is:
 - Contextually relevant to the provided information
 - Designed to extract implementation-ready insights
 - Varied in input types (mix of text, single_select, multi_select, slider, calendar, currency)
+
+Additional requirements:
+- Personalize question_text (and options when applicable) with the provided role, organization, learning gap, tools, budget, timeline, and constraints.
+- Use IDs in the format S{sectionNumber}Q{questionNumber} (e.g., S2Q4). Ensure IDs are unique.
+- Include a validation object for every question with the correct data_type: slider→number, calendar→date, currency→currency, others→string.
+- Ensure at least: Section 1 (≥1 slider), Section 2 (≥1 slider), Section 3 (≥1 currency), Section 4 (≥2 calendar), Section 5 (≥1 slider).
 
 Return ONLY the JSON response with no additional commentary.
 `;
