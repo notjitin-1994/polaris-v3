@@ -36,7 +36,7 @@
     "framer-motion": "^12.23.22",
     "highlight.js": "^11.11.1",
     "html2canvas": "^1.4.1",
-    "html2pdf.js": "^0.10.1",
+    "html2pdf.js": "^0.10.3",
     "jspdf": "^3.0.3",
     "jszip": "^3.10.1",
     "lodash.debounce": "4.0.8",

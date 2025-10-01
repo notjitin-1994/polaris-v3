@@ -128,45 +128,48 @@ export default function LoadingPage({ params }: LoadingPageProps): JSX.Element {
                   />
                 </div>
 
-                {/* Animated Logo/Icon */}
-                <div className="mb-8 inline-flex items-center justify-center">
-                  <img
-                    src="/logo-swirl.png"
-                    alt="SmartSlate Logo"
-                    className="h-20 w-20"
-                    style={{
-                      animation: 'spin 0.8s linear infinite',
-                      filter:
-                        'brightness(1.4) saturate(1.3) drop-shadow(0 0 20px rgba(167, 218, 219, 0.7)) drop-shadow(0 0 10px rgba(167, 218, 219, 0.5)) drop-shadow(0 0 5px rgba(167, 218, 219, 0.3))',
-                      transform: 'scale(1)',
-                      transition: 'transform 0.3s ease',
-                      willChange: 'transform',
-                    }}
-                  />
+                {/* Premium Loading Indicator */}
+                <div className="mb-10 inline-flex items-center justify-center">
+                  <div className="relative">
+                    <div className="h-20 w-20 animate-spin rounded-full border-[3px] border-neutral-300/30 border-t-primary" 
+                         style={{ animationDuration: '1s' }} />
+                    <div className="absolute inset-0 h-20 w-20 animate-spin rounded-full border-[3px] border-transparent border-b-primary-accent-light" 
+                         style={{ animationDuration: '1.5s', animationDirection: 'reverse' }} />
+                    <div className="absolute inset-2 h-16 w-16 rounded-full bg-primary/10 blur-lg animate-pulse" />
+                  </div>
                 </div>
 
                 {/* Status Message */}
-                <h1 className="font-heading animate-fade-in-up mb-3 text-2xl font-bold text-white sm:text-3xl">
+                <h1 className="font-heading animate-fade-in-up mb-3 text-display text-foreground">
                   {error ? 'Generation Error' : 'Generating Dynamic Questions'}
                 </h1>
-                <p className="animate-fade-in-up animate-delay-150 mb-8 text-base text-[rgb(176,197,198)] sm:text-lg">
+                <p className="animate-fade-in-up animate-delay-150 mb-8 text-body text-text-secondary">
                   {status}
                 </p>
 
-                {/* Progress Bar */}
-                <div className="animate-fade-in-up animate-delay-300 mb-6 w-full">
-                  <div className="relative h-3 overflow-hidden rounded-full bg-white/5">
+                {/* Premium Progress Bar */}
+                <div className="animate-fade-in-up animate-delay-300 mb-8 w-full">
+                  <div className="relative h-2.5 overflow-hidden rounded-full bg-white/5 shadow-inner">
                     <div
-                      className="absolute inset-y-0 left-0 rounded-full bg-gradient-to-r from-[#a7dadb] to-[#4F46E5] transition-all duration-500 ease-out"
-                      style={{ width: `${progress}%` }}
+                      className="relative h-full rounded-full bg-gradient-to-r from-primary-accent via-primary-accent-light to-primary-accent transition-all duration-500 ease-out"
+                      style={{ 
+                        width: `${progress}%`,
+                        boxShadow: '0 0 16px rgba(167, 218, 219, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.3)'
+                      }}
                     >
-                      {/* Shimmer effect */}
-                      <div className="animate-shimmer absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent" />
+                      {/* Animated shimmer */}
+                      <div 
+                        className="absolute inset-0 rounded-full"
+                        style={{
+                          background: 'linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.3) 50%, transparent 100%)',
+                          animation: 'shimmer 2s infinite',
+                        }}
+                      />
                     </div>
                   </div>
-                  <div className="mt-2 flex items-center justify-between">
-                    <span className="text-sm text-white/60">Progress</span>
-                    <span className="text-sm font-semibold text-[#a7dadb]">
+                  <div className="mt-3 flex items-center justify-between">
+                    <span className="text-[13px] text-text-disabled font-medium">Progress</span>
+                    <span className="text-[15px] font-semibold text-primary-accent tracking-wide">
                       {Math.round(progress)}%
                     </span>
                   </div>
@@ -174,16 +177,26 @@ export default function LoadingPage({ params }: LoadingPageProps): JSX.Element {
 
                 {/* Error Message */}
                 {error && (
-                  <div className="glass-card animate-fade-in-up border border-[#ef4444]/30 bg-[#ef4444]/10 p-4">
-                    <p className="text-sm font-medium text-[#ef4444]">{error}</p>
+                  <div className="animate-fade-in-up rounded-xl border-[1.5px] border-error/40 bg-error/10 p-5 shadow-md">
+                    <div className="flex items-start gap-3">
+                      <svg className="h-5 w-5 mt-0.5 flex-shrink-0 text-error" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                      </svg>
+                      <p className="text-[15px] font-medium text-error leading-relaxed">{error}</p>
+                    </div>
                   </div>
                 )}
 
                 {/* Info Message */}
                 {!error && progress < 100 && (
-                  <p className="animate-fade-in-up animate-delay-500 text-sm text-white/50">
-                    This may take a moment. Please don't close this page.
-                  </p>
+                  <div className="animate-fade-in-up animate-delay-500 flex items-center justify-center gap-2 rounded-lg bg-primary/5 border border-primary/10 py-3 px-4">
+                    <svg className="h-4 w-4 text-primary-accent" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                    </svg>
+                    <p className="text-[13px] text-text-secondary font-medium">
+                      This may take a moment. Please don't close this page.
+                    </p>
+                  </div>
                 )}
               </div>
             </div>

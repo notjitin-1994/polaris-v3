@@ -13,35 +13,22 @@ export function QuestionnaireCard({
   showLogo = true,
 }: QuestionnaireCardProps): JSX.Element {
   return (
-    <div
-      className="animate-scale-in p-6 md:p-8"
-      style={{
-        position: 'relative',
-        borderRadius: '1rem',
-        background:
-          'linear-gradient(rgba(13,27,42,0.55), rgba(13,27,42,0.55)) padding-box, linear-gradient(135deg, rgba(255,255,255,0.22), rgba(255,255,255,0.06)) border-box',
-        border: '1px solid transparent',
-        boxShadow: '0 8px 40px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.06)',
-        backdropFilter: 'blur(18px)',
-        WebkitBackdropFilter: 'blur(18px)',
-      }}
-    >
+    <div className="glass-card p-8 md:p-10 space-y-8">
       {showLogo && (
-        <div className="animate-fade-in mb-6 flex items-center select-none">
+        <div className="animate-fade-in flex items-center justify-center pb-2">
           <Image
             src="/logo.png"
             alt="SmartSlate"
-            width={120}
-            height={32}
-            className="h-8 w-auto"
-            style={{
-              filter: 'drop-shadow(0 0 0 rgba(167,218,219,0))',
-              transition: 'filter 360ms ease',
-            }}
+            width={140}
+            height={38}
+            className="h-10 w-auto opacity-90 hover:opacity-100 transition-opacity duration-300"
+            priority
           />
         </div>
       )}
-      {children}
+      <div className="space-y-6">
+        {children}
+      </div>
     </div>
   );
 }

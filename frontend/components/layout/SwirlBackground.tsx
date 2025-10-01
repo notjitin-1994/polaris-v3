@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 
 interface SwirlItem {
   id: number;
@@ -27,8 +27,13 @@ export function SwirlBackground({
   opacityMax = 1,
   className = '',
 }: SwirlBackgroundProps) {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
   // Generate static swirl positions (memoized so they don't change on re-renders)
   const swirls = useMemo<SwirlItem[]>(() => {
+    if (!mounted) return [];
     return Array.from({ length: count }, (_, i) => ({
       id: i,
       x: Math.random() * 100,
@@ -36,12 +41,13 @@ export function SwirlBackground({
       size: minSize + Math.random() * (maxSize - minSize),
       opacity: opacityMin + Math.random() * (opacityMax - opacityMin),
     }));
-  }, [count, minSize, maxSize, opacityMin, opacityMax]);
+  }, [mounted, count, minSize, maxSize, opacityMin, opacityMax]);
 
   return (
     <div
       className={`pointer-events-none absolute inset-0 overflow-hidden ${className}`}
       aria-hidden="true"
+      suppressHydrationWarning
     >
       {swirls.map((swirl) => (
         <img

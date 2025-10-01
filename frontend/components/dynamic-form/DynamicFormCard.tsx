@@ -1,28 +1,34 @@
 'use client';
 
 import React from 'react';
+import Image from 'next/image';
 
 type DynamicFormCardProps = {
   children: React.ReactNode;
   showLogo?: boolean;
 };
 
-export function DynamicFormCard({ children }: DynamicFormCardProps): React.JSX.Element {
+export function DynamicFormCard({
+  children,
+  showLogo = true,
+}: DynamicFormCardProps): React.JSX.Element {
   return (
-    <div
-      className="animate-scale-in w-full p-6 md:p-8"
-      style={{
-        position: 'relative',
-        borderRadius: '1rem',
-        background:
-          'linear-gradient(rgba(13,27,42,0.55), rgba(13,27,42,0.55)) padding-box, linear-gradient(135deg, rgba(255,255,255,0.22), rgba(255,255,255,0.06)) border-box',
-        border: '1px solid transparent',
-        boxShadow: '0 8px 40px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.06)',
-        backdropFilter: 'blur(18px)',
-        WebkitBackdropFilter: 'blur(18px)',
-      }}
-    >
-      {children}
+    <div className="glass-card p-8 md:p-10 space-y-8">
+      {showLogo && (
+        <div className="animate-fade-in flex items-center justify-center pb-2">
+          <Image
+            src="/logo.png"
+            alt="SmartSlate"
+            width={140}
+            height={38}
+            className="h-10 w-auto opacity-90 hover:opacity-100 transition-opacity duration-300"
+            priority
+          />
+        </div>
+      )}
+      <div className="space-y-6">
+        {children}
+      </div>
     </div>
   );
 }

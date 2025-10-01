@@ -6,7 +6,15 @@ import remarkGfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw';
 import rehypeSanitize from 'rehype-sanitize';
 import rehypeHighlight from 'rehype-highlight';
-import { BookOpen, Calendar, Target, Zap, BarChart3, FileText, Edit3 } from 'lucide-react';
+import {
+  BookOpen,
+  Calendar,
+  Target,
+  Zap,
+  BarChart3,
+  FileText,
+  Sparkles,
+} from 'lucide-react';
 import 'highlight.js/styles/tokyo-night-dark.css';
 import type { AnyBlueprint } from '@/lib/ollama/schema';
 import { BlueprintDashboard } from './BlueprintDashboard';
@@ -44,82 +52,103 @@ export function BlueprintRenderer({
       ? [
           {
             id: 'dashboard' as TabType,
-            label: 'Dashboard',
+            label: 'Analytics',
             icon: BarChart3,
+            description: 'Visual insights',
           },
         ]
       : []),
     {
       id: 'markdown' as TabType,
-      label: 'Markdown',
+      label: 'Content',
       icon: FileText,
+      description: 'Detailed view',
     },
   ];
 
   return (
     <article className="blueprint-content">
-      {/* Tabbed Navigation - Only show if blueprint exists */}
+      {/* Enhanced Tabbed Navigation */}
       {blueprint && (
-        <div className="mb-8">
-          <div className="relative flex items-center gap-2 rounded-2xl border border-white/10 bg-white/5 p-1.5 backdrop-blur-xl">
-            {tabs.map((tab) => {
-              const Icon = tab.icon;
-              const isActive = activeTab === tab.id;
+        <div className="mb-10">
+          <div className="relative">
+            {/* Tab Background Glow */}
+            <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-primary-500/10 via-transparent to-secondary/10 blur-xl" />
+            
+            <div className="relative flex items-center gap-3 rounded-2xl border border-white/10 bg-gradient-to-r from-white/5 to-white/10 p-2 backdrop-blur-xl">
+              {tabs.map((tab) => {
+                const Icon = tab.icon;
+                const isActive = activeTab === tab.id;
 
-              return (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
-                  className={`relative flex flex-1 items-center justify-center gap-2 rounded-xl px-6 py-3 font-medium transition-all duration-300 ${
-                    isActive
-                      ? 'text-white'
-                      : 'text-text-secondary hover:text-text-primary hover:bg-white/5'
-                  }`}
-                >
-                  {/* Animated background for active tab */}
-                  {isActive && (
-                    <motion.div
-                      layoutId="activeTab"
-                      className="bg-primary-500/20 border-primary-500/40 absolute inset-0 rounded-xl border"
-                      transition={{
-                        type: 'spring',
-                        stiffness: 400,
-                        damping: 30,
-                      }}
-                    />
-                  )}
-
-                  {/* Tab content */}
-                  <Icon
-                    className={`relative h-5 w-5 transition-colors duration-300 ${
-                      isActive ? 'text-primary-400' : ''
+                return (
+                  <button
+                    key={tab.id}
+                    onClick={() => setActiveTab(tab.id)}
+                    className={`group relative flex flex-1 flex-col items-center justify-center gap-1 rounded-xl px-4 py-3 transition-all duration-300 ${
+                      isActive
+                        ? 'text-white shadow-lg'
+                        : 'text-text-secondary hover:text-text-primary hover:bg-white/5'
                     }`}
-                  />
-                  <span className="font-heading relative text-sm sm:text-base">{tab.label}</span>
+                  >
+                    {/* Animated background for active tab */}
+                    {isActive && (
+                      <motion.div
+                        layoutId="activeTab"
+                        className="absolute inset-0 rounded-xl bg-gradient-to-r from-primary-500/30 to-primary-600/30 border border-primary-500/50"
+                        transition={{
+                          type: 'spring',
+                          stiffness: 400,
+                          damping: 30,
+                        }}
+                      />
+                    )}
 
-                  {/* Active indicator dot */}
-                  {isActive && (
-                    <motion.div
-                      initial={{ scale: 0 }}
-                      animate={{ scale: 1 }}
-                      className="bg-primary-400 absolute -top-1 -right-1 h-2 w-2 rounded-full"
-                    />
-                  )}
-                </button>
-              );
-            })}
+                    {/* Tab content */}
+                    <div className="relative flex items-center gap-2">
+                      <Icon
+                        className={`h-5 w-5 transition-all duration-300 ${
+                          isActive 
+                            ? 'text-primary-400 drop-shadow-glow' 
+                            : 'group-hover:text-primary-300'
+                        }`}
+                      />
+                      <div className="text-left">
+                        <div className="font-heading text-sm sm:text-base font-semibold">
+                          {tab.label}
+                        </div>
+                        <div className="hidden sm:block text-xs opacity-70">
+                          {tab.description}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Active indicator */}
+                    {isActive && (
+                      <motion.div
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center"
+                      >
+                        <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary-400 opacity-75" />
+                        <span className="relative inline-flex h-3 w-3 rounded-full bg-primary-400" />
+                      </motion.div>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
           </div>
         </div>
       )}
 
-      {/* Tab Content with Animations */}
+      {/* Tab Content with Enhanced Animations */}
       <AnimatePresence mode="wait">
         {activeTab === 'dashboard' && blueprint ? (
           <motion.div
             key="dashboard"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: 20 }}
             transition={{ duration: 0.3, ease: 'easeInOut' }}
           >
             <BlueprintDashboard blueprint={blueprint} />
@@ -127,9 +156,9 @@ export function BlueprintRenderer({
         ) : (
           <motion.div
             key="markdown"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: 20 }}
             transition={{ duration: 0.3, ease: 'easeInOut' }}
           >
             {/* Show Editor or Rendered Markdown */}
@@ -137,19 +166,38 @@ export function BlueprintRenderer({
               <MarkdownEditor markdown={markdown} onSave={onSaveMarkdown} onCancel={onCancelEdit} />
             ) : (
               <>
-                {/* Enhanced visual hierarchy with icon badges */}
+                {/* Enhanced visual hierarchy with animated badges */}
                 <div className="mb-8 flex flex-wrap gap-3">
-                  <div className="bg-primary-500/10 border-primary-500/20 text-primary-400 inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-sm">
-                    <BookOpen className="h-4 w-4" />
-                    <span className="font-medium">Learning Blueprint</span>
-                  </div>
-                  <div className="text-text-secondary inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-sm">
-                    <Target className="h-4 w-4" />
-                    <span>Personalized Path</span>
-                  </div>
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: 0.1 }}
+                    className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-primary-500/20 to-primary-600/20 border border-primary-500/30 px-4 py-2"
+                  >
+                    <BookOpen className="h-4 w-4 text-primary-400" />
+                    <span className="font-medium text-primary-300">Learning Blueprint</span>
+                  </motion.div>
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: 0.2 }}
+                    className="inline-flex items-center gap-2 rounded-full bg-white/10 border border-white/20 px-4 py-2"
+                  >
+                    <Target className="h-4 w-4 text-text-secondary" />
+                    <span className="text-text-secondary">Personalized Path</span>
+                  </motion.div>
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: 0.3 }}
+                    className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-secondary/20 to-secondary/30 border border-secondary/40 px-4 py-2"
+                  >
+                    <Sparkles className="h-4 w-4 text-secondary" />
+                    <span className="text-secondary">AI Enhanced</span>
+                  </motion.div>
                 </div>
 
-                {/* Main markdown content with professional styling */}
+                {/* Main markdown content with enhanced styling */}
                 <div className="prose prose-blueprint prose-invert prose-lg max-w-none">
                   <ReactMarkdown
                     remarkPlugins={[remarkGfm]}
@@ -157,7 +205,7 @@ export function BlueprintRenderer({
                     components={{
                       h1: ({ children, ...props }) => (
                         <h1
-                          className="border-primary-500/30 font-heading mt-8 mb-6 border-b pb-3 text-4xl font-bold text-white"
+                          className="font-heading mt-8 mb-6 pb-4 text-4xl font-bold text-white border-b border-gradient-to-r from-primary-500/30 via-transparent to-transparent"
                           {...props}
                         >
                           {children}
@@ -165,16 +213,16 @@ export function BlueprintRenderer({
                       ),
                       h2: ({ children, ...props }) => (
                         <h2
-                          className="text-primary-400 font-heading group mt-8 mb-4 flex items-center gap-3 text-3xl font-bold"
+                          className="font-heading group mt-8 mb-4 flex items-center gap-3 text-3xl font-bold text-primary-400"
                           {...props}
                         >
-                          <span className="bg-primary-500 h-8 w-1 rounded-full transition-all group-hover:h-10" />
+                          <span className="h-8 w-1 rounded-full bg-gradient-to-b from-primary-500 to-primary-600 transition-all group-hover:h-10" />
                           {children}
                         </h2>
                       ),
                       h3: ({ children, ...props }) => (
                         <h3
-                          className="text-primary-300 font-heading mt-6 mb-3 text-2xl font-semibold"
+                          className="font-heading mt-6 mb-3 text-2xl font-semibold text-primary-300"
                           {...props}
                         >
                           {children}
@@ -182,7 +230,7 @@ export function BlueprintRenderer({
                       ),
                       h4: ({ children, ...props }) => (
                         <h4
-                          className="text-text-primary font-heading mt-4 mb-2 text-xl font-semibold"
+                          className="font-heading mt-4 mb-2 text-xl font-semibold text-text-primary"
                           {...props}
                         >
                           {children}
@@ -190,7 +238,7 @@ export function BlueprintRenderer({
                       ),
                       h5: ({ children, ...props }) => (
                         <h5
-                          className="text-text-primary font-heading mt-3 mb-2 text-lg font-medium"
+                          className="font-heading mt-3 mb-2 text-lg font-medium text-text-primary"
                           {...props}
                         >
                           {children}
@@ -198,7 +246,7 @@ export function BlueprintRenderer({
                       ),
                       h6: ({ children, ...props }) => (
                         <h6
-                          className="text-text-secondary font-heading mt-3 mb-2 text-base font-medium"
+                          className="font-heading mt-3 mb-2 text-base font-medium text-text-secondary"
                           {...props}
                         >
                           {children}
@@ -206,7 +254,7 @@ export function BlueprintRenderer({
                       ),
                       p: ({ children, ...props }) => (
                         <p
-                          className="text-text-secondary mb-4 text-base leading-relaxed"
+                          className="mb-4 text-base leading-relaxed text-text-secondary"
                           {...props}
                         >
                           {children}
@@ -224,10 +272,10 @@ export function BlueprintRenderer({
                       ),
                       li: ({ children, ordered, ...props }) => (
                         <li
-                          className={`text-text-secondary relative pl-7 ${
+                          className={`relative pl-8 text-text-secondary transition-colors hover:text-text-primary ${
                             ordered
-                              ? 'before:counter-increment-item before:bg-primary-500/20 before:text-primary-400 before:absolute before:top-0 before:left-0 before:flex before:h-5 before:w-5 before:items-center before:justify-center before:rounded-full before:text-xs before:font-bold before:content-[counter(item)]'
-                              : 'before:bg-primary-500 before:absolute before:top-[0.6em] before:left-0 before:h-1.5 before:w-1.5 before:rounded-full before:content-[""]'
+                              ? 'before:counter-increment-item before:absolute before:top-0 before:left-0 before:flex before:h-6 before:w-6 before:items-center before:justify-center before:rounded-full before:bg-gradient-to-br before:from-primary-500/20 before:to-primary-600/20 before:text-xs before:font-bold before:text-primary-400 before:content-[counter(item)]'
+                              : 'before:absolute before:top-[0.6em] before:left-0 before:h-2 before:w-2 before:rounded-full before:bg-gradient-to-br before:from-primary-500 before:to-primary-600 before:content-[""]'
                           }`}
                           {...props}
                         >
@@ -237,7 +285,7 @@ export function BlueprintRenderer({
                       a: ({ children, href, ...props }) => (
                         <a
                           href={href}
-                          className="text-primary-400 hover:text-primary-300 decoration-primary-500/40 hover:decoration-primary-400 font-medium underline transition-colors"
+                          className="font-medium text-primary-400 underline decoration-primary-500/40 transition-all hover:text-primary-300 hover:decoration-primary-400"
                           target={href?.startsWith('http') ? '_blank' : undefined}
                           rel={href?.startsWith('http') ? 'noopener noreferrer' : undefined}
                           {...props}
@@ -251,7 +299,7 @@ export function BlueprintRenderer({
                         </strong>
                       ),
                       em: ({ children, ...props }) => (
-                        <em className="text-primary-300 italic" {...props}>
+                        <em className="italic text-primary-300" {...props}>
                           {children}
                         </em>
                       ),
@@ -259,7 +307,7 @@ export function BlueprintRenderer({
                         const isInline = !className;
                         return isInline ? (
                           <code
-                            className="text-primary-300 rounded border border-white/10 bg-white/10 px-1.5 py-0.5 font-mono text-sm"
+                            className="rounded-md border border-white/10 bg-gradient-to-r from-white/10 to-white/5 px-1.5 py-0.5 font-mono text-sm text-primary-300"
                             {...props}
                           >
                             {children}
@@ -274,36 +322,36 @@ export function BlueprintRenderer({
                         );
                       },
                       pre: ({ children, ...props }) => (
-                        <pre className="my-6 overflow-hidden rounded-lg" {...props}>
+                        <pre className="my-6 overflow-hidden rounded-lg shadow-xl" {...props}>
                           {children}
                         </pre>
                       ),
                       blockquote: ({ children, ...props }) => (
                         <blockquote
-                          className="border-primary-500 bg-primary-500/5 text-text-secondary my-6 rounded-r-lg border-l-4 py-4 pr-4 pl-6 italic"
+                          className="my-6 rounded-r-lg border-l-4 border-primary-500 bg-gradient-to-r from-primary-500/10 to-transparent py-4 pr-4 pl-6 italic text-text-secondary"
                           {...props}
                         >
                           <div className="flex gap-3">
-                            <Zap className="text-primary-400 mt-1 h-5 w-5 flex-shrink-0" />
+                            <Zap className="mt-1 h-5 w-5 flex-shrink-0 text-primary-400" />
                             <div>{children}</div>
                           </div>
                         </blockquote>
                       ),
                       table: ({ children, ...props }) => (
-                        <div className="my-6 overflow-x-auto rounded-lg border border-white/10">
+                        <div className="my-6 overflow-x-auto rounded-lg border border-white/10 shadow-lg">
                           <table className="w-full border-collapse text-sm" {...props}>
                             {children}
                           </table>
                         </div>
                       ),
                       thead: ({ children, ...props }) => (
-                        <thead className="bg-primary-500/10" {...props}>
+                        <thead className="bg-gradient-to-r from-primary-500/10 to-primary-600/10" {...props}>
                           {children}
                         </thead>
                       ),
                       th: ({ children, ...props }) => (
                         <th
-                          className="text-primary-400 border-b border-white/10 px-4 py-3 text-left font-semibold"
+                          className="border-b border-white/10 px-4 py-3 text-left font-semibold text-primary-400"
                           {...props}
                         >
                           {children}
@@ -311,7 +359,7 @@ export function BlueprintRenderer({
                       ),
                       td: ({ children, ...props }) => (
                         <td
-                          className="text-text-secondary border-b border-white/5 px-4 py-3"
+                          className="border-b border-white/5 px-4 py-3 text-text-secondary"
                           {...props}
                         >
                           {children}
@@ -319,7 +367,7 @@ export function BlueprintRenderer({
                       ),
                       hr: ({ ...props }) => (
                         <hr
-                          className="via-primary-500/30 my-8 h-px border-0 bg-gradient-to-r from-transparent to-transparent"
+                          className="my-8 h-px border-0 bg-gradient-to-r from-transparent via-primary-500/30 to-transparent"
                           {...props}
                         />
                       ),
@@ -329,11 +377,18 @@ export function BlueprintRenderer({
                   </ReactMarkdown>
                 </div>
 
-                {/* Footer badge */}
-                <div className="text-text-disabled mt-12 flex items-center justify-between border-t border-white/10 pt-6 text-sm">
-                  <div className="flex items-center gap-2">
-                    <Calendar className="h-4 w-4" />
-                    <span>Generated with SmartSlate AI</span>
+                {/* Enhanced Footer */}
+                <div className="mt-12 border-t border-white/10 pt-6">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3 text-sm text-text-disabled">
+                      <Calendar className="h-4 w-4" />
+                      <span>Generated with SmartSlate AI</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="px-3 py-1 rounded-full bg-gradient-to-r from-primary-500/10 to-primary-600/10 text-xs text-primary-300">
+                        Version 1.0
+                      </span>
+                    </div>
                   </div>
                 </div>
               </>

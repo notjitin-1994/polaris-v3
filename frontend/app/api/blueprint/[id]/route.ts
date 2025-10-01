@@ -53,6 +53,8 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
       dynamic_answers: blueprint.dynamic_answers || {},
       status: blueprint.status,
       version: blueprint.version,
+      questionnaire_version: blueprint.questionnaire_version || 1,
+      completed_steps: blueprint.completed_steps || [],
       created_at: blueprint.created_at,
       updated_at: blueprint.updated_at,
     });

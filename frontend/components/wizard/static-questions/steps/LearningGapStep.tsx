@@ -4,28 +4,192 @@ import React from 'react';
 import { useFormContext } from 'react-hook-form';
 import type { StaticQuestionsFormValues } from '@/components/wizard/static-questions/types';
 import { QuestionnaireInput } from '@/components/wizard/static-questions/QuestionnaireInput';
+import {
+  RadioCardGroup,
+  CheckboxPillGroup,
+  EnhancedScale,
+} from '@/components/wizard/inputs';
+
+const GAP_TYPES = [
+  {
+    value: 'knowledge',
+    label: 'Knowledge Gap',
+    description: "They don't know the information",
+    example: 'New product features, policies, procedures',
+  },
+  {
+    value: 'skill',
+    label: 'Skill Gap',
+    description: "They can't perform the task",
+    example: 'Software usage, presentation skills',
+  },
+  {
+    value: 'behavior',
+    label: 'Behavior Gap',
+    description: "They know and can, but don't do it",
+    example: 'Following protocols, safety practices',
+  },
+  {
+    value: 'performance',
+    label: 'Performance Gap',
+    description: 'Complex mix of knowledge, skill, and motivation',
+    example: 'Leadership development, change management',
+  },
+];
+
+const IMPACT_AREAS = [
+  { value: 'revenue', label: 'Revenue' },
+  { value: 'productivity', label: 'Productivity' },
+  { value: 'compliance', label: 'Compliance' },
+  { value: 'customer', label: 'Customer Satisfaction' },
+  { value: 'safety', label: 'Safety' },
+  { value: 'quality', label: 'Quality' },
+  { value: 'retention', label: 'Employee Retention' },
+];
+
+const BLOOMS_LEVELS = [
+  {
+    value: 'remember',
+    label: 'Remember',
+    description: 'Recall facts and basic concepts',
+    example: 'List, identify, name, recall',
+  },
+  {
+    value: 'understand',
+    label: 'Understand',
+    description: 'Explain ideas or concepts',
+    example: 'Explain, summarize, describe, classify',
+  },
+  {
+    value: 'apply',
+    label: 'Apply',
+    description: 'Use information in new situations',
+    example: 'Execute, implement, use, demonstrate',
+  },
+  {
+    value: 'analyze',
+    label: 'Analyze',
+    description: 'Draw connections and distinctions',
+    example: 'Compare, examine, differentiate, test',
+  },
+  {
+    value: 'evaluate',
+    label: 'Evaluate',
+    description: 'Justify decisions or courses of action',
+    example: 'Assess, critique, justify, judge',
+  },
+  {
+    value: 'create',
+    label: 'Create',
+    description: 'Produce new or original work',
+    example: 'Design, formulate, construct, develop',
+  },
+];
 
 export function LearningGapStep(): JSX.Element {
   const {
+    register,
     formState: { errors },
     watch,
     setValue,
   } = useFormContext<StaticQuestionsFormValues>();
 
-  const learningGap = watch('learningGap');
+  // CRITICAL: Register all nested fields
+  React.useEffect(() => {
+    register('learningGap.description', { required: 'Learning gap description is required' });
+    register('learningGap.gapType', { required: 'Gap type is required' });
+    register('learningGap.urgency', { required: 'Urgency level is required' });
+    register('learningGap.impact', { required: 'Impact level is required' });
+    register('learningGap.impactAreas', { required: 'At least one impact area is required' });
+    register('learningGap.bloomsLevel', { required: 'Blooms taxonomy level is required' });
+    register('learningGap.objectives', { required: 'Learning objectives are required' });
+  }, [register]);
+
+  const learningGap = watch('learningGap') || {};
 
   return (
     <div className="animate-fade-in-up space-y-6">
       <QuestionnaireInput
-        label="What skills or knowledge gap needs to be addressed?"
-        value={learningGap}
-        onChange={(value) => setValue('learningGap', value)}
+        label="Describe the skills or knowledge gap"
+        value={learningGap.description || ''}
+        onChange={(value) => setValue('learningGap.description', value)}
         placeholder="e.g., Our sales team can't effectively demonstrate our product's new AI features to potential clients, leading to missed opportunities and longer sales cycles."
-        error={errors.learningGap?.message}
-        helpText="Describe what your learners currently struggle with and how it impacts performance"
+        error={errors.learningGap?.description?.message as string}
+        helpText="What do learners struggle with? How does it impact performance?"
         required
         multiline
         rows={5}
+      />
+
+      <RadioCardGroup
+        label="What type of gap is this?"
+        value={learningGap.gapType || ''}
+        onChange={(value) => setValue('learningGap.gapType', value)}
+        options={GAP_TYPES}
+        error={errors.learningGap?.gapType?.message as string}
+        helpText="This helps us design the right type of intervention"
+        required
+      />
+
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+        <EnhancedScale
+          label="How urgent is this?"
+          value={learningGap.urgency || 3}
+          onChange={(value) => setValue('learningGap.urgency', value)}
+          min={1}
+          max={5}
+          minLabel="Low Priority"
+          maxLabel="Critical"
+          icons={['⏰', '⏰', '🔥', '🔥', '🚨']}
+          colors={['#94a3b8', '#64748b', '#f59e0b', '#f97316', '#ef4444']}
+          error={errors.learningGap?.urgency?.message as string}
+          required
+        />
+
+        <EnhancedScale
+          label="Business impact if not addressed?"
+          value={learningGap.impact || 3}
+          onChange={(value) => setValue('learningGap.impact', value)}
+          min={1}
+          max={5}
+          minLabel="Minimal"
+          maxLabel="Severe"
+          icons={['😐', '😕', '😟', '😰', '🚨']}
+          colors={['#94a3b8', '#64748b', '#f59e0b', '#f97316', '#ef4444']}
+          error={errors.learningGap?.impact?.message as string}
+          required
+        />
+      </div>
+
+      <CheckboxPillGroup
+        label="Which areas are impacted?"
+        value={learningGap.impactAreas || []}
+        onChange={(value) => setValue('learningGap.impactAreas', value)}
+        options={IMPACT_AREAS}
+        error={errors.learningGap?.impactAreas?.message as string}
+        required
+      />
+
+      <RadioCardGroup
+        label="What cognitive level should learners achieve? (Bloom's Taxonomy)"
+        value={learningGap.bloomsLevel || ''}
+        onChange={(value) => setValue('learningGap.bloomsLevel', value)}
+        options={BLOOMS_LEVELS}
+        error={errors.learningGap?.bloomsLevel?.message as string}
+        helpText="Select the highest level learners need to demonstrate"
+        required
+      />
+
+      <QuestionnaireInput
+        label="Desired learning outcomes"
+        value={learningGap.objectives || ''}
+        onChange={(value) => setValue('learningGap.objectives', value)}
+        placeholder="Upon completion, learners will be able to..."
+        error={errors.learningGap?.objectives?.message as string}
+        helpText="Start with an action verb (e.g., demonstrate, analyze, create)"
+        required
+        multiline
+        rows={4}
       />
 
       <div
@@ -49,26 +213,25 @@ export function LearningGapStep(): JSX.Element {
             />
           </svg>
           <div className="text-sm" style={{ color: '#d0edf0' }}>
-            <p className="mb-2 font-medium">Tips for identifying learning gaps:</p>
-            <ul className="list-inside list-disc space-y-2 text-white/70">
+            <p className="mb-2 font-medium">Writing effective learning objectives (ABCD format):</p>
+            <ul className="list-inside list-disc space-y-1 text-xs text-white/70">
               <li>
-                <strong>Be specific:</strong> Instead of &quot;poor communication skills&quot;, say
-                &quot;team members struggle to deliver clear project updates in client
-                meetings&quot;
+                <strong>A</strong>udience: Who (the learner)
               </li>
               <li>
-                <strong>Include the impact:</strong> Explain how this gap affects work quality,
-                productivity, customer satisfaction, or business results
+                <strong>B</strong>ehavior: Will do what (action verb from Bloom&apos;s)
               </li>
               <li>
-                <strong>Focus on observable behaviors:</strong> What can&apos;t they do now that
-                they need to do? What mistakes are they making?
+                <strong>C</strong>ondition: Under what circumstances
               </li>
               <li>
-                <strong>Think about context:</strong> Where and when does this gap show up in their
-                day-to-day work?
+                <strong>D</strong>egree: How well (criteria for success)
               </li>
             </ul>
+            <p className="mt-2 text-xs italic text-white/60">
+              Example: &quot;Sales reps will demonstrate the AI features to clients during product demos
+              with 90% accuracy&quot;
+            </p>
           </div>
         </div>
       </div>

@@ -30,10 +30,31 @@ export class BlueprintService {
     aggregatedAnswers: AggregatedAnswer,
     existingBlueprintId?: string
   ): Promise<BlueprintRow> {
-    const staticAnswers = aggregatedAnswers.staticResponses;
-    const dynamicAnswers = aggregatedAnswers.dynamicResponses;
+    const staticResponses = aggregatedAnswers.staticResponses;
+    const dynamicResponses = aggregatedAnswers.dynamicResponses;
     // Note: dynamic_questions is not directly available here; assuming it was used to generate dynamic_answers
     // and might be stored separately if needed for historical context.
+
+    // Convert response arrays into key-value maps expected by DB (jsonb objects)
+    const toObject = (
+      arr: Array<{ questionId: string; answer: unknown }>
+    ): Record<string, unknown> => {
+      try {
+        return Object.fromEntries(arr.map(({ questionId, answer }) => [questionId, answer]));
+      } catch {
+        return {};
+      }
+    };
+
+    const staticAnswersObj = Array.isArray(staticResponses) ? toObject(staticResponses) : {};
+    const dynamicAnswersObj = Array.isArray(dynamicResponses) ? toObject(dynamicResponses) : {};
+
+    // Determine questionnaire version from static answers object
+    const versionValue = (staticAnswersObj as Record<string, unknown>)?.version as
+      | number
+      | string
+      | undefined;
+    const questionnaireVersion = versionValue === 2 || versionValue === '2' ? 2 : 1;
 
     if (existingBlueprintId) {
       // Update existing blueprint and increment version
@@ -41,8 +62,8 @@ export class BlueprintService {
         blueprint_id_input: existingBlueprintId,
         new_blueprint_json: blueprintJson,
         new_blueprint_markdown: blueprintMarkdown,
-        new_static_answers: staticAnswers,
-        new_dynamic_answers: dynamicAnswers,
+        new_static_answers: staticAnswersObj,
+        new_dynamic_answers: dynamicAnswersObj,
         new_status: 'completed', // Assuming update means completion
       });
 
@@ -66,10 +87,12 @@ export class BlueprintService {
           user_id: userId,
           blueprint_json: blueprintJson,
           blueprint_markdown: blueprintMarkdown,
-          static_answers: staticAnswers,
-          dynamic_answers: dynamicAnswers,
+          static_answers: staticAnswersObj,
+          dynamic_answers: dynamicAnswersObj,
           status: 'completed',
           version: 1, // Initial version
+          questionnaire_version: questionnaireVersion,
+          completed_steps: [],
         })
         .select()
         .single();

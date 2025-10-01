@@ -76,17 +76,18 @@ export function QuestionnaireLayout({
   useEffect(() => {
     if (!viewport.width || !viewport.height) return;
 
-    const count = window.innerWidth < 768 ? 40 : 50;
-    const minSize = 24;
-    const maxSize = 56;
-    const opacityMin = 0.06;
-    const opacityMax = 0.12;
-    const areaPadding = 24;
+    // Reduced count for elegance
+    const count = window.innerWidth < 768 ? 12 : 18;
+    const minSize = 36;
+    const maxSize = 72;
+    const opacityMin = 0.02;
+    const opacityMax = 0.06;
+    const areaPadding = 60;
 
     const rng = createSeededRng(12345);
     const results: StaticSwirl[] = [];
     const maxAttempts = count * 10;
-    const spacing = 4;
+    const spacing = 12;
 
     for (let i = 0; i < count && i < maxAttempts; i++) {
       const size = minSize + rng() * (maxSize - minSize);
@@ -117,28 +118,24 @@ export function QuestionnaireLayout({
   }, [viewport]);
 
   return (
-    <div
-      className="relative flex min-h-screen w-full items-center justify-center overflow-hidden px-2 py-6 md:px-3 md:py-8 lg:px-3"
-      style={{ backgroundColor: '#020C1B' }}
-    >
-      {/* Center halo & edge vignette for focus */}
+    <div className="relative flex min-h-screen w-full items-center justify-center overflow-hidden bg-background px-4 py-12 sm:px-6 lg:px-8">
+      {/* Refined ambient glow */}
       <div className="pointer-events-none absolute inset-0 z-0">
-        <div
-          className="absolute inset-0"
+        <div 
+          className="absolute inset-0" 
           style={{
-            background:
-              'radial-gradient(60% 40% at 50% 50%, rgba(255,255,255,0.10) 0%, rgba(255,255,255,0.04) 25%, rgba(255,255,255,0.00) 55%)',
+            background: 'radial-gradient(circle at 50% 0%, rgba(167, 218, 219, 0.04) 0%, transparent 60%)',
           }}
         />
-        <div
+        <div 
           className="absolute inset-0"
           style={{
-            boxShadow: 'inset 0 0 220px 60px rgba(0,0,0,0.65)',
+            background: 'radial-gradient(circle at 100% 100%, rgba(79, 70, 229, 0.03) 0%, transparent 50%)',
           }}
         />
       </div>
 
-      {/* Swirl pattern background */}
+      {/* Elegant swirl pattern */}
       <div
         className="pointer-events-none fixed top-0 left-0 z-0 overflow-hidden"
         style={{
@@ -160,13 +157,14 @@ export function QuestionnaireLayout({
               opacity: swirl.opacity,
               transform: `translate(-50%, -50%) rotate(${swirl.rotation}deg) scaleX(${swirl.flip ? -1 : 1})`,
               pointerEvents: 'none',
+              filter: 'blur(0.5px)',
             }}
           />
         ))}
       </div>
 
       {/* Main Content */}
-      <div className="relative z-10 mx-auto w-full max-w-2xl">
+      <div className="relative z-10 mx-auto w-full max-w-3xl">
         <div className="animate-scale-in">{children}</div>
       </div>
     </div>

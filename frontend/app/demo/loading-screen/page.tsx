@@ -112,13 +112,13 @@ export default function LoadingScreenDemoPage(): JSX.Element {
               <div className="flex items-center gap-2">
                 <span className="text-text-secondary">message:</span>
                 <code className="bg-surface text-primary rounded px-2 py-1 text-xs">
-                  "{currentPhaseData.message}"
+                  &ldquo;{currentPhaseData.message}&rdquo;
                 </code>
               </div>
               <div className="flex items-center gap-2">
                 <span className="text-text-secondary">statusText:</span>
                 <code className="bg-surface text-primary rounded px-2 py-1 text-xs">
-                  "{currentPhaseData.status}"
+                  &ldquo;{currentPhaseData.status}&rdquo;
                 </code>
               </div>
               <div className="flex items-center gap-2">
@@ -153,25 +153,25 @@ export default function LoadingScreenDemoPage(): JSX.Element {
               <div className="flex items-start gap-2">
                 <span className="text-text-secondary min-w-[120px]">title:</span>
                 <code className="bg-surface text-primary rounded px-2 py-1 text-xs">
-                  "Preparing Your Blueprint"
+                  &ldquo;Preparing Your Blueprint&rdquo;
                 </code>
               </div>
               <div className="flex items-start gap-2">
                 <span className="text-text-secondary min-w-[120px]">description:</span>
                 <code className="bg-surface text-primary rounded px-2 py-1 text-xs">
-                  "Setting up the AI analysis..."
+                  &ldquo;Setting up the AI analysis...&rdquo;
                 </code>
               </div>
               <div className="flex items-start gap-2">
                 <span className="text-text-secondary min-w-[120px]">message:</span>
                 <code className="bg-surface text-primary rounded px-2 py-1 text-xs">
-                  "{currentPhaseData.message}"
+                  &ldquo;{currentPhaseData.message}&rdquo;
                 </code>
               </div>
               <div className="flex items-start gap-2">
                 <span className="text-text-secondary min-w-[120px]">statusText:</span>
                 <code className="bg-surface text-primary rounded px-2 py-1 text-xs">
-                  "{currentPhaseData.status}"
+                  &ldquo;{currentPhaseData.status}&rdquo;
                 </code>
               </div>
             </div>

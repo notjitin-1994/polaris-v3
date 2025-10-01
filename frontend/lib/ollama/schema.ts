@@ -1,21 +1,78 @@
 import { z } from 'zod';
 
-// Question types supported by the dynamic questions system (new shape)
+// Question types supported by the dynamic questions system (including rich input types)
 export const questionTypeSchema = z.enum([
+  // Basic text inputs
   'text',
+  'textarea',
+  'email',
+  'url',
+  'number',
+  'date',
+  'calendar',
+  // Traditional selection (legacy compatibility)
   'single_select',
   'multi_select',
+  'select',
+  'multiselect',
+  // Rich visual selection inputs (NEW)
+  'radio_pills',
+  'radio_cards',
+  'checkbox_pills',
+  'checkbox_cards',
+  // Scales & sliders (NEW)
   'slider',
-  'calendar',
+  'scale',
+  'enhanced_scale',
+  'labeled_slider',
+  // Specialized inputs (NEW)
+  'toggle_switch',
   'currency',
+  'number_spinner',
 ]);
 
 const validationSchema = z.object({
   required: z.boolean().default(true),
-  data_type: z.enum(['string', 'number', 'date', 'currency']).default('string'),
+  data_type: z.enum(['string', 'number', 'date', 'currency', 'boolean', 'array']).default('string'),
 });
 
-// New question shape (preferred)
+// Option schema for rich inputs (supports both simple strings and objects with icons/descriptions)
+const optionSchema = z.union([
+  z.string(), // Simple string option (backward compatible)
+  z.object({
+    value: z.string(),
+    label: z.string(),
+    icon: z.string().optional(),
+    description: z.string().optional(),
+    disabled: z.boolean().optional(),
+  }),
+]);
+
+// Configuration schemas for rich input types
+const scaleConfigSchema = z.object({
+  min: z.number().default(1),
+  max: z.number().default(5),
+  min_label: z.string().optional(),
+  max_label: z.string().optional(),
+  labels: z.array(z.string()).optional(), // Emojis for each step
+  step: z.number().default(1),
+}).optional();
+
+const sliderConfigSchema = z.object({
+  min: z.number().default(0),
+  max: z.number().default(100),
+  step: z.number().default(1),
+  unit: z.string().optional(), // e.g., "hours/week", "%"
+  markers: z.array(z.number()).optional(),
+}).optional();
+
+const numberConfigSchema = z.object({
+  min: z.number().default(0),
+  max: z.number().default(999),
+  step: z.number().default(1),
+}).optional();
+
+// New question shape (preferred) - now with rich input support
 const baseQuestionSchemaNew = z.object({
   id: z
     .union([z.string(), z.number()])
@@ -25,35 +82,21 @@ const baseQuestionSchemaNew = z.object({
   input_type: questionTypeSchema,
   // Many models omit validation; tolerate absence
   validation: validationSchema.optional(),
+  // Rich input options (for pills, cards, selects, etc.)
+  options: z.array(optionSchema).optional(),
+  max_selections: z.number().int().min(1).optional(), // For checkbox types
+  // Scale/slider configurations
+  scale_config: scaleConfigSchema,
+  slider_config: sliderConfigSchema,
+  number_config: numberConfigSchema,
+  // Currency configuration
+  currency_symbol: z.string().optional(),
+  min: z.number().optional(),
+  max: z.number().optional(),
 });
 
-const textQuestionSchemaNew = baseQuestionSchemaNew.extend({
-  input_type: z.literal('text'),
-});
-
-const singleSelectQuestionSchemaNew = baseQuestionSchemaNew.extend({
-  input_type: z.literal('single_select'),
-  // Some outputs omit options; accept optional and empty
-  options: z.array(z.string().min(1)).optional(),
-});
-
-const multiSelectQuestionSchemaNew = baseQuestionSchemaNew.extend({
-  input_type: z.literal('multi_select'),
-  options: z.array(z.string().min(1)).optional(),
-});
-
-const sliderQuestionSchemaNew = baseQuestionSchemaNew.extend({
-  input_type: z.literal('slider'),
-});
-
-const calendarQuestionSchemaNew = baseQuestionSchemaNew.extend({
-  input_type: z.literal('calendar'),
-});
-
-const currencyQuestionSchemaNew = baseQuestionSchemaNew.extend({
-  input_type: z.literal('currency'),
-});
-
+// For Ollama schema validation, we use a simpler approach since we support many input types
+// The baseQuestionSchemaNew already includes all fields needed for rich inputs
 const dynamicQuestionSchemaNew = z.object({
   sections: z
     .array(
@@ -62,16 +105,7 @@ const dynamicQuestionSchemaNew = z.object({
         // Some models omit description; make it optional
         description: z.string().optional(),
         questions: z
-          .array(
-            z.discriminatedUnion('input_type', [
-              textQuestionSchemaNew,
-              singleSelectQuestionSchemaNew,
-              multiSelectQuestionSchemaNew,
-              sliderQuestionSchemaNew,
-              calendarQuestionSchemaNew,
-              currencyQuestionSchemaNew,
-            ])
-          )
+          .array(baseQuestionSchemaNew)
           .min(1, 'each section must have at least one question'),
       })
     )

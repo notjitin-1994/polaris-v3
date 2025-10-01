@@ -53,6 +53,8 @@ export interface Database {
           blueprint_json: Json;
           blueprint_markdown: string | null;
           status: BlueprintStatus;
+          questionnaire_version: number;
+          completed_steps: Json;
           created_at: string;
           updated_at: string;
           title: string | null;
@@ -68,6 +70,8 @@ export interface Database {
           blueprint_json?: Json;
           blueprint_markdown?: string | null;
           status?: BlueprintStatus;
+          questionnaire_version?: number;
+          completed_steps?: Json;
           created_at?: string;
           updated_at?: string;
           title?: string | null;
@@ -80,6 +84,8 @@ export interface Database {
           blueprint_json?: Json;
           blueprint_markdown?: string | null;
           status?: BlueprintStatus;
+          questionnaire_version?: number;
+          completed_steps?: Json;
           updated_at?: string;
           title?: string | null;
         };
@@ -98,6 +104,11 @@ export interface Database {
     Functions: {
       set_updated_at: unknown;
       increment_blueprint_version: unknown;
+      migrate_static_answers_v1_to_v2: {
+        Args: { v1_data: Json };
+        Returns: Json;
+      };
+      validate_static_answers: unknown;
     };
     Enums: {};
   };

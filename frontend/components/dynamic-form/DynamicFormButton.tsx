@@ -6,7 +6,7 @@ type DynamicFormButtonProps = {
   children: React.ReactNode;
   onClick?: () => void;
   type?: 'button' | 'submit';
-  variant?: 'primary' | 'ghost';
+  variant?: 'primary' | 'secondary' | 'ghost';
   disabled?: boolean;
   loading?: boolean;
   fullWidth?: boolean;
@@ -20,61 +20,29 @@ export function DynamicFormButton({
   disabled = false,
   loading = false,
   fullWidth = false,
-}: DynamicFormButtonProps): JSX.Element {
-  const baseClasses = `
-    inline-flex items-center justify-center rounded-lg px-6 py-3 text-sm font-medium transition-all
-    disabled:opacity-50 disabled:cursor-not-allowed
-    ${fullWidth ? 'w-full' : ''}
-  `;
+}: DynamicFormButtonProps): React.JSX.Element {
+  const baseClasses = 'btn';
+  const variantClasses = {
+    primary: 'btn-primary',
+    secondary: 'btn-secondary',
+    ghost: 'btn-ghost',
+  };
 
-  if (variant === 'primary') {
-    return (
-      <button
-        type={type}
-        onClick={onClick}
-        disabled={disabled || loading}
-        className={`${baseClasses} text-white`}
-        style={{
-          backgroundColor: '#6366f1',
-          transition: 'all 200ms ease',
-        }}
-        onMouseEnter={(e) => {
-          if (!disabled && !loading) {
-            e.currentTarget.style.backgroundColor = '#4f46e5';
-          }
-        }}
-        onMouseLeave={(e) => {
-          e.currentTarget.style.backgroundColor = '#6366f1';
-        }}
-      >
-        <span className={loading ? 'animate-pulse opacity-70' : ''}>
-          {loading ? 'Processing…' : children}
-        </span>
-      </button>
-    );
-  }
-
-  // Ghost variant
   return (
     <button
       type={type}
       onClick={onClick}
-      disabled={disabled}
-      className={`${baseClasses} text-white/70`}
-      style={{
-        backgroundColor: 'rgba(255, 255, 255, 0.05)',
-        transition: 'all 200ms ease',
-      }}
-      onMouseEnter={(e) => {
-        if (!disabled) {
-          e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
-        }
-      }}
-      onMouseLeave={(e) => {
-        e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.05)';
-      }}
+      disabled={disabled || loading}
+      className={`${baseClasses} ${variantClasses[variant]} ${fullWidth ? 'w-full' : ''}`}
     >
-      {children}
+      {loading ? (
+        <div className="flex items-center gap-2.5">
+          <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+          <span className="animate-pulse">Processing...</span>
+        </div>
+      ) : (
+        children
+      )}
     </button>
   );
 }

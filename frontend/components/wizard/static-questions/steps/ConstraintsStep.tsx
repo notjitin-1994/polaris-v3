@@ -22,10 +22,16 @@ const COMMON_CONSTRAINTS = [
 
 export function ConstraintsStep(): JSX.Element {
   const {
+    register,
     formState: { errors },
     watch,
     setValue,
   } = useFormContext<StaticQuestionsFormValues>();
+
+  // CRITICAL: Register the field
+  React.useEffect(() => {
+    register('constraints');
+  }, [register]);
 
   const constraints = watch('constraints') || [];
   const [showCustomInput, setShowCustomInput] = useState(false);
@@ -228,7 +234,7 @@ export function ConstraintsStep(): JSX.Element {
             />
           </svg>
           <div className="text-sm" style={{ color: '#d0edf0' }}>
-            <p className="mb-2 font-medium">💡 Tips for identifying constraints:</p>
+            <p className="mb-2 font-medium">Tips for identifying constraints:</p>
             <ul className="list-inside list-disc space-y-1.5 text-xs text-white/70">
               <li>
                 <strong>Time:</strong> Deadlines, available learning time per week, project duration
@@ -250,7 +256,7 @@ export function ConstraintsStep(): JSX.Element {
               </li>
             </ul>
             <p className="mt-2 text-xs text-white/60">
-              🎯 Being upfront about constraints helps us create achievable solutions
+              Being upfront about constraints helps us create achievable solutions
             </p>
           </div>
         </div>

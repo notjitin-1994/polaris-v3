@@ -117,10 +117,10 @@ export async function POST(req: Request): Promise<Response> {
     let systemPrompt = '';
     try {
       systemPrompt = await readFile(systemPromptPrimary, 'utf8');
-    } catch (e1) {
+    } catch {
       try {
         systemPrompt = await readFile(systemPromptSecondary, 'utf8');
-      } catch (e2) {
+      } catch {
         systemPrompt =
           'You are an AI assistant. Return JSON only matching the required blueprint schema.';
       }
@@ -159,8 +159,10 @@ export async function POST(req: Request): Promise<Response> {
             // Stream controller likely already closed by client disconnect
             isClosed = true;
             try {
-              // Cancel upstream reader to stop reading more chunks
-              reader?.cancel().catch(() => {});
+            // Cancel upstream reader to stop reading more chunks
+            reader?.cancel().catch(() => {
+              // Ignore cancellation errors
+            });
             } catch {}
             return false;
           }
@@ -216,8 +218,8 @@ export async function POST(req: Request): Promise<Response> {
                     console.error('Final blueprint validation failed during streaming:', e);
                   }
                 }
-              } catch (parseError) {
-                console.error('Error parsing Ollama stream chunk:', parseError);
+              } catch {
+                console.error('Error parsing Ollama stream chunk');
                 if (!sendEvent('error', { message: 'Error parsing LLM response chunk' })) {
                   return;
                 }
@@ -232,7 +234,6 @@ export async function POST(req: Request): Promise<Response> {
           const errorMessage =
             error instanceof ValidationError ? error.message : 'Internal Server Error';
           // Try to persist fallback so the user can still view a result
-          let savedFallbackId: string | undefined;
           try {
             const serverBlueprintService = await createServerBlueprintService();
             const hasCompleted = requestBody.blueprintId
@@ -246,18 +247,24 @@ export async function POST(req: Request): Promise<Response> {
                 { staticResponses, dynamicResponses },
                 requestBody.blueprintId
               );
-              savedFallbackId = saved.id as string;
+              const savedFallbackId = saved.id as string;
+              sendEvent('error', {
+                message: errorMessage,
+                details: error instanceof Error ? error.message : '',
+                blueprint: fallbackBlueprint,
+                markdown: fallbackMarkdown,
+                savedBlueprintId,
+              });
             }
           } catch (persistError) {
             console.error('Failed to save fallback blueprint:', persistError);
+            sendEvent('error', {
+              message: errorMessage,
+              details: error instanceof Error ? error.message : '',
+              blueprint: fallbackBlueprint,
+              markdown: fallbackMarkdown,
+            });
           }
-          sendEvent('error', {
-            message: errorMessage,
-            details: error instanceof Error ? error.message : '',
-            blueprint: fallbackBlueprint,
-            markdown: fallbackMarkdown,
-            savedBlueprintId,
-          });
           safeClose();
           return;
         }

@@ -52,15 +52,8 @@ const HeaderSwirlBackground = memo(
         className={`pointer-events-none absolute inset-0 z-0 select-none ${className}`}
         aria-hidden="true"
       >
-        {/* Ambient gradient backdrop */}
-        <div
-          className="absolute inset-0"
-          style={{
-            background:
-              'radial-gradient(1200px 1200px at 80% 0%, rgba(167,218,219,0.10), transparent 60%),\
-             radial-gradient(900px 900px at 0% 100%, rgba(79,70,229,0.10), transparent 55%)',
-          }}
-        />
+        {/* Subtle ambient backdrop without gradients */}
+        <div className="absolute inset-0 bg-primary/5" />
 
         {/* Subtle noise overlay via SVG data URI for depth */}
         <div
@@ -95,14 +88,8 @@ const HeaderSwirlBackground = memo(
           />
         ))}
 
-        {/* Gentle vignette mask to focus header content */}
-        <div
-          className="absolute inset-0"
-          style={{
-            background:
-              'radial-gradient(120% 120% at 50% 20%, rgba(0,0,0,0) 0%, rgba(0,0,0,0) 50%, rgba(0,0,0,0.25) 100%)',
-          }}
-        />
+        {/* Subtle vignette without gradients */}
+        <div className="absolute inset-0 bg-black/10" />
       </div>
     );
   }

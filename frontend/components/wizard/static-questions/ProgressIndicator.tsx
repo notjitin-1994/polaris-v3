@@ -27,22 +27,34 @@ export function ProgressIndicator({ currentIndex, onSelect }: ProgressProps): JS
 
       {/* Progress Bar */}
       <div className="relative">
-        <div className="h-2 w-full bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
+        <div className="h-2 w-full bg-white/5 rounded-full overflow-hidden shadow-inner">
           <div
-            className="h-2 bg-blue-600 rounded-full transition-all duration-500 ease-out"
+            className="relative h-2 rounded-full bg-gradient-to-r from-primary-accent via-primary-accent-light to-primary-accent transition-all duration-700 ease-out"
             // One-off: Dynamic width for wizard step progress indicator
-            style={{ width: `${percent}%` }}
-          />
+            style={{ 
+              width: `${percent}%`,
+              boxShadow: '0 0 16px rgba(167, 218, 219, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.3)'
+            }}
+          >
+            {/* Animated shimmer effect */}
+            <div 
+              className="absolute inset-0 rounded-full"
+              style={{
+                background: 'linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.3) 50%, transparent 100%)',
+                animation: 'shimmer 2s infinite',
+              }}
+            />
+          </div>
         </div>
         {/* Progress dots */}
         <div className="flex justify-between mt-2">
           {wizardSteps.map((_, idx) => (
             <div
               key={idx}
-              className={`w-2 h-2 rounded-full transition-all duration-300 ${
+              className={`w-2 h-2 rounded-full border-2 transition-all duration-300 ${
                 idx <= currentIndex
-                  ? 'bg-blue-600 dark:bg-blue-400'
-                  : 'bg-slate-300 dark:bg-slate-600'
+                  ? 'bg-primary-accent border-primary-accent-light shadow-[0_0_8px_rgba(167,218,219,0.6)]'
+                  : 'bg-background border-white/20'
               }`}
             />
           ))}
@@ -66,12 +78,12 @@ export function ProgressIndicator({ currentIndex, onSelect }: ProgressProps): JS
                 relative px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200
                 ${
                   isCurrent
-                    ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/25'
+                    ? 'bg-secondary-accent text-white shadow-lg shadow-secondary-accent/25'
                     : isCompleted
-                      ? 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 hover:bg-green-200 dark:hover:bg-green-800'
+                      ? 'bg-primary-accent/10 border border-primary-accent/30 text-primary-accent hover:bg-primary-accent/15'
                       : canAccess
-                        ? 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
-                        : 'bg-slate-50 dark:bg-slate-900 text-slate-400 dark:text-slate-600 cursor-not-allowed'
+                        ? 'bg-white/5 border border-white/10 text-text-secondary hover:bg-white/10'
+                        : 'bg-white/5 text-text-disabled cursor-not-allowed'
                 }
                 ${canAccess ? 'cursor-pointer' : 'cursor-not-allowed'}
               `}

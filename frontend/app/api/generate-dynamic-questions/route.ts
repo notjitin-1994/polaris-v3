@@ -28,8 +28,43 @@ export async function POST(request: NextRequest): Promise<Response> {
       .single();
 
     if (blueprintError || !blueprint) {
+      console.error('[GenerateDynamicQuestions] Blueprint not found:', blueprintError);
       return NextResponse.json({ error: 'Blueprint not found' }, { status: 404 });
     }
+
+    // Check if static_answers exists and has data
+    if (!blueprint.static_answers || typeof blueprint.static_answers !== 'object') {
+      console.error('[GenerateDynamicQuestions] No static answers found in blueprint:', {
+        blueprintId,
+        static_answers: blueprint.static_answers,
+      });
+      return NextResponse.json(
+        { 
+          error: 'No static answers found. Please complete the static questionnaire first.',
+          details: 'The blueprint exists but has no static answers data.'
+        },
+        { status: 400 }
+      );
+    }
+
+    // Check if static_answers is empty object
+    const staticAnswersKeys = Object.keys(blueprint.static_answers);
+    if (staticAnswersKeys.length === 0) {
+      console.error('[GenerateDynamicQuestions] Static answers is empty object');
+      return NextResponse.json(
+        { 
+          error: 'Static answers are empty. Please fill out the questionnaire first.',
+          details: 'The static_answers object exists but has no fields.'
+        },
+        { status: 400 }
+      );
+    }
+
+    console.log('[GenerateDynamicQuestions] Blueprint loaded:', {
+      id: blueprint.id,
+      status: blueprint.status,
+      static_answers_keys: staticAnswersKeys,
+    });
 
     // If already generating or questions exist, short-circuit
     if (blueprint.status === 'generating') {
@@ -50,9 +85,10 @@ export async function POST(request: NextRequest): Promise<Response> {
     }
 
     // Extract static answers and convert to GenerationInput format.
-    // Prefer new canonical fields (role, organization, learningGap, resources, constraints),
-    // fallback to legacy keys used in earlier versions and tests.
+    // Support both V2 (nested objects) and V1 (flat strings) formats
     const sa = (blueprint.static_answers || {}) as Record<string, unknown>;
+
+    console.log('[GenerateDynamicQuestions] Static answers:', JSON.stringify(sa, null, 2));
 
     const asString = (v: unknown): string => {
       if (typeof v === 'string') return v;
@@ -67,41 +103,93 @@ export async function POST(request: NextRequest): Promise<Response> {
       return '';
     };
 
-    // Build canonical input, deriving from legacy fields and providing safe fallbacks
-    const canonicalInput = {
-      role: firstNonEmpty(sa.role, 'Learning Professional'),
-      organization: firstNonEmpty(
-        sa.organization,
-        sa.targetAudience,
-        sa.target_audience,
-        'Organization'
-      ),
-      learningGap: firstNonEmpty(
-        sa.learningGap,
-        Array.isArray(sa.learningObjectives)
-          ? (sa.learningObjectives as string[]).join(', ')
-          : asString(sa.learningObjective),
-        'Learning gap not specified'
-      ),
-      resources: firstNonEmpty(
-        sa.resources,
-        sa.deliveryMethod,
-        sa.delivery_method,
-        'Resources not specified'
-      ),
-      constraints: firstNonEmpty(
-        sa.constraints,
-        `${asString(sa.assessmentType) || asString(sa.assessment_type)} ${asString(sa.duration)}`,
-        'Constraints not specified'
-      ),
-      numSections: 5,
-      questionsPerSection: 7,
-    } as const;
+    // Check if V2 schema (has version field and nested objects)
+    const isV2 = sa.version === 2 && typeof sa.organization === 'object';
+
+    let canonicalInput;
+    
+    if (isV2) {
+      // V2 Schema - extract from nested objects
+      console.log('[GenerateDynamicQuestions] Using V2 schema');
+      
+      const org = sa.organization as Record<string, unknown> | undefined;
+      const learningGap = sa.learningGap as Record<string, unknown> | undefined;
+      const resources = sa.resources as Record<string, unknown> | undefined;
+      const deliveryStrategy = sa.deliveryStrategy as Record<string, unknown> | undefined;
+      
+      canonicalInput = {
+        role: asString(sa.role) || 'Learning Professional',
+        organization: asString(org?.name) || 'Organization',
+        learningGap: asString(learningGap?.description) || asString(learningGap?.objectives) || 'Learning gap not specified',
+        resources: [
+          asString((resources?.timeline as Record<string, unknown>)?.duration),
+          asString((resources?.budget as Record<string, unknown>)?.amount),
+          asString(deliveryStrategy?.modality),
+        ].filter(Boolean).join(', ') || 'Resources not specified',
+        constraints: Array.isArray(sa.constraints) 
+          ? sa.constraints.filter((item) => typeof item === 'string').join(', ')
+          : 'No specific constraints',
+        numSections: 5,
+        questionsPerSection: 7,
+      };
+    } else {
+      // V1 Schema - flat string extraction (legacy fallback)
+      console.log('[GenerateDynamicQuestions] Using V1 schema (legacy)');
+      
+      canonicalInput = {
+        role: firstNonEmpty(sa.role, 'Learning Professional'),
+        organization: firstNonEmpty(
+          sa.organization,
+          sa.targetAudience,
+          sa.target_audience,
+          'Organization'
+        ),
+        learningGap: firstNonEmpty(
+          sa.learningGap,
+          Array.isArray(sa.learningObjectives)
+            ? (sa.learningObjectives as string[]).join(', ')
+            : asString(sa.learningObjective),
+          'Learning gap not specified'
+        ),
+        resources: firstNonEmpty(
+          sa.resources,
+          sa.deliveryMethod,
+          sa.delivery_method,
+          'Resources not specified'
+        ),
+        constraints: firstNonEmpty(
+          sa.constraints,
+          `${asString(sa.assessmentType) || asString(sa.assessment_type)} ${asString(sa.duration)}`,
+          'Constraints not specified'
+        ),
+        numSections: 5,
+        questionsPerSection: 7,
+      };
+    }
 
     const input = canonicalInput;
+    console.log('[GenerateDynamicQuestions] Canonical input:', JSON.stringify(input, null, 2));
 
     // Validate and normalize to canonical shape via union+transform
-    const validatedInput = generationInputSchema.parse(input);
+    let validatedInput;
+    try {
+      validatedInput = generationInputSchema.parse(input);
+      console.log('[GenerateDynamicQuestions] Validation successful');
+    } catch (validationError) {
+      console.error('[GenerateDynamicQuestions] Validation failed:', validationError);
+      
+      if (validationError instanceof Error) {
+        return NextResponse.json(
+          { 
+            error: 'Invalid static answers format',
+            details: validationError.message,
+            receivedData: input,
+          },
+          { status: 400 }
+        );
+      }
+      throw validationError;
+    }
 
     // Mark as generating immediately for dashboard routing
     await supabase
@@ -125,7 +213,8 @@ export async function POST(request: NextRequest): Promise<Response> {
     }
 
     // Validate result has sections/questions
-    const maybeSections = (dynamicQuestions as any).sections ?? dynamicQuestions;
+    const maybeSections =
+      (dynamicQuestions as { sections?: unknown[] }).sections ?? dynamicQuestions;
     if (!Array.isArray(maybeSections) || maybeSections.length === 0) {
       await supabase.from('blueprint_generator').update({ status: 'draft' }).eq('id', blueprintId);
       return NextResponse.json(
@@ -147,7 +236,8 @@ export async function POST(request: NextRequest): Promise<Response> {
       .from('blueprint_generator')
       .update({
         dynamic_questions: formSchema.sections, // Store in form schema format for UI
-        dynamic_questions_raw: (dynamicQuestions as any).sections ?? dynamicQuestions, // tolerate legacy
+        dynamic_questions_raw:
+          (dynamicQuestions as { sections?: unknown[] }).sections ?? dynamicQuestions, // tolerate legacy
         status: 'draft',
       })
       .eq('id', blueprintId)
@@ -161,7 +251,8 @@ export async function POST(request: NextRequest): Promise<Response> {
 
     return NextResponse.json({
       success: true,
-      dynamicQuestions: (dynamicQuestions as any).sections ?? dynamicQuestions,
+      dynamicQuestions:
+        (dynamicQuestions as { sections?: unknown[] }).sections ?? dynamicQuestions,
       message: 'Dynamic questions generated successfully',
     });
   } catch (error) {

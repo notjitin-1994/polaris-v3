@@ -267,10 +267,7 @@ export function BlueprintCard({
 
             <div className="relative h-1.5 overflow-hidden rounded-full bg-white/5">
               <motion.div
-                className={cn(
-                  'absolute inset-y-0 left-0 rounded-full',
-                  'from-primary-400 to-primary-600 bg-gradient-to-r'
-                )}
+                className="absolute inset-y-0 left-0 rounded-full bg-primary"
                 initial={{ width: 0 }}
                 animate={{ width: `${completionPercentage}%` }}
                 transition={{
@@ -282,7 +279,7 @@ export function BlueprintCard({
 
               {/* Shimmer effect */}
               <motion.div
-                className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
+                className="absolute inset-0 bg-white/10"
                 animate={{
                   x: ['-100%', '200%'],
                 }}
@@ -391,12 +388,12 @@ export function BlueprintCard({
         {/* Bottom accent line */}
         <motion.div
           className={cn(
-            'h-1 bg-gradient-to-r',
+            'h-1',
             blueprint.status === 'completed'
-              ? 'from-success/50 via-success to-success/50'
+              ? 'bg-success'
               : blueprint.status === 'generating'
-                ? 'from-secondary/50 via-secondary to-secondary/50'
-                : 'from-primary/50 via-primary to-primary/50'
+                ? 'bg-secondary'
+                : 'bg-primary'
           )}
           initial={{ scaleX: 0 }}
           animate={{ scaleX: isHovered ? 1 : 0 }}

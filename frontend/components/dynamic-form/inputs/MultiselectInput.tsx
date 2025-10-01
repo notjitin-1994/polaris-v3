@@ -55,7 +55,7 @@ export const MultiselectInput: React.FC<BaseInputProps> = ({
     'cursor-pointer ring-0 transition outline-none',
     hasError
       ? 'border-red-400/50 focus:border-red-400/50 focus:ring-[1.2px] focus:ring-red-400/50'
-      : 'focus:border-[#d0edf0] focus:ring-[1.2px] focus:ring-[#d0edf0]',
+      : 'focus:border-[#a7dadb] focus:ring-[1.2px] focus:ring-[#a7dadb]',
     disabled && 'cursor-not-allowed disabled:opacity-50'
   );
 

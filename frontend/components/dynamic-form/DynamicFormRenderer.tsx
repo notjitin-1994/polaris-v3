@@ -411,13 +411,9 @@ export const DynamicFormRenderer = React.forwardRef<DynamicFormRef, DynamicFormR
 
     return (
       <FormErrorBoundary>
-        <DynamicFormLayout
-          currentSection={currentSectionIndex}
-          totalSections={formSchema.sections.length}
-        >
-          {/* Form Content */}
-          <div className="w-full">
-            <DynamicFormCard>
+        {/* Form Content */}
+        <div className="w-full">
+          <DynamicFormCard showLogo={false}>
               <FormProvider {...methods}>
                 <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-6">
                   {/* Progress indicator */}
@@ -571,23 +567,39 @@ export const DynamicFormRenderer = React.forwardRef<DynamicFormRef, DynamicFormR
                     </div>
                   </div>
 
-                  {/* Save status */}
-                  {lastSaved && (
-                    <div className="animate-fade-in flex items-center py-2">
-                      <div
-                        className="mr-2 h-2 w-2 rounded-full"
-                        style={{ backgroundColor: '#10b981' }}
-                      />
-                      <span className="text-sm" style={{ color: '#10b981' }}>
-                        All changes saved
-                      </span>
-                    </div>
-                  )}
+                  {/* Save Status */}
+                  <div className="flex items-center justify-start py-2">
+                    {isSaving && (
+                      <div className="animate-fade-in flex items-center gap-2" style={{ color: '#d0edf0' }}>
+                        <div
+                          className="h-3 w-3 animate-spin rounded-full border-2"
+                          style={{
+                            borderColor: 'rgba(167, 218, 219, 0.3)',
+                            borderTopColor: '#a7dadb',
+                          }}
+                        />
+                        <span className="text-xs font-medium">Saving...</span>
+                      </div>
+                    )}
+                    {!isSaving && lastSaved && (
+                      <div className="animate-fade-in flex items-center gap-2 text-green-400">
+                        <div className="flex h-3 w-3 items-center justify-center rounded-full bg-green-500">
+                          <svg className="h-2 w-2 text-white" fill="currentColor" viewBox="0 0 20 20">
+                            <path
+                              fillRule="evenodd"
+                              d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                              clipRule="evenodd"
+                            />
+                          </svg>
+                        </div>
+                        <span className="text-xs font-medium">All changes saved</span>
+                      </div>
+                    )}
+                  </div>
                 </form>
               </FormProvider>
             </DynamicFormCard>
           </div>
-        </DynamicFormLayout>
       </FormErrorBoundary>
     );
   }

@@ -61,10 +61,13 @@ export function mapOllamaToFormSchema(ollamaQuestions: DynamicQuestions): FormSc
           return q;
         }
 
-        const q: Question = {
+        const mappedType = mapInputType(question.input_type);
+        
+        // Build base question
+        const q: any = {
           id: question.id,
           label: question.question_text,
-          type: mapInputType(question.input_type),
+          type: mappedType,
           required: question.validation?.required ?? true,
           helpText: undefined,
           placeholder: undefined,
@@ -74,28 +77,87 @@ export function mapOllamaToFormSchema(ollamaQuestions: DynamicQuestions): FormSc
               message: 'This field is required',
             },
           ],
-          options:
-            question.input_type === 'single_select' || question.input_type === 'multi_select'
-              ? (question.options ?? []).map((option: string) => ({
-                  value: option,
-                  label: option,
-                  disabled: false,
-                }))
-              : undefined,
-          scaleConfig:
-            question.input_type === 'slider'
-              ? {
-                  min: 1,
-                  max: 10,
-                  step: 1,
-                }
-              : undefined,
           metadata: {
             dataType: question.validation?.data_type ?? 'string',
           },
         };
 
-        return q;
+        // Handle options for selection types
+        const hasOptions = question.options && Array.isArray(question.options);
+        if (hasOptions && (
+          mappedType === 'select' ||
+          mappedType === 'multiselect' ||
+          mappedType === 'radio_pills' ||
+          mappedType === 'radio_cards' ||
+          mappedType === 'checkbox_pills' ||
+          mappedType === 'checkbox_cards' ||
+          mappedType === 'toggle_switch'
+        )) {
+          q.options = question.options.map((option: any) => {
+            if (typeof option === 'string') {
+              return { value: option.toLowerCase().replace(/\s+/g, '_'), label: option, disabled: false };
+            }
+            return {
+              value: option.value || option.label?.toLowerCase().replace(/\s+/g, '_') || '',
+              label: option.label || option.value || '',
+              description: option.description,
+              icon: option.icon,
+              disabled: option.disabled || false,
+            };
+          });
+        }
+
+        // Handle max_selections for multi-select types
+        if (question.max_selections && (mappedType === 'checkbox_pills' || mappedType === 'checkbox_cards')) {
+          q.maxSelections = question.max_selections;
+        }
+
+        // Handle scale configuration
+        if (question.scale_config && mappedType === 'enhanced_scale') {
+          q.scaleConfig = {
+            min: question.scale_config.min ?? 1,
+            max: question.scale_config.max ?? 5,
+            minLabel: question.scale_config.min_label,
+            maxLabel: question.scale_config.max_label,
+            labels: question.scale_config.labels,
+            step: question.scale_config.step ?? 1,
+          };
+        } else if (question.input_type === 'slider' && mappedType === 'scale') {
+          q.scaleConfig = {
+            min: 1,
+            max: 10,
+            step: 1,
+          };
+        }
+
+        // Handle slider configuration
+        if (question.slider_config && mappedType === 'labeled_slider') {
+          q.sliderConfig = {
+            min: question.slider_config.min ?? 0,
+            max: question.slider_config.max ?? 100,
+            step: question.slider_config.step ?? 1,
+            unit: question.slider_config.unit,
+            markers: question.slider_config.markers,
+          };
+        }
+
+        // Handle number spinner configuration
+        if (question.number_config && mappedType === 'number_spinner') {
+          q.numberConfig = {
+            min: question.number_config.min ?? 0,
+            max: question.number_config.max ?? 999,
+            step: question.number_config.step ?? 1,
+          };
+        }
+
+        // Handle currency configuration
+        if (mappedType === 'currency') {
+          q.currencySymbol = question.currency_symbol || '$';
+          q.min = question.min;
+          q.max = question.max;
+        }
+
+        return q as Question;
       }),
       order: sectionIndex,
       isCollapsible: true,
@@ -156,19 +218,60 @@ export function mapOllamaToFormSchema(ollamaQuestions: DynamicQuestions): FormSc
  */
 function mapInputType(ollamaType: string): Question['type'] {
   switch (ollamaType) {
+    // Basic text inputs
     case 'text':
       return 'text';
-    case 'single_select':
-      return 'select';
-    case 'multi_select':
-      return 'multiselect';
-    case 'slider':
-      return 'scale';
+    case 'textarea':
+      return 'textarea';
+    case 'email':
+      return 'email';
+    case 'url':
+      return 'url';
+    case 'number':
+      return 'number';
+    case 'date':
     case 'calendar':
       return 'date';
+    
+    // Traditional selection
+    case 'single_select':
+    case 'select':
+      return 'select';
+    case 'multi_select':
+    case 'multiselect':
+      return 'multiselect';
+    
+    // Rich visual selection inputs
+    case 'radio_pills':
+      return 'radio_pills';
+    case 'radio_cards':
+      return 'radio_cards';
+    case 'checkbox_pills':
+      return 'checkbox_pills';
+    case 'checkbox_cards':
+      return 'checkbox_cards';
+    
+    // Scales & sliders
+    case 'scale':
+      return 'scale';
+    case 'enhanced_scale':
+      return 'enhanced_scale';
+    case 'labeled_slider':
+    case 'slider':
+      return 'labeled_slider';
+    
+    // Specialized inputs
+    case 'toggle_switch':
+    case 'toggle':
+      return 'toggle_switch';
     case 'currency':
-      return 'number';
+      return 'currency';
+    case 'number_spinner':
+    case 'spinner':
+      return 'number_spinner';
+    
     default:
+      console.warn(`Unknown Ollama input type: ${ollamaType}, defaulting to text`);
       return 'text';
   }
 }

@@ -117,12 +117,17 @@ function DashboardContent() {
 
       const nextIndex = (count ?? 0) + 1;
 
-      // Always create a fresh draft
+      // Always create a fresh draft with V2 schema
       const blueprintData = {
         user_id: currentUser.id,
-        status: 'draft',
-        static_answers: {},
+        status: 'draft' as const,
+        static_answers: {}, // Empty object - form will populate with defaultValues
+        questionnaire_version: 2, // V2 schema
+        completed_steps: [], // No steps completed yet
+        title: `New Blueprint (${nextIndex})`,
       };
+
+      console.log('[Dashboard] Creating new blueprint:', blueprintData);
 
       const { data, error } = await supabase
         .from('blueprint_generator')
@@ -138,9 +143,16 @@ function DashboardContent() {
       }
 
       const draftId = data.id as string;
-      console.log('Blueprint created successfully with ID:', draftId);
+      console.log('[Dashboard] Blueprint created successfully with ID:', draftId);
+      console.log('[Dashboard] New blueprint data:', {
+        id: data.id,
+        status: data.status,
+        questionnaire_version: data.questionnaire_version,
+        has_static_answers: !!data.static_answers,
+      });
 
-      // Navigate to the static wizard bound to this draft; autosave will save into it
+      // Navigate to the static wizard with this blueprint ID
+      // Form will load with empty fields and start saving to this blueprint
       router.push(`/static-wizard?bid=${draftId}`);
     } catch (err) {
       console.error('Error creating blueprint:', err);

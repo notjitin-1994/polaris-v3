@@ -24,13 +24,14 @@ export const SelectInput: React.FC<BaseInputProps> = ({
   const hasError = !!error;
 
   const selectClasses = cn(
-    'w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white',
-    'ring-0 transition outline-none',
-    'cursor-pointer appearance-none',
+    'w-full h-[3.25rem] rounded-[0.875rem] border-[1.5px] bg-[rgba(13,27,42,0.4)] px-4 text-base text-foreground font-normal',
+    'outline-none transition-all duration-300 cursor-pointer appearance-none',
+    'shadow-[inset_0_1px_2px_rgba(0,0,0,0.1),0_1px_3px_rgba(0,0,0,0.05)]',
+    'hover:border-[var(--border-strong)] hover:bg-[rgba(13,27,42,0.5)]',
     hasError
-      ? 'border-red-400/50 focus:border-red-400/50 focus:ring-[1.2px] focus:ring-red-400/50'
-      : 'focus:border-[#d0edf0] focus:ring-[1.2px] focus:ring-[#d0edf0]',
-    disabled && 'cursor-not-allowed disabled:opacity-50'
+      ? 'border-error/70 focus:border-error focus:bg-[rgba(13,27,42,0.6)] focus:shadow-[0_0_0_3px_rgba(239,68,68,0.15),inset_0_1px_2px_rgba(0,0,0,0.1)]'
+      : 'border-[var(--border-medium)] focus:border-primary focus:bg-[rgba(13,27,42,0.6)] focus:shadow-[0_0_0_3px_rgba(167,218,219,0.15),inset_0_1px_2px_rgba(0,0,0,0.1),var(--glow-subtle)]',
+    disabled && 'cursor-not-allowed opacity-50 bg-[rgba(13,27,42,0.3)]'
   );
 
   return (
@@ -54,14 +55,14 @@ export const SelectInput: React.FC<BaseInputProps> = ({
         className={selectClasses}
         style={{
           backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%23a7dadb' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3E%3C/svg%3E")`,
-          backgroundPosition: 'right 0.75rem center',
+          backgroundPosition: 'right 1rem center',
           backgroundRepeat: 'no-repeat',
-          backgroundSize: '1.5em 1.5em',
-          paddingRight: '2.5rem',
+          backgroundSize: '1.25em 1.25em',
+          paddingRight: '3rem',
         }}
       >
         {!question.required && (
-          <option value="" disabled className="bg-[#0d1b2a] text-white/50">
+          <option value="" disabled className="bg-background-paper text-text-disabled">
             Select an option...
           </option>
         )}
@@ -70,7 +71,7 @@ export const SelectInput: React.FC<BaseInputProps> = ({
             key={`${option.value}-${index}`}
             value={option.value}
             disabled={option.disabled}
-            className="bg-[#0d1b2a] text-white"
+            className="bg-background-paper text-foreground"
           >
             {option.label}
           </option>

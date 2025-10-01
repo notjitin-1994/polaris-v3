@@ -1,33 +1,29 @@
 import { z } from 'zod';
+import {
+  staticQuestionsSchemaV1,
+  staticQuestionsSchemaV2,
+  type StaticQuestionsFormValuesV1,
+  type StaticQuestionsFormValuesV2,
+} from './validation';
 
-// Canonical static questionnaire fields aligned with dynamic-questions-prompt.md
-export const staticQuestionsSchema = z.object({
-  role: z
-    .string({ required_error: 'Role is required' })
-    .min(2, 'Please provide at least 2 characters'),
-  organization: z
-    .string({ required_error: 'Organization is required' })
-    .min(2, 'Please provide at least 2 characters'),
-  learningGap: z
-    .string({ required_error: 'Identified learning gap is required' })
-    .min(10, 'Please provide at least 10 characters'),
-  resources: z
-    .string({ required_error: 'Resources & Budgets are required' })
-    .min(3, 'Please provide at least 3 characters'),
-  constraints: z.array(z.string()).min(1, 'Please select at least one constraint'),
-});
+// Re-export from validation for convenience
+export { staticQuestionsSchemaV1, staticQuestionsSchemaV2 };
+export type { StaticQuestionsFormValuesV1, StaticQuestionsFormValuesV2 };
 
-export type StaticQuestionsFormValues = z.infer<typeof staticQuestionsSchema>;
+// Main type is V2
+export type StaticQuestionsFormValues = StaticQuestionsFormValuesV2;
 
-export type StepKey = keyof StaticQuestionsFormValues;
+// Export V2 as default - use only V2 schema, not union
+export const staticQuestionsSchema = staticQuestionsSchemaV2;
 
 export type WizardStepConfig = {
-  key: StepKey;
+  key: string;
   label: string;
   description?: string;
-  fields: StepKey[];
+  fields: string[];
 };
 
+// V2 wizard steps (8 steps) - NOW DEFAULT
 export const wizardSteps: WizardStepConfig[] = [
   {
     key: 'role',
@@ -38,33 +34,100 @@ export const wizardSteps: WizardStepConfig[] = [
   {
     key: 'organization',
     label: 'Organization',
-    description: 'Organization or team context',
+    description: 'Organization context and industry',
     fields: ['organization'],
   },
   {
+    key: 'learnerProfile',
+    label: 'Learner Profile',
+    description: 'Target audience analysis',
+    fields: ['learnerProfile'],
+  },
+  {
     key: 'learningGap',
-    label: 'Identified Learning Gap',
-    description: 'What skills or knowledge gaps are you addressing?',
+    label: 'Learning Gap & Objectives',
+    description: 'Gap analysis and learning outcomes',
     fields: ['learningGap'],
   },
   {
     key: 'resources',
-    label: 'Resources & Budgets',
-    description: 'Available resources, tools, and budget',
+    label: 'Resources & Budget',
+    description: 'Budget, timeline, team, and technology',
     fields: ['resources'],
+  },
+  {
+    key: 'deliveryStrategy',
+    label: 'Delivery Strategy',
+    description: 'Modality, interactivity, and practice',
+    fields: ['deliveryStrategy'],
   },
   {
     key: 'constraints',
     label: 'Constraints',
-    description: 'Timeline, delivery, or organizational constraints',
+    description: 'Project limitations and boundaries',
     fields: ['constraints'],
+  },
+  {
+    key: 'evaluation',
+    label: 'Assessment & Evaluation',
+    description: 'Measurement strategy (Kirkpatrick)',
+    fields: ['evaluation'],
   },
 ];
 
-export const defaultValues: StaticQuestionsFormValues = {
+// V2 default values
+export const defaultValues: StaticQuestionsFormValuesV2 = {
   role: '',
-  organization: '',
-  learningGap: '',
-  resources: '',
+  organization: {
+    name: '',
+    industry: '',
+    size: '1-50',
+    regions: [],
+  },
+  learnerProfile: {
+    audienceSize: '1-10',
+    priorKnowledge: 3,
+    motivation: [],
+    environment: [],
+    devices: [],
+    timeAvailable: 0,
+    accessibility: [],
+  },
+  learningGap: {
+    description: '',
+    gapType: 'knowledge',
+    urgency: 3,
+    impact: 3,
+    impactAreas: [],
+    bloomsLevel: 'apply',
+    objectives: '',
+  },
+  resources: {
+    budget: { amount: 0, flexibility: 'flexible' },
+    timeline: { targetDate: '', flexibility: 'flexible', duration: 12 },
+    team: {
+      instructionalDesigners: 0,
+      contentDevelopers: 0,
+      multimediaSpecialists: 0,
+      smeAvailability: 3,
+      experienceLevel: 'intermediate',
+    },
+    technology: { lms: '', authoringTools: [], otherTools: [] },
+    contentStrategy: { source: 'scratch', existingMaterials: [] },
+  },
+  deliveryStrategy: {
+    modality: 'self-paced',
+    interactivityLevel: 3,
+    practiceOpportunities: [],
+    socialLearning: [],
+    reinforcement: 'none',
+  },
   constraints: [],
+  evaluation: {
+    level1: { methods: [], satisfactionTarget: 80 },
+    level2: { assessmentMethods: [], passingRequired: false },
+    level3: { measureBehavior: false },
+    level4: { measureROI: false },
+    certification: 'none',
+  },
 };

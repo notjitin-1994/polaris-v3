@@ -13,40 +13,66 @@ export function QuestionnaireProgress({
   totalSteps,
   steps,
 }: QuestionnaireProgressProps): JSX.Element {
+  const progress = ((currentStep + 1) / totalSteps) * 100;
+  
   return (
-    <div className="animate-fade-in-up mb-8">
-      {/* Progress bar */}
-      <div
-        className="relative mb-6 h-1 w-full overflow-hidden rounded-full"
-        style={{ backgroundColor: 'rgba(255, 255, 255, 0.1)' }}
-      >
-        <div
-          className="absolute top-0 left-0 h-full rounded-full transition-all duration-500 ease-out"
-          style={{
-            width: `${((currentStep + 1) / totalSteps) * 100}%`,
-            backgroundColor: '#a7dadb',
-            boxShadow: '0 0 12px rgba(167, 218, 219, 0.5)',
-          }}
-        />
+    <div className="animate-fade-in-up space-y-6 mb-10">
+      {/* Progress bar with segments */}
+      <div className="relative">
+        <div className="h-2 w-full overflow-hidden rounded-full bg-white/5 shadow-inner">
+          <div
+            className="relative h-full rounded-full bg-gradient-to-r from-primary-accent via-primary-accent-light to-primary-accent transition-all duration-700 ease-out"
+            style={{
+              width: `${progress}%`,
+              boxShadow: '0 0 16px rgba(167, 218, 219, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.3)',
+            }}
+          >
+            {/* Animated shimmer effect */}
+            <div 
+              className="absolute inset-0 rounded-full"
+              style={{
+                background: 'linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.3) 50%, transparent 100%)',
+                animation: 'shimmer 2s infinite',
+              }}
+            />
+          </div>
+        </div>
+        
+        {/* Progress dots */}
+        <div className="absolute top-1/2 left-0 right-0 -translate-y-1/2 flex justify-between px-1">
+          {Array.from({ length: totalSteps }).map((_, index) => (
+            <div
+              key={index}
+              className={`h-3 w-3 rounded-full border-2 transition-all duration-300 ${
+                index <= currentStep
+                  ? 'bg-primary-accent border-primary-accent-light shadow-[0_0_8px_rgba(167,218,219,0.6)]'
+                  : 'bg-background border-white/20'
+              }`}
+            />
+          ))}
+        </div>
       </div>
 
-      {/* Step indicator */}
-      <div className="flex items-center justify-between text-sm">
-        <div className="flex-1">
-          <p className="mb-1 text-white/50">
-            Step {currentStep + 1} of {totalSteps}
-          </p>
-          <h3
-            className="text-lg font-semibold text-white"
-            style={{ fontFamily: 'var(--font-quicksand), sans-serif' }}
-          >
+      {/* Step info with refined typography */}
+      <div className="flex items-start justify-between">
+        <div className="flex-1 space-y-2">
+          <div className="flex items-center gap-3">
+            <span className="inline-flex items-center justify-center h-7 px-3 rounded-full bg-primary/10 border border-primary/20 text-[13px] font-semibold text-primary-accent tracking-wide">
+              Step {currentStep + 1} of {totalSteps}
+            </span>
+          </div>
+          <h3 className="text-[22px] font-semibold text-foreground font-heading leading-tight tracking-tight">
             {steps[currentStep]?.label}
           </h3>
           {steps[currentStep]?.description && (
-            <p className="mt-1 text-sm text-white/60">{steps[currentStep]?.description}</p>
+            <p className="text-[15px] text-text-secondary leading-relaxed max-w-lg">
+              {steps[currentStep]?.description}
+            </p>
           )}
         </div>
       </div>
     </div>
   );
 }
+
+/* Add shimmer keyframe to globals.css if not already present */

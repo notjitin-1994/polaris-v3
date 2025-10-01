@@ -189,14 +189,18 @@ function DynamicWizardContent({ id }: { id: string }): React.JSX.Element {
                             user_id: userId,
                             status: 'draft',
                             title: `New Blueprint (${nextIndex})`,
-                            static_answers: {},
+                            static_answers: {}, // Empty - form will use defaults
+                            questionnaire_version: 2, // V2 schema
+                            completed_steps: [], // No steps completed
                           })
                           .select()
                           .single();
                         if (error) throw error;
                         const draftId = data.id as string;
+                        console.log('[DynamicWizard] Created new blueprint:', draftId);
                         router.push(`/static-wizard?bid=${draftId}`);
-                      } catch (_e) {
+                      } catch (error) {
+                        console.error('[DynamicWizard] Error creating new blueprint:', error);
                         router.push('/static-wizard');
                       }
                     }}
@@ -233,7 +237,11 @@ function DynamicWizardContent({ id }: { id: string }): React.JSX.Element {
               title: 'Dynamic Questions',
               description: 'Generated questions based on your responses',
               sections: (Array.isArray(blueprint.dynamic_questions)
-                ? blueprint.dynamic_questions
+                ? blueprint.dynamic_questions.map((section: any) => ({
+                    ...section,
+                    isCollapsible: section.isCollapsible ?? true,
+                    isRequired: section.isRequired ?? true,
+                  }))
                 : []) as any,
               settings: {
                 allowSaveProgress: true,
@@ -245,7 +253,7 @@ function DynamicWizardContent({ id }: { id: string }): React.JSX.Element {
                 theme: 'auto',
               },
             }}
-            initialData={(blueprint.dynamic_answers as any) || {}}
+            initialData={(blueprint.dynamic_answers as Record<string, unknown>) || {}}
             onSubmit={async (answers) => {
               try {
                 // Save dynamic answers to the current draft blueprint
@@ -262,7 +270,7 @@ function DynamicWizardContent({ id }: { id: string }): React.JSX.Element {
               try {
                 // Persist in real-time to the same line item; user is enforced by RLS
                 const svc = createBrowserBlueprintService();
-                await svc.updateDynamicAnswers(id, partialAnswers as any);
+                await svc.updateDynamicAnswers(id, partialAnswers as Record<string, unknown>);
               } catch (e) {
                 console.error('Realtime save error:', e);
               }

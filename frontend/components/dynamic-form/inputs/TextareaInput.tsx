@@ -24,14 +24,18 @@ export const TextareaInput: React.FC<BaseInputProps> = ({
   const hasError = !!error;
 
   const textareaClasses = cn(
-    'w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white placeholder-white/40',
-    'ring-0 transition outline-none',
-    'min-h-[120px] resize-none',
+    'w-full h-auto min-h-[120px] rounded-[0.875rem] border-[1.5px] bg-[rgba(13,27,42,0.4)] px-4 py-3.5 text-base text-foreground placeholder-text-disabled font-normal',
+    'outline-none transition-all duration-300 resize-none leading-relaxed',
+    'shadow-[inset_0_1px_2px_rgba(0,0,0,0.1),0_1px_3px_rgba(0,0,0,0.05)]',
+    'hover:border-[var(--border-strong)] hover:bg-[rgba(13,27,42,0.5)]',
     hasError
-      ? 'border-red-400/50 focus:border-red-400/50 focus:ring-[1.2px] focus:ring-red-400/50'
-      : 'focus:border-[#d0edf0] focus:ring-[1.2px] focus:ring-[#d0edf0]',
-    disabled && 'cursor-not-allowed disabled:opacity-50'
+      ? 'border-error/70 focus:border-error focus:bg-[rgba(13,27,42,0.6)] focus:shadow-[0_0_0_3px_rgba(239,68,68,0.15),inset_0_1px_2px_rgba(0,0,0,0.1)]'
+      : 'border-[var(--border-medium)] focus:border-primary focus:bg-[rgba(13,27,42,0.6)] focus:shadow-[0_0_0_3px_rgba(167,218,219,0.15),inset_0_1px_2px_rgba(0,0,0,0.1),var(--glow-subtle)]',
+    disabled && 'cursor-not-allowed opacity-50 bg-[rgba(13,27,42,0.3)]'
   );
+
+  const charCount = typeof value === 'string' ? value.length : 0;
+  const maxLength = question.maxLength;
 
   return (
     <InputWrapper
@@ -51,20 +55,19 @@ export const TextareaInput: React.FC<BaseInputProps> = ({
         required={question.required}
         placeholder={question.placeholder}
         rows={question.rows || 4}
-        maxLength={question.maxLength}
+        maxLength={maxLength}
         aria-invalid={hasError}
         aria-describedby={hasError ? `${inputId}-error` : undefined}
         className={textareaClasses}
-        style={{
-          backgroundColor: 'rgba(255, 255, 255, 0.05)',
-          color: '#e0e0e0',
-        }}
       />
 
-      {question.maxLength && (
-        <p className="mt-1 text-xs text-white/60">
-          {typeof value === 'string' ? value.length : 0} / {question.maxLength} characters
-        </p>
+      {maxLength && (
+        <div className="mt-2 flex items-center justify-between">
+          <span className="text-[12px] text-text-disabled">Character count</span>
+          <span className={`text-[13px] font-medium ${charCount > maxLength * 0.9 ? 'text-warning' : 'text-text-secondary'}`}>
+            {charCount} / {maxLength}
+          </span>
+        </div>
       )}
     </InputWrapper>
   );

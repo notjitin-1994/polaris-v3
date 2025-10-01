@@ -104,11 +104,7 @@ export function StandardHeader({
       <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
         <SwirlBackground count={12} minSize={32} maxSize={64} opacityMin={0.03} opacityMax={0.08} />
         <div
-          className="absolute inset-0"
-          style={{
-            background:
-              'radial-gradient(60% 50% at 50% 30%, rgba(167,218,219,0.03) 0%, transparent 70%)',
-          }}
+          className="absolute inset-0 bg-primary/5"
         />
       </div>
 
@@ -153,7 +149,7 @@ export function StandardHeader({
             {showDecorativeLine && (
               <div
                 aria-hidden="true"
-                className="mt-4 h-px w-16 bg-gradient-to-r from-white/40 to-transparent"
+                className="mt-4 h-px w-16 bg-neutral-300"
               />
             )}
           </div>

@@ -28,6 +28,7 @@ function pickInt(min: number, max: number): number {
 
 const SwirlBackground = memo(({ className = '' }: SwirlBackgroundProps) => {
   const [tier, setTier] = useState<Tier>('desktop');
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     const getTier = (w: number): Tier => {
@@ -40,6 +41,11 @@ const SwirlBackground = memo(({ className = '' }: SwirlBackgroundProps) => {
     update();
     window.addEventListener('resize', update);
     return () => window.removeEventListener('resize', update);
+  }, []);
+
+  // Ensure we render deterministic markup on the server to avoid hydration mismatch
+  useEffect(() => {
+    setMounted(true);
   }, []);
 
   const config = useMemo(() => {
@@ -89,6 +95,8 @@ const SwirlBackground = memo(({ className = '' }: SwirlBackgroundProps) => {
   }, [tier]);
 
   const swirls = useMemo(() => {
+    // During SSR and the very first client render, keep this empty to match markup
+    if (!mounted) return [] as Swirl[];
     const placed: Swirl[] = [];
     const targetCount = pickInt(config.countMin, config.countMax);
     const maxAttempts = 2500;
@@ -124,6 +132,7 @@ const SwirlBackground = memo(({ className = '' }: SwirlBackgroundProps) => {
     }
     return placed;
   }, [
+    mounted,
     config.countMin,
     config.countMax,
     config.sizeMin,
@@ -137,6 +146,7 @@ const SwirlBackground = memo(({ className = '' }: SwirlBackgroundProps) => {
     <div
       className={`pointer-events-none absolute inset-0 overflow-hidden select-none ${className}`}
       aria-hidden
+      suppressHydrationWarning
     >
       {swirls.map((s) => (
         <img
@@ -160,14 +170,8 @@ const SwirlBackground = memo(({ className = '' }: SwirlBackgroundProps) => {
         />
       ))}
 
-      {/* Gentle vignette to keep focus on cards */}
-      <div
-        className="absolute inset-0"
-        style={{
-          background:
-            'radial-gradient(120% 120% at 50% 50%, rgba(0,0,0,0) 0%, rgba(0,0,0,0) 60%, rgba(0,0,0,0.28) 100%)',
-        }}
-      />
+      {/* Subtle vignette without gradients */}
+      <div className="absolute inset-0 bg-black/10" />
     </div>
   );
 });

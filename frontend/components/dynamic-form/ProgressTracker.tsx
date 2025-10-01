@@ -26,17 +26,29 @@ export const ProgressTracker: React.FC<ProgressTrackerProps> = ({
           )}
         </div>
 
-        <div className="h-2 w-full rounded-full bg-gray-200 dark:bg-gray-700">
+        <div className="h-2 w-full rounded-full bg-white/5 shadow-inner">
           <div
-            className="h-2 rounded-full bg-blue-600 transition-all duration-300 ease-out"
+            className="relative h-2 rounded-full bg-gradient-to-r from-primary-accent via-primary-accent-light to-primary-accent transition-all duration-700 ease-out"
             // One-off: Dynamic width for real-time progress indicator
-            style={{ width: `${progressPercentage}%` }}
+            style={{ 
+              width: `${progressPercentage}%`,
+              boxShadow: '0 0 16px rgba(167, 218, 219, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.3)'
+            }}
             role="progressbar"
             aria-valuenow={progressPercentage}
             aria-valuemin={0}
             aria-valuemax={100}
             aria-label={`Form progress: ${progressPercentage}% complete`}
-          />
+          >
+            {/* Animated shimmer effect */}
+            <div 
+              className="absolute inset-0 rounded-full"
+              style={{
+                background: 'linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.3) 50%, transparent 100%)',
+                animation: 'shimmer 2s infinite',
+              }}
+            />
+          </div>
         </div>
       </div>
 
@@ -57,7 +69,11 @@ export const ProgressTracker: React.FC<ProgressTrackerProps> = ({
                   key={index}
                   className={cn(
                     'h-2 flex-1 rounded-full transition-all duration-300',
-                    isCompleted ? 'bg-green-500' : isCurrent ? 'bg-blue-500' : 'glass-subtle'
+                    isCompleted 
+                      ? 'bg-primary-accent shadow-[0_0_8px_rgba(167,218,219,0.6)]' 
+                      : isCurrent 
+                        ? 'bg-secondary-accent shadow-[0_0_8px_rgba(79,70,229,0.5)]' 
+                        : 'bg-white/5'
                   )}
                   title={`Section ${sectionNumber}${isCompleted ? ' (Completed)' : isCurrent ? ' (Current)' : ' (Upcoming)'}`}
                 />
@@ -98,10 +114,10 @@ export const ProgressTracker: React.FC<ProgressTrackerProps> = ({
                 className={cn(
                   'rounded-lg p-2 text-center transition-all duration-300',
                   isReached
-                    ? 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400'
+                    ? 'bg-primary-accent/10 text-primary-accent border border-primary-accent/30 shadow-[0_0_8px_rgba(167,218,219,0.3)]'
                     : isCurrent
-                      ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400'
-                      : 'bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-400'
+                      ? 'bg-secondary-accent/10 text-secondary-accent border border-secondary-accent/30'
+                      : 'bg-white/5 text-text-disabled border border-white/10'
                 )}
               >
                 <div className="text-lg">{icon}</div>
@@ -114,9 +130,9 @@ export const ProgressTracker: React.FC<ProgressTrackerProps> = ({
 
       {/* Completion message */}
       {progressPercentage === 100 && (
-        <div className="rounded-lg border border-green-200 bg-green-50 p-3 dark:border-green-800 dark:bg-green-900/20">
+        <div className="rounded-lg border border-primary-accent/30 bg-primary-accent/10 p-3 shadow-[0_0_12px_rgba(167,218,219,0.3)]">
           <div className="flex items-center">
-            <div className="mr-2 text-green-500">
+            <div className="mr-2 text-primary-accent">
               <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
                 <path
                   fillRule="evenodd"
@@ -125,7 +141,7 @@ export const ProgressTracker: React.FC<ProgressTrackerProps> = ({
                 />
               </svg>
             </div>
-            <span className="text-sm font-medium text-green-800 dark:text-green-200">
+            <span className="text-sm font-medium text-primary-accent">
               All sections completed! Ready to submit.
             </span>
           </div>
