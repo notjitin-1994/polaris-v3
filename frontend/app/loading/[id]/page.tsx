@@ -184,18 +184,7 @@ function LoadingContent({ id }: { id: string }): React.JSX.Element {
         {/* Ambient glow background */}
         <div className="pointer-events-none absolute inset-0 z-0">
           <div
-            className="absolute inset-0"
-            style={{
-              background:
-                'radial-gradient(circle at 50% 0%, rgba(167, 218, 219, 0.04) 0%, transparent 60%)',
-            }}
-          />
-          <div
-            className="absolute inset-0"
-            style={{
-              background:
-                'radial-gradient(circle at 100% 100%, rgba(79, 70, 229, 0.03) 0%, transparent 50%)',
-            }}
+            className="absolute inset-0 bg-primary/[0.02]"
           />
         </div>
 
@@ -247,7 +236,7 @@ function LoadingContent({ id }: { id: string }): React.JSX.Element {
                 </div>
                 <div className="bg-surface h-2 overflow-hidden rounded-full">
                   <motion.div
-                    className="from-primary to-secondary h-full bg-gradient-to-r"
+                    className="h-full bg-primary"
                     initial={{ width: '0%' }}
                     animate={{ width: `${progress}%` }}
                     transition={{ duration: 0.3 }}

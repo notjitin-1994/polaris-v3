@@ -197,7 +197,7 @@ export default function PricingPage(): React.JSX.Element {
   }
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-gradient-to-br from-[#020C1B] via-[#0A1628] to-[#0F1B2E] text-white">
+    <div className="relative min-h-screen overflow-hidden bg-[#020C1B] text-white">
       {/* Subtle cosmic background effect */}
       <div className="absolute inset-0 opacity-30">
         <div className="bg-primary/20 absolute top-20 left-10 h-96 w-96 animate-pulse rounded-full blur-3xl" />
@@ -210,11 +210,11 @@ export default function PricingPage(): React.JSX.Element {
       <div className="relative mx-auto max-w-7xl px-4 py-16">
         {/* Hero Section */}
         <header className="animate-in fade-in slide-in-from-bottom-4 mb-12 text-center duration-700">
-          <div className="from-primary/20 to-primary/20 mb-4 inline-flex items-center gap-2 rounded-full border border-white/10 bg-gradient-to-r px-3 py-1">
+          <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/10 bg-primary/20 px-3 py-1">
             <span className="text-primary text-xs font-medium">✨ Limited Time</span>
             <span className="text-xs text-white/80">Save 20% with annual billing</span>
           </div>
-          <h1 className="text-display from-primary to-secondary font-heading bg-gradient-to-r bg-clip-text text-transparent">
+          <h1 className="text-display font-heading text-primary">
             Launch Your Ideas Into Orbit
           </h1>
           <p className="text-body text-text-secondary mx-auto mt-4 max-w-2xl">
@@ -306,7 +306,7 @@ export default function PricingPage(): React.JSX.Element {
                 {/* Popular Badge */}
                 {p.popular && (
                   <div className="absolute -top-4 left-1/2 z-10 -translate-x-1/2">
-                    <div className="from-primary to-secondary text-primary-foreground rounded-full bg-gradient-to-r px-4 py-1 text-xs font-bold shadow-lg">
+                    <div className="text-primary-foreground rounded-full bg-primary px-4 py-1 text-xs font-bold shadow-lg">
                       MOST POPULAR
                     </div>
                   </div>
@@ -315,7 +315,7 @@ export default function PricingPage(): React.JSX.Element {
                 <div
                   className={`glass relative h-full rounded-2xl border p-6 ${
                     p.popular
-                      ? 'border-primary/40 from-primary/[0.08] to-primary/[0.04] bg-gradient-to-br shadow-2xl'
+                      ? 'border-primary/40 bg-primary/[0.08] shadow-2xl'
                       : 'border-neutral-200 hover:border-neutral-300 dark:border-neutral-800 dark:hover:border-neutral-700'
                   }`}
                 >
@@ -440,7 +440,7 @@ export default function PricingPage(): React.JSX.Element {
                     onClick={() => gotoSignup(p.id)}
                     className={`w-full rounded-xl px-4 py-3 font-medium transition-all duration-200 ${
                       p.popular
-                        ? 'from-secondary to-secondary/80 hover:shadow-secondary/25 transform bg-gradient-to-r text-white hover:-translate-y-0.5 hover:shadow-lg'
+                        ? 'bg-secondary hover:shadow-secondary/25 transform text-white hover:-translate-y-0.5 hover:shadow-lg'
                         : 'bg-foreground/5 text-foreground hover:bg-foreground/10 border border-neutral-300 dark:border-neutral-700'
                     }`}
                   >
@@ -525,7 +525,7 @@ export default function PricingPage(): React.JSX.Element {
                   {/* Active Indicator */}
                   {active && (
                     <div className="absolute -top-4 left-1/2 z-10 -translate-x-1/2">
-                      <div className="from-primary to-secondary text-primary-foreground rounded-full bg-gradient-to-r px-4 py-1 text-xs font-bold shadow-lg">
+                      <div className="text-primary-foreground rounded-full bg-primary px-4 py-1 text-xs font-bold shadow-lg">
                         RECOMMENDED FOR {teamSeats} SEATS
                       </div>
                     </div>
@@ -534,7 +534,7 @@ export default function PricingPage(): React.JSX.Element {
                   <div
                     className={`glass relative h-full rounded-2xl border p-6 transition-all duration-300 ${
                       active
-                        ? 'border-primary/40 from-primary/[0.05] bg-gradient-to-br to-transparent shadow-2xl'
+                        ? 'border-primary/40 bg-primary/[0.05] shadow-2xl'
                         : 'border-neutral-200 hover:border-neutral-300 dark:border-neutral-800 dark:hover:border-neutral-700'
                     }`}
                   >
@@ -677,7 +677,7 @@ export default function PricingPage(): React.JSX.Element {
                       onClick={() => gotoSignup(t.id)}
                       className={`w-full rounded-xl px-4 py-3 font-medium transition-all duration-200 ${
                         active
-                          ? 'from-secondary to-secondary/80 hover:shadow-secondary/25 transform bg-gradient-to-r text-white hover:-translate-y-0.5 hover:shadow-lg'
+                          ? 'bg-secondary hover:shadow-secondary/25 transform text-white hover:-translate-y-0.5 hover:shadow-lg'
                           : 'bg-foreground/5 text-foreground hover:bg-foreground/10 border border-neutral-300 dark:border-neutral-700'
                       }`}
                     >
@@ -699,7 +699,7 @@ export default function PricingPage(): React.JSX.Element {
             </p>
           </div>
 
-          <div className="relative overflow-hidden rounded-2xl border border-neutral-200 bg-gradient-to-br from-purple-500/10 via-transparent to-blue-500/10 shadow-2xl dark:border-neutral-800">
+          <div className="relative overflow-hidden rounded-2xl border border-neutral-200 bg-primary/10 shadow-2xl dark:border-neutral-800">
             <div className="relative p-8 md:p-10">
               <div className="grid gap-8 md:grid-cols-2">
                 {/* Left Content */}
@@ -726,7 +726,7 @@ export default function PricingPage(): React.JSX.Element {
                   {/* Enterprise Features Grid */}
                   <div className="grid grid-cols-1 gap-4">
                     <div className="flex items-start gap-3">
-                      <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-purple-500/20 to-blue-500/20">
+                      <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-primary/20">
                         <svg
                           className="h-5 w-5 text-purple-400"
                           fill="none"
@@ -750,7 +750,7 @@ export default function PricingPage(): React.JSX.Element {
                     </div>
 
                     <div className="flex items-start gap-3">
-                      <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-purple-500/20 to-blue-500/20">
+                      <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-primary/20">
                         <svg
                           className="h-5 w-5 text-purple-400"
                           fill="none"
@@ -774,7 +774,7 @@ export default function PricingPage(): React.JSX.Element {
                     </div>
 
                     <div className="flex items-start gap-3">
-                      <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-purple-500/20 to-blue-500/20">
+                      <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-primary/20">
                         <svg
                           className="h-5 w-5 text-purple-400"
                           fill="none"
@@ -801,11 +801,11 @@ export default function PricingPage(): React.JSX.Element {
 
                 {/* Right Content - Pricing */}
                 <div className="flex flex-col justify-center">
-                  <div className="from-surface to-surface rounded-2xl border border-neutral-200 bg-gradient-to-br p-8 text-center dark:border-neutral-800">
+                  <div className="rounded-2xl border border-neutral-200 bg-surface p-8 text-center dark:border-neutral-800">
                     <div className="mb-4">
                       <span className="text-text-disabled text-sm">Starting at</span>
                       <div className="mt-2 flex items-baseline justify-center gap-1">
-                        <span className="bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-5xl font-bold text-transparent">
+                        <span className="text-5xl font-bold text-primary">
                           $199/year
                         </span>
                       </div>
@@ -859,7 +859,7 @@ export default function PricingPage(): React.JSX.Element {
 
                     <a
                       href="mailto:sales@smartslate.io"
-                      className="from-secondary to-secondary/80 hover:shadow-secondary/25 inline-flex w-full transform items-center justify-center gap-2 rounded-xl bg-gradient-to-r px-6 py-3 font-medium text-white transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg"
+                      className="hover:shadow-secondary/25 inline-flex w-full transform items-center justify-center gap-2 rounded-xl bg-secondary px-6 py-3 font-medium text-white transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg"
                     >
                       <svg
                         className="h-5 w-5"

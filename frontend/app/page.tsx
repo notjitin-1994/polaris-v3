@@ -253,19 +253,43 @@ function DashboardContent() {
     [user?.id]
   );
 
+  const [resumingBlueprintId, setResumingBlueprintId] = useState<string | null>(null);
+
   const handleResumeBlueprint = useCallback(
     async (blueprintId: string) => {
+      if (resumingBlueprintId) {
+        // Prevent multiple simultaneous resume actions
+        return;
+      }
+
       try {
+        setResumingBlueprintId(blueprintId);
+        console.log('[Dashboard] Resuming blueprint:', blueprintId);
+        
         const svc = createBrowserBlueprintService();
         const path = await svc.getNextRouteForBlueprint(blueprintId);
+        
+        console.log('[Dashboard] Determined next route:', path);
+        
+        // Add slight delay for better UX (shows loading state)
+        await new Promise(resolve => setTimeout(resolve, 300));
+        
         router.push(path);
       } catch (error) {
-        console.error('Error determining next route:', error);
-        // Fallback to static wizard
+        console.error('[Dashboard] Error determining next route:', error);
+        setResumingBlueprintId(null);
+        
+        // Show user-friendly error
+        alert(
+          'Unable to resume blueprint. Starting from the beginning. ' +
+          'Your previous progress has been saved.'
+        );
+        
+        // Fallback to static wizard as safest option
         router.push(`/static-wizard?bid=${blueprintId}`);
       }
     },
-    [router]
+    [router, resumingBlueprintId]
   );
 
   const getFirstName = () => {
@@ -283,7 +307,7 @@ function DashboardContent() {
     return user && firstName ? (
       <h1 className="font-heading text-3xl font-bold tracking-tight text-white sm:text-4xl md:text-5xl">
         <span>Welcome, </span>
-        <span className="text-[#a7dadb]">{firstName}</span>
+        <span className="text-primary">{firstName}</span>
         <span>.</span>
       </h1>
     ) : (
@@ -400,6 +424,7 @@ function DashboardContent() {
                     onResume={handleResumeBlueprint}
                     onDelete={handleDeleteBlueprint}
                     questionnaireComplete={!!questionnaireCompletion[blueprint.id]}
+                    isResuming={resumingBlueprintId === blueprint.id}
                   />
                 ))}
               </div>
@@ -555,12 +580,12 @@ function WorkspaceActionCard({
       onClick={onClick}
       disabled={disabled}
       onMouseMove={handleMouseMove}
-      className="group pressable elevate animate-fade-in-up relative block h-full w-full overflow-hidden rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl transition-transform duration-300 hover:-translate-y-0.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#a7dadb] disabled:cursor-not-allowed disabled:opacity-50"
+      className="group pressable elevate animate-fade-in-up relative block h-full w-full overflow-hidden rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl transition-transform duration-300 hover:-translate-y-0.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary disabled:cursor-not-allowed disabled:opacity-50"
       aria-label={label}
     >
       <div className="interactive-spotlight" aria-hidden="true" />
       <div className="relative grid h-full grid-cols-[auto,1fr,auto] items-center gap-4 p-5 sm:p-6">
-        <span className="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-white/85 transition-colors group-hover:text-[#a7dadb]">
+        <span className="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-white/85 transition-colors group-hover:text-primary">
           <Icon className="h-5 w-5" />
         </span>
         <div className="min-w-0">
@@ -569,7 +594,7 @@ function WorkspaceActionCard({
             <p className="mt-0.5 line-clamp-3 text-xs text-white/60">{description}</p>
           )}
         </div>
-        <span className="translate-x-1 text-white/70 opacity-0 transition will-change-transform group-hover:translate-x-0 group-hover:text-[#a7dadb] group-hover:opacity-100">
+        <span className="translate-x-1 text-white/70 opacity-0 transition will-change-transform group-hover:translate-x-0 group-hover:text-primary group-hover:opacity-100">
           <ArrowRight className="h-5 w-5" />
         </span>
       </div>

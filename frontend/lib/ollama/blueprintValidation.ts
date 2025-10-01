@@ -136,20 +136,24 @@ function mapFullToBlueprint(input: FullBlueprint): Blueprint {
 
 function parseDurationToHours(duration: string | undefined): number {
   if (!duration) return 0;
-  // Extract leading number; tolerate formats like "2h", "1.5h", "90m"
-  const hoursMatch = duration.match(/([0-9]+(?:\.[0-9]+)?)\s*h/i);
+  
+  // Extract leading number; tolerate formats like "2h", "1.5h", "90m", "35 minutes", "2 hours"
+  const hoursMatch = duration.match(/([0-9]+(?:\.[0-9]+)?)\s*(?:h|hour|hours)/i);
   if (hoursMatch) {
     return Math.max(0, Math.round(parseFloat(hoursMatch[1])));
   }
-  const minutesMatch = duration.match(/([0-9]+)\s*m/i);
+  
+  const minutesMatch = duration.match(/([0-9]+)\s*(?:m|min|mins|minute|minutes)/i);
   if (minutesMatch) {
     const mins = parseInt(minutesMatch[1], 10);
     return Math.max(0, Math.round(mins / 60));
   }
+  
   const numberMatch = duration.match(/^[0-9]+(?:\.[0-9]+)?$/);
   if (numberMatch) {
     return Math.max(0, Math.round(parseFloat(numberMatch[0])));
   }
+  
   return 0;
 }
 
@@ -182,6 +186,14 @@ function mapFullLikeToBlueprint(input: unknown): Blueprint | null {
   const title = org && org.length > 0 ? `${org} Learning Blueprint` : 'Learning Blueprint';
   const overviewParts: string[] = [];
   if (role) overviewParts.push(`Role: ${role}`);
+  
+  // Handle executive_summary if present
+  if (obj.executive_summary && typeof obj.executive_summary === 'object') {
+    const execSummary = obj.executive_summary as Record<string, unknown>;
+    if (typeof execSummary.content === 'string') {
+      overviewParts.push(execSummary.content.substring(0, 200));
+    }
+  }
   const instr =
     obj.instructional_strategy && typeof obj.instructional_strategy === 'object'
       ? (obj.instructional_strategy as Record<string, unknown>)
@@ -201,21 +213,38 @@ function mapFullLikeToBlueprint(input: unknown): Blueprint | null {
   if (kpiNames.length) overviewParts.push(`KPIs: ${kpiNames.join(', ')}`);
   const overview = overviewParts.join(' • ') || 'Auto-generated learning blueprint overview.';
 
-  // Learning objectives from prompt objectives -> titles
-  const objectives = Array.isArray(obj.objectives)
-    ? (obj.objectives as Array<Record<string, unknown>>)
-    : [];
+  // Learning objectives - handle both arrays and objects with objectives property
+  const learningObjectivesRaw = obj.learning_objectives ?? obj.objectives;
+  let objectives: Array<Record<string, unknown>> = [];
+  
+  if (Array.isArray(learningObjectivesRaw)) {
+    objectives = learningObjectivesRaw as Array<Record<string, unknown>>;
+  } else if (learningObjectivesRaw && typeof learningObjectivesRaw === 'object') {
+    const objWithObjectives = learningObjectivesRaw as Record<string, unknown>;
+    if (Array.isArray(objWithObjectives.objectives)) {
+      objectives = objWithObjectives.objectives as Array<Record<string, unknown>>;
+    }
+  }
+  
   const learningObjectives = objectives
-    .map((o) => (typeof o?.title === 'string' ? o.title : null))
+    .map((o) => (typeof o?.title === 'string' ? o.title : typeof o?.description === 'string' ? o.description : null))
     .filter((s): s is string => !!s && s.trim().length > 0);
   if (learningObjectives.length === 0) {
     learningObjectives.push('Define measurable learning objectives');
   }
 
-  // Modules from content_outline
-  const contentOutline = Array.isArray(obj.content_outline)
-    ? (obj.content_outline as Array<Record<string, unknown>>)
-    : [];
+  // Modules from content_outline - handle both array and object with modules property
+  let contentOutline: Array<Record<string, unknown>> = [];
+  
+  if (Array.isArray(obj.content_outline)) {
+    contentOutline = obj.content_outline as Array<Record<string, unknown>>;
+  } else if (obj.content_outline && typeof obj.content_outline === 'object') {
+    // Claude generates content_outline as { modules: [...], displayType: "..." }
+    const outlineObj = obj.content_outline as Record<string, unknown>;
+    if (Array.isArray(outlineObj.modules)) {
+      contentOutline = outlineObj.modules as Array<Record<string, unknown>>;
+    }
+  }
   const assessmentMethods = Array.isArray(assessment?.methods)
     ? (assessment?.methods as string[])
     : [];
@@ -228,8 +257,26 @@ function mapFullLikeToBlueprint(input: unknown): Blueprint | null {
       ? (m.topics as string[]).filter((t) => typeof t === 'string' && t.trim().length > 0)
       : [];
     const prerequisites = Array.isArray(m?.prerequisites) ? (m.prerequisites as string[]) : [];
+    
+    // Handle activities - Claude generates learning_activities array
     const activities: string[] = [];
-    if (deliveryMethod) activities.push(`Delivery: ${deliveryMethod}`);
+    if (Array.isArray(m?.learning_activities)) {
+      for (const activity of m.learning_activities as Array<unknown>) {
+        if (typeof activity === 'string') {
+          activities.push(activity);
+        } else if (activity && typeof activity === 'object') {
+          const act = activity as Record<string, unknown>;
+          if (typeof act.activity === 'string') {
+            activities.push(act.activity);
+          } else if (typeof act.type === 'string') {
+            const duration = typeof act.duration === 'string' ? ` (${act.duration})` : '';
+            activities.push(`${act.type}${duration}`);
+          }
+        }
+      }
+    } else if (deliveryMethod) {
+      activities.push(`Delivery: ${deliveryMethod}`);
+    }
     if (prerequisites.length > 0) activities.push(`Prerequisites: ${prerequisites.join(', ')}`);
     if (activities.length === 0) activities.push('See instructional strategy');
     const assessments = assessmentMethods.length > 0 ? assessmentMethods : ['Formative assessment'];
@@ -274,15 +321,26 @@ function mapFullLikeToBlueprint(input: unknown): Blueprint | null {
     obj.resources && typeof obj.resources === 'object'
       ? (obj.resources as Record<string, unknown>)
       : undefined;
-  const human = Array.isArray(resourcesObj?.human)
+  // Claude uses human_resources, tools_and_platforms, and budget.items
+  const human = Array.isArray(resourcesObj?.human_resources)
+    ? (resourcesObj?.human_resources as Array<Record<string, unknown>>)
+    : Array.isArray(resourcesObj?.human)
     ? (resourcesObj?.human as Array<Record<string, unknown>>)
     : [];
-  const tools = Array.isArray(resourcesObj?.tools)
+  const tools = Array.isArray(resourcesObj?.tools_and_platforms)
+    ? (resourcesObj?.tools_and_platforms as Array<Record<string, unknown>>)
+    : Array.isArray(resourcesObj?.tools)
     ? (resourcesObj?.tools as Array<Record<string, unknown>>)
     : [];
-  const budget = Array.isArray(resourcesObj?.budget)
-    ? (resourcesObj?.budget as Array<Record<string, unknown>>)
-    : [];
+  let budget: Array<Record<string, unknown>> = [];
+  if (resourcesObj?.budget && typeof resourcesObj.budget === 'object') {
+    const budgetObj = resourcesObj.budget as Record<string, unknown>;
+    if (Array.isArray(budgetObj.items)) {
+      budget = budgetObj.items as Array<Record<string, unknown>>;
+    }
+  } else if (Array.isArray(resourcesObj?.budget)) {
+    budget = resourcesObj.budget as Array<Record<string, unknown>>;
+  }
   const resources: Array<{ name: string; type: string; url?: string }> = [];
   for (const h of human) {
     const name = typeof h?.name === 'string' ? h.name : undefined;

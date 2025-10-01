@@ -105,9 +105,9 @@ export function LabeledSlider({
           {/* Markers */}
           {markers && (
             <div className="mt-3 flex justify-between">
-              {markers.map((marker) => (
+              {markers.map((marker, index) => (
                 <button
-                  key={marker.value}
+                  key={`marker-${marker.value}-${index}`}
                   type="button"
                   onClick={() => !disabled && onChange(marker.value)}
                   className="text-text-disabled hover:text-foreground text-[11px] font-medium transition-colors"

@@ -37,11 +37,11 @@ export const SectionNavigator: React.FC<SectionNavigatorProps> = ({
                 className={cn(
                   'w-full rounded-lg border px-4 py-3 text-left transition-colors',
                   isCurrent
-                    ? 'border-blue-500 bg-blue-50 text-blue-900 dark:bg-blue-900/20 dark:text-blue-100'
+                    ? 'border-secondary bg-secondary/10 text-secondary-dark dark:bg-secondary/20 dark:text-secondary-light'
                     : 'border-gray-200 bg-white text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700',
                   isCompleted &&
                     !isCurrent &&
-                    'border-green-200 bg-green-50 text-green-900 dark:border-green-800 dark:bg-green-900/20 dark:text-green-100'
+                    'border-success/30 bg-success/10 text-success dark:border-success dark:bg-success/20 dark:text-success'
                 )}
               >
                 <div className="flex items-center justify-between">
@@ -50,9 +50,9 @@ export const SectionNavigator: React.FC<SectionNavigatorProps> = ({
                       className={cn(
                         'flex h-6 w-6 items-center justify-center rounded-full text-sm font-medium',
                         isCompleted
-                          ? 'bg-green-500 text-white'
+                          ? 'bg-success text-white'
                           : isCurrent
-                            ? 'bg-blue-500 text-white'
+                            ? 'bg-secondary text-white'
                             : 'bg-gray-200 text-gray-600 dark:bg-gray-600 dark:text-gray-300'
                       )}
                     >
@@ -68,7 +68,7 @@ export const SectionNavigator: React.FC<SectionNavigatorProps> = ({
                     </div>
                   </div>
                   {isCompleted && (
-                    <div className="text-green-500">
+                    <div className="text-success">
                       <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
                         <path
                           fillRule="evenodd"
@@ -108,17 +108,17 @@ export const SectionNavigator: React.FC<SectionNavigatorProps> = ({
               className={cn(
                 'overflow-hidden rounded-lg border',
                 isCurrent
-                  ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
+                  ? 'border-secondary bg-secondary/10 dark:bg-secondary/20'
                   : 'border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800',
                 isCompleted &&
                   !isCurrent &&
-                  'border-green-200 bg-green-50 dark:border-green-800 dark:bg-green-900/20'
+                  'border-success/30 bg-success/10 dark:border-success dark:bg-success/20'
               )}
             >
               <Accordion.Trigger
                 className={cn(
                   'w-full px-4 py-3 text-left hover:bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:outline-none focus:ring-inset dark:hover:bg-gray-700',
-                  isCurrent && 'bg-blue-100 dark:bg-blue-900/30'
+                  isCurrent && 'bg-secondary/10 dark:bg-secondary/20'
                 )}
               >
                 <div className="flex items-center justify-between">
@@ -127,9 +127,9 @@ export const SectionNavigator: React.FC<SectionNavigatorProps> = ({
                       className={cn(
                         'flex h-6 w-6 items-center justify-center rounded-full text-sm font-medium',
                         isCompleted
-                          ? 'bg-green-500 text-white'
+                          ? 'bg-success text-white'
                           : isCurrent
-                            ? 'bg-blue-500 text-white'
+                            ? 'bg-secondary text-white'
                             : 'bg-gray-200 text-gray-600 dark:bg-gray-600 dark:text-gray-300'
                       )}
                     >
@@ -146,7 +146,7 @@ export const SectionNavigator: React.FC<SectionNavigatorProps> = ({
                   </div>
                   <div className="flex items-center space-x-2">
                     {isCompleted && (
-                      <div className="text-green-500">
+                      <div className="text-success">
                         <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
                           <path
                             fillRule="evenodd"

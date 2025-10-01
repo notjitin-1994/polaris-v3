@@ -40,7 +40,7 @@ export function AssessmentTypeStep(): React.JSX.Element {
           className={`min-h-24 w-full resize-none rounded-lg border-2 p-4 text-base transition-colors ${
             errors.constraints
               ? 'border-red-300 bg-red-50 focus-visible:border-red-500 focus-visible:ring-red-500/50 dark:border-red-700 dark:bg-red-900/20'
-              : 'border-slate-300 bg-white focus-visible:border-blue-500 focus-visible:ring-blue-500/50 dark:border-slate-600 dark:bg-slate-800'
+              : 'border-slate-300 bg-white focus-visible:border-secondary focus-visible:ring-secondary/50 dark:border-slate-600 dark:bg-slate-800'
           } placeholder-slate-400 dark:text-slate-100 dark:placeholder-slate-500`}
           placeholder="e.g., Launch by Q4, mobile-first constraints, SCORM compliance, limited SME time, requires legal review"
           aria-invalid={!!errors.constraints}
@@ -63,10 +63,10 @@ export function AssessmentTypeStep(): React.JSX.Element {
         )}
       </div>
 
-      <div className="rounded-lg bg-indigo-50 p-4 dark:bg-indigo-900/20">
+      <div className="rounded-lg bg-secondary/10 p-4 dark:bg-secondary/20">
         <div className="flex items-start gap-2">
           <svg
-            className="mt-0.5 h-5 w-5 flex-shrink-0 text-indigo-600 dark:text-indigo-400"
+            className="mt-0.5 h-5 w-5 flex-shrink-0 text-secondary dark:text-secondary-light"
             fill="currentColor"
             viewBox="0 0 20 20"
           >
@@ -76,7 +76,7 @@ export function AssessmentTypeStep(): React.JSX.Element {
               clipRule="evenodd"
             />
           </svg>
-          <div className="text-sm text-indigo-800 dark:text-indigo-200">
+          <div className="text-sm text-secondary-dark dark:text-secondary-light">
             <p className="mb-2 font-medium">Tips:</p>
             <p className="text-xs">
               Constraints guide scope and sequencing. Be realistic to avoid infeasible blueprints.

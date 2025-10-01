@@ -29,7 +29,7 @@ export function ProgressIndicator({ currentIndex, onSelect }: ProgressProps): Re
       <div className="relative">
         <div className="h-2 w-full overflow-hidden rounded-full bg-white/5 shadow-inner">
           <div
-            className="from-primary-accent via-primary-accent-light to-primary-accent relative h-2 rounded-full bg-gradient-to-r transition-all duration-700 ease-out"
+            className="relative h-2 rounded-full bg-primary transition-all duration-700 ease-out"
             // One-off: Dynamic width for wizard step progress indicator
             style={{
               width: `${percent}%`,

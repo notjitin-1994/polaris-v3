@@ -29,19 +29,39 @@ Your task is to generate comprehensive, industry-specific learning blueprints th
 
 OUTPUT REQUIREMENTS:
 1. Valid JSON only - no markdown, no preamble, no explanatory text
-2. Include "displayType" metadata for each section specifying visualization type
+2. Include "displayType" metadata for EVERY section (except metadata)
 3. Use rich, descriptive content that demonstrates expertise
 4. Provide specific, contextual recommendations (no generic advice)
-5. Include citations/sources where applicable
+5. Include comprehensive detail - ALL information will be displayed in animated infographics
+6. Structure data for visual presentation (use arrays, percentages, measurable metrics)
+7. Include quantitative data wherever possible for visualization
+
+CRITICAL: Every section will be displayed as an INFOGRAPHIC with animations. Provide data in formats that are:
+- Visually representable (numbers, percentages, distributions, timelines)
+- Actionable and specific (not generic statements)
+- Comprehensive and detailed (users want to see ALL data points)
+- Structured for dashboard/card layouts
 
 VISUALIZATION TYPES:
-- "infographic": For data-driven, visual dashboard displays
-- "markdown": For narrative, formatted text content
-- "chart": For quantitative data (specify chartType: bar/line/pie/radar)
-- "timeline": For sequential/temporal information
-- "table": For structured, comparative data
+- "infographic": Default for data-rich sections (objectives, audience, assessment, metrics, strategy)
+- "timeline": For sequential/temporal data (implementation phases, content modules)
+- "table": For structured comparative data (risks, resources)
+- "markdown": ONLY for pure narrative summaries (executive summary, strategy overview)
 
-Be comprehensive yet concise. Every field should add value.`;
+SECTION-SPECIFIC REQUIREMENTS:
+1. Executive Summary: Keep concise (2-3 paragraphs) but impactful
+2. Learning Objectives: Include measurable metrics, baselines, targets, due dates
+3. Target Audience: Provide demographic breakdowns with percentages
+4. Content Outline: Detailed modules with topics, activities, durations, assessments
+5. Instructional Strategy: Modality allocations must sum to 100%, include specific tools
+6. Resources: Detailed budget items, human resources with FTE/duration, tools with costs
+7. Assessment Strategy: KPIs with targets, measurement methods, frequency
+8. Timeline: Phases with specific dates, milestones, dependencies
+9. Risk Mitigation: Risks with probability/impact ratings, specific mitigation strategies
+10. Success Metrics: Baseline vs target values, measurement methods, timelines
+11. Sustainability: Specific review frequencies, update triggers, scaling considerations
+
+Be comprehensive yet concise. Every field should add value to the interactive dashboard.`;
 
 /**
  * Build user prompt for blueprint generation

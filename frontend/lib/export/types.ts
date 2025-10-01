@@ -1,7 +1,7 @@
 import { AnyBlueprint } from '@/lib/ollama/schema';
 import { DashboardData } from '@/types/dashboard';
 
-export type ExportFormat = 'pdf' | 'markdown' | 'json';
+export type ExportFormat = 'pdf' | 'markdown' | 'json' | 'docx';
 
 export interface ExportOptions {
   format: ExportFormat;

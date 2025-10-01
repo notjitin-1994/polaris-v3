@@ -30,7 +30,7 @@ export function DurationStep(): React.JSX.Element {
           className={`w-full rounded-lg border-2 p-4 text-base transition-colors ${
             errors.role
               ? 'border-red-300 bg-red-50 focus:border-red-500 focus:ring-red-500 dark:border-red-700 dark:bg-red-900/20'
-              : 'border-slate-300 bg-white focus:border-blue-500 focus:ring-blue-500 dark:border-slate-600 dark:bg-slate-800'
+              : 'border-slate-300 bg-white focus:border-secondary focus:ring-secondary/50 dark:border-slate-600 dark:bg-slate-800'
           } placeholder-slate-400 dark:text-slate-100 dark:placeholder-slate-500`}
           placeholder="e.g., Instructional Designer"
           aria-invalid={!!errors.role}

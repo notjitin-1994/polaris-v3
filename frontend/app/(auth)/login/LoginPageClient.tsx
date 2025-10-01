@@ -23,7 +23,7 @@ export default function LoginPageClient(): React.JSX.Element {
   }, []);
 
   return (
-    <div className="relative flex min-h-screen w-full items-center justify-center overflow-x-hidden bg-gradient-to-br from-[#020C1B] to-[#0A1628] px-2 py-8 md:px-6 lg:px-8 lg:py-12">
+    <div className="relative flex min-h-screen w-full items-center justify-center overflow-x-hidden bg-[#020C1B] px-2 py-8 md:px-6 lg:px-8 lg:py-12">
       <SwirlBackground />
       <div className="relative z-10 mx-auto w-full max-w-7xl">
         {/* Master container wrapping both sections */}
@@ -35,7 +35,7 @@ export default function LoginPageClient(): React.JSX.Element {
             <section className="flex h-full w-full justify-center lg:justify-start">
               <div className="flex h-full w-full max-w-xl flex-col p-2 text-left sm:p-3 md:p-4 lg:max-w-none">
                 <div className="mb-6">
-                  <div className="inline-flex items-start gap-3">
+                  <div className="inline-flex items-center gap-2">
                     <Image
                       src="/logo.png"
                       alt="Smartslate"
@@ -44,7 +44,7 @@ export default function LoginPageClient(): React.JSX.Element {
                       className="h-9 w-auto select-none md:h-10 lg:h-12"
                       priority
                     />
-                    <h1 className="font-heading text-[0.525rem] leading-tight font-bold text-white md:text-[0.6125rem] lg:text-[0.7rem]">
+                    <h1 className="font-heading text-[0.9px] leading-none font-bold text-white md:text-[1px] lg:text-[1.1px]">
                       Polaris
                     </h1>
                   </div>
@@ -66,7 +66,7 @@ export default function LoginPageClient(): React.JSX.Element {
                           alt="SmartSlate"
                           width={64}
                           height={64}
-                          className="h-[0.8rem] w-auto md:h-[0.9rem]"
+                          className="h-[0.2rem] w-auto md:h-[0.225rem]"
                           quality={100}
                           priority
                           unoptimized
@@ -100,7 +100,7 @@ export default function LoginPageClient(): React.JSX.Element {
                         {/* Confidence level bar */}
                         <div className="mb-5">
                           <div className="h-2 overflow-hidden rounded-full bg-white/10">
-                            <div className="h-full w-[72%] bg-gradient-to-r from-emerald-400 to-teal-400" />
+                            <div className="h-full w-[72%] bg-primary" />
                           </div>
                           <div className="mt-1 h-2 w-20 rounded-full bg-white/15" />
                         </div>
@@ -113,7 +113,7 @@ export default function LoginPageClient(): React.JSX.Element {
                           <div className="col-span-2 flex h-full flex-col space-y-2">
                             <div className="h-2 w-4/5 rounded-full bg-white/15" />
                             <div className="h-2 w-3/4 rounded-full bg-white/10" />
-                            <div className="from-primary/15 to-secondary/15 min-h-[160px] flex-1 rounded-xl border border-white/10 bg-gradient-to-br md:min-h-[200px] lg:min-h-[240px]" />
+                            <div className="min-h-[160px] flex-1 rounded-xl border border-white/10 bg-primary/15 md:min-h-[200px] lg:min-h-[240px]" />
                             <div className="grid grid-cols-2 gap-2">
                               <div className="h-10 rounded-lg border border-white/10 bg-white/5" />
                               <div className="h-10 rounded-lg border border-white/10 bg-white/5" />
@@ -142,10 +142,7 @@ export default function LoginPageClient(): React.JSX.Element {
                   className="pointer-events-none absolute -inset-6 rounded-3xl opacity-75 blur-2xl"
                   aria-hidden="true"
                   style={{
-                    background:
-                      'radial-gradient(360px 260px at 0% -10%, rgba(167,218,219,0.38), transparent 60%),\
-                       radial-gradient(420px 300px at 120% 0%, rgba(167,218,219,0.26), transparent 70%)',
-                    filter: 'saturate(1.05)',
+                    background: 'rgba(167,218,219,0.15)',
                   }}
                 />
                 <div className="relative flex h-full flex-col space-y-3 px-4 py-3 sm:space-y-4 sm:px-5 sm:py-4 md:px-6 md:py-5 lg:px-7">
@@ -154,7 +151,7 @@ export default function LoginPageClient(): React.JSX.Element {
                     <div className="animate-scale-in flex h-full flex-col rounded-2xl px-0 pt-0.5 pb-2 sm:pt-1 sm:pb-3 md:pt-2 md:pb-4 lg:pb-4">
                       {/* Soft halo for mobile to lift the card */}
                       <div
-                        className="from-primary/10 to-secondary/10 pointer-events-none absolute -inset-0.5 rounded-2xl bg-gradient-to-br opacity-70 blur-xl"
+                        className="pointer-events-none absolute -inset-0.5 rounded-2xl bg-primary/10 opacity-70 blur-xl"
                         aria-hidden="true"
                       />
                       <div className="relative flex flex-1 flex-col">

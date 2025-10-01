@@ -26,6 +26,7 @@ interface BlueprintCardProps {
   onResume: (blueprintId: string) => void;
   onDelete: (blueprintId: string) => void;
   questionnaireComplete: boolean;
+  isResuming?: boolean;
 }
 
 export function BlueprintCard({
@@ -35,6 +36,7 @@ export function BlueprintCard({
   onResume,
   onDelete,
   questionnaireComplete,
+  isResuming = false,
 }: BlueprintCardProps): React.JSX.Element {
   const router = useRouter();
   const [isHovered, setIsHovered] = useState(false);
@@ -342,15 +344,31 @@ export function BlueprintCard({
                   'bg-secondary hover:bg-secondary-dark',
                   'text-white',
                   'transition-all duration-200',
-                  'shadow-secondary/20 hover:shadow-secondary/30 shadow-lg'
+                  'shadow-secondary/20 hover:shadow-secondary/30 shadow-lg',
+                  'disabled:opacity-50 disabled:cursor-not-allowed'
                 )}
                 onClick={() => onResume(blueprint.id)}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                title="Resume blueprint"
-                aria-label="Resume blueprint"
+                disabled={isResuming}
+                whileHover={!isResuming ? { scale: 1.05 } : {}}
+                whileTap={!isResuming ? { scale: 0.95 } : {}}
+                title={isResuming ? 'Loading...' : 'Resume blueprint'}
+                aria-label={isResuming ? 'Loading blueprint' : 'Resume blueprint'}
               >
-                <Play className="h-4 w-4" />
+                {isResuming ? (
+                  <motion.div
+                    animate={{ rotate: 360 }}
+                    transition={{
+                      duration: 1,
+                      repeat: Infinity,
+                      ease: 'linear',
+                    }}
+                    className="h-4 w-4"
+                  >
+                    <Sparkles className="h-4 w-4" />
+                  </motion.div>
+                ) : (
+                  <Play className="h-4 w-4" />
+                )}
               </motion.button>
             )}
 
@@ -367,7 +385,7 @@ export function BlueprintCard({
                 title="View Blueprint"
                 aria-label="View Blueprint"
               >
-                <Eye className="h-4 w-4 text-indigo-200" />
+                <Eye className="h-4 w-4 text-secondary-foreground" />
               </Link>
             )}
 

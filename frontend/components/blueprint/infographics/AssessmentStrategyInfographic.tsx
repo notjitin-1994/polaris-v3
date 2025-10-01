@@ -69,7 +69,7 @@ export function AssessmentStrategyInfographic({
 
               {/* Animated indicator */}
               <motion.div
-                className="from-primary to-secondary mt-3 h-1 rounded-full bg-gradient-to-r"
+                className="mt-3 h-1 rounded-full bg-primary"
                 initial={{ width: 0 }}
                 animate={{ width: '100%' }}
                 transition={{ delay: index * 0.1 + 0.3, duration: 0.6 }}

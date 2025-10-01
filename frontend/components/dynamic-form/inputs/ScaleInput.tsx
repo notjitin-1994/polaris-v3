@@ -15,17 +15,40 @@ export const ScaleInput: React.FC<BaseInputProps> = ({
   disabled,
   className,
 }) => {
+  // Enhanced validation with better logging
   if (!isScaleQuestion(question)) {
-    console.warn('ScaleInput received non-scale question:', question);
+    console.error('[ScaleInput] Type validation failed:', {
+      questionId: question.id,
+      questionType: question.type,
+      expectedType: 'scale',
+      hasScaleConfig: 'scaleConfig' in question,
+      scaleConfig: (question as any).scaleConfig,
+    });
     return null;
   }
 
   const inputId = `scale-${question.id}`;
   const hasError = !!error;
-  const config = question.scaleConfig;
-  const min = config?.min || 1;
-  const max = config?.max || 5;
-  const step = config?.step || 1;
+  
+  // Defensive: Ensure scaleConfig exists with defaults
+  const config = question.scaleConfig || {
+    min: 1,
+    max: 5,
+    step: 1,
+    minLabel: 'Low',
+    maxLabel: 'High',
+  };
+  
+  const min = config.min ?? 1;
+  const max = config.max ?? 5;
+  const step = config.step ?? 1;
+  
+  // Log for debugging
+  console.log('[ScaleInput] Rendering scale:', {
+    questionId: question.id,
+    config,
+    currentValue: value,
+  });
 
   // Generate scale options
   const scaleOptions = [];

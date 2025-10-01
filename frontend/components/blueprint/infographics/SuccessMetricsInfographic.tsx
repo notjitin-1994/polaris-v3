@@ -23,7 +23,7 @@ export function SuccessMetricsInfographic({
     <div className="space-y-6">
       {/* Reporting Cadence Badge */}
       {reportingCadence && (
-        <div className="bg-primary/10 text-primary inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm">
+        <div className="inline-flex items-center gap-2 rounded-full bg-primary px-4 py-2 text-sm font-bold text-slate-900">
           <Calendar className="h-4 w-4" />
           <span>Reporting: {reportingCadence}</span>
         </div>
@@ -40,7 +40,7 @@ export function SuccessMetricsInfographic({
             className="glass-strong relative overflow-hidden rounded-xl p-6"
           >
             {/* Background gradient */}
-            <div className="from-primary/5 to-secondary/5 absolute inset-0 bg-gradient-to-br opacity-50" />
+            <div className="absolute inset-0 bg-primary/5 opacity-50" />
 
             {/* Content */}
             <div className="relative z-10">
@@ -60,7 +60,7 @@ export function SuccessMetricsInfographic({
                 <div>
                   <div className="text-text-secondary mb-1 text-xs">Target</div>
                   <motion.div
-                    className="text-primary text-lg font-bold"
+                    className="inline-flex rounded bg-primary px-2 py-1 text-lg font-bold text-slate-900"
                     initial={{ scale: 0.8, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
                     transition={{ delay: index * 0.08 + 0.2 }}
@@ -81,16 +81,16 @@ export function SuccessMetricsInfographic({
                   <span className="text-foreground">{metric.timeline}</span>
                 </div>
               </div>
-
-              {/* Animated bottom border */}
-              <motion.div
-                className="from-primary to-secondary absolute right-0 bottom-0 left-0 h-1 bg-gradient-to-r"
-                initial={{ scaleX: 0 }}
-                animate={{ scaleX: 1 }}
-                transition={{ delay: index * 0.08 + 0.4, duration: 0.5 }}
-                style={{ transformOrigin: 'left' }}
-              />
             </div>
+
+            {/* Animated bottom border - moved outside content div */}
+            <motion.div
+              className="absolute right-0 bottom-0 left-0 z-20 h-1 bg-primary"
+              initial={{ scaleX: 0 }}
+              animate={{ scaleX: 1 }}
+              transition={{ delay: index * 0.08 + 0.4, duration: 0.5 }}
+              style={{ transformOrigin: 'left' }}
+            />
           </motion.div>
         ))}
       </div>

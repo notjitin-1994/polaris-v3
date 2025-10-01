@@ -191,8 +191,15 @@ export const EnhancedScaleInput: React.FC<BaseInputProps> = ({
   disabled,
   className,
 }) => {
+  // Enhanced validation with better logging
   if (!isEnhancedScaleQuestion(question)) {
-    console.warn('EnhancedScaleInput received non-enhanced-scale question:', question);
+    console.error('[EnhancedScaleInput] Type validation failed:', {
+      questionId: question.id,
+      questionType: question.type,
+      expectedType: 'enhanced_scale',
+      hasScaleConfig: 'scaleConfig' in question,
+      scaleConfig: (question as any).scaleConfig,
+    });
     return null;
   }
 
@@ -214,6 +221,14 @@ export const EnhancedScaleInput: React.FC<BaseInputProps> = ({
       label: config.labels?.[index] || String(i),
     });
   }
+  
+  // Log for debugging
+  console.log('[EnhancedScaleInput] Rendering enhanced scale:', {
+    questionId: question.id,
+    config,
+    options,
+    currentValue: value,
+  });
 
   return (
     <EnhancedScale

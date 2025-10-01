@@ -118,7 +118,7 @@ export function RenameDialog({
     >
       <div className="glass-strong animate-scale-in mx-4 w-full max-w-md overflow-hidden rounded-2xl shadow-2xl">
         {/* Header */}
-        <div className="border-b border-white/10 bg-gradient-to-b from-white/5 to-transparent p-6">
+        <div className="border-b border-white/10 bg-white/5 p-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
               <div className="bg-primary/10 border-primary/20 flex h-10 w-10 items-center justify-center rounded-full border">
@@ -208,7 +208,7 @@ export function RenameDialog({
         </div>
 
         {/* Keyboard shortcuts hint */}
-        <div className="border-t border-white/10 bg-gradient-to-t from-white/5 to-transparent px-6 py-4">
+        <div className="border-t border-white/10 bg-white/5 px-6 py-4">
           <div className="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-xs text-white/60">
             <span className="font-medium text-white/80">Tip:</span> Press{' '}
             <kbd className="rounded border border-white/20 bg-white/10 px-1.5 py-0.5 font-mono text-xs text-white/70">

@@ -417,8 +417,8 @@ export function StepWizard(): React.JSX.Element {
               </div>
             )}
             {saveState === 'saved' && (
-              <div className="animate-fade-in flex items-center gap-2 text-green-400">
-                <div className="flex h-3 w-3 items-center justify-center rounded-full bg-green-500">
+              <div className="animate-fade-in flex items-center gap-2 text-success">
+                <div className="flex h-3 w-3 items-center justify-center rounded-full bg-success">
                   <svg className="h-2 w-2 text-white" fill="currentColor" viewBox="0 0 20 20">
                     <path
                       fillRule="evenodd"

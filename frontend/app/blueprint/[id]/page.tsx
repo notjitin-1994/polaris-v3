@@ -9,11 +9,7 @@ import {
   Edit3,
   Copy,
   ExternalLink,
-  FileText,
   Sparkles,
-  Eye,
-  Palette,
-  Maximize2,
   Clock,
   CheckCircle,
   Loader2,
@@ -25,6 +21,7 @@ import { BlueprintRenderer } from '@/components/blueprint/BlueprintRenderer';
 import { RenameDialog } from '@/components/ui/RenameDialog';
 import { getSupabaseBrowserClient } from '@/lib/supabase/client';
 import { createBrowserBlueprintService } from '@/lib/db/blueprints.client';
+import { parseAndValidateBlueprintJSON } from '@/lib/ollama/blueprintValidation';
 import type { Database } from '@/types/supabase';
 
 interface PageProps {
@@ -49,8 +46,7 @@ export default function BlueprintPage({ params }: PageProps): React.JSX.Element 
   const [renamingBlueprint, setRenamingBlueprint] = useState(false);
   const [isEditingMarkdown, setIsEditingMarkdown] = useState(false);
   const [showShareMenu, setShowShareMenu] = useState(false);
-  const [showExportMenu, setShowExportMenu] = useState(false);
-  const [viewMode, setViewMode] = useState<'default' | 'focused' | 'presentation'>('default');
+  const viewMode = 'presentation'; // Always use presentation mode
   const [showSuccessToast, setShowSuccessToast] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
   const [isExporting, setIsExporting] = useState(false);
@@ -176,7 +172,6 @@ export default function BlueprintPage({ params }: PageProps): React.JSX.Element 
     if (!data) return;
 
     setIsExporting(true);
-    setShowExportMenu(false);
     showToast('Preparing PDF export...');
 
     try {
@@ -244,13 +239,13 @@ export default function BlueprintPage({ params }: PageProps): React.JSX.Element 
 
   if (loading) {
     return (
-      <main className="from-background via-background to-primary-950/20 flex min-h-screen w-full items-center justify-center bg-gradient-to-br p-4">
+      <main className="flex min-h-screen w-full items-center justify-center bg-background p-4">
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           className="glass-card max-w-md p-8 text-center"
         >
-          <div className="border-primary-400/30 border-t-primary-400 mx-auto mb-6 h-16 w-16 animate-spin rounded-full border-4" />
+          <div className="border-primary/30 border-t-primary mx-auto mb-6 h-16 w-16 animate-spin rounded-full border-4" />
           <div className="skeleton-brand mx-auto mb-4 h-8 w-48 rounded-xl" />
           <div className="skeleton-brand mx-auto h-4 w-32 rounded-lg" />
         </motion.div>
@@ -260,7 +255,7 @@ export default function BlueprintPage({ params }: PageProps): React.JSX.Element 
 
   if (error || !user || !data) {
     return (
-      <main className="from-background via-background to-error/10 flex min-h-screen w-full items-center justify-center bg-gradient-to-br p-4">
+      <main className="flex min-h-screen w-full items-center justify-center bg-background p-4">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -289,16 +284,33 @@ export default function BlueprintPage({ params }: PageProps): React.JSX.Element 
     );
   }
 
-  // Parse blueprint JSON for dashboard
+  // Parse and normalize blueprint JSON for dashboard
   let blueprintData = null;
   if (data?.blueprint_json) {
     try {
+      // Parse the blueprint JSON (already validated during generation)
       blueprintData =
         typeof data.blueprint_json === 'string'
           ? JSON.parse(data.blueprint_json)
           : data.blueprint_json;
+      
+      // Remove internal generation metadata if present
+      if (blueprintData && typeof blueprintData === 'object') {
+        const { _generation_metadata, ...cleanBlueprint } = blueprintData as any;
+        blueprintData = cleanBlueprint;
+      }
     } catch (e) {
       console.error('Failed to parse blueprint JSON:', e);
+      // Attempt Ollama normalization as fallback for legacy blueprints
+      try {
+        const rawBlueprint =
+          typeof data.blueprint_json === 'string'
+            ? data.blueprint_json
+            : JSON.stringify(data.blueprint_json);
+        blueprintData = parseAndValidateBlueprintJSON(rawBlueprint);
+      } catch (fallbackError) {
+        console.error('Failed to parse blueprint JSON (fallback):', fallbackError);
+      }
     }
   }
 
@@ -311,88 +323,41 @@ export default function BlueprintPage({ params }: PageProps): React.JSX.Element 
     day: 'numeric',
   });
 
-  // Title content with enhanced styling
+  // Compact title content with inline metadata
   const titleContent = (
-    <div className="flex items-center gap-3">
-      <motion.div
-        initial={{ rotate: 0 }}
-        animate={{ rotate: 360 }}
-        transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
-        className="hidden sm:block"
-      >
-        <Sparkles className="text-primary-400 h-5 w-5" />
-      </motion.div>
-      <div className="flex flex-col">
-        <h1 className="font-heading line-clamp-1 text-sm font-bold text-white sm:text-base md:text-lg">
-          {blueprintTitle}
-        </h1>
-        <div className="text-text-secondary flex items-center gap-4 text-xs">
-          <span className="flex items-center gap-1">
-            <Clock className="h-3 w-3" />
-            {createdDate}
+    <div className="flex items-center gap-2 sm:gap-3">
+      <h1 className="font-heading line-clamp-1 text-sm font-bold text-white sm:text-base">
+        {blueprintTitle}
+      </h1>
+      <div className="hidden md:flex items-center gap-3 text-text-secondary text-xs">
+        <span className="flex items-center gap-1 whitespace-nowrap">
+          <Clock className="h-3 w-3" />
+          {createdDate}
+        </span>
+        {blueprintData && (
+          <span className="flex items-center gap-1 whitespace-nowrap">
+            <CheckCircle className="text-success h-3 w-3" />
+            Active
           </span>
-          {blueprintData && (
-            <span className="flex items-center gap-1">
-              <CheckCircle className="text-success h-3 w-3" />
-              Active Blueprint
-            </span>
-          )}
-        </div>
+        )}
       </div>
     </div>
   );
 
-  // Enhanced right side action buttons
+  // Compact action buttons
   const rightActions = (
-    <div className="flex items-center gap-2">
-      {/* View Mode Toggle */}
-      <div className="hidden items-center rounded-lg border border-white/10 bg-white/5 p-1 lg:flex">
-        <button
-          type="button"
-          className={`rounded px-3 py-1.5 text-xs font-medium transition-all ${
-            viewMode === 'default'
-              ? 'bg-primary/20 text-primary-300'
-              : 'text-white/70 hover:text-white'
-          }`}
-          onClick={() => setViewMode('default')}
-        >
-          Default
-        </button>
-        <button
-          type="button"
-          className={`rounded px-3 py-1.5 text-xs font-medium transition-all ${
-            viewMode === 'focused'
-              ? 'bg-primary/20 text-primary-300'
-              : 'text-white/70 hover:text-white'
-          }`}
-          onClick={() => setViewMode('focused')}
-        >
-          Focused
-        </button>
-        <button
-          type="button"
-          className={`rounded px-3 py-1.5 text-xs font-medium transition-all ${
-            viewMode === 'presentation'
-              ? 'bg-primary/20 text-primary-300'
-              : 'text-white/70 hover:text-white'
-          }`}
-          onClick={() => setViewMode('presentation')}
-        >
-          Present
-        </button>
-      </div>
-
-      {/* Edit */}
+    <div className="flex items-center gap-1.5">
+      {/* Rename/Edit */}
       <motion.button
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
         type="button"
-        className="pressable inline-flex h-9 w-9 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-white/70 transition-all hover:bg-white/10 hover:text-white"
-        onClick={handleStartEditing}
-        title="Edit blueprint"
-        aria-label="Edit blueprint"
+        className="pressable inline-flex h-8 w-8 items-center justify-center rounded-lg border border-white/10 bg-white/5 text-white/70 transition-all hover:bg-white/10 hover:text-white"
+        onClick={() => setRenamingBlueprint(true)}
+        title="Rename blueprint"
+        aria-label="Rename blueprint"
       >
-        <Edit3 className="h-4 w-4" aria-hidden="true" />
+        <Edit3 className="h-3.5 w-3.5" aria-hidden="true" />
       </motion.button>
 
       {/* Share Menu */}
@@ -401,12 +366,12 @@ export default function BlueprintPage({ params }: PageProps): React.JSX.Element 
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           type="button"
-          className="pressable inline-flex h-9 w-9 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-white/70 transition-all hover:bg-white/10 hover:text-white"
+          className="pressable inline-flex h-8 w-8 items-center justify-center rounded-lg border border-white/10 bg-white/5 text-white/70 transition-all hover:bg-white/10 hover:text-white"
           onClick={() => setShowShareMenu(!showShareMenu)}
           title="Share blueprint"
           aria-label="Share blueprint"
         >
-          <Share2 className="h-4 w-4" aria-hidden="true" />
+          <Share2 className="h-3.5 w-3.5" aria-hidden="true" />
         </motion.button>
 
         <AnimatePresence>
@@ -439,78 +404,29 @@ export default function BlueprintPage({ params }: PageProps): React.JSX.Element 
         </AnimatePresence>
       </div>
 
-      {/* Export Menu */}
-      <div className="relative">
-        <motion.button
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          type="button"
-          className="pressable from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 inline-flex h-9 items-center gap-2 rounded-xl bg-gradient-to-r px-4 text-sm font-medium text-white shadow-lg transition-all hover:shadow-xl"
-          onClick={() => setShowExportMenu(!showExportMenu)}
-          title="Export blueprint"
-          aria-label="Export blueprint"
-        >
-          <Download className="h-4 w-4" aria-hidden="true" />
-          <span className="hidden sm:inline">Export</span>
-        </motion.button>
-
-        <AnimatePresence>
-          {showExportMenu && (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: -10 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: -10 }}
-              className="glass-card absolute top-full right-0 z-50 mt-2 w-56"
-            >
-              <div className="p-2">
-                <button
-                  className="text-text-secondary hover:bg-error/10 hover:text-error flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-all"
-                  onClick={handleExportPDF}
-                  disabled={isExporting}
-                >
-                  <FileText className="h-4 w-4" />
-                  <div className="flex-1 text-left">
-                    <div className="font-medium">Export as PDF</div>
-                    <div className="text-xs opacity-70">Dashboard + Content</div>
-                  </div>
-                </button>
-                <button
-                  className="text-text-secondary hover:bg-primary/10 hover:text-primary-300 flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-all"
-                  onClick={handleExportMarkdown}
-                  disabled={isExporting}
-                >
-                  <FileText className="h-4 w-4" />
-                  <div className="flex-1 text-left">
-                    <div className="font-medium">Export as Markdown</div>
-                    <div className="text-xs opacity-70">Editable format</div>
-                  </div>
-                </button>
-                <button
-                  className="text-text-secondary hover:bg-success/10 hover:text-success flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-all"
-                  onClick={handleExportJSON}
-                  disabled={isExporting}
-                >
-                  <FileText className="h-4 w-4" />
-                  <div className="flex-1 text-left">
-                    <div className="font-medium">Export as JSON</div>
-                    <div className="text-xs opacity-70">Structured data</div>
-                  </div>
-                </button>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
+      {/* Export Button - Direct PDF Export */}
+      <motion.button
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
+        type="button"
+        className="pressable inline-flex h-8 w-8 items-center justify-center rounded-lg bg-secondary hover:bg-secondary/90 text-secondary-foreground shadow-lg transition-all hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
+        onClick={handleExportPDF}
+        disabled={isExporting}
+        title="Export blueprint as PDF"
+        aria-label="Export blueprint as PDF"
+      >
+        <Download className="h-3.5 w-3.5" aria-hidden="true" />
+      </motion.button>
     </div>
   );
 
   return (
-    <main className="from-background via-background to-primary-950/10 relative min-h-screen w-full overflow-hidden bg-gradient-to-br">
+    <main className="relative min-h-screen w-full overflow-hidden bg-background">
       {/* Animated Background Pattern */}
       <div className="absolute inset-0 overflow-hidden">
-        <div className="bg-primary-500/10 absolute -top-40 -right-40 h-80 w-80 animate-pulse rounded-full blur-3xl" />
+        <div className="bg-primary/10 absolute -top-40 -right-40 h-80 w-80 animate-pulse rounded-full blur-3xl" />
         <div className="bg-secondary/10 absolute -bottom-40 -left-40 h-80 w-80 animate-pulse rounded-full blur-3xl delay-1000" />
-        <div className="bg-primary-400/5 absolute top-1/2 left-1/2 h-96 w-96 -translate-x-1/2 -translate-y-1/2 animate-pulse rounded-full blur-3xl delay-500" />
+        <div className="bg-primary/5 absolute top-1/2 left-1/2 h-96 w-96 -translate-x-1/2 -translate-y-1/2 animate-pulse rounded-full blur-3xl delay-500" />
       </div>
 
       {/* Header */}
@@ -547,26 +463,11 @@ export default function BlueprintPage({ params }: PageProps): React.JSX.Element 
             viewMode === 'presentation' ? 'p-8 lg:p-16' : 'p-6 sm:p-8 lg:p-12'
           }`}
         >
-          {/* Content Header */}
-          <div className="mb-8 border-b border-white/10 pb-6">
-            <div className="flex items-start justify-between">
-              <div>
-                <div className="mb-2 flex items-center gap-2">
-                  <span className="from-primary-500/20 to-primary-600/20 text-primary-300 rounded-full bg-gradient-to-r px-3 py-1 text-xs font-semibold">
-                    AI Generated
-                  </span>
-                  <span className="text-text-secondary rounded-full bg-white/10 px-3 py-1 text-xs">
-                    Version 1.0
-                  </span>
-                </div>
-                <button
-                  onClick={() => setRenamingBlueprint(true)}
-                  className="group hover:text-primary-300 flex items-center gap-2 transition-colors"
-                >
-                  <h2 className="text-2xl font-bold text-white">{blueprintTitle}</h2>
-                  <Edit3 className="h-4 w-4 opacity-0 transition-opacity group-hover:opacity-100" />
-                </button>
-              </div>
+          {/* Decorative Line with Teal Glow */}
+          <div className="mb-8 flex items-center gap-4">
+            <div className="relative h-px flex-1">
+              <div className="absolute inset-0 bg-primary blur-sm" />
+              <div className="relative h-full bg-primary" />
             </div>
           </div>
 
@@ -578,32 +479,6 @@ export default function BlueprintPage({ params }: PageProps): React.JSX.Element 
             onSaveMarkdown={handleSaveMarkdown}
             onCancelEdit={() => setIsEditingMarkdown(false)}
           />
-        </motion.div>
-
-        {/* Quick Actions Bar */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5 }}
-          className="glass-card mt-8 p-4"
-        >
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <button className="text-text-secondary flex items-center gap-2 rounded-lg bg-white/5 px-4 py-2 transition-all hover:bg-white/10 hover:text-white">
-                <Eye className="h-4 w-4" />
-                <span className="text-sm">Preview Mode</span>
-              </button>
-              <button className="text-text-secondary flex items-center gap-2 rounded-lg bg-white/5 px-4 py-2 transition-all hover:bg-white/10 hover:text-white">
-                <Palette className="h-4 w-4" />
-                <span className="text-sm">Customize Theme</span>
-              </button>
-              <button className="text-text-secondary flex items-center gap-2 rounded-lg bg-white/5 px-4 py-2 transition-all hover:bg-white/10 hover:text-white">
-                <Maximize2 className="h-4 w-4" />
-                <span className="text-sm">Fullscreen</span>
-              </button>
-            </div>
-            <div className="text-text-disabled text-xs">Last updated: Just now</div>
-          </div>
         </motion.div>
       </motion.div>
 

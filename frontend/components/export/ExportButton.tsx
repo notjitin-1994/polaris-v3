@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Download, FileText, FileImage, Code, Loader2 } from 'lucide-react';
+import { Download, FileText, FileImage, Code, Loader2, FileType } from 'lucide-react';
 import { Blueprint } from '@/lib/ollama/schema';
 import { DashboardData } from '@/types/dashboard';
 import {
@@ -76,7 +76,7 @@ export const ExportButton: React.FC<ExportButtonProps> = ({
     setIsExporting(true);
 
     try {
-      const formats: ExportFormat[] = ['pdf', 'markdown', 'json'];
+      const formats: ExportFormat[] = ['pdf', 'markdown', 'json', 'docx'];
       const results = new Map<ExportFormat, ExportResult>();
 
       for (const format of formats) {
@@ -175,6 +175,16 @@ export const ExportButton: React.FC<ExportButtonProps> = ({
             aria-label="Export as JSON"
           >
             <Code className="h-4 w-4" aria-hidden="true" />
+          </button>
+
+          <button
+            onClick={() => handleExport('docx')}
+            disabled={isExporting}
+            className="glass flex items-center gap-2 rounded-lg bg-primary/80 px-3 py-2 text-white transition-all duration-200 hover:bg-primary/90 focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 dark:bg-primary/70 dark:hover:bg-primary/80"
+            title="Export as Word Document"
+            aria-label="Export as Word Document"
+          >
+            <FileType className="h-4 w-4" aria-hidden="true" />
           </button>
         </div>
       </div>

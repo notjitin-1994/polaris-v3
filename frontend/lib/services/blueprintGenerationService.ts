@@ -58,7 +58,7 @@ export class BlueprintGenerationService {
   async generate(context: BlueprintContext): Promise<GenerationResult> {
     const startTime = Date.now();
 
-    logger.info('blueprint.generation.started', {
+    logger.info('blueprint.generation.started', 'Blueprint generation started', {
       blueprintId: context.blueprintId,
       userId: context.userId,
       organization: context.organization,
@@ -81,7 +81,7 @@ export class BlueprintGenerationService {
 
       const duration = Date.now() - startTime;
 
-      logger.info('blueprint.generation.success', {
+      logger.info('blueprint.generation.success', 'Blueprint generation succeeded', {
         blueprintId: context.blueprintId,
         model: 'claude-sonnet-4',
         duration,
@@ -101,7 +101,7 @@ export class BlueprintGenerationService {
         usage: blueprint.usage,
       };
     } catch (sonnetError) {
-      logger.warn('blueprint.generation.claude_primary_failed', {
+      logger.warn('blueprint.generation.claude_primary_failed', 'Claude primary failed', {
         blueprintId: context.blueprintId,
         error: (sonnetError as Error).message,
       });
@@ -119,7 +119,7 @@ export class BlueprintGenerationService {
         // Don't fallback - re-throw error
         const duration = Date.now() - startTime;
 
-        logger.error('blueprint.generation.failed_no_fallback', {
+        logger.error('blueprint.generation.failed_no_fallback', 'Generation failed without fallback', {
           blueprintId: context.blueprintId,
           duration,
           error: (sonnetError as Error).message,
@@ -151,7 +151,7 @@ export class BlueprintGenerationService {
 
         const duration = Date.now() - startTime;
 
-        logger.info('blueprint.generation.fallback_success', {
+        logger.info('blueprint.generation.fallback_success', 'Claude fallback succeeded', {
           blueprintId: context.blueprintId,
           model: 'claude-opus-4',
           duration,
@@ -172,7 +172,7 @@ export class BlueprintGenerationService {
           usage: blueprint.usage,
         };
       } catch (opusError) {
-        logger.error('blueprint.generation.claude_fallback_failed', {
+        logger.error('blueprint.generation.claude_fallback_failed', 'Claude fallback failed', {
           blueprintId: context.blueprintId,
           sonnetError: (sonnetError as Error).message,
           opusError: (opusError as Error).message,
@@ -185,7 +185,7 @@ export class BlueprintGenerationService {
 
           const duration = Date.now() - startTime;
 
-          logger.info('blueprint.generation.ollama_success', {
+          logger.info('blueprint.generation.ollama_success', 'Ollama generation succeeded', {
             blueprintId: context.blueprintId,
             duration,
             attempts: 3,
@@ -206,7 +206,7 @@ export class BlueprintGenerationService {
         } catch (ollamaError) {
           const duration = Date.now() - startTime;
 
-          logger.error('blueprint.generation.all_failed', {
+          logger.error('blueprint.generation.all_failed', 'All generation methods failed', {
             blueprintId: context.blueprintId,
             duration,
             sonnetError: (sonnetError as Error).message,
@@ -241,7 +241,7 @@ export class BlueprintGenerationService {
     userPrompt: string,
     maxTokens: number
   ): Promise<{ data: any; usage: { input_tokens: number; output_tokens: number } }> {
-    logger.info('blueprint.generation.claude_attempt', {
+    logger.info('blueprint.generation.claude_attempt', 'Attempting Claude generation', {
       blueprintId: context.blueprintId,
       model,
       maxTokens,
@@ -281,7 +281,7 @@ export class BlueprintGenerationService {
     systemPrompt: string,
     userPrompt: string
   ): Promise<any> {
-    logger.info('blueprint.generation.ollama_attempt', {
+    logger.info('blueprint.generation.ollama_attempt', 'Attempting Ollama generation', {
       blueprintId: context.blueprintId,
       emergencyFallback: true,
     });

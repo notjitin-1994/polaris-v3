@@ -90,7 +90,7 @@ export const Header = memo(function Header({
         {/* Subtle ambient glow */}
         <div
           aria-hidden="true"
-          className="from-primary/[0.03] pointer-events-none absolute inset-x-0 -top-32 h-64 bg-gradient-to-b via-transparent to-transparent"
+          className="pointer-events-none absolute inset-x-0 -top-32 h-64 bg-primary/[0.03]"
         />
 
         <div className="relative py-4">
@@ -162,7 +162,7 @@ export const Header = memo(function Header({
                 {/* Minimal accent line */}
                 <div
                   aria-hidden="true"
-                  className="from-primary/60 mt-4 h-px w-12 bg-gradient-to-r to-transparent"
+                  className="mt-4 h-px w-12 bg-primary/60"
                 />
               </motion.div>
 

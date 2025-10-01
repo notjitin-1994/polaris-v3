@@ -66,7 +66,7 @@ export const ExportHistory: React.FC<ExportHistoryProps> = ({ className = '' }) 
   const formatColors = {
     pdf: 'text-red-600',
     markdown: 'text-gray-600',
-    json: 'text-green-600',
+    json: 'text-success',
   };
 
   const formatFileSize = (bytes: number): string => {
@@ -141,7 +141,7 @@ export const ExportHistory: React.FC<ExportHistoryProps> = ({ className = '' }) 
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => handleDownload(entry)}
-                    className="p-2 text-gray-400 transition-colors hover:text-blue-600 dark:hover:text-blue-400"
+                    className="p-2 text-gray-400 transition-colors hover:text-secondary dark:hover:text-secondary-light"
                     title="Download"
                   >
                     <Download className="h-4 w-4" />

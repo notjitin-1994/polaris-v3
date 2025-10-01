@@ -58,6 +58,9 @@ export class ExportService {
         case 'json':
           result = await this.exportToJSON(exportData, options);
           break;
+        case 'docx':
+          result = await this.exportToWord(exportData, options);
+          break;
         default:
           throw new Error(`Unsupported export format: ${options.format}`);
       }
@@ -247,6 +250,24 @@ export class ExportService {
       return {
         success: false,
         error: error instanceof Error ? error.message : 'JSON export failed',
+      };
+    }
+  }
+
+  /**
+   * Export to Word (DOCX) format with rich text formatting
+   */
+  private async exportToWord(data: ExportData, options: ExportOptions): Promise<ExportResult> {
+    try {
+      const { WordGenerator } = await import('./wordGenerator');
+
+      const generator = new WordGenerator();
+      return await generator.generateWordDocument(data, options);
+    } catch (error) {
+      console.error('Word export failed:', error);
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Word export failed',
       };
     }
   }

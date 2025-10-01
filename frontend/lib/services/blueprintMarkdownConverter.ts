@@ -64,16 +64,42 @@ function convertSectionToMarkdown(section: any): string {
   // Handle modules
   if (section.modules && Array.isArray(section.modules)) {
     let md = '';
-    section.modules.forEach((module: any) => {
-      md += `### ${module.title}\n\n`;
-      md += `${module.description}\n\n`;
+    section.modules.forEach((module: any, index: number) => {
+      md += `### ${index + 1}. ${module.title}\n\n`;
+      if (module.description) {
+        md += `${module.description}\n\n`;
+      }
       md += `**Duration:** ${module.duration}\n\n`;
-      md += `**Delivery Method:** ${module.delivery_method}\n\n`;
+      if (module.delivery_method) {
+        md += `**Delivery Method:** ${module.delivery_method}\n\n`;
+      }
+      
       if (module.topics && module.topics.length > 0) {
         md += `**Topics:**\n\n`;
         module.topics.forEach((topic: string) => {
           md += `- ${topic}\n`;
         });
+        md += '\n';
+      }
+      
+      if (module.learning_activities && module.learning_activities.length > 0) {
+        md += `**Learning Activities:**\n\n`;
+        module.learning_activities.forEach((activity: any) => {
+          if (typeof activity === 'string') {
+            md += `- ${activity}\n`;
+          } else {
+            md += `- ${activity.type}: ${activity.activity} (${activity.duration})\n`;
+          }
+        });
+        md += '\n';
+      }
+      
+      if (module.assessment) {
+        md += `**Assessment:**\n\n`;
+        md += `- Type: ${module.assessment.type}\n`;
+        if (module.assessment.description) {
+          md += `- Description: ${module.assessment.description}\n`;
+        }
         md += '\n';
       }
     });
@@ -90,6 +116,18 @@ function convertSectionToMarkdown(section: any): string {
       md += `| ${kpi.metric} | ${kpi.target} | ${kpi.measurement_method} | ${kpi.frequency} |\n`;
     });
     md += '\n';
+    
+    // Add evaluation methods if present
+    if (section.evaluation_methods && section.evaluation_methods.length > 0) {
+      md += '### Evaluation Methods\n\n';
+      md += '| Method | Timing | Weight |\n';
+      md += '|--------|--------|--------|\n';
+      section.evaluation_methods.forEach((method: any) => {
+        md += `| ${method.method} | ${method.timing} | ${method.weight} |\n`;
+      });
+      md += '\n';
+    }
+    
     return md;
   }
 
@@ -101,6 +139,21 @@ function convertSectionToMarkdown(section: any): string {
       md += `| ${metric.metric} | ${metric.current_baseline} | ${metric.target} | ${metric.measurement_method} | ${metric.timeline} |\n`;
     });
     md += '\n';
+    
+    // Add reporting cadence if present
+    if (section.reporting_cadence) {
+      md += `**Reporting Cadence:** ${section.reporting_cadence}\n\n`;
+    }
+    
+    // Add dashboard requirements if present
+    if (section.dashboard_requirements && section.dashboard_requirements.length > 0) {
+      md += '### Dashboard Requirements\n\n';
+      section.dashboard_requirements.forEach((req: string) => {
+        md += `- ${req}\n`;
+      });
+      md += '\n';
+    }
+    
     return md;
   }
 
@@ -112,6 +165,16 @@ function convertSectionToMarkdown(section: any): string {
       md += `| ${risk.risk} | ${risk.probability} | ${risk.impact} | ${risk.mitigation_strategy} |\n`;
     });
     md += '\n';
+    
+    // Add contingency plans if present
+    if (section.contingency_plans && section.contingency_plans.length > 0) {
+      md += '### Contingency Plans\n\n';
+      section.contingency_plans.forEach((plan: string) => {
+        md += `- ${plan}\n`;
+      });
+      md += '\n';
+    }
+    
     return md;
   }
 
@@ -169,6 +232,101 @@ function convertSectionToMarkdown(section: any): string {
       md += `**Total Budget:** ${formatCurrency(section.budget.total, section.budget.currency)}\n\n`;
     }
 
+    return md;
+  }
+  
+  // Handle instructional strategy modalities
+  if (section.modalities && Array.isArray(section.modalities)) {
+    let md = section.overview ? `${section.overview}\n\n` : '';
+    
+    md += '### Learning Modalities\n\n';
+    section.modalities.forEach((modality: any) => {
+      md += `#### ${modality.type} (${modality.allocation_percent}%)\n\n`;
+      md += `${modality.rationale}\n\n`;
+      if (modality.tools && modality.tools.length > 0) {
+        md += `**Tools:** ${modality.tools.join(', ')}\n\n`;
+      }
+    });
+    
+    if (section.cohort_model) {
+      md += `### Cohort Model\n\n${section.cohort_model}\n\n`;
+    }
+    
+    if (section.accessibility_considerations && section.accessibility_considerations.length > 0) {
+      md += '### Accessibility Considerations\n\n';
+      section.accessibility_considerations.forEach((consideration: string) => {
+        md += `- ${consideration}\n`;
+      });
+      md += '\n';
+    }
+    
+    return md;
+  }
+  
+  // Handle target audience demographics
+  if (section.demographics || section.learning_preferences) {
+    let md = '';
+    
+    if (section.demographics) {
+      md += '### Demographics\n\n';
+      
+      if (section.demographics.roles && section.demographics.roles.length > 0) {
+        md += `**Roles:** ${section.demographics.roles.join(', ')}\n\n`;
+      }
+      
+      if (section.demographics.experience_levels && section.demographics.experience_levels.length > 0) {
+        md += `**Experience Levels:** ${section.demographics.experience_levels.join(', ')}\n\n`;
+      }
+      
+      if (section.demographics.department_distribution && section.demographics.department_distribution.length > 0) {
+        md += '**Department Distribution:**\n\n';
+        md += '| Department | Percentage |\n';
+        md += '|------------|------------|\n';
+        section.demographics.department_distribution.forEach((dept: any) => {
+          md += `| ${dept.department} | ${dept.percentage}% |\n`;
+        });
+        md += '\n';
+      }
+    }
+    
+    if (section.learning_preferences && section.learning_preferences.modalities) {
+      md += '### Learning Preferences\n\n';
+      md += '| Modality | Percentage |\n';
+      md += '|----------|------------|\n';
+      section.learning_preferences.modalities.forEach((pref: any) => {
+        md += `| ${pref.type} | ${pref.percentage}% |\n`;
+      });
+      md += '\n';
+    }
+    
+    return md;
+  }
+  
+  // Handle sustainability plan
+  if (section.maintenance_schedule || section.scaling_considerations) {
+    let md = section.content ? `${section.content}\n\n` : '';
+    
+    if (section.maintenance_schedule) {
+      md += '### Maintenance Schedule\n\n';
+      md += `**Review Frequency:** ${section.maintenance_schedule.review_frequency}\n\n`;
+      
+      if (section.maintenance_schedule.update_triggers && section.maintenance_schedule.update_triggers.length > 0) {
+        md += '**Update Triggers:**\n\n';
+        section.maintenance_schedule.update_triggers.forEach((trigger: string) => {
+          md += `- ${trigger}\n`;
+        });
+        md += '\n';
+      }
+    }
+    
+    if (section.scaling_considerations && section.scaling_considerations.length > 0) {
+      md += '### Scaling Considerations\n\n';
+      section.scaling_considerations.forEach((consideration: string) => {
+        md += `- ${consideration}\n`;
+      });
+      md += '\n';
+    }
+    
     return md;
   }
 

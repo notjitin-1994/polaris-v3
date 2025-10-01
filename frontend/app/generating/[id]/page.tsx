@@ -163,7 +163,7 @@ function GeneratingContent({ id }: { id: string }): React.JSX.Element {
       {/* Main Content */}
       <main className="w-full px-4 py-8 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-3xl">
-          <div className="glass rounded-2xl p-8 md:p-12">
+          <div className="glass-card animate-scale-in rounded-2xl p-8 md:p-12">
             {/* Icon */}
             <div className="mb-8 flex justify-center">
               {error ? (
@@ -210,7 +210,7 @@ function GeneratingContent({ id }: { id: string }): React.JSX.Element {
                 </div>
                 <div className="bg-surface h-2 overflow-hidden rounded-full">
                   <motion.div
-                    className="from-primary to-secondary h-full bg-gradient-to-r"
+                    className="h-full bg-primary"
                     initial={{ width: '0%' }}
                     animate={{ width: `${progress}%` }}
                     transition={{ duration: 0.3 }}

@@ -86,7 +86,7 @@ export function SignupFormContent(): React.JSX.Element {
 
       {error && <p className="text-sm text-red-400">{error}</p>}
 
-      <button type="submit" className="btn-primary pressable w-full" disabled={loading}>
+      <button type="submit" className="btn-primary pressable w-full rounded-xl px-4 py-3" disabled={loading}>
         <span className={loading ? 'animate-pulse opacity-70' : ''}>
           {loading ? 'Creating account…' : 'Create account'}
         </span>

@@ -79,9 +79,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }): React
       },
       async signOut() {
         setLoading(true);
-        const { error } = await supabase.auth.signOut();
-        setLoading(false);
-        if (error) throw error;
+        try {
+          const { error } = await supabase.auth.signOut();
+          if (error) throw error;
+          
+          // Clear auth state
+          setAuth(null, null);
+          
+          // Redirect to login and force refresh
+          if (typeof window !== 'undefined') {
+            window.location.href = '/login';
+          }
+        } catch (error) {
+          setLoading(false);
+          throw error;
+        }
       },
       async signInWithProvider(provider) {
         setLoading(true);

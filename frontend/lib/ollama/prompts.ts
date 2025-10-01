@@ -18,126 +18,179 @@ let cachedSystemPrompt: string | null = null;
 
 export function buildSystemPrompt(): string {
   if (cachedSystemPrompt) return cachedSystemPrompt;
-  try {
-    // Prefer project-level .taskmaster prompts as source of truth
-    const candidates = [
-      path.join(process.cwd(), '.taskmaster', 'dynamic-questions-prompt.md'),
-      path.join(process.cwd(), '..', '.taskmaster', 'dynamic-questions-prompt.md'),
-    ];
-    for (const p of candidates) {
-      if (fs.existsSync(p)) {
-        const content = fs.readFileSync(p, 'utf8');
-        cachedSystemPrompt = content;
-        return content;
-      }
+  
+  // Use comprehensive prompt matching Perplexity's format
+  cachedSystemPrompt = `You are an expert Learning Experience Designer with deep knowledge of instructional design principles, adult learning theory, and organizational development.
+
+Your task is to generate sophisticated dynamic questionnaires that deeply understand comprehensive project context and use modern, visually engaging input types.
+
+OUTPUT REQUIREMENTS:
+1. Valid JSON only - no markdown, no preamble, no explanatory text
+2. Generate exactly 5 sections with 7 questions each (35 total questions)
+3. Use modern visual input types (radio_pills, checkbox_cards, etc.) - AVOID select/multiselect
+4. Personalize questions based on user context
+5. Include validation for every question
+6. Use unique IDs in format: q{questionNumber}_s{sectionNumber}
+
+JSON SCHEMA:
+{
+  "sections": [
+    {
+      "id": "s1",
+      "title": "Section Title",
+      "description": "Section description",
+      "order": 1,
+      "questions": [
+        {
+          "id": "q1_s1",
+          "label": "Question text",
+          "type": "radio_pills",
+          "required": true,
+          "helpText": "Optional help text",
+          "options": [
+            {"value": "option1", "label": "Option 1", "disabled": false}
+          ],
+          "scaleConfig": {
+            "min": 1,
+            "max": 5,
+            "minLabel": "Low",
+            "maxLabel": "High",
+            "step": 1
+          }
+        }
+      ]
     }
-    throw new Error('dynamic-questions-prompt.md not found');
-  } catch (error) {
-    // Fallback to embedded prompt if the file is unavailable at runtime
-    cachedSystemPrompt = [
-      'You are an expert **Learning Experience Designer, Instructional Designer, and Senior Learning Leader**.',
-      "Your task is to generate a **dynamic questionnaire** based on the user's responses to 5 static questions:",
-      '1. Role',
-      '2. Organization',
-      '3. Identified Learning Gap',
-      '4. Resources & Budgets',
-      '5. Constraints',
-      '',
-      '## Goal',
-      'Generate a **dynamic, highly contextual questionnaire** with **5 sections**, each containing **7 questions** (35 total).',
-      'The questionnaire will collect comprehensive, actionable insights to enable generation of a **fully functional, implementable Learning Blueprint**.',
-      '',
-      '## Output Format',
-      'Return the questionnaire in **strict JSON** with this schema:',
-      '',
-      '```json',
-      '{',
-      '  "sections": [',
-      '    {',
-      '      "title": "string",',
-      '      "description": "string",',
-      '      "questions": [',
-      '        {',
-      '          "id": "string",',
-      '          "question_text": "string",',
-      '          "input_type": "string",',
-      '          "options": ["optional", "for", "balloons", "or", "dropdown"],',
-      '          "validation": {',
-      '            "required": true,',
-      '            "data_type": "string/number/date/currency"',
-      '          }',
-      '        }',
-      '      ]',
-      '    }',
-      '  ]',
-      '}',
-      '```',
-      '',
-      '### Accepted Input Types',
-      '- "single_select" → Single-choice balloons or dropdown.',
-      '- "multi_select" → Multiple-choice balloons.',
-      '- "slider" → Numeric scale (e.g., 1–10, resource allocation).',
-      '- "calendar" → Date or timeline input.',
-      '- "currency" → Budget or cost input.',
-      '- "text" → Open text response.',
-      '',
-      '---',
-      '',
-      '## Section Guidance',
-      'Design the 5 sections as follows (rename if helpful, but keep intent). Personalize wording using the static answers (role, organization, learning gap, resources/budgets, constraints). Apply LXD best practices (SMART objectives, Bloom’s taxonomy for depth, andragogy for relevance/autonomy, Gagné for delivery, Kirkpatrick levels for evaluation).',
-      '',
-      '1. **Learning Objectives & Outcomes** – define success, strategic importance, measurable outcomes.',
-      '2. **Learner Profile & Audience Context** – learner strengths, experience, motivation, learning preferences.',
-      '3. **Resources, Tools, & Support Systems** – available personnel, technology, content, budgets.',
-      '4. **Timeline, Constraints, & Delivery Conditions** – timeframes, priorities, delivery modes, blockers.',
-      '5. **Evaluation, Success Metrics & Long-Term Impact** – success measurement, feedback loops, sustainability.',
-      '',
-      '---',
-      '',
-      '## Question Design Guidelines',
-      '- **Depth & Specificity**: Each question extracts practical, implementation-ready information. Use verbs that elicit measurable outputs (SMART).',
-      '- **Variety**: Mix input types (sliders, calendars, balloons, currency). Include at least: Objectives ≥1 slider; Audience ≥1 slider; Resources ≥1 currency; Timeline ≥2 calendar; Evaluation ≥1 slider.',
-      '- **Clarity**: Questions must be unambiguous and easy to answer. Single purpose per question.',
-      '- **Personalization**: Weave the user’s role, organization, tools (e.g., LMS/authoring), budget/timeline, and constraints into question_text and options.',
-      '- **Options Quality**: For single_select/multi_select, provide 4–8 realistic options plus "Other" if helpful.',
-      '- **Accessibility & Global Readiness**: Elicit languages, time zones, and accommodations where relevant.',
-      '- **Avoid Duplication**: No repeated questions across sections.',
-      '- **Scalability**: Questions must apply across industries and org sizes.',
-      '',
-      '---',
-      '',
-      '## Final Instruction',
-      'Generate the **full questionnaire (5 sections × 7 questions)** in JSON.',
-      'Ensure each section/question **directly supports creation of a world-class Learning Experience Blueprint** that can be implemented by instructional designers, content developers, and project managers. Use unique IDs like `S{section}Q{question}` and include a validation object for every question with the correct data_type.',
-    ].join('\n');
-    return cachedSystemPrompt;
-  }
+  ]
+}
+
+MODERN INPUT TYPES (USE THESE):
+
+SINGLE SELECTION:
+- radio_pills (2-6 options) - Modern pill buttons for quick selection
+- radio_cards (2-4 options) - Cards with descriptions for detailed options
+- toggle_switch (exactly 2 options) - Yes/No, Enable/Disable binary choices
+
+MULTIPLE SELECTION:
+- checkbox_pills (2-8 options) - Pill buttons for multiple selection
+- checkbox_cards (2-6 options) - Cards with descriptions, multiple selection
+
+RATING & SCALES:
+- scale (1-10 range) - Simple numeric rating scale
+  Config: {min: 1, max: 5, minLabel: "Novice", maxLabel: "Expert"}
+- enhanced_scale (1-7 with visual feedback) - Scale with labels/emojis
+  Config: {min: 1, max: 5, labels: ["😞", "😐", "🙂", "😊", "🤩"]}
+- labeled_slider (0-100+ with unit) - Continuous values with units
+  Config: {min: 0, max: 40, step: 1, unit: "hours/week"}
+
+TEXT INPUT:
+- text (single line, max 200 chars) - Short text answers
+- textarea (multi-line, 3-10 rows) - Detailed descriptions
+
+NUMERIC:
+- currency (with symbol) - Budget, costs, ROI
+  Config: {currencySymbol: "$", min: 0, max: 1000000}
+- number_spinner (with +/- buttons) - Team size, quantities
+  Config: {min: 1, max: 500, step: 1}
+- number (basic numeric) - Percentages, scores
+
+DATE & CONTACT:
+- date (calendar picker) - Dates, deadlines, milestones
+- email (validated) - Contact information
+- url (validated) - Links, resources
+
+AVOID THESE (Poor UX):
+❌ select - Use radio_pills or radio_cards instead
+❌ multiselect - Use checkbox_pills or checkbox_cards instead
+
+SECTION GUIDELINES:
+1. Learning Objectives & Outcomes - Define success, strategic importance, measurable outcomes
+2. Learner Profile & Audience Context - Experience, motivation, learning preferences
+3. Resources, Tools, & Support Systems - Personnel, technology, content, budgets
+4. Timeline, Constraints, & Delivery - Timeframes, priorities, delivery modes
+5. Evaluation, Success Metrics & Impact - Measurement, feedback loops, sustainability
+
+QUESTION DESIGN BEST PRACTICES:
+- Use SMART objectives framework
+- Apply Bloom's taxonomy for cognitive depth
+- Consider adult learning principles (andragogy)
+- Include Kirkpatrick evaluation levels where relevant
+- Mix input types for engagement
+- Personalize with user's role, organization, industry
+- Make questions actionable and implementation-ready
+- Avoid duplication across sections
+
+Return ONLY valid JSON matching the schema above.`;
+  
+  return cachedSystemPrompt;
 }
 
 export function buildUserPrompt(input: GenerationInput): string {
-  return `
-Based on the following static responses, generate a comprehensive dynamic questionnaire:
+  // Parse input data for structured presentation
+  const role = 'role' in input ? (input as any).role : 'Not specified';
+  const org = 'organization' in input ? (input as any).organization : 'Not specified';
+  const industry = 'industry' in input ? (input as any).industry : 'Not specified';
+  const learningGap = 'learningGap' in input ? (input as any).learningGap : 'Not specified';
+  const resources = 'resources' in input ? (input as any).resources : 'Not specified';
+  const constraints = 'constraints' in input ? (input as any).constraints : 'Not specified';
 
-**Role:** ${'role' in input ? (input as any).role : 'N/A'}
-**Organization:** ${'organization' in input ? (input as any).organization : 'N/A'}
-**Identified Learning Gap:** ${'learningGap' in input ? (input as any).learningGap : 'N/A'}
-**Resources & Budgets:** ${'resources' in input ? (input as any).resources : 'N/A'}
-**Constraints:** ${'constraints' in input ? (input as any).constraints : 'N/A'}
+  return `Generate a comprehensive learning blueprint dynamic questionnaire based on the following context:
 
-Generate exactly ${input.numSections} sections with ${input.questionsPerSection} questions each (${input.numSections * input.questionsPerSection} total questions).
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                         PROJECT CONTEXT ANALYSIS                              ║
+╚══════════════════════════════════════════════════════════════════════════════╝
 
-Use the JSON schema provided in the system prompt and ensure each question is:
-- Clear and actionable
-- Contextually relevant to the provided information
-- Designed to extract implementation-ready insights
-- Varied in input types (mix of text, single_select, multi_select, slider, calendar, currency)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🏢 ORGANIZATION PROFILE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Organization:     ${org}
+Industry:         ${industry}
+Requestor Role:   ${role}
 
-Additional requirements:
-- Personalize question_text (and options when applicable) with the provided role, organization, learning gap, tools, budget, timeline, and constraints.
-- Use IDs in the format S{sectionNumber}Q{questionNumber} (e.g., S2Q4). Ensure IDs are unique.
-- Include a validation object for every question with the correct data_type: slider→number, calendar→date, currency→currency, others→string.
-- Ensure at least: Section 1 (≥1 slider), Section 2 (≥1 slider), Section 3 (≥1 currency), Section 4 (≥2 calendar), Section 5 (≥1 slider).
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🎯 LEARNING GAP & OBJECTIVES (CRITICAL CONTEXT)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Gap Description:
+${learningGap}
 
-Return ONLY the JSON response with no additional commentary.
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+💰 RESOURCES & CONSTRAINTS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Resources Available: ${resources}
+Constraints: ${constraints}
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                         YOUR MISSION & TASK                                   ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+Generate ${input.numSections} sections with ${input.questionsPerSection} questions each (${input.numSections * input.questionsPerSection} total questions).
+
+REQUIREMENTS:
+1. Use modern visual input types (radio_pills, checkbox_cards, toggle_switch, etc.)
+2. AVOID old types: select, multiselect (use pills/cards instead)
+3. Personalize all questions with organization name, role, industry, and gap context
+4. Include validation for every question (required: true/false)
+5. Use IDs in format: q{questionNumber}_s{sectionNumber} (e.g., q1_s1, q2_s1)
+6. Mix input types for engagement:
+   - Include scales for ratings/assessments
+   - Use currency for budget questions
+   - Use date for timeline questions
+   - Use pills/cards for selections
+   - Use text/textarea for descriptions
+
+SECTION STRUCTURE:
+1. Learning Objectives & Outcomes (success criteria, strategic alignment)
+2. Learner Profile & Audience (experience, motivation, preferences)
+3. Resources & Support Systems (team, technology, budget, content)
+4. Timeline & Delivery Strategy (deadlines, modality, constraints)
+5. Evaluation & Success Metrics (KPIs, measurement, sustainability)
+
+CRITICAL:
+- Return ONLY valid JSON matching the schema from system prompt
+- No markdown, no code blocks, no explanatory text
+- Ensure all sections have "id", "title", "description", "order"
+- Ensure all questions have "id", "label", "type", "required"
+- Include "options" array for all selection types
+- Include "scaleConfig" for scale/slider types
+- Make questions actionable and implementation-ready
 `;
 }

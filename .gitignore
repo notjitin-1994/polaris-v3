@@ -29,8 +29,10 @@ node_modules/
 # OS specific
 .DS_Store
 
-# Task files
+# Task filesimage,
 # tasks.json
 # tasks/ 
 sshkey
 sshkey.pub
+.vercel
+image.png

@@ -74,7 +74,7 @@ export function ObjectivesInfographic({
             </div>
             <div className="bg-surface h-2 overflow-hidden rounded-full">
               <motion.div
-                className="from-primary to-secondary h-full bg-gradient-to-r"
+                className="h-full bg-primary"
                 initial={{ width: 0 }}
                 animate={{ width: `${calculateProgress(obj.baseline, obj.target)}%` }}
                 transition={{ delay: index * 0.1 + 0.3, duration: 0.8, ease: 'easeOut' }}

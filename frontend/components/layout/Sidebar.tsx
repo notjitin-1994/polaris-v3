@@ -9,7 +9,6 @@ import {
   IconSidebarToggle,
   IconApps,
   IconEye,
-  IconChecklist,
   IconSun,
   IconLogout,
   IconSettings,
@@ -78,7 +77,6 @@ export function Sidebar({ user, onSignOut }: SidebarProps) {
   const collapsedQuickItems = [
     { title: 'Dashboard', icon: IconApps, path: '/' },
     { title: 'Explore', icon: IconEye, path: '/explore', badge: 'Coming Soon', disabled: true },
-    { title: 'Blueprints', icon: IconChecklist, path: '/blueprints' },
     { title: 'Learning', icon: IconSun, path: '/learning', badge: 'Coming Soon', disabled: true },
   ];
 
@@ -123,84 +121,12 @@ export function Sidebar({ user, onSignOut }: SidebarProps) {
       </div>
 
       {/* Navigation Content */}
-      {sidebarCollapsed ? (
-        // Collapsed View: Icon-only Quick Access
-        <div className="flex flex-1 flex-col items-center gap-2 overflow-y-auto px-3 py-4">
-          {collapsedQuickItems.map(({ title, icon: Icon, path, disabled }) => {
-            const isActive = pathname === path;
-            return (
-              <button
-                key={title}
-                type="button"
-                onClick={() => !disabled && router.push(path)}
-                disabled={disabled}
-                aria-label={title}
-                className={`group focus-visible:ring-secondary/50 relative flex h-11 w-11 items-center justify-center rounded-xl transition-all duration-200 focus-visible:ring-2 focus-visible:ring-offset-2 ${
-                  isActive
-                    ? 'bg-primary/10 text-primary shadow-sm'
-                    : disabled
-                      ? 'text-text-disabled cursor-not-allowed opacity-50'
-                      : 'text-text-secondary hover:text-foreground hover:bg-foreground/5 active:scale-95'
-                } `}
-              >
-                <Icon className="h-5 w-5" />
-                {/* Tooltip on hover */}
-                {!disabled && (
-                  <div className="bg-surface text-foreground pointer-events-none invisible absolute left-full z-50 ml-3 rounded-lg border border-neutral-200 px-3 py-1.5 text-sm font-medium whitespace-nowrap opacity-0 shadow-lg transition-all duration-200 group-hover:visible group-hover:opacity-100 dark:border-neutral-800">
-                    {title}
-                    <div className="bg-surface absolute top-1/2 left-0 h-2 w-2 -translate-x-1 -translate-y-1/2 rotate-45 border-b border-l border-neutral-200 dark:border-neutral-800" />
-                  </div>
-                )}
-                {isActive && (
-                  <div className="bg-primary absolute top-1/2 right-0 h-6 w-1 -translate-y-1/2 rounded-l-full" />
-                )}
-              </button>
-            );
-          })}
-
-          {/* Divider */}
-          <div className="my-2 h-px w-8 bg-neutral-200 dark:bg-neutral-800" />
-
-          {/* Product Links (collapsed) */}
-          {productLinks.map(({ name, path, badgeType }) => {
-            const isActive = pathname === path;
-            const initial = name.charAt(0);
-            return (
-              <button
-                key={name}
-                type="button"
-                onClick={() => router.push(path)}
-                disabled={badgeType === 'soon'}
-                aria-label={name}
-                className={`group focus-visible:ring-secondary/50 relative flex h-11 w-11 items-center justify-center rounded-xl text-xs font-bold transition-all duration-200 focus-visible:ring-2 focus-visible:ring-offset-2 ${
-                  isActive
-                    ? 'bg-primary/10 text-primary shadow-sm'
-                    : badgeType === 'soon'
-                      ? 'text-text-disabled cursor-not-allowed opacity-50'
-                      : 'text-text-secondary hover:text-foreground hover:bg-foreground/5 active:scale-95'
-                } `}
-              >
-                {initial}
-                {/* Tooltip on hover */}
-                {badgeType !== 'soon' && (
-                  <div className="bg-surface text-foreground pointer-events-none invisible absolute left-full z-50 ml-3 rounded-lg border border-neutral-200 px-3 py-1.5 text-sm font-medium whitespace-nowrap opacity-0 shadow-lg transition-all duration-200 group-hover:visible group-hover:opacity-100 dark:border-neutral-800">
-                    {name}
-                    <div className="bg-surface absolute top-1/2 left-0 h-2 w-2 -translate-x-1 -translate-y-1/2 rotate-45 border-b border-l border-neutral-200 dark:border-neutral-800" />
-                  </div>
-                )}
-                {isActive && (
-                  <div className="bg-primary absolute top-1/2 right-0 h-6 w-1 -translate-y-1/2 rounded-l-full" />
-                )}
-              </button>
-            );
-          })}
-        </div>
-      ) : (
+      {!sidebarCollapsed && (
         // Expanded View: Full Navigation
         <nav className="flex-1 space-y-6 overflow-y-auto px-4 py-4" aria-label="Primary navigation">
           {/* Quick Access Section */}
           <div className="space-y-1.5">
-            <h2 className="text-primary mb-2 px-3 text-[6.3px] font-bold tracking-wider uppercase">
+            <h2 className="text-primary mb-2 px-3 text-[5px] font-bold tracking-wider uppercase">
               Quick Access
             </h2>
             {collapsedQuickItems.map(({ title, icon: Icon, path, badge, disabled }) => {
@@ -236,7 +162,7 @@ export function Sidebar({ user, onSignOut }: SidebarProps) {
 
           {/* Product Links */}
           <div className="space-y-1">
-            <h2 className="text-primary mb-2 px-3 text-[6.3px] font-bold tracking-wider uppercase">
+            <h2 className="text-primary mb-2 px-3 text-[5px] font-bold tracking-wider uppercase">
               Explore Suite
             </h2>
             {productLinks.map(({ name, path, badge, badgeType }) => {
@@ -277,8 +203,8 @@ export function Sidebar({ user, onSignOut }: SidebarProps) {
       {/* Footer Section */}
       <div className="bg-surface/50 mt-auto w-full backdrop-blur-sm">
         {sidebarCollapsed ? (
-          // Collapsed Footer
-          <div className="flex flex-col items-center gap-2 px-3 py-4">
+          // Collapsed Footer - Only Subscribe Button
+          <div className="flex flex-col items-center px-3 py-4">
             {/* Subscribe Button - Collapsed */}
             <button
               type="button"
@@ -296,38 +222,6 @@ export function Sidebar({ user, onSignOut }: SidebarProps) {
               >
                 <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
               </svg>
-            </button>
-
-            {/* Divider */}
-            <div className="my-1 h-px w-8 bg-neutral-200 dark:bg-neutral-800" />
-
-            <button
-              type="button"
-              onClick={() => router.push('/profile')}
-              title={`${getCapitalizedFirstName()}'s Profile`}
-              aria-label={`${getCapitalizedFirstName()}'s Profile`}
-              className="group hover:bg-foreground/5 focus-visible:ring-secondary/50 relative flex h-11 w-11 items-center justify-center rounded-xl transition-all duration-200 focus-visible:ring-2 focus-visible:ring-offset-2 active:scale-95"
-            >
-              <UserAvatar user={user} sizeClass="w-8 h-8" textClass="text-sm font-bold" />
-              <div className="bg-success border-surface absolute -top-1 -right-1 h-3 w-3 rounded-full border-2" />
-            </button>
-            <button
-              type="button"
-              onClick={() => router.push('/settings')}
-              title="Settings"
-              aria-label="Settings"
-              className="group text-text-secondary hover:text-foreground hover:bg-foreground/5 focus-visible:ring-secondary/50 relative flex h-11 w-11 items-center justify-center rounded-xl transition-all duration-200 focus-visible:ring-2 focus-visible:ring-offset-2 active:scale-95"
-            >
-              <IconSettings className="h-5 w-5" />
-            </button>
-            <button
-              type="button"
-              onClick={onSignOut}
-              title="Sign Out"
-              aria-label="Sign Out"
-              className="group text-text-secondary hover:text-error hover:bg-error/5 focus-visible:ring-error/50 relative flex h-11 w-11 items-center justify-center rounded-xl transition-all duration-200 focus-visible:ring-2 focus-visible:ring-offset-2 active:scale-95"
-            >
-              <IconLogout className="h-5 w-5" />
             </button>
           </div>
         ) : (

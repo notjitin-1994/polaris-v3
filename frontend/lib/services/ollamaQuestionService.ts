@@ -82,24 +82,48 @@ function convertOllamaToPerplexityFormat(
 
 /**
  * Map Ollama input types to our standardized types
+ * Handles both modern types (from updated prompts) and legacy types (for backward compatibility)
  */
-function mapOllamaType(ollamaType: string): any {
-  const typeMap: Record<string, string> = {
-    text: 'text',
-    textarea: 'textarea',
+function mapOllamaType(ollamaType: string): string {
+  // Modern types (pass through as-is - these are already correct)
+  const modernTypes = [
+    'radio_pills',
+    'radio_cards',
+    'checkbox_pills',
+    'checkbox_cards',
+    'toggle_switch',
+    'scale',
+    'enhanced_scale',
+    'labeled_slider',
+    'text',
+    'textarea',
+    'currency',
+    'number_spinner',
+    'number',
+    'date',
+    'email',
+    'url',
+  ];
+
+  // If it's already a modern type, return it as-is
+  if (modernTypes.includes(ollamaType)) {
+    return ollamaType;
+  }
+
+  // Legacy type mapping (for backward compatibility with old prompts)
+  const legacyTypeMap: Record<string, string> = {
     single_select: 'radio_pills',
     multi_select: 'checkbox_pills',
     slider: 'scale',
-    number: 'number',
     calendar_date: 'date',
     calendar_range: 'date',
+    calendar: 'date',
     boolean: 'toggle_switch',
-    currency: 'currency',
   };
 
-  const mapped = typeMap[ollamaType] || 'text';
+  const mapped = legacyTypeMap[ollamaType] || 'text';
 
-  if (!typeMap[ollamaType]) {
+  if (!legacyTypeMap[ollamaType] && !modernTypes.includes(ollamaType)) {
     logger.warn('dynamic_questions.input_type.unknown', 'Unknown Ollama input type', {
       originalType: ollamaType,
       mappedType: mapped,

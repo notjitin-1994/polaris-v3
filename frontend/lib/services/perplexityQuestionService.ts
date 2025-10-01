@@ -63,79 +63,367 @@ interface PerplexityAPIResponse {
 }
 
 /**
- * Build prompt for Perplexity question generation
+ * Build comprehensive prompt for Perplexity question generation
+ * Includes ALL V2 static questionnaire data in structured format
  */
 function buildPerplexityPrompt(context: QuestionGenerationContext): string {
-  const { staticAnswers, userPrompts = [], role, industry, organization } = context;
+  const { staticAnswers, userPrompts = [] } = context;
 
-  // Extract key context from static answers
-  const contextInfo = {
-    role: role || staticAnswers.role || 'Unknown',
-    industry:
-      industry || staticAnswers.organization?.industry || staticAnswers.industry || 'Unknown',
-    organization:
-      organization || staticAnswers.organization?.name || staticAnswers.organization || 'Unknown',
-    learningGap:
-      staticAnswers.learningGap?.description || staticAnswers.learningGap || 'Not specified',
-    audience:
-      staticAnswers.learnerProfile?.audienceSize || staticAnswers.targetAudience || 'Not specified',
-  };
+  // Extract V2 schema data with safe defaults
+  const org = staticAnswers.organization || {};
+  const learner = staticAnswers.learnerProfile || {};
+  const gap = staticAnswers.learningGap || {};
+  const resources = staticAnswers.resources || {};
+  const delivery = staticAnswers.deliveryStrategy || {};
+  const evaluation = staticAnswers.evaluation || {};
+  const constraints = staticAnswers.constraints || [];
 
-  return `You are an expert Learning Experience Designer with access to current web research.
+  return `You are an expert Learning Experience Designer with access to current web research. Generate a sophisticated dynamic questionnaire that deeply understands the following comprehensive project context.
 
-CONTEXT:
-- Role: ${contextInfo.role}
-- Industry: ${contextInfo.industry}
-- Organization: ${contextInfo.organization}
-- Learning Gap: ${contextInfo.learningGap}
-- Target Audience: ${contextInfo.audience}
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                         PROJECT CONTEXT ANALYSIS                              ║
+╚══════════════════════════════════════════════════════════════════════════════╝
 
-STATIC QUESTIONNAIRE ANSWERS:
-${JSON.stringify(staticAnswers, null, 2)}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🏢 ORGANIZATION PROFILE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Organization:     ${org.name || 'Not specified'}
+Industry:         ${org.industry || 'Not specified'}
+Organization Size: ${org.size || 'Not specified'} employees
+Operating Regions: ${Array.isArray(org.regions) && org.regions.length > 0 ? org.regions.join(', ') : 'Not specified'}
+Requestor Role:   ${staticAnswers.role || 'Not specified'}
 
-${userPrompts.length > 0 ? `ADDITIONAL CONTEXT:\n${userPrompts.join('\n')}` : ''}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+👥 LEARNER PROFILE & AUDIENCE ANALYSIS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Audience Size:           ${learner.audienceSize || 'Not specified'}
+Prior Knowledge Level:   ${learner.priorKnowledge || 'Not specified'}/5 (1=Novice, 5=Expert)
+Motivation Factors:      ${Array.isArray(learner.motivation) && learner.motivation.length > 0 ? learner.motivation.join(', ') : 'Not specified'}
+Learning Environments:   ${Array.isArray(learner.environment) && learner.environment.length > 0 ? learner.environment.join(', ') : 'Not specified'}
+Device Access:           ${Array.isArray(learner.devices) && learner.devices.length > 0 ? learner.devices.join(', ') : 'Not specified'}
+Time Availability:       ${learner.timeAvailable || 0} hours per week
+Accessibility Needs:     ${Array.isArray(learner.accessibility) && learner.accessibility.length > 0 ? learner.accessibility.join(', ') : 'None specified'}
 
-TASK:
-Generate a comprehensive dynamic questionnaire with 5 sections, 7 questions each (35 total questions).
-Research current ${contextInfo.industry} learning and development best practices from 2024-2025.
-Create questions that will gather actionable insights for developing a Learning Blueprint.
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🎯 LEARNING GAP & OBJECTIVES (CRITICAL CONTEXT)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Gap Description:
+${gap.description || 'Not specified'}
 
-REQUIREMENTS:
-1. Use diverse input types based on question nature:
-   - Visual inputs preferred: radio_pills, radio_cards, checkbox_pills, checkbox_cards
-   - Scales for ratings: scale, enhanced_scale, labeled_slider
-   - Text when open-ended: text, textarea
-   - Specialized: toggle_switch, currency, number_spinner, date, email, url
+Gap Type:              ${gap.gapType || 'Not specified'} (knowledge/skill/behavior/performance)
+Urgency Level:         ${gap.urgency || 'Not specified'}/5 (1=Low, 5=Critical)
+Business Impact:       ${gap.impact || 'Not specified'}/5 (1=Minimal, 5=Transformational)
+Impact Areas:          ${Array.isArray(gap.impactAreas) && gap.impactAreas.length > 0 ? gap.impactAreas.join(', ') : 'Not specified'}
+Bloom's Taxonomy:      ${gap.bloomsLevel || 'Not specified'} (remember/understand/apply/analyze/evaluate/create)
 
-2. Each question must be:
-   - Contextually relevant to the provided information
-   - Actionable and specific
-   - Clear and professional
-   - Designed to extract implementation-ready insights
+Learning Objectives (Rich Text):
+${gap.objectives || 'Not specified'}
 
-3. Include research citations in metadata when applicable
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+💰 RESOURCES & BUDGET CONSTRAINTS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Budget Amount:         $${resources.budget?.amount?.toLocaleString() || '0'}
+Budget Flexibility:    ${resources.budget?.flexibility || 'Not specified'}
 
-OUTPUT SCHEMA (STRICT JSON - NO MARKDOWN, NO PREAMBLE):
+Timeline Target:       ${resources.timeline?.targetDate || 'Not specified'}
+Project Duration:      ${resources.timeline?.duration || 'Not specified'} weeks
+Timeline Flexibility:  ${resources.timeline?.flexibility || 'Not specified'}
+
+Team Composition:
+  - Instructional Designers:    ${resources.team?.instructionalDesigners || 0}
+  - Content Developers:         ${resources.team?.contentDevelopers || 0}
+  - Multimedia Specialists:     ${resources.team?.multimediaSpecialists || 0}
+  - SME Availability:           ${resources.team?.smeAvailability || 'Not specified'}/5
+  - Team Experience Level:      ${resources.team?.experienceLevel || 'Not specified'}
+
+Technology Stack:
+  - LMS Platform:       ${resources.technology?.lms || 'Not specified'}
+  - Authoring Tools:    ${Array.isArray(resources.technology?.authoringTools) && resources.technology.authoringTools.length > 0 ? resources.technology.authoringTools.join(', ') : 'Not specified'}
+  - Other Tools:        ${Array.isArray(resources.technology?.otherTools) && resources.technology.otherTools.length > 0 ? resources.technology.otherTools.join(', ') : 'Not specified'}
+
+Content Strategy:      ${resources.contentStrategy?.source || 'Not specified'} (scratch/adapt/license/curate/hybrid)
+${Array.isArray(resources.contentStrategy?.existingMaterials) && resources.contentStrategy.existingMaterials.length > 0 ? `Existing Materials:    ${resources.contentStrategy.existingMaterials.join(', ')}` : ''}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🎓 DELIVERY STRATEGY & MODALITY
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Primary Modality:           ${delivery.modality || 'Not specified'} (self-paced/ilt/blended/microlearning/simulation/video)
+${delivery.duration ? `Session Duration:           ${delivery.duration} minutes` : ''}
+${delivery.sessionStructure ? `Session Structure:          ${delivery.sessionStructure}` : ''}
+Interactivity Level:        ${delivery.interactivityLevel || 'Not specified'}/5 (1=Passive, 5=Highly Interactive)
+Practice Opportunities:     ${Array.isArray(delivery.practiceOpportunities) && delivery.practiceOpportunities.length > 0 ? delivery.practiceOpportunities.join(', ') : 'Not specified'}
+Social Learning Elements:   ${Array.isArray(delivery.socialLearning) && delivery.socialLearning.length > 0 ? delivery.socialLearning.join(', ') : 'Not specified'}
+Reinforcement Strategy:     ${delivery.reinforcement || 'Not specified'}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+⚠️ PROJECT CONSTRAINTS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+${constraints.length > 0 ? constraints.map((c: string) => `• ${c}`).join('\n') : 'None specified'}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📊 ASSESSMENT & EVALUATION FRAMEWORK (Kirkpatrick Model)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Level 1 (Reaction):
+  - Methods:                ${Array.isArray(evaluation.level1?.methods) && evaluation.level1.methods.length > 0 ? evaluation.level1.methods.join(', ') : 'Not specified'}
+  - Satisfaction Target:    ${evaluation.level1?.satisfactionTarget || 'Not specified'}%
+
+Level 2 (Learning):
+  - Assessment Methods:     ${Array.isArray(evaluation.level2?.assessmentMethods) && evaluation.level2.assessmentMethods.length > 0 ? evaluation.level2.assessmentMethods.join(', ') : 'Not specified'}
+  - Passing Required:       ${evaluation.level2?.passingRequired ? 'Yes' : 'No'}
+${evaluation.level2?.passingScore ? `  - Passing Score:          ${evaluation.level2.passingScore}%` : ''}
+${evaluation.level2?.attemptsAllowed ? `  - Attempts Allowed:       ${evaluation.level2.attemptsAllowed}` : ''}
+
+Level 3 (Behavior Change):
+  - Measure Behavior:       ${evaluation.level3?.measureBehavior ? 'Yes' : 'No'}
+${evaluation.level3?.methods ? `  - Methods:                ${Array.isArray(evaluation.level3.methods) ? evaluation.level3.methods.join(', ') : evaluation.level3.methods}` : ''}
+${evaluation.level3?.followUpTiming ? `  - Follow-up Timing:       ${evaluation.level3.followUpTiming}` : ''}
+${evaluation.level3?.behaviors ? `  - Target Behaviors:       ${evaluation.level3.behaviors}` : ''}
+
+Level 4 (Results/ROI):
+  - Measure ROI:            ${evaluation.level4?.measureROI ? 'Yes' : 'No'}
+${evaluation.level4?.metrics ? `  - Metrics:                ${Array.isArray(evaluation.level4.metrics) ? evaluation.level4.metrics.join(', ') : evaluation.level4.metrics}` : ''}
+${evaluation.level4?.owner ? `  - Measurement Owner:      ${evaluation.level4.owner}` : ''}
+${evaluation.level4?.timing ? `  - Measurement Timing:     ${evaluation.level4.timing}` : ''}
+
+Certification Type:       ${evaluation.certification || 'None'}
+
+${userPrompts.length > 0 ? `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+💬 ADDITIONAL USER CONTEXT
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+${userPrompts.join('\n')}
+` : ''}
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                         YOUR MISSION & TASK                                   ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+Generate a sophisticated, research-backed dynamic questionnaire with 5 sections containing 7 questions each (35 total questions). Use your web research capability to find current ${org.industry || 'L&D'} industry best practices from 2024-2025.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🎨 INPUT TYPE SELECTION GUIDE (CRITICAL - READ CAREFULLY)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+⚠️ AVOID THESE INPUT TYPES (Poor UX, use alternatives):
+  ❌ select         → Use radio_pills or radio_cards instead (2-6 options)
+  ❌ multiselect    → Use checkbox_pills or checkbox_cards instead (2-8 options)
+
+✅ PREFERRED INPUT TYPES (Modern, Visual, Engaging):
+
+📍 SINGLE SELECTION (Choose One):
+  • radio_pills (2-6 options)
+    Use for: Short labels, quick selection
+    Example: "What is your primary learning goal?" 
+    Options: ["Skill Development", "Career Advancement", "Certification", "Performance Improvement"]
+    
+  • radio_cards (2-4 options)
+    Use for: Longer descriptions, need visual distinction
+    Example: "Select your preferred learning format:"
+    Options with descriptions showing benefits of each format
+
+📍 MULTIPLE SELECTION (Choose Many):
+  • checkbox_pills (2-8 options)
+    Use for: Multiple selection with short labels
+    Example: "Which delivery methods interest you?" (can select 1-3)
+    Options: ["Live Webinars", "Self-Paced", "Workshops", "Coaching"]
+    
+  • checkbox_cards (2-6 options)
+    Use for: Multiple selection with detailed descriptions
+    Example: "Select all assessment methods you'd like to explore:"
+    Options with descriptions explaining each method
+
+📍 RATING & SCALES (Numeric Values):
+  • scale (1-10 range)
+    Use for: Simple 1-5 or 1-10 ratings
+    Example: "Rate your current knowledge level (1=Novice, 5=Expert)"
+    Config: {min: 1, max: 5, minLabel: "Novice", maxLabel: "Expert"}
+    
+  • enhanced_scale (1-7 range with labels/emojis)
+    Use for: More expressive ratings with visual feedback
+    Example: "How satisfied are you with current training?"
+    Config: {min: 1, max: 5, labels: ["😞", "😐", "🙂", "😊", "🤩"]}
+    
+  • labeled_slider (0-100+ range with unit)
+    Use for: Continuous numeric values, percentages, time
+    Example: "How many hours per week can learners dedicate?"
+    Config: {min: 0, max: 40, step: 1, unit: "hours/week"}
+
+📍 BOOLEAN/BINARY CHOICES:
+  • toggle_switch (exactly 2 options)
+    Use for: Yes/No, Enable/Disable, Included/Excluded
+    Example: "Will this training be mandatory?"
+    Options: [{"value": "yes", "label": "Yes"}, {"value": "no", "label": "No"}]
+
+📍 TEXT INPUT (Free Form):
+  • text (single line, max 200 chars)
+    Use for: Names, titles, short answers
+    Example: "What is the primary skill you want to develop?"
+    
+  • textarea (multi-line, 3-10 rows)
+    Use for: Detailed descriptions, scenarios, objectives
+    Example: "Describe a typical challenge your learners face:"
+
+📍 SPECIALIZED NUMERIC:
+  • currency (money with symbol)
+    Use for: Budget, cost per learner, ROI targets
+    Example: "What is your available training budget?"
+    Config: {currencySymbol: "$", min: 0, max: 1000000}
+    
+  • number_spinner (integer with +/- buttons)
+    Use for: Team size, number of modules, cohort size
+    Example: "How many learners are in this cohort?"
+    Config: {min: 1, max: 500, step: 1}
+    
+  • number (basic numeric)
+    Use for: Percentages, scores, general numbers
+    Example: "What completion rate are you targeting?"
+
+📍 DATE & CONTACT:
+  • date (calendar picker)
+    Use for: Start dates, deadlines, milestones
+    Example: "When do you need the training completed by?"
+    
+  • email (validated email)
+    Use for: Contact information
+    Example: "Who should we contact about this project?"
+    
+  • url (validated URL)
+    Use for: Resource links, LMS URLs
+    Example: "What is your organization's LMS URL?"
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📋 QUESTION DESIGN REQUIREMENTS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+EACH QUESTION MUST:
+✓ Be contextually relevant to the comprehensive context above
+✓ Directly address the Bloom's level (${gap.bloomsLevel || 'not specified'})
+✓ Consider the gap type (${gap.gapType || 'not specified'})
+✓ Respect budget constraints ($${resources.budget?.amount?.toLocaleString() || '0'})
+✓ Align with team experience (${resources.team?.experienceLevel || 'not specified'})
+✓ Match delivery modality (${delivery.modality || 'not specified'})
+✓ Design for interactivity level (${delivery.interactivityLevel || 'not specified'}/5)
+✓ Support evaluation requirements (Kirkpatrick Levels ${evaluation.level3?.measureBehavior ? '1-3' : evaluation.level4?.measureROI ? '1-4' : '1-2'})
+✓ Be actionable and extract implementation-ready insights
+✓ Use clear, professional language
+✓ Include helpful helpText to guide responses
+✓ Have realistic placeholder examples
+✓ Include research citations in metadata when drawing from current best practices
+
+CONTEXTUAL INTELLIGENCE:
+- For high urgency (${gap.urgency || 'N/A'}/5), prioritize questions about rapid deployment
+- For large teams (${resources.team?.instructionalDesigners || 0}+ IDs), ask about collaboration workflows
+- For ${learner.priorKnowledge || 'N/A'}/5 knowledge level, adjust technical depth appropriately
+- For ${learner.timeAvailable || 0} hours/week availability, consider time-based questions
+- For limited budget, focus on cost-effective solutions
+- For high interactivity preferences, emphasize engagement strategies
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📤 OUTPUT SCHEMA (STRICT JSON - NO MARKDOWN, NO PREAMBLE)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 {
   "sections": [
     {
       "id": "s1",
-      "title": "Section Title",
-      "description": "Brief description of what this section covers",
+      "title": "Engaging Section Title",
+      "description": "Clear explanation of what this section explores and why it matters",
       "order": 1,
       "questions": [
         {
           "id": "q1_s1",
-          "label": "Question text that is clear and actionable",
-          "type": "radio_pills|radio_cards|checkbox_pills|checkbox_cards|scale|enhanced_scale|labeled_slider|toggle_switch|text|textarea|select|multiselect|currency|number_spinner|date|email|url|number",
+          "label": "Clear, actionable question text?",
+          "type": "radio_pills",
           "required": true,
-          "helpText": "Brief guidance for the user",
-          "placeholder": "Example: Your answer here...",
-          "options": [{"value": "v1", "label": "Option 1"}],
-          "scaleConfig": {"min": 1, "max": 5, "minLabel": "Low", "maxLabel": "High"},
+          "helpText": "Brief guidance to help user answer effectively",
+          "placeholder": "Select your preferred option",
+          "options": [
+            {"value": "opt1", "label": "Option One", "icon": "✓"},
+            {"value": "opt2", "label": "Option Two", "icon": "★"},
+            {"value": "opt3", "label": "Option Three", "icon": "●"}
+          ],
           "metadata": {
-            "researchSource": "Citation if research was used"
+            "researchSource": "2024 L&D Industry Report - cite actual sources when using research"
           }
+        },
+        {
+          "id": "q2_s1",
+          "label": "Rate your experience level",
+          "type": "enhanced_scale",
+          "required": true,
+          "helpText": "Be honest - this helps us tailor recommendations",
+          "scaleConfig": {
+            "min": 1,
+            "max": 5,
+            "minLabel": "Beginner",
+            "maxLabel": "Expert",
+            "labels": ["😊", "🙂", "😐", "😎", "🤩"],
+            "step": 1
+          },
+          "metadata": {}
+        },
+        {
+          "id": "q3_s1",
+          "label": "Select all delivery methods that interest you",
+          "type": "checkbox_pills",
+          "required": true,
+          "helpText": "You can select multiple options (recommended: 2-4)",
+          "maxSelections": 5,
+          "options": [
+            {"value": "webinar", "label": "Live Webinars"},
+            {"value": "selfpaced", "label": "Self-Paced Online"},
+            {"value": "workshop", "label": "In-Person Workshops"},
+            {"value": "coaching", "label": "1-on-1 Coaching"},
+            {"value": "microlearning", "label": "Microlearning Modules"}
+          ],
+          "metadata": {}
+        },
+        {
+          "id": "q4_s1",
+          "label": "How many hours per week can learners dedicate?",
+          "type": "labeled_slider",
+          "required": true,
+          "helpText": "Consider their current workload and competing priorities",
+          "sliderConfig": {
+            "min": 0,
+            "max": 40,
+            "step": 1,
+            "unit": "hours/week",
+            "markers": [5, 10, 20, 30]
+          },
+          "metadata": {}
+        },
+        {
+          "id": "q5_s1",
+          "label": "What is your total training budget?",
+          "type": "currency",
+          "required": true,
+          "helpText": "Include all costs: development, delivery, and evaluation",
+          "currencySymbol": "$",
+          "min": 0,
+          "max": 10000000,
+          "metadata": {}
+        },
+        {
+          "id": "q6_s1",
+          "label": "Describe a typical learner challenge or pain point",
+          "type": "textarea",
+          "required": true,
+          "helpText": "Provide specific examples to help us design targeted solutions",
+          "placeholder": "Example: Our sales team struggles with...",
+          "rows": 4,
+          "maxLength": 500,
+          "metadata": {}
+        },
+        {
+          "id": "q7_s1",
+          "label": "Will pre-assessment testing be required?",
+          "type": "toggle_switch",
+          "required": true,
+          "helpText": "Helps establish baseline and measure learning gains",
+          "options": [
+            {"value": "yes", "label": "Yes, Required"},
+            {"value": "no", "label": "No, Optional"}
+          ],
+          "metadata": {}
         }
       ]
     }
@@ -143,11 +431,26 @@ OUTPUT SCHEMA (STRICT JSON - NO MARKDOWN, NO PREAMBLE):
   "metadata": {
     "generatedAt": "${new Date().toISOString()}",
     "model": "sonar-pro",
-    "researchCitations": ["source1", "source2"]
+    "context": "Generated from comprehensive V2 static questionnaire with ${Object.keys(staticAnswers).length} data points",
+    "researchCitations": []
   }
 }
 
-CRITICAL: Return ONLY valid JSON. No markdown code fences. No explanatory text.`;
+CRITICAL INSTRUCTIONS:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1. Return ONLY valid JSON - NO markdown code fences (no \`\`\`json), NO explanatory text
+2. Start directly with { and end with }
+3. Ensure all strings are properly escaped
+4. Use diverse input types across questions (not all radio_pills or all text)
+5. Make options realistic and contextually relevant
+6. Prefer visual input types (pills, cards, scales) over select/multiselect
+7. Include helpful helpText for every question
+8. Set appropriate min/max/step for numeric inputs
+9. Use researchCitations in metadata when drawing from 2024-2025 best practices
+10. Ensure question IDs follow format: q{number}_s{section number} (e.g., q1_s1, q7_s3)
+
+REMEMBER THE CONTEXT:
+You are designing questions for ${org.industry || 'a learning initiative'} with a ${gap.bloomsLevel || 'standard'} Bloom's level target, ${delivery.modality || 'standard delivery'} modality, and ${delivery.interactivityLevel || 3}/5 interactivity preference. Questions should extract insights that directly inform blueprint development.`;
 }
 
 /**

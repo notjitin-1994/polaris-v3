@@ -39,7 +39,7 @@ export class BatchExportService {
 
         // Export in all requested formats
         const formats: ExportFormat[] =
-          options.format === 'json' ? ['pdf', 'markdown', 'json'] : [options.format];
+          options.format === 'json' ? ['pdf', 'markdown', 'json', 'docx'] : [options.format];
 
         for (const format of formats) {
           const exportOptions: ExportOptions = {
@@ -110,7 +110,7 @@ export class BatchExportService {
     options: Partial<BatchExportOptions> = {},
     dashboardData?: DashboardData
   ): Promise<ExportResult> {
-    const formats: ExportFormat[] = ['pdf', 'markdown', 'json'];
+    const formats: ExportFormat[] = ['pdf', 'markdown', 'json', 'docx'];
     const zip = new JSZip();
     const results: ExportResult[] = [];
 

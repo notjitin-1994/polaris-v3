@@ -9,7 +9,7 @@ import { getServerSession } from '@/lib/supabase/server';
 import { getSupabaseServerClient } from '@/lib/supabase/server';
 import { blueprintGenerationService } from '@/lib/services/blueprintGenerationService';
 import { extractLearningObjectives } from '@/lib/claude/prompts';
-import { markdownGeneratorService } from '@/lib/services/markdownGenerator';
+import { convertBlueprintToMarkdown } from '@/lib/services/blueprintMarkdownConverter';
 import { createServiceLogger } from '@/lib/logging';
 
 const logger = createServiceLogger('api');
@@ -210,8 +210,8 @@ export async function POST(req: NextRequest): Promise<NextResponse<GenerateBluep
       );
     }
 
-    // Convert blueprint to markdown for legacy compatibility
-    const markdown = markdownGeneratorService.generateMarkdown(result.blueprint);
+    // Convert blueprint to comprehensive markdown
+    const markdown = convertBlueprintToMarkdown(result.blueprint);
 
     // Save to database
     const { error: saveError } = await supabase

@@ -29,7 +29,7 @@ export function TargetAudienceStep(): React.JSX.Element {
           className={`min-h-28 w-full resize-none rounded-lg border-2 p-4 text-base transition-colors ${
             errors.organization
               ? 'border-red-300 bg-red-50 focus:border-red-500 focus:ring-red-500 dark:border-red-700 dark:bg-red-900/20'
-              : 'border-slate-300 bg-white focus:border-blue-500 focus:ring-blue-500 dark:border-slate-600 dark:bg-slate-800'
+              : 'border-slate-300 bg-white focus:border-secondary focus:ring-secondary/50 dark:border-slate-600 dark:bg-slate-800'
           } placeholder-slate-400 dark:text-slate-100 dark:placeholder-slate-500`}
           placeholder="e.g., Global L&D team in a 2,000-person SaaS org; cross-functional stakeholders across engineering and enablement."
           aria-invalid={!!errors.organization}
@@ -52,10 +52,10 @@ export function TargetAudienceStep(): React.JSX.Element {
         )}
       </div>
 
-      <div className="rounded-lg bg-green-50 p-4 dark:bg-green-900/20">
+      <div className="rounded-lg bg-success/10 p-4 dark:bg-success/20">
         <div className="flex items-start gap-2">
           <svg
-            className="mt-0.5 h-5 w-5 flex-shrink-0 text-green-600 dark:text-green-400"
+            className="mt-0.5 h-5 w-5 flex-shrink-0 text-success dark:text-success"
             fill="currentColor"
             viewBox="0 0 20 20"
           >
@@ -65,7 +65,7 @@ export function TargetAudienceStep(): React.JSX.Element {
               clipRule="evenodd"
             />
           </svg>
-          <div className="text-sm text-green-800 dark:text-green-200">
+          <div className="text-sm text-success dark:text-success">
             <p className="mb-1 font-medium">Tip:</p>
             <p>
               Be specific about experience levels and prior knowledge. This helps tailor the content
