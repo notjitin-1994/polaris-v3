@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Sparkles, Clock, AlertCircle, ExternalLink, BarChart3, TrendingUp } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { InteractiveBlueprintDashboard } from '@/components/blueprint/InteractiveBlueprintDashboard';
 import { BlueprintDashboard } from '@/components/blueprint/BlueprintDashboard';
 import { parseAndValidateBlueprintJSON } from '@/lib/ollama/blueprintValidation';
@@ -22,32 +22,36 @@ interface BlueprintData {
 }
 
 // Check if blueprint has comprehensive structure for InteractiveBlueprintDashboard
-function isComprehensiveBlueprint(blueprint: any): boolean {
+function isComprehensiveBlueprint(blueprint: unknown): boolean {
   if (!blueprint || typeof blueprint !== 'object') return false;
 
+  const bp = blueprint as Record<string, unknown>;
   const hasDetailedSections =
-    blueprint.learning_objectives ||
-    blueprint.target_audience ||
-    blueprint.content_outline ||
-    blueprint.implementation_timeline;
+    bp.learning_objectives ||
+    bp.target_audience ||
+    bp.content_outline ||
+    bp.implementation_timeline;
 
   return !!hasDetailedSections;
 }
 
 // Normalize blueprint data for consistent rendering
-function normalizeBlueprint(blueprint: any): any {
+function normalizeBlueprint(blueprint: unknown): unknown {
   if (!blueprint) return null;
 
   // Handle nested blueprint_json field (legacy format)
-  if (blueprint.blueprint_json && typeof blueprint.blueprint_json === 'object') {
-    return blueprint.blueprint_json;
+  if (typeof blueprint === 'object' && blueprint !== null) {
+    const bp = blueprint as Record<string, unknown>;
+    if (bp.blueprint_json && typeof bp.blueprint_json === 'object') {
+      return bp.blueprint_json;
+    }
   }
 
   return blueprint;
 }
 
 export default function SharedBlueprintPage({ params }: PageProps): React.JSX.Element {
-  const [token, setToken] = useState<string>('');
+  const [_token, setToken] = useState<string>('');
   const [data, setData] = useState<BlueprintData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -165,7 +169,8 @@ export default function SharedBlueprintPage({ params }: PageProps): React.JSX.El
 
       // Remove internal generation metadata if present
       if (blueprintData && typeof blueprintData === 'object') {
-        const { _generation_metadata, ...cleanBlueprint } = blueprintData as any;
+        const bpData = blueprintData as Record<string, unknown>;
+        const { _generation_metadata: _genMeta, ...cleanBlueprint } = bpData;
         blueprintData = cleanBlueprint;
       }
     } catch (e) {

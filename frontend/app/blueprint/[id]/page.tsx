@@ -8,8 +8,8 @@ import {
   Edit3,
   Copy,
   ExternalLink,
-  Clock,
   CheckCircle,
+  Loader2,
 } from 'lucide-react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -146,10 +146,6 @@ export default function BlueprintPage({ params }: PageProps): React.JSX.Element 
     }
   };
 
-  const handleStartEditing = () => {
-    setIsEditingMarkdown(true);
-  };
-
   const handleShareBlueprint = async () => {
     if (!blueprintId || isGeneratingShare) return;
     
@@ -211,51 +207,6 @@ export default function BlueprintPage({ params }: PageProps): React.JSX.Element 
     } finally {
       setIsExporting(false);
     }
-  };
-
-  const handleExportMarkdown = () => {
-    if (!data) return;
-
-    const markdown = data.blueprint_markdown ?? '# Blueprint\n\nNo content available.';
-    const blueprintTitle = data.title ?? 'Learning Blueprint';
-
-    const blob = new Blob([markdown], { type: 'text/markdown' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `${blueprintTitle.replace(/[^a-z0-9]/gi, '_')}.md`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-
-    setShowExportMenu(false);
-    showToast('Markdown exported successfully');
-  };
-
-  const handleExportJSON = () => {
-    if (!data) return;
-
-    const blueprintTitle = data.title ?? 'Learning Blueprint';
-    const exportData = {
-      title: data.title,
-      created_at: data.created_at,
-      blueprint_json: data.blueprint_json,
-      blueprint_markdown: data.blueprint_markdown,
-    };
-
-    const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `${blueprintTitle.replace(/[^a-z0-9]/gi, '_')}.json`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-
-    setShowExportMenu(false);
-    showToast('JSON exported successfully');
   };
 
   if (loading) {
@@ -338,7 +289,7 @@ export default function BlueprintPage({ params }: PageProps): React.JSX.Element 
   const markdown = data.blueprint_markdown ?? '# Blueprint\n\nNo markdown available.';
   const blueprintTitle =
     data.title ?? 'Starmap for Professional Development and Career Growth Path';
-  const createdDate = new Date(data.created_at).toLocaleDateString('en-US', {
+  const _createdDate = new Date(data.created_at).toLocaleDateString('en-US', {
     year: 'numeric',
     month: 'long',
     day: 'numeric',
@@ -493,113 +444,6 @@ export default function BlueprintPage({ params }: PageProps): React.JSX.Element 
         placeholder="Enter blueprint name..."
         maxLength={100}
       />
-
-      {/* Share Dialog */}
-      <AnimatePresence>
-        {showShareDialog && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm"
-            onClick={() => setShowShareDialog(false)}
-          >
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-              className="glass-card relative max-w-lg overflow-hidden"
-              onClick={(e) => e.stopPropagation()}
-            >
-              {/* Decorative Background */}
-              <div className="absolute inset-0 overflow-hidden">
-                <div className="bg-primary/20 absolute -top-20 -right-20 h-40 w-40 rounded-full blur-3xl" />
-                <div className="bg-secondary/20 absolute -bottom-20 -left-20 h-40 w-40 rounded-full blur-3xl" />
-              </div>
-
-              {/* Content */}
-              <div className="relative z-10 p-6 sm:p-8">
-                {/* Header */}
-                <div className="mb-6 text-center">
-                  <motion.div
-                    initial={{ scale: 0, rotate: -180 }}
-                    animate={{ scale: 1, rotate: 0 }}
-                    transition={{ delay: 0.1, type: 'spring' }}
-                    className="border-primary/30 bg-primary/20 mb-4 inline-flex h-16 w-16 items-center justify-center rounded-full border backdrop-blur-xl"
-                  >
-                    <Share2 className="text-primary h-8 w-8" />
-                  </motion.div>
-                  <h3 className="text-foreground mb-2 text-xl font-bold">
-                    Public Share Link Created
-                  </h3>
-                  <p className="text-text-secondary text-sm">
-                    Anyone with this link can view the analytics dashboard for this blueprint
-                  </p>
-                </div>
-
-                {/* Share URL Input */}
-                <div className="mb-6">
-                  <label className="text-text-secondary mb-2 block text-xs font-medium tracking-wider uppercase">
-                    Share Link
-                  </label>
-                  <div className="flex items-center gap-2">
-                    <input
-                      type="text"
-                      value={shareUrl}
-                      readOnly
-                      className="text-foreground placeholder:text-text-disabled focus:border-secondary focus:ring-secondary/50 flex-1 rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-sm focus:ring-2 focus:outline-none"
-                    />
-                    <motion.button
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      onClick={handleCopyShareLink}
-                      className="bg-secondary text-secondary-foreground hover:bg-secondary/90 inline-flex h-11 items-center gap-2 rounded-lg px-4 font-medium shadow-lg transition-all hover:shadow-xl"
-                    >
-                      <Copy className="h-4 w-4" />
-                      <span>Copy</span>
-                    </motion.button>
-                  </div>
-                </div>
-
-                {/* Quick Actions */}
-                <div className="mb-6 space-y-2">
-                  <motion.a
-                    href={shareUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    className="border-primary/30 text-primary hover:border-primary/50 hover:bg-primary/10 bg-primary/5 flex items-center justify-center gap-2 rounded-lg border px-4 py-3 text-sm font-medium transition-all"
-                  >
-                    <ExternalLink className="h-4 w-4" />
-                    <span>Preview Public Dashboard</span>
-                  </motion.a>
-                </div>
-
-                {/* Info Box */}
-                <div className="border-primary/30 bg-primary/10 mb-6 rounded-lg border p-4">
-                  <p className="text-text-secondary text-xs leading-relaxed">
-                    <strong className="text-foreground">Note:</strong> This link provides read-only
-                    access to the analytics dashboard. No personal information or questionnaire
-                    answers are shared. You can disable sharing anytime by deleting this blueprint.
-                  </p>
-                </div>
-
-                {/* Close Button */}
-                <motion.button
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  onClick={() => setShowShareDialog(false)}
-                  className="border-foreground/20 text-foreground hover:bg-foreground/5 w-full rounded-lg border px-4 py-3 font-medium transition-all"
-                >
-                  Close
-                </motion.button>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </main>
   );
 }
