@@ -135,5 +135,2041 @@
       "updated": "2025-09-28T13:14:42.423Z",
       "description": "Tasks for master context"
     }
+  },
+  "perplexity-dynamic-questions": {
+    "tasks": [
+      {
+        "id": 1,
+        "title": "Setup Project Repository",
+        "description": "Create a new project repository on a version control system like GitHub or GitLab. Initialize the project structure with necessary folders for API, services, dynamic forms, and logging.",
+        "details": "Use a tool like `git init` to initialize the repository. Create folders for API endpoints, services, dynamic form components, and logging utilities.",
+        "testStrategy": "Verify repository structure and initial commit.",
+        "priority": "high",
+        "dependencies": [],
+        "status": "cancelled",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Create Project Repository",
+            "description": "Create a new project repository on GitHub or GitLab.",
+            "dependencies": [],
+            "details": "Use GitHub or GitLab to create a new repository.",
+            "status": "pending",
+            "testStrategy": "Verify repository creation."
+          },
+          {
+            "id": 2,
+            "title": "Initialize Git Repository",
+            "description": "Initialize a Git repository in the project folder using `git init`.",
+            "dependencies": [],
+            "details": "Run `git init` in the project directory.",
+            "status": "pending",
+            "testStrategy": "Verify the presence of a `.git` folder."
+          },
+          {
+            "id": 3,
+            "title": "Create Project Structure",
+            "description": "Create necessary folders for API, services, dynamic forms, and logging.",
+            "dependencies": [],
+            "details": "Use `mkdir` to create folders for API endpoints, services, dynamic form components, and logging utilities.",
+            "status": "pending",
+            "testStrategy": "Verify the existence of the created folders."
+          },
+          {
+            "id": 4,
+            "title": "Configure Initial Commit",
+            "description": "Create a README file and make an initial commit to the repository.",
+            "dependencies": [],
+            "details": "Create a README file and commit it using `git add`, `git commit`, and `git push`.",
+            "status": "pending",
+            "testStrategy": "Verify the initial commit on GitHub or GitLab."
+          },
+          {
+            "id": 5,
+            "title": "Sync with Remote Repository",
+            "description": "Link the local repository to the remote repository and push changes.",
+            "dependencies": [],
+            "details": "Use `git remote add` and `git push` to sync with the remote repository.",
+            "status": "pending",
+            "testStrategy": "Verify that changes are reflected on GitHub or GitLab."
+          }
+        ]
+      },
+      {
+        "id": 2,
+        "title": "Implement Perplexity API Integration",
+        "description": "Integrate Perplexity AI API for dynamic question generation using the `sonar-pro` model.",
+        "details": "Use the Perplexity API with `curl` or Python's `requests` library. Set up API key securely using environment variables. Implement request logic with a maximum of 8700 tokens and a temperature of 0.1.",
+        "testStrategy": "Test API connectivity and successful question generation.",
+        "priority": "high",
+        "dependencies": [
+          1
+        ],
+        "status": "done",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Set Up Perplexity API Credentials and Environment",
+            "description": "Register for a Perplexity AI account, generate an API key, and securely store it using environment variables.",
+            "dependencies": [],
+            "details": "Follow Perplexity's account setup process, generate an API key from the dashboard, and configure your development environment to load the key securely from environment variables.",
+            "status": "done",
+            "testStrategy": "Verify that the environment variable is set and accessible in the development environment without exposing the key in code or logs."
+          },
+          {
+            "id": 2,
+            "title": "Implement API Request Logic",
+            "description": "Develop the logic to send requests to the Perplexity API using either curl or Python's requests library, targeting the sonar-pro model.",
+            "dependencies": [
+              "2.1"
+            ],
+            "details": "Construct the POST request to the /chat/completions endpoint, include the Authorization header with the API key, and set the model parameter to 'sonar-pro'.",
+            "status": "done",
+            "testStrategy": "Send a test request and confirm a valid response is received from the API."
+          },
+          {
+            "id": 3,
+            "title": "Configure Request Parameters",
+            "description": "Set up the request payload to include a maximum of 8700 tokens and a temperature of 0.1 for dynamic question generation.",
+            "dependencies": [
+              "2.2"
+            ],
+            "details": "Ensure the payload includes 'max_tokens': 8700 and 'temperature': 0.1, and that these parameters are correctly passed in each API call.",
+            "status": "done",
+            "testStrategy": "Validate that requests are sent with the correct parameters and that the API enforces these limits."
+          },
+          {
+            "id": 4,
+            "title": "Handle API Responses and Errors",
+            "description": "Parse the API response to extract generated questions and implement error handling for failed requests or invalid responses.",
+            "dependencies": [
+              "2.3"
+            ],
+            "details": "Process the JSON response to retrieve the generated content, handle HTTP errors, and provide meaningful error messages for troubleshooting.",
+            "status": "done",
+            "testStrategy": "Test with both valid and invalid requests to ensure robust error handling and correct extraction of generated questions."
+          },
+          {
+            "id": 5,
+            "title": "Validate Integration with Dynamic Question Generation Workflow",
+            "description": "Integrate the Perplexity API logic into the application's dynamic question generation workflow and verify end-to-end functionality.",
+            "dependencies": [
+              "2.4"
+            ],
+            "details": "Connect the API integration to the application's logic for generating questions dynamically, ensuring seamless operation within the broader system.",
+            "status": "done",
+            "testStrategy": "Trigger dynamic question generation through the application and confirm that questions are generated, received, and processed as expected."
+          }
+        ]
+      },
+      {
+        "id": 3,
+        "title": "Develop Ollama Fallback Mechanism",
+        "description": "Implement Ollama as a fallback for dynamic question generation when Perplexity fails.",
+        "details": "Use the existing Ollama model (`qwen3:30b-a3b`) and prompt. Handle fallback triggers like API errors or timeouts.",
+        "testStrategy": "Simulate Perplexity failure and verify Ollama fallback.",
+        "priority": "high",
+        "dependencies": [
+          2
+        ],
+        "status": "done",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Identify Perplexity Failure Conditions",
+            "description": "Define and document all scenarios where Perplexity fails, including API errors, timeouts, and unexpected responses.",
+            "dependencies": [],
+            "details": "Enumerate specific error codes, timeout thresholds, and edge cases that should trigger the fallback mechanism.",
+            "status": "done",
+            "testStrategy": "Simulate each failure scenario and verify detection logic."
+          },
+          {
+            "id": 2,
+            "title": "Integrate Ollama Model Invocation",
+            "description": "Implement logic to invoke the Ollama model (`qwen3:30b-a3b`) with the existing prompt when fallback is triggered.",
+            "dependencies": [
+              "3.1"
+            ],
+            "details": "Ensure Ollama is installed and running; use the correct API endpoint and model tag. Pass prompt and recommended inference parameters (e.g., temperature=0.7, top_p=0.8, top_k=20, repetition_penalty=1.05).",
+            "status": "done",
+            "testStrategy": "Trigger fallback and verify Ollama generates questions as expected."
+          },
+          {
+            "id": 3,
+            "title": "Handle Fallback Trigger and Response Routing",
+            "description": "Design and implement the mechanism to route requests to Ollama when Perplexity fails, ensuring seamless user experience.",
+            "dependencies": [
+              "3.1",
+              "3.2"
+            ],
+            "details": "Intercept failed Perplexity responses, trigger Ollama invocation, and return generated questions to the calling service.",
+            "status": "done",
+            "testStrategy": "Simulate Perplexity failures and confirm correct routing and response delivery."
+          },
+          {
+            "id": 4,
+            "title": "Monitor and Log Fallback Events",
+            "description": "Add structured logging for all fallback events, including triggers, responses, and errors for debugging and optimization.",
+            "dependencies": [
+              "3.3"
+            ],
+            "details": "Log metadata such as timestamps, error types, fallback triggers, and Ollama response details. Integrate with the broader logging system.",
+            "status": "done",
+            "testStrategy": "Review logs for completeness and accuracy after simulated fallback events."
+          },
+          {
+            "id": 5,
+            "title": "Validate Fallback Mechanism End-to-End",
+            "description": "Test the complete fallback workflow from Perplexity failure detection to Ollama response delivery.",
+            "dependencies": [
+              "3.4"
+            ],
+            "details": "Simulate user requests, induce Perplexity failures, and verify that Ollama generates and returns dynamic questions correctly.",
+            "status": "done",
+            "testStrategy": "Perform end-to-end tests covering all failure scenarios and confirm expected system behavior."
+          }
+        ]
+      },
+      {
+        "id": 4,
+        "title": "Create Dynamic Input Type System",
+        "description": "Develop a dynamic input type system that supports diverse input types suggested by LLMs.",
+        "details": "Implement a registry for known input types and a fallback mechanism for unknown types. Use intelligent type mapping logic.",
+        "testStrategy": "Test rendering of known and unknown input types.",
+        "priority": "high",
+        "dependencies": [
+          2
+        ],
+        "status": "done",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Design Input Type Registry Structure",
+            "description": "Define the architecture and data structure for a registry that catalogs known input types, ensuring extensibility for future types.",
+            "dependencies": [],
+            "details": "Specify how input types are registered, stored, and retrieved. Include mechanisms for versioning and metadata.",
+            "status": "done",
+            "testStrategy": "Verify registry can store, retrieve, and update input type definitions accurately."
+          },
+          {
+            "id": 2,
+            "title": "Implement Input Type Registration and Lookup",
+            "description": "Develop the logic to register new input types and efficiently look up existing types from the registry.",
+            "dependencies": [
+              "4.1"
+            ],
+            "details": "Create APIs or service methods for adding, updating, and querying input types. Ensure thread safety and error handling.",
+            "status": "done",
+            "testStrategy": "Test registration and lookup operations with various input types, including edge cases."
+          },
+          {
+            "id": 3,
+            "title": "Develop Fallback Mechanism for Unknown Input Types",
+            "description": "Create a robust fallback system that handles unknown or unsupported input types gracefully, using default rendering or error messaging.",
+            "dependencies": [
+              "4.2"
+            ],
+            "details": "Define fallback strategies such as generic input rendering, logging, and user notification. Integrate with the registry lookup process.",
+            "status": "done",
+            "testStrategy": "Simulate unknown input types and verify fallback behavior and user experience."
+          },
+          {
+            "id": 4,
+            "title": "Implement Intelligent Type Mapping Logic",
+            "description": "Build logic to intelligently map LLM-suggested input types to known types or appropriate fallbacks, using heuristics or configurable rules.",
+            "dependencies": [
+              "4.2",
+              "4.3"
+            ],
+            "details": "Design algorithms or rule engines that analyze LLM output and select the best matching input type or fallback.",
+            "status": "done",
+            "testStrategy": "Test mapping accuracy with a variety of LLM-suggested types, including ambiguous and novel cases."
+          },
+          {
+            "id": 5,
+            "title": "Test Dynamic Rendering of Input Types",
+            "description": "Validate the system's ability to dynamically render both known and unknown input types in forms, ensuring usability and correctness.",
+            "dependencies": [
+              "4.4"
+            ],
+            "details": "Create test cases for rendering forms with diverse input types, including those suggested by LLMs and those requiring fallback.",
+            "status": "done",
+            "testStrategy": "Review rendered forms for correctness, accessibility, and user experience across all input scenarios."
+          }
+        ]
+      },
+      {
+        "id": 5,
+        "title": "Implement Data Persistence Logic",
+        "description": "Save dynamic questions and answers to the database with proper validation.",
+        "details": "Use SQL queries to update `blueprint_generator` table. Validate JSON schema before saving.",
+        "testStrategy": "Verify data persistence and schema validation.",
+        "priority": "high",
+        "dependencies": [
+          4
+        ],
+        "status": "done",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Define JSON Schema for Validation",
+            "description": "Create a JSON schema to validate dynamic questions and answers before saving to the database.",
+            "dependencies": [],
+            "details": "Use JSON schema validation libraries to ensure data integrity.",
+            "status": "done",
+            "testStrategy": "Verify schema validation against sample data"
+          },
+          {
+            "id": 2,
+            "title": "Implement SQL Queries for Data Persistence",
+            "description": "Write SQL queries to update the `blueprint_generator` table with dynamic questions and answers.",
+            "dependencies": [
+              "5.1"
+            ],
+            "details": "Use parameterized queries to prevent SQL injection.",
+            "status": "done",
+            "testStrategy": "Test query execution with sample data"
+          },
+          {
+            "id": 3,
+            "title": "Integrate JSON Schema Validation with SQL Queries",
+            "description": "Combine JSON schema validation with SQL queries to ensure validated data is saved.",
+            "dependencies": [
+              "5.1",
+              "5.2"
+            ],
+            "details": "Use a programming language like Python or Node.js to integrate validation and database operations.",
+            "status": "done",
+            "testStrategy": "Verify that only validated data is persisted"
+          },
+          {
+            "id": 4,
+            "title": "Handle Errors and Exceptions",
+            "description": "Implement error handling for validation failures and database operations.",
+            "dependencies": [
+              "5.3"
+            ],
+            "details": "Use try-catch blocks to catch and log exceptions.",
+            "status": "done",
+            "testStrategy": "Test error handling with invalid data"
+          },
+          {
+            "id": 5,
+            "title": "Test Data Persistence Logic",
+            "description": "Verify that dynamic questions and answers are correctly saved and validated.",
+            "dependencies": [
+              "5.4"
+            ],
+            "details": "Use unit tests to ensure data persistence and validation work as expected.",
+            "status": "done",
+            "testStrategy": "Run comprehensive tests for data persistence and validation"
+          }
+        ]
+      },
+      {
+        "id": 6,
+        "title": "Develop Logging System",
+        "description": "Create a comprehensive logging system for debugging and optimization.",
+        "details": "Implement structured logging with log levels and metadata. Use a log viewer page with filtering and export capabilities.",
+        "testStrategy": "Test log filtering and export functionality.",
+        "priority": "medium",
+        "dependencies": [
+          1
+        ],
+        "status": "done",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Design Structured Logging Format",
+            "description": "Define a consistent, machine-readable log format (e.g., JSON) with standardized field names, log levels, timestamps, and metadata to ensure logs are easily parsed and analyzed.",
+            "dependencies": [],
+            "details": "Specify required fields such as timestamp (ISO 8601 UTC), log level, message, service/module, correlation/request IDs, and relevant context. Ensure sensitive data is masked or excluded.",
+            "status": "done",
+            "testStrategy": "Validate sample log entries for format consistency, required fields, and absence of sensitive data."
+          },
+          {
+            "id": 2,
+            "title": "Implement Logging Library Integration",
+            "description": "Integrate or develop a logging library that supports the defined structured format and log levels across all relevant application components.",
+            "dependencies": [
+              "6.1"
+            ],
+            "details": "Choose or build a logging library that outputs logs in the specified format, supports dynamic metadata, and allows configuration of log levels (e.g., debug, info, warn, error).",
+            "status": "done",
+            "testStrategy": "Unit test log output for various log levels and metadata inclusion."
+          },
+          {
+            "id": 3,
+            "title": "Centralize and Store Logs",
+            "description": "Set up a centralized log storage solution to aggregate logs from all sources, enabling efficient querying, filtering, and retention management.",
+            "dependencies": [
+              "6.2"
+            ],
+            "details": "Configure log shipping to a central store (e.g., file system, database, or log management service). Ensure logs are indexed for fast search and retrieval.",
+            "status": "done",
+            "testStrategy": "Verify that logs from all components are aggregated and accessible in the central store."
+          },
+          {
+            "id": 4,
+            "title": "Develop Log Viewer Page with Filtering",
+            "description": "Create a user interface for viewing logs, supporting filtering by log level, time range, service/module, and metadata fields.",
+            "dependencies": [
+              "6.3"
+            ],
+            "details": "Implement a web-based log viewer that queries the centralized log store and provides interactive filtering and search capabilities.",
+            "status": "done",
+            "testStrategy": "Test UI filtering for accuracy, responsiveness, and usability with various filter combinations."
+          },
+          {
+            "id": 5,
+            "title": "Implement Log Export Functionality",
+            "description": "Enable users to export filtered log data from the viewer page in common formats (e.g., CSV, JSON) for external analysis or archiving.",
+            "dependencies": [
+              "6.4"
+            ],
+            "details": "Provide export options in the log viewer UI, ensuring exported data matches applied filters and preserves structured format.",
+            "status": "done",
+            "testStrategy": "Test export feature for correct data selection, format integrity, and compatibility with external tools."
+          }
+        ]
+      },
+      {
+        "id": 7,
+        "title": "Integrate with Wizard UI",
+        "description": "Integrate dynamic question generation with the existing wizard UI.",
+        "details": "Maintain the existing StepWizard flow. Add loading states and display generation source badges.",
+        "testStrategy": "Verify UI rendering and loading states.",
+        "priority": "medium",
+        "dependencies": [
+          4,
+          6
+        ],
+        "status": "done",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Analyze Existing StepWizard UI Flow",
+            "description": "Review the current StepWizard implementation to identify integration points for dynamic question generation.",
+            "dependencies": [],
+            "details": "Document the UI flow, component structure, and data handling relevant to dynamic question display and user progression.\n<info added on 2025-10-01T10:31:49.610Z>\nThe wizard flow analysis reveals the current architecture uses a static questionnaire that redirects to `/loading/${blueprintId}`, which calls the deprecated `/api/generate-dynamic-questions` endpoint before redirecting to `/dynamic-wizard/${id}`. The dynamic wizard utilizes the DynamicFormRenderer component for question display.\n\nKey integration requirements include replacing the old API endpoint with `/api/dynamic-questions` in `/app/loading/[id]/page.tsx`, implementing source badge display to indicate whether questions were generated by Perplexity or Ollama, enhancing error handling with proper logging mechanisms, and adding progress indicators for different generation phases.\n\nThe existing component structure includes DynamicQuestionsLoader for loading states and DynamicFormRenderer for question rendering. New components needed are a source badge component to display the generation source and enhanced error message components for better user feedback during failures.\n</info added on 2025-10-01T10:31:49.610Z>",
+            "status": "done",
+            "testStrategy": "Verify documentation accuracy by walkthrough of the current StepWizard UI."
+          },
+          {
+            "id": 2,
+            "title": "Integrate Dynamic Question Generation Logic",
+            "description": "Embed the dynamic question generation API calls into the StepWizard flow without disrupting existing navigation or state management.",
+            "dependencies": [
+              "7.1"
+            ],
+            "details": "Ensure API requests are triggered at the appropriate wizard steps and responses are handled asynchronously.\n<info added on 2025-10-01T10:33:49.123Z>\nIntegration completed successfully. The dynamic question generation API has been fully integrated into the StepWizard flow. The implementation now uses the new `/api/dynamic-questions` endpoint which automatically fetches static answers from the database and generates dynamic questions using either Perplexity or Ollama as a fallback. The UI has been enhanced to display the generation source with appropriate badges and progress messages. All changes maintain backward compatibility with the existing wizard navigation and state management. The integration includes comprehensive error handling and logging throughout the generation process.\n</info added on 2025-10-01T10:33:49.123Z>",
+            "status": "done",
+            "testStrategy": "Confirm questions are generated and displayed at the correct steps through manual and automated UI tests."
+          },
+          {
+            "id": 3,
+            "title": "Implement Loading States in the Wizard UI",
+            "description": "Add visual loading indicators to the wizard interface during dynamic question generation.",
+            "dependencies": [
+              "7.2"
+            ],
+            "details": "Display loading spinners or skeletons while awaiting API responses, ensuring accessibility and responsiveness.\n<info added on 2025-10-01T10:33:53.943Z>\nLoading Page Enhancements:\n1. Progress bar with shimmer animation (existing - maintained)\n2. Dynamic status messages based on generation phase\n3. Spinner with dual-ring animation (existing - maintained)\n4. Phase-specific messages:\n   - \"Analyzing your responses...\"\n   - \"Generating personalized questions...\"\n   - \"✨ Questions generated with Perplexity Research\" (or Ollama variants)\n   - \"Questions ready! Redirecting...\"\n\nFeatures:\n- Smooth progress animation (0-90% during generation, 100% on complete)\n- Visual feedback for every phase\n- Error state with clear messaging\n- Auto-redirect on success (1.5s delay to show source badge)\n</info added on 2025-10-01T10:33:53.943Z>",
+            "status": "done",
+            "testStrategy": "Simulate slow API responses and verify loading indicators appear and disappear as expected."
+          },
+          {
+            "id": 4,
+            "title": "Display Generation Source Badges",
+            "description": "Show badges in the UI indicating the source of each generated question (e.g., Perplexity, Ollama).",
+            "dependencies": [
+              "7.2"
+            ],
+            "details": "Update the question display component to include a visually distinct badge based on the generation source metadata.\n<info added on 2025-10-01T10:34:02.736Z>\nThe GenerationSourceBadge component has been successfully implemented and integrated into the wizard UI. The component renders three distinct badge variants based on the generation source: a purple badge with star icon for Perplexity (indicating premium research), a yellow badge with warning icon for Ollama fallback (when backup was used), and a blue badge with checkmark icon for direct Ollama generation. The badges are displayed in two key locations: on the loading page immediately after question generation completes (before redirect), and at the top of the questionnaire form on the dynamic wizard page. The component accepts source type, fallback status, size options (small, medium, large), and optional custom styling. All badges feature SmartSlate design token compliance, glass effect compatibility, dark mode support, hover scale animations, and accessible tooltips for enhanced user experience.\n</info added on 2025-10-01T10:34:02.736Z>",
+            "status": "done",
+            "testStrategy": "Trigger both Perplexity and Ollama generation flows and verify correct badge rendering for each."
+          },
+          {
+            "id": 5,
+            "title": "Verify End-to-End UI Integration",
+            "description": "Test the complete StepWizard flow with dynamic question generation, loading states, and source badges.",
+            "dependencies": [
+              "7.3",
+              "7.4"
+            ],
+            "details": "Perform comprehensive UI tests to ensure all new features work together and do not break existing functionality.\n<info added on 2025-10-01T10:40:58.752Z>\n## End-to-End Integration Testing\n\n**Issues Found & Fixed:**\n\n1. **Scale Config Undefined Error**\n   - Problem: Perplexity responses might not include required config objects\n   - Solution: Added `normalizeQuestion()` function in perplexityQuestionService\n   - Ensures all config objects have proper defaults (scaleConfig, sliderConfig, numberConfig)\n\n2. **Rich Input Component Defensiveness**\n   - Updated all rich input components with safe defaults:\n     - EnhancedScaleInput: scaleConfig defaults\n     - LabeledSliderInput: sliderConfig defaults\n     - NumberSpinnerInput: numberConfig defaults\n     - CurrencyInputComponent: min/max defaults\n   - Prevents \"Cannot read properties of undefined\" errors\n\n**Testing Results:**\n- ✅ Loading page renders correctly\n- ✅ Source badges display properly\n- ✅ Error handling working\n- ✅ No linting errors\n- ✅ Dev server running on port 3001\n- ✅ All input types render safely with defaults\n</info added on 2025-10-01T10:40:58.752Z>\n<info added on 2025-10-01T10:47:31.336Z>\n## Final Bug Fixes - All Input Types Now Safe\n\n**Additional Issues Fixed:**\n1. **Options undefined in all rich inputs**\n   - Problem: LLM responses might not include options for all input types\n   - Fixed: Added safe defaults `(question.options || [])` to ALL input components:\n     - RadioPillsInput\n     - RadioCardsInput  \n     - CheckboxPillsInput\n     - CheckboxCardsInput\n     - ToggleSwitchInput (with yes/no defaults)\n\n2. **Comprehensive normalization**\n   - Updated `normalizeQuestion()` to ensure options for selection-based inputs\n   - Toggle switch gets default yes/no options if missing\n   - All components now bulletproof against missing data\n\n**Verification:**\n- ✅ All tests still passing (55/55)\n- ✅ Zero linting errors\n- ✅ Dev server running without errors\n- ✅ All input types render safely\n- ✅ Ready for Perplexity responses with any schema variations\n</info added on 2025-10-01T10:47:31.336Z>",
+            "status": "done",
+            "testStrategy": "Execute manual and automated integration tests covering all user scenarios, including error and fallback cases."
+          }
+        ]
+      },
+      {
+        "id": 8,
+        "title": "Implement API Endpoints",
+        "description": "Create API endpoints for dynamic question generation and answer persistence.",
+        "details": "Define endpoints like `/api/dynamic-questions` and `/api/dynamic-answers`. Handle request and response formats.",
+        "testStrategy": "Test API endpoint functionality and response formats.",
+        "priority": "medium",
+        "dependencies": [
+          2,
+          5
+        ],
+        "status": "done",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Define API Endpoint Specifications",
+            "description": "Specify the endpoints for dynamic question generation and answer persistence, including HTTP methods, URL paths, and expected request/response formats.",
+            "dependencies": [],
+            "details": "Document endpoints such as POST /api/dynamic-questions and POST /api/dynamic-answers, using JSON for data exchange and following RESTful naming conventions.",
+            "status": "done",
+            "testStrategy": "Review endpoint documentation for completeness and adherence to REST best practices."
+          },
+          {
+            "id": 2,
+            "title": "Implement Dynamic Question Generation Endpoint",
+            "description": "Develop the backend logic for the /api/dynamic-questions endpoint to generate questions dynamically based on input parameters.",
+            "dependencies": [
+              "8.1"
+            ],
+            "details": "Handle incoming requests, validate input, invoke question generation logic, and return generated questions in a standardized JSON response.",
+            "status": "done",
+            "testStrategy": "Send test requests with various parameters and verify correct question generation and response structure."
+          },
+          {
+            "id": 3,
+            "title": "Implement Answer Persistence Endpoint",
+            "description": "Develop the backend logic for the /api/dynamic-answers endpoint to persist user answers to the database.",
+            "dependencies": [
+              "8.1"
+            ],
+            "details": "Validate incoming answer data, ensure schema compliance, and save answers to the appropriate database table.",
+            "status": "done",
+            "testStrategy": "Submit sample answers and verify correct database persistence and response codes."
+          },
+          {
+            "id": 4,
+            "title": "Handle API Request Validation and Error Responses",
+            "description": "Implement robust validation for incoming requests and standardized error handling for both endpoints.",
+            "dependencies": [
+              "8.2",
+              "8.3"
+            ],
+            "details": "Return appropriate HTTP status codes (e.g., 200, 400, 500) and clear error messages for invalid input or server errors.",
+            "status": "done",
+            "testStrategy": "Test endpoints with invalid and edge-case inputs to confirm proper error responses."
+          },
+          {
+            "id": 5,
+            "title": "Document and Test API Endpoints",
+            "description": "Create API documentation and develop automated tests to verify endpoint functionality and response formats.",
+            "dependencies": [
+              "8.2",
+              "8.3",
+              "8.4"
+            ],
+            "details": "Provide usage examples, expected request/response schemas, and write integration tests for all endpoints.",
+            "status": "done",
+            "testStrategy": "Run automated tests and review documentation for accuracy and clarity."
+          }
+        ]
+      },
+      {
+        "id": 9,
+        "title": "Develop Unit Tests",
+        "description": "Write unit tests for critical components like Perplexity integration and input type registry.",
+        "details": "Use a testing framework like Jest or Pytest. Cover Perplexity service, Ollama fallback, and input type mapping logic.",
+        "testStrategy": "Run unit tests to ensure component functionality.",
+        "priority": "medium",
+        "dependencies": [
+          2,
+          3,
+          4
+        ],
+        "status": "done",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Set Up Unit Testing Framework",
+            "description": "Install and configure the appropriate unit testing framework (Jest for JavaScript or Pytest for Python) for the project environment.",
+            "dependencies": [],
+            "details": "Ensure the testing framework is properly integrated with the project build and CI/CD pipeline.",
+            "status": "done",
+            "testStrategy": "Verify the framework runs sample tests and generates reports."
+          },
+          {
+            "id": 2,
+            "title": "Write Unit Tests for Perplexity Service Integration",
+            "description": "Develop unit tests to validate the functionality and error handling of the Perplexity service integration.",
+            "dependencies": [
+              "9.1"
+            ],
+            "details": "Test successful responses, error scenarios, and edge cases for the Perplexity API integration.",
+            "status": "done",
+            "testStrategy": "Mock API responses and assert correct handling of both success and failure cases."
+          },
+          {
+            "id": 3,
+            "title": "Write Unit Tests for Ollama Fallback Mechanism",
+            "description": "Create unit tests to ensure the Ollama fallback mechanism triggers correctly when Perplexity fails.",
+            "dependencies": [
+              "9.1"
+            ],
+            "details": "Simulate Perplexity failures and verify that Ollama is invoked with the correct parameters.",
+            "status": "done",
+            "testStrategy": "Use mocks to simulate failures and assert fallback logic execution."
+          },
+          {
+            "id": 4,
+            "title": "Write Unit Tests for Input Type Registry and Mapping Logic",
+            "description": "Develop unit tests for the input type registry, including type registration, lookup, and mapping logic.",
+            "dependencies": [
+              "9.1"
+            ],
+            "details": "Test registration of known types, fallback for unknown types, and correct mapping to internal representations.",
+            "status": "done",
+            "testStrategy": "Assert correct behavior for various input type scenarios, including edge cases."
+          },
+          {
+            "id": 5,
+            "title": "Review and Maintain Unit Test Coverage",
+            "description": "Analyze unit test coverage for all critical components and add or update tests to ensure comprehensive coverage.",
+            "dependencies": [
+              "9.2",
+              "9.3",
+              "9.4"
+            ],
+            "details": "Use coverage tools to identify untested code paths and refactor or add tests as needed.",
+            "status": "done",
+            "testStrategy": "Run coverage reports and ensure all critical logic is exercised by tests."
+          }
+        ]
+      },
+      {
+        "id": 10,
+        "title": "Conduct Integration Tests",
+        "description": "Perform integration tests for the full question generation flow and fallback logic.",
+        "details": "Test Perplexity to DB flow and Perplexity fail → Ollama → DB flow. Use tools like Cypress for UI integration tests.",
+        "testStrategy": "Verify successful integration of components.",
+        "priority": "medium",
+        "dependencies": [
+          8,
+          9
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Define Integration Test Scenarios and Acceptance Criteria",
+            "description": "Identify and document all integration points in the question generation flow, including Perplexity to DB and Perplexity failover to Ollama to DB. Specify expected behaviors and edge cases for both success and fallback logic.",
+            "dependencies": [],
+            "details": "List all system interactions and define clear acceptance criteria for each integration path, including both positive and negative scenarios.",
+            "status": "pending",
+            "testStrategy": "Review requirements and system architecture to ensure all integration flows and fallback conditions are covered."
+          },
+          {
+            "id": 2,
+            "title": "Design and Prepare Integration Test Cases",
+            "description": "Develop detailed test cases for each integration scenario, covering both standard and failure flows. Include test data and expected outcomes for each case.",
+            "dependencies": [
+              "10.1"
+            ],
+            "details": "Create test cases for Perplexity to DB, Perplexity fail → Ollama → DB, and edge cases such as API errors or DB failures.",
+            "status": "pending",
+            "testStrategy": "Ensure test cases comprehensively cover all documented scenarios and acceptance criteria."
+          },
+          {
+            "id": 3,
+            "title": "Set Up and Configure Integration Test Environment",
+            "description": "Provision and configure the necessary test environment, including databases, Perplexity and Ollama services, and UI test tools like Cypress.",
+            "dependencies": [
+              "10.2"
+            ],
+            "details": "Replicate production-like conditions, configure environment variables, and ensure all services are accessible for integration testing.",
+            "status": "pending",
+            "testStrategy": "Validate environment readiness by running smoke tests on all integrated components."
+          },
+          {
+            "id": 4,
+            "title": "Implement and Automate Integration Tests",
+            "description": "Develop and automate integration tests using Cypress for UI and appropriate tools for backend flows. Ensure tests cover both main and fallback logic.",
+            "dependencies": [
+              "10.3"
+            ],
+            "details": "Write and automate scripts for all defined test cases, including both successful and failure scenarios.",
+            "status": "pending",
+            "testStrategy": "Run automated test suites and verify that all integration points behave as expected under various conditions."
+          },
+          {
+            "id": 5,
+            "title": "Execute Tests, Analyze Results, and Document Findings",
+            "description": "Run the full suite of integration tests, analyze outcomes, log defects, and document results for review and future regression testing.",
+            "dependencies": [
+              "10.4"
+            ],
+            "details": "Monitor test execution, capture logs and screenshots, and record all issues and their resolutions. Summarize findings for stakeholders.",
+            "status": "pending",
+            "testStrategy": "Ensure all test results are documented, issues are tracked, and retesting is performed after fixes."
+          }
+        ]
+      },
+      {
+        "id": 11,
+        "title": "Implement E2E Tests",
+        "description": "Develop end-to-end tests for the complete user journey.",
+        "details": "Use tools like Cypress or Playwright. Test static to dynamic question flow, answer persistence, and resume capability.",
+        "testStrategy": "Run E2E tests to ensure full system functionality.",
+        "priority": "medium",
+        "dependencies": [
+          10
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Set Up E2E Testing Framework",
+            "description": "Install and configure Cypress or Playwright for the project, ensuring compatibility with the tech stack and CI/CD pipeline.",
+            "dependencies": [],
+            "details": "Evaluate both Cypress and Playwright based on project requirements such as cross-browser support, parallel execution, and debugging tools. Complete initial setup and integration.",
+            "status": "pending",
+            "testStrategy": "Verify framework installation by running a sample test and confirming integration with CI/CD."
+          },
+          {
+            "id": 2,
+            "title": "Design Test Scenarios for User Journey",
+            "description": "Define comprehensive test cases covering static to dynamic question flow, answer persistence, and resume capability.",
+            "dependencies": [
+              "11.1"
+            ],
+            "details": "Map out the complete user journey, including edge cases and error handling. Document scenarios for static questions, dynamic transitions, saving answers, and resuming sessions.",
+            "status": "pending",
+            "testStrategy": "Review test case documentation for coverage and accuracy against user requirements."
+          },
+          {
+            "id": 3,
+            "title": "Implement E2E Tests for Question Flow",
+            "description": "Develop automated tests to validate static and dynamic question transitions, ensuring correct rendering and navigation.",
+            "dependencies": [
+              "11.2"
+            ],
+            "details": "Write scripts to simulate user interactions through the question flow, checking for correct display and transitions between question types.",
+            "status": "pending",
+            "testStrategy": "Run tests and verify that all question flows execute as expected without errors."
+          },
+          {
+            "id": 4,
+            "title": "Test Answer Persistence and Resume Functionality",
+            "description": "Automate tests to confirm that user answers are saved and can be restored when resuming the journey.",
+            "dependencies": [
+              "11.3"
+            ],
+            "details": "Simulate user sessions where answers are entered, saved, and later resumed. Validate data integrity and session restoration.",
+            "status": "pending",
+            "testStrategy": "Check that answers persist across sessions and are accurately restored upon resuming."
+          },
+          {
+            "id": 5,
+            "title": "Integrate E2E Tests with CI/CD and Reporting",
+            "description": "Configure automated execution of E2E tests in the CI/CD pipeline and set up reporting for test results.",
+            "dependencies": [
+              "11.4"
+            ],
+            "details": "Ensure tests run automatically on code changes and generate detailed reports for failures and coverage. Integrate with existing CI/CD tools.",
+            "status": "pending",
+            "testStrategy": "Verify that tests execute on each pipeline run and that reports are generated and accessible to the team."
+          }
+        ]
+      },
+      {
+        "id": 12,
+        "title": "Conduct Load Tests",
+        "description": "Perform load tests to ensure system scalability.",
+        "details": "Use tools like Apache JMeter or Locust. Test concurrent question generations and database save performance.",
+        "testStrategy": "Verify system performance under load.",
+        "priority": "low",
+        "dependencies": [
+          11
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Define Load Test Scenarios",
+            "description": "Identify and document realistic user scenarios for concurrent question generation and database save operations, reflecting expected and peak usage patterns.",
+            "dependencies": [],
+            "details": "Include scenarios such as multiple users generating questions simultaneously and saving results to the database, based on anticipated real-world usage.",
+            "status": "pending",
+            "testStrategy": "Review scenarios with stakeholders to ensure coverage of critical workflows and peak load conditions."
+          },
+          {
+            "id": 2,
+            "title": "Configure Load Testing Tools",
+            "description": "Set up and configure Apache JMeter or Locust to simulate the defined concurrent user scenarios.",
+            "dependencies": [
+              "12.1"
+            ],
+            "details": "Prepare test scripts and environments to accurately mimic user actions and system interactions for both question generation and database operations.",
+            "status": "pending",
+            "testStrategy": "Validate tool configuration by running small-scale test executions and verifying correct simulation of user behavior."
+          },
+          {
+            "id": 3,
+            "title": "Execute Load Tests",
+            "description": "Run load tests with gradually increasing numbers of concurrent users to assess system scalability and identify performance bottlenecks.",
+            "dependencies": [
+              "12.2"
+            ],
+            "details": "Monitor system under varying loads, starting from baseline and ramping up to peak and beyond, capturing metrics such as response time, throughput, and error rates.",
+            "status": "pending",
+            "testStrategy": "Ensure tests are repeatable and results are consistent across multiple runs."
+          },
+          {
+            "id": 4,
+            "title": "Analyze Load Test Results",
+            "description": "Collect and analyze performance metrics from load test executions to identify bottlenecks, scalability limits, and failure points.",
+            "dependencies": [
+              "12.3"
+            ],
+            "details": "Focus on key indicators such as response times, throughput, error rates, and resource utilization during concurrent operations.",
+            "status": "pending",
+            "testStrategy": "Compare results against predefined performance benchmarks and document any deviations or issues."
+          },
+          {
+            "id": 5,
+            "title": "Report Findings and Recommend Improvements",
+            "description": "Document load testing outcomes, highlight critical issues, and provide actionable recommendations for system optimization.",
+            "dependencies": [
+              "12.4"
+            ],
+            "details": "Summarize test results, identified bottlenecks, and propose remediation steps to enhance scalability and reliability.",
+            "status": "pending",
+            "testStrategy": "Review report with engineering and product teams to prioritize and plan necessary improvements."
+          }
+        ]
+      },
+      {
+        "id": 13,
+        "title": "Implement Security Measures",
+        "description": "Ensure API key security, data protection, and access controls.",
+        "details": "Use environment variables for API keys. Implement RLS policies and scrub sensitive data from logs.",
+        "testStrategy": "Verify API key security and access controls.",
+        "priority": "high",
+        "dependencies": [
+          1
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Set up Environment Variables for API Keys",
+            "description": "Configure secure storage of API keys using environment variables and .env files with proper gitignore setup.",
+            "dependencies": [],
+            "details": "Create .env file structure, install python-dotenv package, implement environment variable loading in application code, and ensure .env files are added to .gitignore to prevent accidental commits.",
+            "status": "done",
+            "testStrategy": "Verify API keys are loaded from environment variables and not exposed in code or logs."
+          },
+          {
+            "id": 2,
+            "title": "Implement API Key Rotation and Management",
+            "description": "Set up automated API key rotation system and implement key lifecycle management.",
+            "dependencies": [
+              "13.1"
+            ],
+            "details": "Create system for regular API key rotation, implement key versioning, set up automated rotation schedules, and establish procedures for emergency key revocation.",
+            "status": "pending",
+            "testStrategy": "Test key rotation functionality and verify old keys are properly invalidated."
+          },
+          {
+            "id": 3,
+            "title": "Configure Row Level Security (RLS) Policies",
+            "description": "Implement database-level security policies to control data access based on user roles and permissions.",
+            "dependencies": [],
+            "details": "Define RLS policies for all database tables, implement user role-based access controls, set up policy enforcement for CRUD operations, and configure default deny policies.",
+            "status": "done",
+            "testStrategy": "Verify users can only access authorized data and RLS policies prevent unauthorized access."
+          },
+          {
+            "id": 4,
+            "title": "Implement Sensitive Data Scrubbing in Logs",
+            "description": "Set up automated scrubbing of sensitive information from application logs and monitoring systems.",
+            "dependencies": [],
+            "details": "Identify sensitive data patterns (API keys, passwords, PII), implement log sanitization middleware, configure structured logging with field-level filtering, and set up log retention policies.",
+            "status": "done",
+            "testStrategy": "Review logs to ensure no sensitive data is exposed and verify scrubbing rules work correctly."
+          },
+          {
+            "id": 5,
+            "title": "Establish Security Monitoring and Auditing",
+            "description": "Set up comprehensive security monitoring, logging, and audit trails for API access and data operations.",
+            "dependencies": [
+              "13.1",
+              "13.2",
+              "13.3",
+              "13.4"
+            ],
+            "details": "Implement real-time monitoring for API key usage, set up anomaly detection for unusual access patterns, configure audit logging for all security-related events, and establish alerting for security violations.",
+            "status": "pending",
+            "testStrategy": "Test monitoring alerts and verify audit logs capture all security events accurately."
+          }
+        ]
+      },
+      {
+        "id": 14,
+        "title": "Document Project",
+        "description": "Create comprehensive documentation for the project.",
+        "details": "Document API endpoints, logging system, and troubleshooting guides. Use tools like Swagger for API documentation.",
+        "testStrategy": "Review documentation for completeness and clarity.",
+        "priority": "low",
+        "dependencies": [
+          13
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Document API Endpoints",
+            "description": "Use Swagger to document all API endpoints, including request and response formats.",
+            "dependencies": [],
+            "details": "Utilize Swagger tools to generate interactive API documentation, detailing each endpoint's parameters, HTTP methods, and expected responses.",
+            "status": "pending",
+            "testStrategy": "Review API documentation for completeness and clarity."
+          },
+          {
+            "id": 2,
+            "title": "Document Logging System",
+            "description": "Create detailed documentation for the logging system, including setup and configuration.",
+            "dependencies": [],
+            "details": "Explain how to configure and use the logging system, including log levels and output formats.",
+            "status": "done",
+            "testStrategy": "Verify logging system documentation for accuracy."
+          },
+          {
+            "id": 3,
+            "title": "Develop Troubleshooting Guides",
+            "description": "Create step-by-step guides for common issues and error scenarios.",
+            "dependencies": [],
+            "details": "Include clear instructions for diagnosing and resolving common problems, with links to relevant API documentation.",
+            "status": "pending",
+            "testStrategy": "Test troubleshooting guides with simulated error scenarios."
+          },
+          {
+            "id": 4,
+            "title": "Organize and Structure Documentation",
+            "description": "Ensure documentation is well-organized and easy to navigate.",
+            "dependencies": [
+              "14.1",
+              "14.2",
+              "14.3"
+            ],
+            "details": "Use a logical structure with clear headings, tables of contents, and search functionality.",
+            "status": "pending",
+            "testStrategy": "Review documentation for ease of use and clarity."
+          },
+          {
+            "id": 5,
+            "title": "Review and Update Documentation",
+            "description": "Regularly review and update documentation to reflect project changes.",
+            "dependencies": [
+              "14.4"
+            ],
+            "details": "Schedule regular reviews to ensure documentation remains accurate and relevant.",
+            "status": "pending",
+            "testStrategy": "Verify documentation updates align with project changes."
+          }
+        ]
+      },
+      {
+        "id": 15,
+        "title": "Plan Rollout and Monitoring",
+        "description": "Plan the rollout strategy and monitor system performance post-launch.",
+        "details": "Feature flag rollout, monitor metrics, and collect user feedback. Use tools like Datadog for monitoring.",
+        "testStrategy": "Verify successful rollout and monitor system health.",
+        "priority": "medium",
+        "dependencies": [
+          14
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Select and Configure Feature Flag Management Tool",
+            "description": "Choose and set up a feature flag management system that fits the technology stack, providing UI and API access for managing flags.",
+            "dependencies": [],
+            "details": "Evaluate and select a feature flag tool (e.g., LaunchDarkly, Unleash). Configure the tool for your environment, ensuring it supports gradual rollouts, user segmentation, and integration with monitoring tools like Datadog.",
+            "status": "pending",
+            "testStrategy": "Verify tool integration and basic flag creation functionality."
+          },
+          {
+            "id": 2,
+            "title": "Define Rollout Strategy and Segmentation Rules",
+            "description": "Plan and document the phased rollout strategy, including user segmentation and percentage-based releases.",
+            "dependencies": [
+              "15.1"
+            ],
+            "details": "Define rules for enabling features (e.g., internal team, beta users, percentage of production users). Use secure hashing for consistent user assignment. Document segmentation criteria (e.g., user role, location).",
+            "status": "pending",
+            "testStrategy": "Validate that users are correctly segmented and receive the intended feature version during rollout."
+          },
+          {
+            "id": 3,
+            "title": "Implement Monitoring and Alerting",
+            "description": "Set up real-time monitoring and alerting for system performance and feature flag states using Datadog.",
+            "dependencies": [
+              "15.1"
+            ],
+            "details": "Integrate feature flag events with Datadog dashboards. Configure alerts for anomalies in system health, performance, and user experience. Ensure logging captures which users receive which features.",
+            "status": "pending",
+            "testStrategy": "Test alert triggers and dashboard visibility for feature flag and system metrics."
+          },
+          {
+            "id": 4,
+            "title": "Collect and Analyze User Feedback",
+            "description": "Establish mechanisms to gather and analyze user feedback during and after the rollout.",
+            "dependencies": [
+              "15.2",
+              "15.3"
+            ],
+            "details": "Implement in-app feedback tools, surveys, or usage analytics. Correlate feedback with feature flag states and system metrics to identify issues or opportunities for improvement.",
+            "status": "pending",
+            "testStrategy": "Verify feedback collection and integration with monitoring data."
+          },
+          {
+            "id": 5,
+            "title": "Review, Iterate, and Clean Up Feature Flags",
+            "description": "Regularly review feature flag usage, iterate based on feedback and metrics, and remove stale flags.",
+            "dependencies": [
+              "15.4"
+            ],
+            "details": "Schedule periodic reviews of active flags. Remove flags that are no longer needed to reduce technical debt. Document decisions and changes for future reference.",
+            "status": "pending",
+            "testStrategy": "Confirm that obsolete flags are removed and that the codebase remains clean and maintainable."
+          }
+        ]
+      }
+    ],
+    "metadata": {
+      "created": "2025-10-01T09:37:54.414Z",
+      "updated": "2025-10-01T10:34:57.999Z",
+      "description": "Tasks for perplexity-dynamic-questions context"
+    }
+  },
+  "claude-blueprint-generation": {
+    "tasks": [
+      {
+        "id": 1,
+        "title": "Integrate Claude Sonnet 4 API as Primary Generation Model",
+        "description": "Implement Claude Sonnet 4 as the primary blueprint generation model with strict prompt, token, and timeout controls.",
+        "details": "Use Anthropic Claude API (v2023-06-01) with model 'claude-sonnet-4-20250514'. Set max_tokens=12000, temperature=0.2, and a 120s timeout. Implement system/user prompt as per PRD. Use exponential backoff for up to 2 retries. Ensure API key is securely loaded from environment variables. Use axios or fetch with robust error handling. Validate output is strict JSON (no markdown wrappers).",
+        "testStrategy": "Unit test API integration with mock responses, verify prompt formatting, token limits, timeout, and JSON-only output. Simulate API failures and check retry logic.",
+        "priority": "high",
+        "dependencies": [],
+        "status": "done",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Set Up Secure API Key Management",
+            "description": "Load the Anthropic API key securely from environment variables and ensure it is never exposed to the client.",
+            "dependencies": [],
+            "details": "Implement environment variable loading for the API key in your application. Verify that the key is only accessible server-side and not leaked in logs or client responses.\n<info added on 2025-10-01T11:22:03.207Z>\n✅ Completed: Secure API Key Management\n\n**Implemented:**\n- Created `/frontend/lib/claude/config.ts` with secure environment variable loading\n- Implemented `getClaudeConfig()` for server-side only API key access\n- Implemented `isClaudeConfigured()` for safe client-side checking\n- API key loaded from ANTHROPIC_API_KEY or NEXT_PUBLIC_ANTHROPIC_API_KEY (fallback)\n- Default values for base URL (https://api.anthropic.com) and version (2023-06-01)\n- Proper validation: throws error if API key is missing/empty/whitespace\n- Whitespace trimming and trailing slash removal\n\n**Tests:** Created comprehensive test suite with 16 tests covering:\n- Environment variable loading\n- Default values\n- Whitespace trimming\n- URL normalization\n- Error cases (missing/empty API key)\n- Security (API key only accessible server-side)\n- Both primary and fallback environment variables\n\n**Result:** ✅ All 16 tests passed\n</info added on 2025-10-01T11:22:03.207Z>",
+            "status": "done",
+            "testStrategy": "Unit test environment variable loading and verify API key is never exposed in client-side code or logs."
+          },
+          {
+            "id": 2,
+            "title": "Implement Robust API Client with Retry Logic",
+            "description": "Create a client for the Claude Sonnet 4 API using axios or fetch, with strict timeout (120s), exponential backoff for up to 2 retries, and comprehensive error handling.",
+            "dependencies": [],
+            "details": "Configure the API client to use model 'claude-sonnet-4-20250514', max_tokens=12000, temperature=0.2, and a 120s timeout. Implement exponential backoff for retries on failure. Handle all possible API errors gracefully.\n<info added on 2025-10-01T11:25:07.321Z>\nCompleted: Robust API Client with Retry Logic\n\nImplemented:\n- Created `/frontend/lib/claude/client.ts` with full Claude API integration\n- `ClaudeClient` class with configurable settings\n- Strict timeout handling (default: 120s, configurable)\n- Exponential backoff retry logic (up to 2 retries by default)\n- Comprehensive error handling with custom `ClaudeApiError` class\n- Request configuration: model, max_tokens (12000), temperature (0.2)\n- Helper methods: `extractText()` and `parseJSON()` for response parsing\n- Structured logging for all operations\n\nFeatures:\n- Automatic abort on timeout using AbortController\n- Exponential backoff: baseDelay * 2^attempt (1s, 2s, 4s...)\n- Error classification: timeout, rate_limit, network_error, parse_error\n- Token usage tracking in responses\n- Type-safe interfaces for requests/responses\n\nTests: Created comprehensive test suite with 21 tests covering:\n- Successful API calls\n- Request header/body validation\n- Custom parameters (model, max_tokens, temperature)\n- Retry logic (succeeds on 3rd attempt)\n- Max retries reached handling\n- Timeout handling\n- HTTP error responses (with/without JSON body)\n- Text extraction from responses\n- JSON parsing (valid/invalid)\n- Error object construction\n\nResult: All 21 tests passed\n</info added on 2025-10-01T11:25:07.321Z>",
+            "status": "done",
+            "testStrategy": "Unit test the client with mock responses, simulate API failures, and verify retry logic and timeout behavior."
+          },
+          {
+            "id": 3,
+            "title": "Enforce Strict Prompt and Output Validation",
+            "description": "Format system and user prompts according to the PRD and validate that the API response is strict JSON with no markdown wrappers.",
+            "dependencies": [],
+            "details": "Implement prompt formatting as specified in the PRD. Parse and validate the API response to ensure it is pure JSON, rejecting any responses containing markdown or malformed JSON.\n<info added on 2025-10-01T11:28:06.155Z>\nCompleted implementation of strict prompt formatting and output validation modules with comprehensive test coverage.\n\n**Prompts Module** (`/frontend/lib/claude/prompts.ts`):\n- Created `BLUEPRINT_SYSTEM_PROMPT` with complete system instructions defining Claude's role, output requirements, and JSON schema\n- Implemented `buildBlueprintPrompt()` function that generates user prompts incorporating questionnaire context\n- Added `extractLearningObjectives()` utility to parse objectives from various dynamic answer formats\n- Enforced strict JSON output requirements with no markdown or preamble allowed\n- Defined comprehensive output schema including displayType specifications for all sections\n\n**Validation Module** (`/frontend/lib/claude/validation.ts`):\n- Implemented `stripMarkdownCodeFences()` to remove any ```json``` wrappers from responses\n- Created `parseAndValidateJSON()` with comprehensive error handling for malformed JSON\n- Added `validateBlueprintStructure()` to verify presence of required metadata and sections\n- Implemented `normalizeBlueprintStructure()` to add default displayType values where missing\n- Built complete validation pipeline in `validateAndNormalizeBlueprint()` that executes parse → validate → normalize sequence\n- Defined custom `ValidationError` class with specific error codes and detailed error information\n\n**Test Coverage**: Achieved 100% test coverage with 53 passing tests:\n- Prompts module: 22 tests covering system prompt content, prompt building logic, context inclusion, and learning objectives extraction\n- Validation module: 31 tests covering markdown stripping, JSON parsing, structure validation, normalization logic, and error handling scenarios\n\nAll implementation requirements met with robust error handling and comprehensive test coverage ensuring reliable prompt formatting and strict JSON validation.\n</info added on 2025-10-01T11:28:06.155Z>",
+            "status": "done",
+            "testStrategy": "Unit test prompt formatting and response validation. Verify that only valid JSON is accepted and markdown is rejected."
+          },
+          {
+            "id": 4,
+            "title": "Integrate Usage Tracking and Logging",
+            "description": "Track token usage, model calls, and errors. Log all relevant events for monitoring and debugging.",
+            "dependencies": [],
+            "details": "Implement logging for each API call, including token counts, success/failure status, and any errors. Ensure logs are structured and can be filtered by relevant attributes.\n<info added on 2025-10-01T11:28:44.977Z>\n✅ Completed: Usage Tracking and Logging\n\n**Logging Already Integrated:**\n\n**ClaudeClient** (`/frontend/lib/claude/client.ts`):\n- `claude.client.request`: Logs every API request with model, maxTokens, temperature\n- `claude.client.success`: Logs successful responses with token usage (input_tokens, output_tokens), duration\n- `claude.client.retry`: Logs retry attempts with attempt number, delay, error message\n- `claude.client.error`: Logs final errors with duration\n\n**Validation Module** (`/frontend/lib/claude/validation.ts`):\n- `claude.validation.markdown_detected`: Warns when markdown code fences found\n- `claude.validation.missing_display_type`: Warns for sections missing displayType\n- `claude.validation.sections_missing_display_type`: Info log with count/sections\n- `claude.validation.added_default_display_type`: Info when defaults added\n- `claude.validation.success`: Summary log with metadata and section count\n\n**Token Usage Tracking:**\n- Automatically captured from Claude API response: `{ input_tokens, output_tokens }`\n- Logged in success events\n- Available for cost tracking and analytics\n\n**All log events use structured metadata** with:\n- Relevant IDs (blueprintId when available)\n- Timing information (duration, delay)\n- Error details (messages, codes)\n- Token counts\n- Model information\n\n**Logger Integration:**\n- Uses existing `createServiceLogger()` from `/frontend/lib/logging`\n- Consistent log format across all modules\n- Filterable by service name: 'claude-client', 'claude-validation'\n\n**Result:** ✅ Comprehensive logging already in place with token tracking\n</info added on 2025-10-01T11:28:44.977Z>",
+            "status": "done",
+            "testStrategy": "Unit test logging of API calls, token usage, and errors. Verify log structure and filterability."
+          },
+          {
+            "id": 5,
+            "title": "Create Secure Proxy Endpoint for Client Requests",
+            "description": "Build a Next.js API route that securely proxies client requests to the Claude Sonnet 4 API, handling authentication and never exposing the API key.",
+            "dependencies": [],
+            "details": "Implement '/api/claude/generate-blueprint/route.ts' to accept model, prompts, and blueprintId. Handle server-side authentication, error responses, and token usage tracking. Return strict JSON with usage stats.\n<info added on 2025-10-01T11:30:59.375Z>\n✅ Completed: Secure Proxy Endpoint for Client Requests\n\n**Implemented:** `/frontend/app/api/claude/generate-blueprint/route.ts`\n\n**Features:**\n- Secure Next.js API route (server-side only)\n- Input validation for systemPrompt, userPrompt, blueprintId\n- Uses ClaudeClient with retry logic and timeout\n- Extracts text from Claude response and validates as JSON\n- Comprehensive error handling for:\n  - Missing required fields (400)\n  - ClaudeApiError (preserves status code)\n  - ValidationError (400)\n  - Unknown errors (500)\n- Returns structured response with blueprint, usage stats, and metadata\n- CORS support via OPTIONS handler\n- Complete logging for all operations\n\n**Response Format:**\n```typescript\n{\n  success: true,\n  blueprint: { ... }, // Validated and normalized\n  usage: {\n    input_tokens: 100,\n    output_tokens: 500,\n  },\n  metadata: {\n    model: 'claude-sonnet-4-20250514',\n    duration: 2500,\n    timestamp: '2025-10-01T12:00:00Z',\n  }\n}\n```\n\n**Security:**\n- API key never exposed to client\n- Server-side execution only\n- No API key in responses or logs\n\n**Tests:** Created 11 integration tests covering:\n- Successful blueprint generation\n- Custom model usage\n- Missing field validation (systemPrompt, userPrompt, blueprintId)\n- ClaudeApiError handling with status code preservation\n- ValidationError handling\n- Unknown error handling\n- Duration and timestamp metadata\n- CORS preflight requests\n\n**Result:** ✅ All 11 tests passed\n</info added on 2025-10-01T11:30:59.375Z>",
+            "status": "done",
+            "testStrategy": "Unit and integration test the endpoint with valid/invalid payloads, authentication, and error scenarios. Mock Claude API for integration tests."
+          }
+        ]
+      },
+      {
+        "id": 2,
+        "title": "Implement Claude Opus 4 Fallback Logic",
+        "description": "Add fallback to Claude Opus 4 when Sonnet 4 fails, with enhanced logging and higher token limits.",
+        "details": "On Sonnet 4 failure (4xx/5xx, timeout, invalid key, rate limit, network, or JSON parse error after retries), switch to 'claude-opus-4-20250514' with max_tokens=16000. Use same prompt structure. Log all fallback activations and track fallback rate. Ensure API key and endpoint security.",
+        "testStrategy": "Unit test fallback triggers, ensure Opus 4 is called only on valid failure scenarios. Log and assert fallback events.",
+        "priority": "high",
+        "dependencies": [
+          1
+        ],
+        "status": "in-progress",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Define Sonnet 4 Failure Detection Criteria",
+            "description": "Specify and implement the exact failure scenarios for Sonnet 4 that should trigger fallback, including 4xx/5xx errors, timeouts, invalid key, rate limit, network issues, and JSON parse errors after retries.",
+            "dependencies": [],
+            "details": "Enumerate all relevant error types and integrate detection logic into the Sonnet 4 request handler to ensure accurate and consistent fallback triggers.\n<info added on 2025-10-01T11:33:47.097Z>\n✅ Completed: Define Sonnet 4 Failure Detection Criteria\n\n**Implemented:** `/frontend/lib/claude/fallback.ts`\n\n**Features:**\n- Complete fallback decision engine with well-defined criteria\n- `FallbackTrigger` enum defining all failure types\n- `shouldFallbackToOpus()`: Determines if Sonnet 4 error warrants Opus 4 fallback\n- `shouldFallbackToOllama()`: Emergency fallback when both Claude models fail\n- `logFallbackDecision()`: Structured logging for all fallback decisions\n\n**Fallback Triggers (Comprehensive List):**\n1. TIMEOUT: Request timeout exceeded\n2. RATE_LIMIT: 429 status or rate_limit_error type\n3. INVALID_API_KEY: 401/403 authentication failures\n4. API_ERROR_4XX: All 4xx client errors\n5. API_ERROR_5XX: All 5xx server errors\n6. NETWORK_ERROR: Network connectivity issues\n7. JSON_PARSE_ERROR: Failed to parse Claude response as JSON\n8. VALIDATION_ERROR: Invalid JSON format (but NOT structural validation errors)\n\n**Smart Decision Logic:**\n- ValidationError with INVALID_JSON code → fallback\n- ValidationError with structural codes (MISSING_METADATA, NO_SECTIONS) → no fallback (won't help)\n- Generic errors with 'fetch'/'network' in message → fallback\n- Unknown errors → no fallback (re-throw)\n\n**Tests:** Created 29 comprehensive tests covering:\n- All ClaudeApiError scenarios (timeout, rate limit, auth, 4xx, 5xx, network, parse)\n- ValidationError scenarios (JSON vs structural)\n- Generic error scenarios\n- Decision object structure\n- Edge cases (no status code, errorType only, etc.)\n\n**Result:** ✅ All 29 tests passed\n</info added on 2025-10-01T11:33:47.097Z>",
+            "status": "done",
+            "testStrategy": "Unit test each failure scenario to confirm correct detection and fallback initiation."
+          },
+          {
+            "id": 2,
+            "title": "Implement Fallback Invocation to Claude Opus 4",
+            "description": "Develop logic to switch to 'claude-opus-4-20250514' with max_tokens=16000 and identical prompt structure when Sonnet 4 fails as defined.",
+            "dependencies": [
+              "2.1"
+            ],
+            "details": "Ensure prompt structure, input formatting, and API parameters match Sonnet 4 usage, with correct model and token limit for Opus 4.",
+            "status": "done",
+            "testStrategy": "Simulate Sonnet 4 failures and verify Opus 4 is called with correct parameters and prompt."
+          },
+          {
+            "id": 3,
+            "title": "Enhance Logging for Fallback Events",
+            "description": "Add detailed logging for all fallback activations, capturing failure type, timestamps, request metadata, and Opus 4 invocation details.",
+            "dependencies": [
+              "2.2"
+            ],
+            "details": "Ensure logs are structured, searchable, and include all relevant context for monitoring and debugging fallback behavior.",
+            "status": "done",
+            "testStrategy": "Trigger various fallback scenarios and verify logs contain complete and accurate information."
+          },
+          {
+            "id": 4,
+            "title": "Track and Report Fallback Rate Metrics",
+            "description": "Implement tracking of fallback frequency and expose metrics for monitoring fallback rates over time.",
+            "dependencies": [
+              "2.3"
+            ],
+            "details": "Aggregate fallback events and provide reporting (e.g., via dashboard or logs) to support operational monitoring and analysis.",
+            "status": "done",
+            "testStrategy": "Generate synthetic load with controlled failure rates and verify fallback metrics accuracy."
+          },
+          {
+            "id": 5,
+            "title": "Ensure API Key and Endpoint Security for Both Models",
+            "description": "Audit and enforce secure handling of API keys and endpoints for Sonnet 4 and Opus 4, preventing leaks and unauthorized access.",
+            "dependencies": [
+              "2.2"
+            ],
+            "details": "Review environment variable usage, access controls, and logging practices to ensure sensitive data is never exposed.",
+            "status": "done",
+            "testStrategy": "Conduct security review and penetration testing to confirm no API keys or endpoints are leaked in logs or error messages."
+          }
+        ]
+      },
+      {
+        "id": 3,
+        "title": "Integrate Ollama Emergency Fallback",
+        "description": "Use Ollama local model as emergency fallback if both Claude models fail, adapting prompts as needed.",
+        "details": "Use existing Ollama client with model 'qwen3:30b-a3b'. Adapt prompt to Ollama's format (single prompt, no system/user split). Set timeout to 180s. Log all emergency fallback activations. Ensure robust error handling and retry logic. Use axios/fetch with local endpoint from env.",
+        "testStrategy": "Integration test with simulated Claude failures, verify Ollama is called and logs are generated. Test prompt adaptation and timeout.",
+        "priority": "high",
+        "dependencies": [
+          2
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Detect Claude Model Failures and Trigger Fallback",
+            "description": "Implement logic to monitor both Claude models' responses and reliably detect failure conditions that require emergency fallback to Ollama.",
+            "dependencies": [],
+            "details": "Define clear criteria for Claude model failure (e.g., API errors, timeouts, invalid responses). Ensure fallback is only triggered when both primary and secondary Claude models fail.",
+            "status": "pending",
+            "testStrategy": "Simulate Claude model failures in integration tests and verify that fallback logic is triggered only under correct conditions."
+          },
+          {
+            "id": 2,
+            "title": "Adapt Prompts for Ollama Model Format",
+            "description": "Transform incoming prompts from Claude's system/user split format to Ollama's required single-prompt format before sending to the local model.",
+            "dependencies": [
+              "3.1"
+            ],
+            "details": "Implement prompt adaptation logic that merges or reformats system and user messages into a single string compatible with Ollama's expectations. Ensure no loss of critical context.",
+            "status": "pending",
+            "testStrategy": "Unit test prompt adaptation with various prompt structures, including edge cases, and verify output matches Ollama's requirements."
+          },
+          {
+            "id": 3,
+            "title": "Invoke Ollama Local Model with Robust Error Handling",
+            "description": "Call the Ollama local model ('qwen3:30b-a3b') using axios/fetch, applying a 180s timeout, and implement comprehensive error handling and retry logic.",
+            "dependencies": [
+              "3.2"
+            ],
+            "details": "Use the local endpoint from environment variables. Ensure retries on transient errors, handle timeouts, and propagate errors appropriately if all retries fail.",
+            "status": "pending",
+            "testStrategy": "Integration test with simulated network failures, timeouts, and model errors to verify retry and error handling logic."
+          },
+          {
+            "id": 4,
+            "title": "Log Emergency Fallback Activations and Outcomes",
+            "description": "Record all activations of the Ollama emergency fallback, including input prompts, timestamps, error details, and model responses, in the logging system.",
+            "dependencies": [
+              "3.3"
+            ],
+            "details": "Ensure logs are structured, include relevant metadata, and are compatible with the comprehensive logging system. Scrub sensitive data as needed.",
+            "status": "pending",
+            "testStrategy": "Verify log entries are created for every fallback activation and contain all required fields. Test log filtering and sensitive data scrubbing."
+          },
+          {
+            "id": 5,
+            "title": "Validate and Normalize Ollama Model Responses",
+            "description": "Ensure responses from the Ollama model are validated and normalized to the expected JSON schema before returning to the orchestrator service.",
+            "dependencies": [
+              "3.4"
+            ],
+            "details": "Implement response validation logic to check for JSON structure, required fields, and data types. Normalize any deviations to maintain consistency with upstream consumers.",
+            "status": "pending",
+            "testStrategy": "Unit test with various Ollama responses, including malformed and partial outputs, to verify normalization and error reporting."
+          }
+        ]
+      },
+      {
+        "id": 4,
+        "title": "Develop Blueprint Generation Orchestrator Service",
+        "description": "Create a service to orchestrate model selection, retries, validation, and normalization for blueprint generation.",
+        "details": "Implement '/frontend/lib/services/blueprintGenerationService.ts' with generate(), generateWithClaude(), generateWithOllama(), and validateAndNormalize() methods. Handle all fallback logic, retries, and error propagation. Use TypeScript with strict typing. Ensure all model responses are validated and normalized to dynamic JSON schema.",
+        "testStrategy": "Unit and integration tests for all code paths: Sonnet → Opus → Ollama, including error and retry logic. Mock all model APIs.",
+        "priority": "high",
+        "dependencies": [
+          1,
+          2,
+          3
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Design Orchestrator Service Architecture",
+            "description": "Define the overall architecture for the blueprint generation orchestrator service, specifying module boundaries, method responsibilities, and model selection logic.",
+            "dependencies": [],
+            "details": "Document the structure of '/frontend/lib/services/blueprintGenerationService.ts', outlining the generate(), generateWithClaude(), generateWithOllama(), and validateAndNormalize() methods. Specify how model selection, fallback, and error propagation will be orchestrated.",
+            "status": "pending",
+            "testStrategy": "Review architecture documentation for completeness and alignment with requirements. Peer review for clarity and extensibility."
+          },
+          {
+            "id": 2,
+            "title": "Implement Model Invocation and Fallback Logic",
+            "description": "Develop the logic to invoke different blueprint generation models (Claude, Ollama), including retries, fallback sequencing, and error handling.",
+            "dependencies": [
+              "4.1"
+            ],
+            "details": "Implement generate(), generateWithClaude(), and generateWithOllama() methods with robust retry and fallback logic. Ensure all error scenarios (timeouts, invalid responses, network errors) are handled and propagated appropriately.",
+            "status": "pending",
+            "testStrategy": "Unit tests for all model invocation paths, including forced error and retry scenarios. Assert correct fallback activation and error propagation."
+          },
+          {
+            "id": 3,
+            "title": "Develop Validation and Normalization Pipeline",
+            "description": "Create the validateAndNormalize() method to ensure all model responses conform to the dynamic JSON schema and are normalized for downstream use.",
+            "dependencies": [
+              "4.2"
+            ],
+            "details": "Implement strict validation of model outputs against dynamic JSON schemas. Normalize valid responses to a consistent structure, handling schema mismatches and reporting validation errors.",
+            "status": "pending",
+            "testStrategy": "Unit tests for schema validation, normalization, and error reporting. Test with valid, invalid, and edge-case model outputs."
+          },
+          {
+            "id": 4,
+            "title": "Integrate Strict TypeScript Typing and Error Propagation",
+            "description": "Apply strict TypeScript typing throughout the orchestrator service and ensure all errors are typed and propagated according to best practices.",
+            "dependencies": [
+              "4.3"
+            ],
+            "details": "Enforce strict typing in all method signatures, interfaces, and data structures. Ensure error objects are typed and propagated in a type-safe manner, avoiding use of 'any'.",
+            "status": "pending",
+            "testStrategy": "Type-check the entire service with 'strict' mode enabled. Add tests to verify type safety and error propagation in all code paths."
+          },
+          {
+            "id": 5,
+            "title": "Write Unit and Integration Tests for Orchestrator Service",
+            "description": "Develop comprehensive unit and integration tests covering all orchestrator service methods, including model selection, fallback, validation, normalization, and error handling.",
+            "dependencies": [
+              "4.4"
+            ],
+            "details": "Mock all model APIs and simulate various success and failure scenarios. Ensure tests cover Sonnet → Opus → Ollama paths, error and retry logic, and validation/normalization outcomes.",
+            "status": "pending",
+            "testStrategy": "Achieve high test coverage for all code paths. Use mocks and assertions to verify correct orchestration, fallback, and error handling behaviors."
+          }
+        ]
+      },
+      {
+        "id": 5,
+        "title": "Create Claude API Proxy Endpoint",
+        "description": "Implement '/api/claude/generate-blueprint/route.ts' as a secure proxy for Claude API requests.",
+        "details": "Create a Next.js API route that accepts model, systemPrompt, userPrompt, and blueprintId. Handles authentication (getSession), error responses, and token usage tracking. Never expose API keys to client. Use server-side fetch/axios. Return strict JSON with usage stats.",
+        "testStrategy": "Unit test endpoint with valid/invalid payloads, authentication, and error scenarios. Mock Claude API for integration tests.",
+        "priority": "high",
+        "dependencies": [
+          4
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Design API Route Schema and Input Validation",
+            "description": "Define the Next.js API route '/api/claude/generate-blueprint/route.ts' to accept model, systemPrompt, userPrompt, and blueprintId. Implement strict input validation for all fields.",
+            "dependencies": [],
+            "details": "Specify the expected request payload structure and validate incoming data types and required fields before processing.",
+            "status": "pending",
+            "testStrategy": "Unit test with valid and invalid payloads to ensure correct validation and error responses."
+          },
+          {
+            "id": 2,
+            "title": "Implement Secure Authentication and Authorization",
+            "description": "Integrate server-side authentication using getSession or equivalent to verify user identity and permissions for API access.",
+            "dependencies": [
+              "5.1"
+            ],
+            "details": "Ensure only authenticated users can access the endpoint. Handle unauthorized access with appropriate error responses.",
+            "status": "pending",
+            "testStrategy": "Test with authenticated and unauthenticated requests, verifying correct access control and error handling."
+          },
+          {
+            "id": 3,
+            "title": "Proxy Claude API Requests Server-Side",
+            "description": "Implement server-side logic to securely forward validated requests to the Claude API using fetch or axios, ensuring API keys are never exposed to the client.",
+            "dependencies": [
+              "5.2"
+            ],
+            "details": "Configure environment variables for Claude API keys. Handle request construction, response parsing, and error propagation.",
+            "status": "pending",
+            "testStrategy": "Mock Claude API responses for integration tests. Verify correct request forwarding and error handling."
+          },
+          {
+            "id": 4,
+            "title": "Track and Return Usage Statistics",
+            "description": "Implement logic to track Claude API token usage per request and include usage stats in the strict JSON response.",
+            "dependencies": [
+              "5.3"
+            ],
+            "details": "Extract token usage data from Claude API responses and structure it in the endpoint's output.",
+            "status": "pending",
+            "testStrategy": "Unit test for correct extraction and formatting of usage statistics in the response."
+          },
+          {
+            "id": 5,
+            "title": "Handle Error Responses and Finalize Strict JSON Output",
+            "description": "Ensure all error scenarios (validation, authentication, Claude API errors) are handled gracefully and returned as strict JSON objects with appropriate status codes and messages.",
+            "dependencies": [
+              "5.4"
+            ],
+            "details": "Standardize error response format and ensure all successful responses include usage stats and relevant data.",
+            "status": "pending",
+            "testStrategy": "Test all error scenarios and verify strict JSON output for both errors and successful responses."
+          }
+        ]
+      },
+      {
+        "id": 6,
+        "title": "Enhance Blueprint Generation API Endpoint",
+        "description": "Update '/api/blueprints/generate/route.ts' to orchestrate the full generation flow and return status/metadata.",
+        "details": "Fetch questionnaire answers, call orchestrator service, save results to DB, and return status/metadata. Handle all error states and propagate fallback info. Ensure endpoint is authenticated and rate-limited. Use TypeScript for strict typing.",
+        "testStrategy": "Integration test full flow with all model/fallback paths, DB save, and error handling. Assert correct status and metadata in response.",
+        "priority": "high",
+        "dependencies": [
+          5
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Implement Authentication and Rate Limiting Middleware",
+            "description": "Integrate authentication and rate limiting mechanisms to ensure only authorized and appropriately throttled requests can access the '/api/blueprints/generate/route.ts' endpoint.",
+            "dependencies": [],
+            "details": "Use TypeScript middleware to validate JWT tokens and enforce rate limits before processing requests. Ensure strict typing for request and response objects.",
+            "status": "pending",
+            "testStrategy": "Test with valid and invalid tokens, and simulate rate limit breaches to verify correct rejection and error messaging."
+          },
+          {
+            "id": 2,
+            "title": "Fetch and Validate Questionnaire Answers",
+            "description": "Retrieve questionnaire answers from the data source and validate their structure and completeness using TypeScript interfaces.",
+            "dependencies": [
+              "6.1"
+            ],
+            "details": "Implement logic to fetch answers based on authenticated user context. Validate input using strict TypeScript types and handle missing or malformed data gracefully.",
+            "status": "pending",
+            "testStrategy": "Test with complete, incomplete, and malformed questionnaire data to ensure proper validation and error handling."
+          },
+          {
+            "id": 3,
+            "title": "Integrate Orchestrator Service Call",
+            "description": "Invoke the orchestrator service with validated questionnaire answers and handle all possible response and error states.",
+            "dependencies": [
+              "6.2"
+            ],
+            "details": "Call the orchestrator service using TypeScript, handle timeouts, errors, and fallback scenarios. Propagate fallback information as needed.",
+            "status": "pending",
+            "testStrategy": "Simulate orchestrator success, failure, and fallback paths. Assert correct propagation of fallback info and error states."
+          },
+          {
+            "id": 4,
+            "title": "Persist Generation Results and Metadata",
+            "description": "Save the orchestrator results, status, and metadata to the database, ensuring atomicity and consistency.",
+            "dependencies": [
+              "6.3"
+            ],
+            "details": "Implement database save logic with strict typing for result and metadata objects. Handle DB errors and ensure rollback or compensation as needed.",
+            "status": "pending",
+            "testStrategy": "Test DB save with valid and invalid data, simulate DB failures, and verify atomicity and error handling."
+          },
+          {
+            "id": 5,
+            "title": "Construct and Return Typed API Response",
+            "description": "Build a strictly typed API response containing status, metadata, and any fallback information, handling all error states.",
+            "dependencies": [
+              "6.4"
+            ],
+            "details": "Assemble the final response object using TypeScript interfaces. Ensure all error and success states are correctly represented in the response.",
+            "status": "pending",
+            "testStrategy": "Integration test the full endpoint flow, asserting correct status, metadata, and error/fallback info in all scenarios."
+          }
+        ]
+      },
+      {
+        "id": 7,
+        "title": "Implement Real-Time Generation Status Endpoint",
+        "description": "Create '/api/blueprints/[id]/status/route.ts' for polling generation status and progress.",
+        "details": "Implement GET endpoint returning status, currentStep, progress, estimatedTime, and model. Update status in DB during generation steps. Poll every 2s from frontend. Use server push (SSE/WebSockets) if feasible for future optimization.",
+        "testStrategy": "Unit and integration tests for status transitions, polling, and error states. Simulate long-running generations.",
+        "priority": "medium",
+        "dependencies": [
+          6
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Design Endpoint Schema and Response Structure",
+            "description": "Define the API contract for '/api/blueprints/[id]/status/route.ts', specifying required fields (status, currentStep, progress, estimatedTime, model) and response formats for all states.",
+            "dependencies": [],
+            "details": "Establish the JSON schema for the GET endpoint, ensuring clarity and extensibility for future enhancements such as server push. Document all possible status values and error responses.",
+            "status": "pending",
+            "testStrategy": "Validate schema compliance and response structure using unit tests and contract tests."
+          },
+          {
+            "id": 2,
+            "title": "Implement Status Tracking and Database Updates",
+            "description": "Develop logic to update and persist generation status, current step, progress, estimated time, and model in the database during each generation phase.",
+            "dependencies": [
+              "7.1"
+            ],
+            "details": "Integrate status updates into the generation workflow, ensuring atomic and consistent writes to the database. Handle concurrent updates and error scenarios.",
+            "status": "pending",
+            "testStrategy": "Unit and integration tests for status transitions, concurrent updates, and error handling."
+          },
+          {
+            "id": 3,
+            "title": "Develop GET Status Endpoint Logic",
+            "description": "Implement the GET handler for '/api/blueprints/[id]/status/route.ts' to retrieve and return the current generation status and progress data.",
+            "dependencies": [
+              "7.2"
+            ],
+            "details": "Fetch the latest status from the database and return it in the defined schema. Handle missing or invalid blueprint IDs gracefully.",
+            "status": "pending",
+            "testStrategy": "Unit tests for all response scenarios, including valid, missing, and error cases."
+          },
+          {
+            "id": 4,
+            "title": "Integrate Polling and Simulate Long-Running Generation",
+            "description": "Ensure the endpoint supports polling every 2 seconds from the frontend and simulate long-running generation processes for robust testing.",
+            "dependencies": [
+              "7.3"
+            ],
+            "details": "Implement backend logic to support frequent polling without performance degradation. Simulate long-running tasks to test status updates and endpoint responsiveness.",
+            "status": "pending",
+            "testStrategy": "Integration tests for polling behavior, performance under load, and simulated long-running operations."
+          },
+          {
+            "id": 5,
+            "title": "Evaluate and Prototype Server Push (SSE/WebSockets) for Real-Time Updates",
+            "description": "Research, design, and prototype server push mechanisms (SSE or WebSockets) for future real-time status updates as an optimization to polling.",
+            "dependencies": [
+              "7.4"
+            ],
+            "details": "Assess feasibility of SSE and WebSockets for the use case. Build a minimal prototype demonstrating real-time status delivery and document integration steps.",
+            "status": "pending",
+            "testStrategy": "Prototype tests for real-time delivery, connection stability, and fallback to polling."
+          }
+        ]
+      },
+      {
+        "id": 8,
+        "title": "Implement Dynamic JSON Schema Validation and Normalization",
+        "description": "Validate and normalize any JSON structure from LLM, ensuring displayType metadata and graceful fallback.",
+        "details": "Use TypeScript interfaces as per PRD. For each section, check displayType; default to 'markdown' if missing, log warning for unknown types, and fallback as needed. Show JSON dump for malformed sections. Use zod or yup for runtime validation.",
+        "testStrategy": "Unit test with various valid/invalid/malformed JSONs, missing/unknown displayTypes, and ensure correct normalization and logging.",
+        "priority": "high",
+        "dependencies": [
+          4
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Define TypeScript Interfaces and Validation Schemas",
+            "description": "Establish TypeScript interfaces and corresponding Zod or Yup schemas for all expected JSON structures as specified in the PRD.",
+            "dependencies": [],
+            "details": "Review the PRD to enumerate all possible JSON section types and their required fields. For each, define a TypeScript interface and a matching Zod or Yup schema to enable both static and runtime validation.",
+            "status": "pending",
+            "testStrategy": "Unit test schema definitions for type correctness and ensure Zod/Yup schemas match TypeScript interfaces."
+          },
+          {
+            "id": 2,
+            "title": "Implement Dynamic Validation of Incoming JSON",
+            "description": "Validate incoming JSON structures from the LLM using the defined schemas, ensuring type safety and detailed error reporting.",
+            "dependencies": [
+              "8.1"
+            ],
+            "details": "For each section in the JSON, use Zod or Yup to validate against the appropriate schema. Capture and log validation errors with context for debugging and user feedback.",
+            "status": "pending",
+            "testStrategy": "Test with a variety of valid, invalid, and malformed JSON inputs to ensure correct validation and error reporting."
+          },
+          {
+            "id": 3,
+            "title": "Normalize Sections and Enforce displayType Metadata",
+            "description": "Normalize each JSON section, ensuring the presence and validity of the displayType field, applying defaults and fallbacks as needed.",
+            "dependencies": [
+              "8.2"
+            ],
+            "details": "For each section, check for the displayType property. If missing, default to 'markdown'. If an unknown type is encountered, log a warning and apply a fallback strategy as per PRD.",
+            "status": "pending",
+            "testStrategy": "Test normalization logic with sections missing displayType, with unknown types, and with valid types to ensure correct fallback and logging."
+          },
+          {
+            "id": 4,
+            "title": "Handle Malformed or Unprocessable Sections Gracefully",
+            "description": "Detect and handle malformed or unprocessable JSON sections by displaying a raw JSON dump and logging the issue.",
+            "dependencies": [
+              "8.3"
+            ],
+            "details": "If a section fails validation or normalization, render a JSON dump for that section in the UI and log the error for diagnostics, ensuring the application remains stable.",
+            "status": "pending",
+            "testStrategy": "Test with intentionally malformed sections to verify that JSON dumps are shown and errors are logged without breaking the UI."
+          },
+          {
+            "id": 5,
+            "title": "Integrate and Test End-to-End Validation and Normalization Pipeline",
+            "description": "Integrate all validation and normalization logic into the main processing pipeline and perform comprehensive end-to-end testing.",
+            "dependencies": [
+              "8.4"
+            ],
+            "details": "Wire up the validation and normalization steps so that any JSON from the LLM is processed according to the defined flow, with all error handling and fallbacks in place.",
+            "status": "pending",
+            "testStrategy": "Run end-to-end tests with a suite of JSON payloads covering all edge cases, including missing/unknown displayTypes and malformed sections, to ensure robust handling and correct UI output."
+          }
+        ]
+      },
+      {
+        "id": 9,
+        "title": "Build Infographic Dashboard Components",
+        "description": "Develop infographic visualization components using Framer Motion, responsive grids, and modern UI patterns.",
+        "details": "Create '/frontend/components/blueprint/InfographicSection.tsx' and subcomponents for objectives, audience, assessment, and metrics. Use Framer Motion (v11+), Tailwind CSS for glass morphism, and recharts (v3+) for charts. Implement card layouts, animated progress bars, counters, and interactive tooltips. Ensure accessibility and responsiveness.",
+        "testStrategy": "Component/unit tests for all infographic elements, animation triggers, and responsiveness. Visual regression tests with Storybook.",
+        "priority": "high",
+        "dependencies": [
+          8
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Design InfographicSection Layout and Responsive Grid",
+            "description": "Establish the overall structure for the InfographicSection component, implementing a responsive grid layout using Tailwind CSS and modern UI patterns.",
+            "dependencies": [],
+            "details": "Create '/frontend/components/blueprint/InfographicSection.tsx' as the main container. Use Tailwind CSS to define a responsive grid that adapts to various screen sizes, ensuring accessibility and glass morphism effects.",
+            "status": "pending",
+            "testStrategy": "Visual regression tests with Storybook for layout and responsiveness. Accessibility checks for keyboard navigation and screen readers."
+          },
+          {
+            "id": 2,
+            "title": "Develop Animated Card Components for Objectives, Audience, Assessment, and Metrics",
+            "description": "Implement individual card components for each infographic section, integrating Framer Motion v11+ for entry, hover, and interactive animations.",
+            "dependencies": [
+              "9.1"
+            ],
+            "details": "Create subcomponents for objectives, audience, assessment, and metrics. Use Framer Motion's motion components and variants to animate cards on mount and interaction. Apply Tailwind CSS for glass morphism and consistent card styling.",
+            "status": "pending",
+            "testStrategy": "Component/unit tests for animation triggers and card rendering. Storybook stories for each card with animation states."
+          },
+          {
+            "id": 3,
+            "title": "Integrate Recharts v3+ for Data Visualization",
+            "description": "Embed Recharts-based charts within the appropriate card components to visualize assessment and metrics data.",
+            "dependencies": [
+              "9.2"
+            ],
+            "details": "Use Recharts v3+ to render bar, line, or pie charts as needed. Ensure charts are responsive and styled to match the dashboard's visual language. Add interactive tooltips and accessible labels.",
+            "status": "pending",
+            "testStrategy": "Unit tests for chart rendering with mock data. Visual regression tests for chart responsiveness and tooltip interactions."
+          },
+          {
+            "id": 4,
+            "title": "Implement Animated Progress Bars, Counters, and Tooltips",
+            "description": "Add animated progress bars and counters using Framer Motion, and implement interactive tooltips for data points and metrics.",
+            "dependencies": [
+              "9.2",
+              "9.3"
+            ],
+            "details": "Use Framer Motion to animate progress bars and counters within cards. Integrate accessible tooltips that display additional information on hover or focus, ensuring ARIA compliance.",
+            "status": "pending",
+            "testStrategy": "Unit tests for animation logic and tooltip accessibility. Storybook stories for progress bars, counters, and tooltips."
+          },
+          {
+            "id": 5,
+            "title": "Ensure Accessibility, Responsiveness, and Comprehensive Testing",
+            "description": "Audit all components for accessibility and responsiveness, and implement comprehensive component/unit and visual regression tests.",
+            "dependencies": [
+              "9.1",
+              "9.2",
+              "9.3",
+              "9.4"
+            ],
+            "details": "Verify keyboard navigation, color contrast, and ARIA attributes. Test all components across device sizes. Finalize Storybook stories and automate visual regression and accessibility tests.",
+            "status": "pending",
+            "testStrategy": "Automated accessibility tests (e.g., axe-core), responsive layout tests, and visual regression tests for all components."
+          }
+        ]
+      },
+      {
+        "id": 10,
+        "title": "Implement Timeline, Chart, and Table Visualization Components",
+        "description": "Create TimelineSection, ChartSection, and TableSection components for dynamic data rendering.",
+        "details": "Use recharts (v3+) for ChartSection (bar, line, pie, radar), react-table (v8+) for TableSection, and visx or react-chrono for TimelineSection. Ensure all components accept dynamic schema and displayType. Add sorting/filtering for tables and interactivity for charts/timelines.",
+        "testStrategy": "Component/unit tests for each visualization type, schema compatibility, and error handling. Visual regression and interaction tests.",
+        "priority": "medium",
+        "dependencies": [
+          8
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Design Dynamic Schema Interfaces for Visualization Components",
+            "description": "Define TypeScript interfaces and props for TimelineSection, ChartSection, and TableSection to accept dynamic data schemas and displayType parameters.",
+            "dependencies": [],
+            "details": "Ensure each component can flexibly handle varying data structures and display types, supporting extensibility for future visualization formats.",
+            "status": "pending",
+            "testStrategy": "Unit tests for schema validation, prop type enforcement, and error handling for unsupported schemas."
+          },
+          {
+            "id": 2,
+            "title": "Implement ChartSection Using Recharts v3+",
+            "description": "Develop the ChartSection component supporting bar, line, pie, and radar charts using Recharts v3+ with dynamic schema mapping.",
+            "dependencies": [
+              "10.1"
+            ],
+            "details": "Enable chart type selection via displayType, map incoming data to Recharts format, and add interactivity such as tooltips, legends, and click events.",
+            "status": "pending",
+            "testStrategy": "Component tests for each chart type, schema compatibility, and interaction events."
+          },
+          {
+            "id": 3,
+            "title": "Implement TableSection Using React-Table v8+",
+            "description": "Build the TableSection component using react-table v8+ to render tables with dynamic columns, sorting, and filtering capabilities.",
+            "dependencies": [
+              "10.1"
+            ],
+            "details": "Configure columns and data via dynamic schema, implement sorting and filtering UI, and ensure accessibility and responsiveness.",
+            "status": "pending",
+            "testStrategy": "Unit and component tests for sorting, filtering, schema mapping, and accessibility."
+          },
+          {
+            "id": 4,
+            "title": "Implement TimelineSection Using visx or react-chrono",
+            "description": "Create the TimelineSection component using visx or react-chrono, supporting dynamic event data and displayType-driven rendering.",
+            "dependencies": [
+              "10.1"
+            ],
+            "details": "Map incoming data to timeline format, enable interactivity such as event selection and hover details, and support multiple timeline layouts.",
+            "status": "pending",
+            "testStrategy": "Component tests for timeline rendering, schema compatibility, and interactive features."
+          },
+          {
+            "id": 5,
+            "title": "Integrate Visualization Components and Ensure Interoperability",
+            "description": "Compose TimelineSection, ChartSection, and TableSection into a unified visualization module, ensuring seamless interoperability and consistent handling of dynamic schemas and displayType.",
+            "dependencies": [
+              "10.2",
+              "10.3",
+              "10.4"
+            ],
+            "details": "Implement logic to route data and displayType to the correct component, handle unknown types gracefully, and ensure consistent styling and error handling across all visualizations.",
+            "status": "pending",
+            "testStrategy": "Integration tests for component routing, schema compatibility, error handling, and visual regression."
+          }
+        ]
+      },
+      {
+        "id": 11,
+        "title": "Enhance Markdown Rendering and Conversion Logic",
+        "description": "Upgrade MarkdownSection and implement robust blueprint-to-markdown conversion.",
+        "details": "Use react-markdown (v9+) with rehype-highlight for syntax highlighting. Implement convertBlueprintToMarkdown as per PRD. Ensure proper heading hierarchy, tables, blockquotes, and section breaks. Add zebra striping and borders to tables.",
+        "testStrategy": "Unit tests for markdown conversion, rendering of all section types, and edge cases. Snapshot tests for output.",
+        "priority": "medium",
+        "dependencies": [
+          8
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Upgrade MarkdownSection to Use react-markdown v9+ with rehype-highlight",
+            "description": "Refactor the MarkdownSection component to utilize react-markdown version 9 or higher, integrating rehype-highlight for syntax highlighting of code blocks.",
+            "dependencies": [],
+            "details": "Ensure all code blocks in markdown are rendered with syntax highlighting using rehype-highlight. Verify compatibility with existing markdown features and update imports and configuration as needed.",
+            "status": "pending",
+            "testStrategy": "Unit test MarkdownSection rendering with various code blocks and languages. Snapshot test for visual correctness of syntax highlighting."
+          },
+          {
+            "id": 2,
+            "title": "Implement convertBlueprintToMarkdown Function per PRD",
+            "description": "Develop the convertBlueprintToMarkdown function to transform blueprint data structures into valid markdown, following the Product Requirements Document (PRD).",
+            "dependencies": [
+              "11.1"
+            ],
+            "details": "Ensure the function handles all blueprint section types, including headings, tables, blockquotes, and section breaks, producing well-structured markdown output.",
+            "status": "pending",
+            "testStrategy": "Unit test conversion of all blueprint section types and edge cases. Assert markdown output matches expected structure."
+          },
+          {
+            "id": 3,
+            "title": "Enforce Proper Heading Hierarchy and Section Breaks",
+            "description": "Ensure that the markdown output from convertBlueprintToMarkdown maintains a logical and accessible heading hierarchy, and inserts section breaks where appropriate.",
+            "dependencies": [
+              "11.2"
+            ],
+            "details": "Validate that headings use correct levels (e.g., h1, h2, h3) and that section breaks are represented in markdown for clear document structure.",
+            "status": "pending",
+            "testStrategy": "Unit test heading levels and section break rendering. Accessibility test for screen reader compatibility."
+          },
+          {
+            "id": 4,
+            "title": "Enhance Table Rendering with Zebra Striping and Borders",
+            "description": "Update markdown table rendering to include zebra striping and visible borders for improved readability.",
+            "dependencies": [
+              "11.1"
+            ],
+            "details": "Apply custom CSS or component overrides to ensure tables rendered from markdown have alternating row backgrounds and clear borders.",
+            "status": "pending",
+            "testStrategy": "Snapshot and visual regression tests for table appearance. Unit test for correct application of styles."
+          },
+          {
+            "id": 5,
+            "title": "Comprehensive Testing of Markdown Rendering and Conversion Logic",
+            "description": "Develop and execute unit and snapshot tests covering all markdown section types, edge cases, and visual output.",
+            "dependencies": [
+              "11.2",
+              "11.3",
+              "11.4"
+            ],
+            "details": "Ensure all features—syntax highlighting, heading hierarchy, tables, blockquotes, and section breaks—are robustly tested. Cover both conversion and rendering layers.",
+            "status": "pending",
+            "testStrategy": "Unit tests for all conversion and rendering scenarios. Snapshot tests for visual output. Edge case and regression tests."
+          }
+        ]
+      },
+      {
+        "id": 12,
+        "title": "Implement Blueprint Viewer with View Toggle",
+        "description": "Enhance BlueprintViewer.tsx to support toggling between infographic and markdown views, routing sections by displayType.",
+        "details": "Add UI toggle (infographic/markdown). Dynamically render sections using displayType and route to correct component. Handle unknown/missing displayTypes gracefully. Ensure seamless transitions and accessibility.",
+        "testStrategy": "Integration and UI tests for view toggling, section routing, and fallback handling. User interaction and accessibility tests.",
+        "priority": "medium",
+        "dependencies": [
+          9,
+          10,
+          11
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Design and Implement View Toggle UI",
+            "description": "Create a user interface toggle in BlueprintViewer.tsx to switch between infographic and markdown views, ensuring accessibility and seamless transitions.",
+            "dependencies": [],
+            "details": "Use Blueprint.js or equivalent accessible UI components for the toggle. Ensure keyboard navigation and ARIA attributes for accessibility. The toggle should update the view state and trigger re-rendering of the appropriate section.",
+            "status": "pending",
+            "testStrategy": "UI and accessibility tests for toggle interaction, keyboard navigation, and ARIA compliance."
+          },
+          {
+            "id": 2,
+            "title": "Dynamic Section Rendering by displayType",
+            "description": "Implement logic to dynamically render each section in BlueprintViewer.tsx based on its displayType, routing to the correct component (infographic or markdown).",
+            "dependencies": [
+              "12.1"
+            ],
+            "details": "Map displayType values to their respective components. Ensure that the correct component is rendered for each section and that switching views updates all relevant sections.",
+            "status": "pending",
+            "testStrategy": "Integration tests for correct component routing and rendering based on displayType."
+          },
+          {
+            "id": 3,
+            "title": "Graceful Handling of Unknown or Missing displayTypes",
+            "description": "Add fallback logic to handle sections with unknown or missing displayType values, displaying a user-friendly message or default component.",
+            "dependencies": [
+              "12.2"
+            ],
+            "details": "Implement a default/fallback component for unrecognized displayTypes. Ensure the UI does not break and provides clear feedback to the user.",
+            "status": "pending",
+            "testStrategy": "UI and integration tests for fallback rendering and user messaging."
+          },
+          {
+            "id": 4,
+            "title": "Ensure Seamless Transitions Between Views",
+            "description": "Implement smooth transitions and state management when toggling between infographic and markdown views, preserving scroll position and minimizing UI flicker.",
+            "dependencies": [
+              "12.2"
+            ],
+            "details": "Use React state and effect hooks to manage transitions. Consider animation or transition effects for enhanced UX. Maintain scroll position and focus where appropriate.",
+            "status": "pending",
+            "testStrategy": "User interaction tests for transition smoothness, scroll preservation, and absence of flicker."
+          },
+          {
+            "id": 5,
+            "title": "Accessibility and Integration Testing",
+            "description": "Conduct comprehensive accessibility and integration testing for the BlueprintViewer, covering toggle controls, section rendering, fallbacks, and transitions.",
+            "dependencies": [
+              "12.1",
+              "12.2",
+              "12.3",
+              "12.4"
+            ],
+            "details": "Test with screen readers, keyboard navigation, and various assistive technologies. Validate ARIA roles, labels, and focus management. Ensure all user flows are accessible.",
+            "status": "pending",
+            "testStrategy": "Accessibility audits, integration tests, and user scenario walkthroughs for all implemented features."
+          }
+        ]
+      },
+      {
+        "id": 13,
+        "title": "Integrate Comprehensive Logging System",
+        "description": "Enhance logging with structured events, service tagging, and persistent storage for all blueprint operations.",
+        "details": "Update '/frontend/lib/logging/logger.ts' and logStore.ts to support new log entry schema. Log all blueprint generation events, model usage, errors, and fallbacks. Ensure logs are filterable by blueprintId, model, and status. Scrub sensitive data. Use localForage or IndexedDB for persistent storage.",
+        "testStrategy": "Unit and integration tests for all log events, filtering, and search. Test log export and sensitive data scrubbing.",
+        "priority": "medium",
+        "dependencies": [
+          4,
+          6
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Design Structured Log Entry Schema",
+            "description": "Define and document a standardized log entry schema that includes structured events, service tags, and required metadata for all blueprint operations.",
+            "dependencies": [],
+            "details": "Specify fields such as timestamp, blueprintId, model, event type, status, error details, and service tags. Ensure schema supports filtering and future extensibility.",
+            "status": "pending",
+            "testStrategy": "Review schema documentation and validate sample log entries for completeness and adherence to requirements."
+          },
+          {
+            "id": 2,
+            "title": "Update Logging Modules for New Schema",
+            "description": "Refactor '/frontend/lib/logging/logger.ts' and 'logStore.ts' to implement the new structured log entry schema and ensure all blueprint generation events, model usage, errors, and fallbacks are logged.",
+            "dependencies": [
+              "13.1"
+            ],
+            "details": "Modify logging functions to generate logs conforming to the new schema. Ensure all relevant events are captured and logged with appropriate metadata.",
+            "status": "pending",
+            "testStrategy": "Unit test logging functions for each event type. Verify logs are correctly structured and contain all required fields."
+          },
+          {
+            "id": 3,
+            "title": "Implement Persistent Log Storage",
+            "description": "Integrate localForage or IndexedDB to persistently store all log entries, ensuring durability and accessibility across sessions.",
+            "dependencies": [
+              "13.2"
+            ],
+            "details": "Abstract log storage to use localForage or IndexedDB. Ensure logs can be efficiently written, read, and deleted as needed.",
+            "status": "pending",
+            "testStrategy": "Integration test log storage: write, retrieve, filter, and delete logs. Simulate browser restarts to verify persistence."
+          },
+          {
+            "id": 4,
+            "title": "Enable Log Filtering and Search",
+            "description": "Implement filtering and search capabilities for logs by blueprintId, model, and status to support efficient troubleshooting and analysis.",
+            "dependencies": [
+              "13.3"
+            ],
+            "details": "Develop UI and backend logic to filter and search logs based on key fields. Ensure performance and accuracy for large log volumes.",
+            "status": "pending",
+            "testStrategy": "Test filtering and search with varied log datasets. Validate results for accuracy and responsiveness."
+          },
+          {
+            "id": 5,
+            "title": "Implement Sensitive Data Scrubbing",
+            "description": "Develop and integrate mechanisms to scrub or redact sensitive data from all log entries before storage or export.",
+            "dependencies": [
+              "13.2"
+            ],
+            "details": "Identify sensitive fields and implement scrubbing logic in logging modules. Ensure compliance with data protection standards.",
+            "status": "pending",
+            "testStrategy": "Unit and integration test log entries for presence of sensitive data. Attempt to log known sensitive values and verify redaction."
+          }
+        ]
+      },
+      {
+        "id": 14,
+        "title": "Enhance Logs Page with Filtering, Search, and Export",
+        "description": "Upgrade '/frontend/app/logs/page.tsx' to support blueprint generation filters, search, and CSV export.",
+        "details": "Add filter by blueprintId, model, and status. Implement search and metrics display (avg duration, success rate). Add CSV export using papaparse or similar. Ensure admin-only access to full logs.",
+        "testStrategy": "UI and integration tests for filtering, search, export, and access control. Test with large log datasets.",
+        "priority": "low",
+        "dependencies": [
+          13
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Implement Filtering by BlueprintId, Model, and Status",
+            "description": "Add UI controls and backend query logic to filter logs by blueprintId, model, and status on the logs page.",
+            "dependencies": [],
+            "details": "Update '/frontend/app/logs/page.tsx' to include dropdowns or multi-selects for blueprintId, model, and status. Ensure filters interact with the data source to fetch and display only relevant logs.",
+            "status": "pending",
+            "testStrategy": "UI tests for filter controls, integration tests to verify correct filtering with various combinations and large datasets."
+          },
+          {
+            "id": 2,
+            "title": "Implement Search Functionality for Logs",
+            "description": "Enable keyword search across log entries, allowing users to quickly find relevant logs.",
+            "dependencies": [
+              "14.1"
+            ],
+            "details": "Add a search input to the logs page. Implement logic to filter logs based on search terms, matching relevant fields such as message, blueprintId, or model.",
+            "status": "pending",
+            "testStrategy": "UI and integration tests for search accuracy, responsiveness, and performance with large datasets."
+          },
+          {
+            "id": 3,
+            "title": "Display Metrics: Average Duration and Success Rate",
+            "description": "Calculate and display metrics such as average duration and success rate for the currently filtered logs.",
+            "dependencies": [
+              "14.1",
+              "14.2"
+            ],
+            "details": "Compute metrics in real-time based on the filtered and searched log set. Display metrics prominently above or alongside the log table.",
+            "status": "pending",
+            "testStrategy": "Unit tests for metric calculations, UI tests to verify correct display and updates as filters/search change."
+          },
+          {
+            "id": 4,
+            "title": "Add CSV Export Functionality Using papaparse or Similar",
+            "description": "Allow users to export the currently visible (filtered/searched) logs to a CSV file.",
+            "dependencies": [
+              "14.1",
+              "14.2",
+              "14.3"
+            ],
+            "details": "Integrate papaparse or a similar library to convert the displayed logs to CSV format. Add an export button to trigger download of the filtered log data.",
+            "status": "pending",
+            "testStrategy": "Integration tests to verify correct CSV content, export of large datasets, and handling of special characters."
+          },
+          {
+            "id": 5,
+            "title": "Enforce Admin-Only Access to Full Logs",
+            "description": "Restrict access to the full logs page and export functionality to admin users only.",
+            "dependencies": [
+              "14.1",
+              "14.2",
+              "14.3",
+              "14.4"
+            ],
+            "details": "Implement access control checks in both frontend and backend. Hide or disable log viewing and export features for non-admin users.",
+            "status": "pending",
+            "testStrategy": "Access control tests for various user roles, UI tests to verify feature visibility, and security tests for backend enforcement."
+          }
+        ]
+      },
+      {
+        "id": 15,
+        "title": "Implement Robust Error Handling and User Feedback",
+        "description": "Ensure all error scenarios are handled gracefully with user-friendly messages and retry options.",
+        "details": "Implement error handling for all model/API/database failures as per PRD. Show appropriate user-facing messages. Queue failed saves for retry. Log all errors with context. Use react-toastify or similar for notifications.",
+        "testStrategy": "Integration and E2E tests for all error scenarios, user feedback, and retry logic. Simulate network and API failures.",
+        "priority": "high",
+        "dependencies": [
+          4,
+          6,
+          12
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Design and Implement Error Boundaries for Critical Components",
+            "description": "Create and integrate error boundary components to catch and handle rendering errors in critical UI sections and the application root, ensuring graceful degradation and fallback UI.",
+            "dependencies": [],
+            "details": "Use React error boundaries to wrap critical and error-prone components. Implement custom fallback UIs for different error scenarios. Ensure error boundaries do not disrupt unaffected UI sections.",
+            "status": "pending",
+            "testStrategy": "Simulate rendering errors in wrapped components and verify fallback UI is displayed. Test error isolation and recovery."
+          },
+          {
+            "id": 2,
+            "title": "Centralize Error Logging and Contextual Reporting",
+            "description": "Implement a centralized error logging mechanism to capture, contextualize, and persist all errors from model, API, and database failures.",
+            "dependencies": [],
+            "details": "Use a logging service or library to record errors with relevant context (e.g., error type, affected component, user action). Integrate with external monitoring tools if required. Ensure logs are accessible for debugging and analytics.",
+            "status": "pending",
+            "testStrategy": "Trigger various error scenarios and verify that logs are generated with correct context. Validate integration with external monitoring services."
+          },
+          {
+            "id": 3,
+            "title": "Display User-Friendly Error Messages and Notifications",
+            "description": "Show clear, actionable, and context-specific error messages to users using react-toastify or a similar notification system.",
+            "dependencies": [],
+            "details": "Map error types to user-facing messages. Ensure notifications are non-intrusive and provide guidance or next steps. Support localization if needed.",
+            "status": "pending",
+            "testStrategy": "Simulate different error conditions and verify that appropriate messages are shown via notifications. Test message clarity and user comprehension."
+          },
+          {
+            "id": 4,
+            "title": "Implement Retry Logic and Failed Save Queuing",
+            "description": "Queue failed save operations and provide users with retry options for recoverable errors, ensuring data integrity and improved user experience.",
+            "dependencies": [],
+            "details": "Detect failed saves due to transient errors (e.g., network, API). Store failed operations in a queue and allow users to manually or automatically retry. Ensure retries are idempotent and do not cause data duplication.",
+            "status": "pending",
+            "testStrategy": "Simulate save failures and verify that operations are queued and retried successfully. Test edge cases such as repeated failures and eventual success."
+          },
+          {
+            "id": 5,
+            "title": "Test and Validate Error Handling and User Feedback Workflows",
+            "description": "Develop and execute integration and end-to-end tests covering all error scenarios, user feedback mechanisms, and retry logic.",
+            "dependencies": [],
+            "details": "Create test cases for model, API, and database failures. Simulate network and API errors. Validate error boundaries, logging, notifications, and retry workflows.",
+            "status": "pending",
+            "testStrategy": "Automate integration and E2E tests for all error-handling paths. Review test coverage and ensure all workflows meet PRD requirements."
+          }
+        ]
+      }
+    ],
+    "metadata": {
+      "created": "2025-10-01T11:05:39.360Z",
+      "updated": "2025-10-01T11:33:47.441Z",
+      "description": "Tasks for claude-blueprint-generation context"
+    }
   }
 }

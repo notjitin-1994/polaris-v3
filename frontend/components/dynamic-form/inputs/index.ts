@@ -25,8 +25,9 @@ export {
   NumberSpinnerInput,
 } from './RichInputs';
 
-// Input component mapping
+// Input component mapping using registry
 import { InputType } from '@/lib/dynamic-form';
+import { inputRegistry } from '@/lib/dynamic-form/inputRegistry';
 import TextInput from './TextInput';
 import TextareaInput from './TextareaInput';
 import SelectInput from './SelectInput';
@@ -48,48 +49,46 @@ import {
   NumberSpinnerInput,
 } from './RichInputs';
 
-export const getInputComponent = (type: InputType) => {
-  switch (type) {
-    // Basic inputs
-    case 'text':
-      return TextInput;
-    case 'textarea':
-      return TextareaInput;
-    case 'select':
-      return SelectInput;
-    case 'multiselect':
-      return MultiselectInput;
-    case 'scale':
-      return ScaleInput;
-    case 'number':
-      return NumberInput;
-    case 'date':
-      return DateInput;
-    case 'email':
-      return EmailInput;
-    case 'url':
-      return UrlInput;
-    // Rich visual inputs
-    case 'radio_pills':
-      return RadioPillsInput;
-    case 'radio_cards':
-      return RadioCardsInput;
-    case 'checkbox_pills':
-      return CheckboxPillsInput;
-    case 'checkbox_cards':
-      return CheckboxCardsInput;
-    case 'enhanced_scale':
-      return EnhancedScaleInput;
-    case 'labeled_slider':
-      return LabeledSliderInput;
-    case 'toggle_switch':
-      return ToggleSwitchInput;
-    case 'currency':
-      return CurrencyInputComponent;
-    case 'number_spinner':
-      return NumberSpinnerInput;
-    default:
-      console.warn(`Unknown input type: ${type}`);
-      return TextInput;
-  }
+// Register all known input types
+inputRegistry.registerBatch([
+  // Basic inputs
+  { type: 'text', component: TextInput },
+  { type: 'textarea', component: TextareaInput },
+  { type: 'select', component: SelectInput },
+  { type: 'multiselect', component: MultiselectInput },
+  { type: 'scale', component: ScaleInput },
+  { type: 'number', component: NumberInput },
+  { type: 'date', component: DateInput },
+  { type: 'email', component: EmailInput },
+  { type: 'url', component: UrlInput },
+  // Rich visual inputs
+  { type: 'radio_pills', component: RadioPillsInput },
+  { type: 'radio_cards', component: RadioCardsInput },
+  { type: 'checkbox_pills', component: CheckboxPillsInput },
+  { type: 'checkbox_cards', component: CheckboxCardsInput },
+  { type: 'enhanced_scale', component: EnhancedScaleInput },
+  { type: 'labeled_slider', component: LabeledSliderInput },
+  { type: 'toggle_switch', component: ToggleSwitchInput },
+  { type: 'currency', component: CurrencyInputComponent },
+  { type: 'number_spinner', component: NumberSpinnerInput },
+]);
+
+// Set fallback type
+inputRegistry.setFallback('text');
+
+/**
+ * Get input component for a given type
+ * Supports intelligent mapping for unknown types
+ */
+export const getInputComponent = (type: InputType | string) => {
+  const result = inputRegistry.getWithFallback(type);
+  return result.component;
+};
+
+/**
+ * Get input component with mapping information
+ * Useful for debugging and logging
+ */
+export const getInputComponentWithInfo = (type: string) => {
+  return inputRegistry.getWithFallback(type);
 };

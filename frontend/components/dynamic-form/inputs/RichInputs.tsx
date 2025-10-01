@@ -2,7 +2,7 @@
 
 /**
  * Rich Input Components for Dynamic Forms
- * 
+ *
  * These components adapt the static questionnaire's rich inputs
  * to work with the dynamic form system's BaseInputProps interface.
  */
@@ -20,14 +20,8 @@ import {
   isCurrencyQuestion,
   isNumberSpinnerQuestion,
 } from '@/lib/dynamic-form/schema';
-import {
-  RadioPillGroup,
-  type RadioPillOption,
-} from '@/components/wizard/inputs/RadioPillGroup';
-import {
-  RadioCardGroup,
-  type RadioCardOption,
-} from '@/components/wizard/inputs/RadioCardGroup';
+import { RadioPillGroup, type RadioPillOption } from '@/components/wizard/inputs/RadioPillGroup';
+import { RadioCardGroup, type RadioCardOption } from '@/components/wizard/inputs/RadioCardGroup';
 import {
   CheckboxPillGroup,
   type CheckboxPillOption,
@@ -36,22 +30,11 @@ import {
   CheckboxCardGroup,
   type CheckboxCardOption,
 } from '@/components/wizard/inputs/CheckboxCardGroup';
-import {
-  EnhancedScale,
-  type EnhancedScaleOption,
-} from '@/components/wizard/inputs/EnhancedScale';
-import {
-  LabeledSlider,
-} from '@/components/wizard/inputs/LabeledSlider';
-import {
-  ToggleSwitch,
-} from '@/components/wizard/inputs/ToggleSwitch';
-import {
-  CurrencyInput,
-} from '@/components/wizard/inputs/CurrencyInput';
-import {
-  NumberSpinner,
-} from '@/components/wizard/inputs/NumberSpinner';
+import { EnhancedScale, type EnhancedScaleOption } from '@/components/wizard/inputs/EnhancedScale';
+import { LabeledSlider } from '@/components/wizard/inputs/LabeledSlider';
+import { ToggleSwitch } from '@/components/wizard/inputs/ToggleSwitch';
+import { CurrencyInput } from '@/components/wizard/inputs/CurrencyInput';
+import { NumberSpinner } from '@/components/wizard/inputs/NumberSpinner';
 
 // ==================== Radio Pills ====================
 export const RadioPillsInput: React.FC<BaseInputProps> = ({
@@ -67,7 +50,7 @@ export const RadioPillsInput: React.FC<BaseInputProps> = ({
     return null;
   }
 
-  const options: RadioPillOption[] = question.options.map((opt) => ({
+  const options: RadioPillOption[] = (question.options || []).map((opt) => ({
     value: opt.value,
     label: opt.label,
     icon: opt.icon,
@@ -103,7 +86,7 @@ export const RadioCardsInput: React.FC<BaseInputProps> = ({
     return null;
   }
 
-  const options: RadioCardOption[] = question.options.map((opt) => ({
+  const options: RadioCardOption[] = (question.options || []).map((opt) => ({
     value: opt.value,
     label: opt.label,
     description: opt.description,
@@ -139,7 +122,7 @@ export const CheckboxPillsInput: React.FC<BaseInputProps> = ({
     return null;
   }
 
-  const options: CheckboxPillOption[] = question.options.map((opt) => ({
+  const options: CheckboxPillOption[] = (question.options || []).map((opt) => ({
     value: opt.value,
     label: opt.label,
     icon: opt.icon,
@@ -176,7 +159,7 @@ export const CheckboxCardsInput: React.FC<BaseInputProps> = ({
     return null;
   }
 
-  const options: CheckboxCardOption[] = question.options.map((opt) => ({
+  const options: CheckboxCardOption[] = (question.options || []).map((opt) => ({
     value: opt.value,
     label: opt.label,
     description: opt.description,
@@ -213,7 +196,14 @@ export const EnhancedScaleInput: React.FC<BaseInputProps> = ({
     return null;
   }
 
-  const config = question.scaleConfig;
+  // Provide safe defaults for scaleConfig
+  const config = question.scaleConfig || {
+    min: 1,
+    max: 5,
+    step: 1,
+    minLabel: 'Low',
+    maxLabel: 'High',
+  };
   const options: EnhancedScaleOption[] = [];
 
   // Generate options from min to max
@@ -256,7 +246,12 @@ export const LabeledSliderInput: React.FC<BaseInputProps> = ({
     return null;
   }
 
-  const config = question.sliderConfig;
+  // Provide safe defaults for sliderConfig
+  const config = question.sliderConfig || {
+    min: 0,
+    max: 100,
+    step: 1,
+  };
 
   return (
     <LabeledSlider
@@ -291,7 +286,13 @@ export const ToggleSwitchInput: React.FC<BaseInputProps> = ({
     return null;
   }
 
-  const options = question.options.map((opt) => ({
+  // Provide safe defaults for options
+  const options = (
+    question.options || [
+      { value: 'yes', label: 'Yes' },
+      { value: 'no', label: 'No' },
+    ]
+  ).map((opt) => ({
     value: opt.value,
     label: opt.label,
     icon: opt.icon,
@@ -305,7 +306,12 @@ export const ToggleSwitchInput: React.FC<BaseInputProps> = ({
       label={question.label}
       value={stringValue}
       onChange={onChange}
-      options={options as [{ value: string; label: string; icon?: string }, { value: string; label: string; icon?: string }]}
+      options={
+        options as [
+          { value: string; label: string; icon?: string },
+          { value: string; label: string; icon?: string },
+        ]
+      }
       error={error}
       helpText={question.helpText}
       required={question.required}
@@ -335,8 +341,8 @@ export const CurrencyInputComponent: React.FC<BaseInputProps> = ({
       value={typeof value === 'number' ? value : 0}
       onChange={onChange}
       currencySymbol={question.currencySymbol || '$'}
-      min={question.min}
-      max={question.max}
+      min={question.min ?? 0}
+      max={question.max ?? 999999}
       error={error}
       helpText={question.helpText}
       required={question.required}
@@ -360,7 +366,12 @@ export const NumberSpinnerInput: React.FC<BaseInputProps> = ({
     return null;
   }
 
-  const config = question.numberConfig;
+  // Provide safe defaults for numberConfig
+  const config = question.numberConfig || {
+    min: 0,
+    max: 999,
+    step: 1,
+  };
 
   return (
     <NumberSpinner
