@@ -58,11 +58,12 @@ export function BudgetResourcesInfographic({
   tools_and_platforms,
 }: BudgetResourcesInfographicProps): React.JSX.Element {
   // Prepare budget chart data
-  const budgetChartData = budget?.items.map((item) => ({
-    name: item.item.length > 20 ? `${item.item.substring(0, 20)}...` : item.item,
-    value: item.amount,
-    fullName: item.item,
-  })) || [];
+  const budgetChartData =
+    budget?.items.map((item) => ({
+      name: item.item.length > 20 ? `${item.item.substring(0, 20)}...` : item.item,
+      value: item.amount,
+      fullName: item.item,
+    })) || [];
 
   const CustomTooltip = ({ active, payload }: any) => {
     if (active && payload && payload.length) {
@@ -90,7 +91,7 @@ export function BudgetResourcesInfographic({
             className="glass-strong rounded-xl border border-white/10 p-6"
           >
             <div className="mb-4 flex items-center gap-3">
-              <div className="rounded-xl bg-success/20 p-3">
+              <div className="bg-success/20 rounded-xl p-3">
                 <DollarSign className="text-success h-6 w-6" />
               </div>
               <div>
@@ -103,7 +104,14 @@ export function BudgetResourcesInfographic({
               <PieChart>
                 <defs>
                   {COLORS.map((color, index) => (
-                    <linearGradient key={index} id={`budgetGradient${index}`} x1="0" y1="0" x2="0" y2="1">
+                    <linearGradient
+                      key={index}
+                      id={`budgetGradient${index}`}
+                      x1="0"
+                      y1="0"
+                      x2="0"
+                      y2="1"
+                    >
                       <stop offset="0%" stopColor={color} stopOpacity={1} />
                       <stop offset="100%" stopColor={color} stopOpacity={0.6} />
                     </linearGradient>
@@ -124,7 +132,10 @@ export function BudgetResourcesInfographic({
                   animationDuration={1500}
                 >
                   {budgetChartData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={`url(#budgetGradient${index % COLORS.length})`} />
+                    <Cell
+                      key={`cell-${index}`}
+                      fill={`url(#budgetGradient${index % COLORS.length})`}
+                    />
                   ))}
                 </Pie>
                 <Tooltip content={<CustomTooltip />} />
@@ -148,7 +159,7 @@ export function BudgetResourcesInfographic({
             className="glass-strong rounded-xl border border-white/10 p-6"
           >
             <div className="mb-4 flex items-center gap-3">
-              <div className="rounded-xl bg-primary/20 p-3">
+              <div className="bg-primary/20 rounded-xl p-3">
                 <BarChart3 className="text-primary h-6 w-6" />
               </div>
               <div>
@@ -170,7 +181,7 @@ export function BudgetResourcesInfographic({
                     </div>
                     <div className="h-2 overflow-hidden rounded-full bg-white/10">
                       <motion.div
-                        className="h-full bg-primary"
+                        className="bg-primary h-full"
                         initial={{ width: 0 }}
                         animate={{ width: `${percentage}%` }}
                         transition={{ delay: index * 0.1, duration: 0.8 }}
@@ -194,7 +205,7 @@ export function BudgetResourcesInfographic({
           className="glass-strong rounded-xl border border-white/10 p-6"
         >
           <div className="mb-6 flex items-center gap-3">
-            <div className="rounded-xl bg-warning/20 p-3">
+            <div className="bg-warning/20 rounded-xl p-3">
               <Users className="text-warning h-6 w-6" />
             </div>
             <div>
@@ -232,7 +243,7 @@ export function BudgetResourcesInfographic({
           className="glass-strong rounded-xl border border-white/10 p-6"
         >
           <div className="mb-6 flex items-center gap-3">
-            <div className="rounded-xl bg-secondary/20 p-3">
+            <div className="bg-secondary/20 rounded-xl p-3">
               <Wrench className="text-secondary h-6 w-6" />
             </div>
             <div>
@@ -263,4 +274,3 @@ export function BudgetResourcesInfographic({
     </div>
   );
 }
-

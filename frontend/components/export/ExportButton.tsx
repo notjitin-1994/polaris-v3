@@ -180,7 +180,7 @@ export const ExportButton: React.FC<ExportButtonProps> = ({
           <button
             onClick={() => handleExport('docx')}
             disabled={isExporting}
-            className="glass flex items-center gap-2 rounded-lg bg-primary/80 px-3 py-2 text-white transition-all duration-200 hover:bg-primary/90 focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 dark:bg-primary/70 dark:hover:bg-primary/80"
+            className="glass bg-primary/80 hover:bg-primary/90 focus-visible:ring-primary/50 dark:bg-primary/70 dark:hover:bg-primary/80 flex items-center gap-2 rounded-lg px-3 py-2 text-white transition-all duration-200 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
             title="Export as Word Document"
             aria-label="Export as Word Document"
           >

@@ -187,11 +187,15 @@ ${evaluation.level4?.timing ? `  - Measurement Timing:     ${evaluation.level4.t
 
 Certification Type:       ${evaluation.certification || 'None'}
 
-${userPrompts.length > 0 ? `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+${
+  userPrompts.length > 0
+    ? `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 💬 ADDITIONAL USER CONTEXT
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ${userPrompts.join('\n')}
-` : ''}
+`
+    : ''
+}
 
 ╔══════════════════════════════════════════════════════════════════════════════╗
 ║                         YOUR MISSION & TASK                                   ║

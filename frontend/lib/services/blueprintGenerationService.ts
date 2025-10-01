@@ -119,11 +119,15 @@ export class BlueprintGenerationService {
         // Don't fallback - re-throw error
         const duration = Date.now() - startTime;
 
-        logger.error('blueprint.generation.failed_no_fallback', 'Generation failed without fallback', {
-          blueprintId: context.blueprintId,
-          duration,
-          error: (sonnetError as Error).message,
-        });
+        logger.error(
+          'blueprint.generation.failed_no_fallback',
+          'Generation failed without fallback',
+          {
+            blueprintId: context.blueprintId,
+            duration,
+            error: (sonnetError as Error).message,
+          }
+        );
 
         return {
           success: false,

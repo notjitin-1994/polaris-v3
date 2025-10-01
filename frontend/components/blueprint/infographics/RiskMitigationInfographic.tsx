@@ -76,7 +76,9 @@ export function RiskMitigationInfographic({
                 <Shield className="text-primary h-4 w-4" />
                 <p className="text-sm font-medium text-white">Mitigation Strategy</p>
               </div>
-              <p className="text-text-secondary text-sm leading-relaxed">{risk.mitigation_strategy}</p>
+              <p className="text-text-secondary text-sm leading-relaxed">
+                {risk.mitigation_strategy}
+              </p>
             </div>
           </motion.div>
         ))}
@@ -88,7 +90,7 @@ export function RiskMitigationInfographic({
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.5 }}
-          className="glass rounded-xl border border-primary/30 p-6"
+          className="glass border-primary/30 rounded-xl border p-6"
         >
           <h4 className="mb-4 flex items-center gap-2 text-lg font-semibold text-white">
             <Shield className="text-primary h-5 w-5" />
@@ -107,4 +109,3 @@ export function RiskMitigationInfographic({
     </div>
   );
 }
-

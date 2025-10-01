@@ -121,7 +121,7 @@ export const ExportPreviewModal: React.FC<ExportPreviewModalProps> = ({
                 <Icon className="h-4 w-4" />
                 {name}
                 {isSuccess ? (
-                  <span className="h-2 w-2 rounded-full bg-success"></span>
+                  <span className="bg-success h-2 w-2 rounded-full"></span>
                 ) : (
                   <span className="h-2 w-2 rounded-full bg-red-500"></span>
                 )}

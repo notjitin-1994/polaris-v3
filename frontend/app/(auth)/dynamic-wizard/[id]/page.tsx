@@ -51,15 +51,16 @@ function DynamicWizardContent({ id }: { id: string }): React.JSX.Element {
 
       // Extract generation metadata if available
       if (data.dynamic_questions_raw && typeof data.dynamic_questions_raw === 'object') {
-        const raw: any = data.dynamic_questions_raw;
-        if (raw.metadata) {
-          setGenerationSource(raw.metadata.source || null);
-          setFallbackUsed(raw.metadata.fallbackUsed || false);
+        const raw = data.dynamic_questions_raw as Record<string, unknown>;
+        if (raw.metadata && typeof raw.metadata === 'object') {
+          const metadata = raw.metadata as Record<string, unknown>;
+          setGenerationSource((metadata.source as string) || null);
+          setFallbackUsed((metadata.fallbackUsed as boolean) || false);
 
           logger.info('dynamic_questions.wizard.loaded', 'Dynamic wizard loaded with metadata', {
             blueprintId: id,
-            source: raw.metadata.source,
-            fallbackUsed: raw.metadata.fallbackUsed,
+            source: metadata.source,
+            fallbackUsed: metadata.fallbackUsed,
           });
         }
       }
@@ -98,7 +99,7 @@ function DynamicWizardContent({ id }: { id: string }): React.JSX.Element {
           </p>
           <Link
             href="/"
-            className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+            className="bg-primary text-primary-foreground hover:bg-primary/90 inline-flex items-center gap-2 rounded-lg px-4 py-2 font-medium transition-colors"
           >
             <ArrowLeft className="h-4 w-4" />
             Back to Dashboard
@@ -153,10 +154,10 @@ function DynamicWizardContent({ id }: { id: string }): React.JSX.Element {
                   feature is currently under development.
                 </p>
 
-                <div className="mb-8 rounded-lg border border-primary/20 bg-primary/10 p-6">
+                <div className="border-primary/20 bg-primary/10 mb-8 rounded-lg border p-6">
                   <div className="flex items-start gap-3">
                     <svg
-                      className="mt-0.5 h-5 w-5 flex-shrink-0 text-primary"
+                      className="text-primary mt-0.5 h-5 w-5 flex-shrink-0"
                       fill="currentColor"
                       viewBox="0 0 20 20"
                     >
@@ -167,7 +168,7 @@ function DynamicWizardContent({ id }: { id: string }): React.JSX.Element {
                       />
                     </svg>
                     <div className="text-left">
-                      <p className="mb-2 text-sm font-medium text-primary">
+                      <p className="text-primary mb-2 text-sm font-medium">
                         In a complete implementation, this page would:
                       </p>
                       <ul className="space-y-1 text-sm text-[rgb(176,197,198)]">
@@ -183,7 +184,7 @@ function DynamicWizardContent({ id }: { id: string }): React.JSX.Element {
                 <div className="flex flex-col justify-center gap-3 sm:flex-row">
                   <Link
                     href="/"
-                    className="inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-6 py-2.5 text-sm font-medium text-primary-foreground shadow-sm transition-all duration-200 hover:bg-primary/90 hover:shadow-md"
+                    className="bg-primary text-primary-foreground hover:bg-primary/90 inline-flex items-center justify-center gap-2 rounded-lg px-6 py-2.5 text-sm font-medium shadow-sm transition-all duration-200 hover:shadow-md"
                   >
                     <ArrowLeft className="h-4 w-4" />
                     Return to Dashboard
@@ -268,13 +269,13 @@ function DynamicWizardContent({ id }: { id: string }): React.JSX.Element {
               id: `dynamic-${blueprint.id}`,
               title: 'Dynamic Questions',
               description: 'Generated questions based on your responses',
-              sections: (Array.isArray(blueprint.dynamic_questions)
-                ? blueprint.dynamic_questions.map((section: any) => ({
+              sections: Array.isArray(blueprint.dynamic_questions)
+                ? blueprint.dynamic_questions.map((section: Record<string, unknown>) => ({
                     ...section,
                     isCollapsible: section.isCollapsible ?? true,
                     isRequired: section.isRequired ?? true,
                   }))
-                : []) as any,
+                : [],
               settings: {
                 allowSaveProgress: true,
                 autoSaveInterval: 2000,

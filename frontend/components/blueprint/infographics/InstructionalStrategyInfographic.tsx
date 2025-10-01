@@ -31,7 +31,7 @@ export function InstructionalStrategyInfographic({
 }: InstructionalStrategyInfographicProps): React.JSX.Element {
   // Calculate total allocation
   const totalAllocation = modalities.reduce((sum, m) => sum + (m.allocation_percent || 0), 0);
-  
+
   // Generate colors for each modality
   const colors = [
     { bg: 'bg-primary/20', text: 'text-primary', bar: 'bg-primary' },
@@ -49,23 +49,23 @@ export function InstructionalStrategyInfographic({
         className="glass rounded-xl border border-white/10 p-6"
       >
         <div className="mb-4 flex items-center gap-3">
-          <div className="rounded-xl bg-primary/20 p-3">
-            <GraduationCap className="h-6 w-6 text-primary" />
+          <div className="bg-primary/20 rounded-xl p-3">
+            <GraduationCap className="text-primary h-6 w-6" />
           </div>
           <h3 className="text-lg font-bold text-white">Strategic Approach</h3>
         </div>
-        <p className="text-sm leading-relaxed text-text-secondary">{overview}</p>
+        <p className="text-text-secondary text-sm leading-relaxed">{overview}</p>
       </motion.div>
 
       {/* Learning Modalities */}
       <div className="space-y-4">
         <div className="mb-4 flex items-center gap-3">
-          <div className="rounded-xl bg-secondary/20 p-3">
-            <Layers className="h-6 w-6 text-secondary" />
+          <div className="bg-secondary/20 rounded-xl p-3">
+            <Layers className="text-secondary h-6 w-6" />
           </div>
           <div>
             <h3 className="text-lg font-bold text-white">Learning Modalities</h3>
-            <p className="text-sm text-text-secondary">Distribution across learning methods</p>
+            <p className="text-text-secondary text-sm">Distribution across learning methods</p>
           </div>
         </div>
 
@@ -73,20 +73,21 @@ export function InstructionalStrategyInfographic({
         <div className="space-y-3">
           {modalities.map((modality, index) => {
             const color = colors[index % colors.length];
-            const percentage = totalAllocation > 0 ? (modality.allocation_percent / totalAllocation) * 100 : 0;
-            
+            const percentage =
+              totalAllocation > 0 ? (modality.allocation_percent / totalAllocation) * 100 : 0;
+
             return (
               <motion.div
                 key={index}
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: index * 0.1 }}
-                className={`glass rounded-xl border border-white/10 p-5 transition-all hover:border-primary/30`}
+                className={`glass hover:border-primary/30 rounded-xl border border-white/10 p-5 transition-all`}
               >
                 <div className="mb-3 flex items-start justify-between">
                   <div className="flex-1">
                     <h4 className="mb-1 text-base font-semibold text-white">{modality.type}</h4>
-                    <p className="text-sm text-text-secondary">{modality.rationale}</p>
+                    <p className="text-text-secondary text-sm">{modality.rationale}</p>
                   </div>
                   <div className="ml-4 flex flex-col items-end">
                     <span className={`text-2xl font-bold ${color.text}`}>
@@ -136,12 +137,12 @@ export function InstructionalStrategyInfographic({
           className="glass rounded-xl border border-white/10 p-6"
         >
           <div className="mb-3 flex items-center gap-3">
-            <div className="rounded-xl bg-success/20 p-3">
-              <Users className="h-6 w-6 text-success" />
+            <div className="bg-success/20 rounded-xl p-3">
+              <Users className="text-success h-6 w-6" />
             </div>
             <h3 className="text-lg font-bold text-white">Cohort Model</h3>
           </div>
-          <p className="text-sm leading-relaxed text-text-secondary">{cohort_model}</p>
+          <p className="text-text-secondary text-sm leading-relaxed">{cohort_model}</p>
         </motion.div>
       )}
 
@@ -154,8 +155,8 @@ export function InstructionalStrategyInfographic({
           className="glass rounded-xl border border-white/10 p-6"
         >
           <div className="mb-4 flex items-center gap-3">
-            <div className="rounded-xl bg-warning/20 p-3">
-              <Accessibility className="h-6 w-6 text-warning" />
+            <div className="bg-warning/20 rounded-xl p-3">
+              <Accessibility className="text-warning h-6 w-6" />
             </div>
             <h3 className="text-lg font-bold text-white">Accessibility Considerations</h3>
           </div>
@@ -168,8 +169,8 @@ export function InstructionalStrategyInfographic({
                 transition={{ delay: 0.6 + index * 0.05 }}
                 className="flex items-start gap-3 rounded-lg bg-white/5 p-4"
               >
-                <div className="mt-0.5 h-2 w-2 flex-shrink-0 rounded-full bg-success" />
-                <span className="text-sm text-text-secondary">{consideration}</span>
+                <div className="bg-success mt-0.5 h-2 w-2 flex-shrink-0 rounded-full" />
+                <span className="text-text-secondary text-sm">{consideration}</span>
               </motion.div>
             ))}
           </div>
@@ -178,4 +179,3 @@ export function InstructionalStrategyInfographic({
     </div>
   );
 }
-

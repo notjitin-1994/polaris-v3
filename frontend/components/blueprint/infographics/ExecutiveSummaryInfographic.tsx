@@ -33,29 +33,29 @@ export function ExecutiveSummaryInfographic({
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="relative overflow-hidden rounded-2xl border border-white/10 bg-primary/10 p-6 md:p-8"
+        className="bg-primary/10 relative overflow-hidden rounded-2xl border border-white/10 p-6 md:p-8"
       >
         {/* Decorative Background */}
         <div className="absolute inset-0 opacity-5">
-          <div className="absolute top-0 right-0 h-64 w-64 rounded-full bg-primary blur-3xl" />
-          <div className="absolute bottom-0 left-0 h-64 w-64 rounded-full bg-secondary blur-3xl" />
+          <div className="bg-primary absolute top-0 right-0 h-64 w-64 rounded-full blur-3xl" />
+          <div className="bg-secondary absolute bottom-0 left-0 h-64 w-64 rounded-full blur-3xl" />
         </div>
 
         {/* Content */}
         <div className="relative z-10">
           <div className="mb-6 flex items-center justify-between">
-            <div className="flex items-center gap-3 flex-1">
+            <div className="flex flex-1 items-center gap-3">
               <motion.div
                 animate={{ rotate: [0, 360] }}
                 transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
-                className="rounded-xl bg-primary/20 p-3"
+                className="bg-primary/20 rounded-xl p-3"
               >
-                <Sparkles className="h-6 w-6 text-primary" />
+                <Sparkles className="text-primary h-6 w-6" />
               </motion.div>
               <div>
                 <h3 className="text-xl font-bold text-white">Strategic Overview</h3>
                 {metadata?.organization && (
-                  <p className="text-sm text-text-secondary">{metadata.organization}</p>
+                  <p className="text-text-secondary text-sm">{metadata.organization}</p>
                 )}
               </div>
             </div>
@@ -77,7 +77,7 @@ export function ExecutiveSummaryInfographic({
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => console.log('Modify Strategic Overview')}
-              className="pressable inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full border-2 border-primary bg-primary/10 text-primary transition-all hover:bg-primary/20 hover:border-primary hover:shadow-[0_0_25px_rgba(167,218,219,0.8)]"
+              className="pressable border-primary bg-primary/10 text-primary hover:bg-primary/20 hover:border-primary inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full border-2 transition-all hover:shadow-[0_0_25px_rgba(167,218,219,0.8)]"
               title="Modify with AI"
               aria-label="Modify Strategic Overview with AI"
             >
@@ -85,7 +85,7 @@ export function ExecutiveSummaryInfographic({
             </motion.button>
           </div>
 
-          <p className="text-base leading-relaxed text-text-secondary">{content}</p>
+          <p className="text-text-secondary text-base leading-relaxed">{content}</p>
         </div>
       </motion.div>
 
@@ -99,19 +99,19 @@ export function ExecutiveSummaryInfographic({
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.1 * (index + 1) }}
               whileHover={{ scale: 1.02, y: -4 }}
-              className="glass-card group rounded-xl border border-white/10 p-5 transition-all hover:border-primary/30"
+              className="glass-card group hover:border-primary/30 rounded-xl border border-white/10 p-5 transition-all"
             >
               <div className="mb-3 flex items-center gap-2">
-                <div className="rounded-lg bg-primary/20 p-2">
-                  {index === 0 && <Target className="h-4 w-4 text-primary" />}
-                  {index === 1 && <Users className="h-4 w-4 text-secondary" />}
-                  {index === 2 && <TrendingUp className="h-4 w-4 text-success" />}
+                <div className="bg-primary/20 rounded-lg p-2">
+                  {index === 0 && <Target className="text-primary h-4 w-4" />}
+                  {index === 1 && <Users className="text-secondary h-4 w-4" />}
+                  {index === 2 && <TrendingUp className="text-success h-4 w-4" />}
                 </div>
-                <span className="text-xs font-bold uppercase tracking-wider text-primary">
+                <span className="text-primary text-xs font-bold tracking-wider uppercase">
                   Highlight {index + 1}
                 </span>
               </div>
-              <p className="text-sm leading-relaxed text-text-secondary">{highlight.trim()}.</p>
+              <p className="text-text-secondary text-sm leading-relaxed">{highlight.trim()}.</p>
             </motion.div>
           ))}
         </div>
@@ -119,4 +119,3 @@ export function ExecutiveSummaryInfographic({
     </div>
   );
 }
-

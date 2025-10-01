@@ -73,7 +73,7 @@ export const UserAvatar = memo(function UserAvatar({
 
   return (
     <span
-      className={`${sizeClass} inline-flex items-center justify-center overflow-hidden rounded-full border-2 border-neutral-200/30 bg-primary/10 ring-1 ring-neutral-200/20`}
+      className={`${sizeClass} bg-primary/10 inline-flex items-center justify-center overflow-hidden rounded-full border-2 border-neutral-200/30 ring-1 ring-neutral-200/20`}
     >
       <span className={textClass}>{getUserInitial(user)}</span>
     </span>

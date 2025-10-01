@@ -141,7 +141,7 @@ export const ExportHistory: React.FC<ExportHistoryProps> = ({ className = '' }) 
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => handleDownload(entry)}
-                    className="p-2 text-gray-400 transition-colors hover:text-secondary dark:hover:text-secondary-light"
+                    className="hover:text-secondary dark:hover:text-secondary-light p-2 text-gray-400 transition-colors"
                     title="Download"
                   >
                     <Download className="h-4 w-4" />

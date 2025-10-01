@@ -100,7 +100,7 @@ export default function LoginPageClient(): React.JSX.Element {
                         {/* Confidence level bar */}
                         <div className="mb-5">
                           <div className="h-2 overflow-hidden rounded-full bg-white/10">
-                            <div className="h-full w-[72%] bg-primary" />
+                            <div className="bg-primary h-full w-[72%]" />
                           </div>
                           <div className="mt-1 h-2 w-20 rounded-full bg-white/15" />
                         </div>
@@ -113,7 +113,7 @@ export default function LoginPageClient(): React.JSX.Element {
                           <div className="col-span-2 flex h-full flex-col space-y-2">
                             <div className="h-2 w-4/5 rounded-full bg-white/15" />
                             <div className="h-2 w-3/4 rounded-full bg-white/10" />
-                            <div className="min-h-[160px] flex-1 rounded-xl border border-white/10 bg-primary/15 md:min-h-[200px] lg:min-h-[240px]" />
+                            <div className="bg-primary/15 min-h-[160px] flex-1 rounded-xl border border-white/10 md:min-h-[200px] lg:min-h-[240px]" />
                             <div className="grid grid-cols-2 gap-2">
                               <div className="h-10 rounded-lg border border-white/10 bg-white/5" />
                               <div className="h-10 rounded-lg border border-white/10 bg-white/5" />
@@ -151,7 +151,7 @@ export default function LoginPageClient(): React.JSX.Element {
                     <div className="animate-scale-in flex h-full flex-col rounded-2xl px-0 pt-0.5 pb-2 sm:pt-1 sm:pb-3 md:pt-2 md:pb-4 lg:pb-4">
                       {/* Soft halo for mobile to lift the card */}
                       <div
-                        className="pointer-events-none absolute -inset-0.5 rounded-2xl bg-primary/10 opacity-70 blur-xl"
+                        className="bg-primary/10 pointer-events-none absolute -inset-0.5 rounded-2xl opacity-70 blur-xl"
                         aria-hidden="true"
                       />
                       <div className="relative flex flex-1 flex-col">

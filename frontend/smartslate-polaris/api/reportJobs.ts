@@ -230,16 +230,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     if (!jobId) return res.status(400).json({ error: 'job_id is required' });
     const job = store.get(jobId);
     if (!job) return res.status(404).json({ error: 'job not found' });
-    return res
-      .status(200)
-      .json({
-        job_id: job.id,
-        status: job.status,
-        percent: job.percent,
-        eta_seconds: job.eta_seconds,
-        result: job.result ?? null,
-        error: job.error ?? null,
-      });
+    return res.status(200).json({
+      job_id: job.id,
+      status: job.status,
+      percent: job.percent,
+      eta_seconds: job.eta_seconds,
+      result: job.result ?? null,
+      error: job.error ?? null,
+    });
   }
 
   return res.status(405).json({ error: 'Method not allowed' });

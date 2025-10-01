@@ -38,7 +38,7 @@ export class WordGenerator {
   private readonly surfaceBg = '142433'; // Surface background
   private readonly textPrimary = 'E0E0E0'; // #e0e0e0
   private readonly textSecondary = 'B0C5C6'; // #b0c5c6
-  
+
   private logoBase64: string | null = null;
 
   /**
@@ -46,13 +46,13 @@ export class WordGenerator {
    */
   private async loadLogo(): Promise<void> {
     if (this.logoBase64) return;
-    
+
     try {
       const response = await fetch('/logo.png');
       const blob = await response.blob();
       const arrayBuffer = await blob.arrayBuffer();
       const bytes = new Uint8Array(arrayBuffer);
-      
+
       // Convert to base64
       let binary = '';
       for (let i = 0; i < bytes.byteLength; i++) {
@@ -75,7 +75,7 @@ export class WordGenerator {
     try {
       // Load logo first
       await this.loadLogo();
-      
+
       const sections: Paragraph[] = [];
 
       // Add branded title page with logo
@@ -494,13 +494,13 @@ export class WordGenerator {
       paragraphs.push(
         new Paragraph({
           children: [
-            new TextRun({ 
-              text: 'Blueprint ID: ', 
+            new TextRun({
+              text: 'Blueprint ID: ',
               bold: true,
               color: this.brandIndigo,
               size: 22,
             }),
-            new TextRun({ 
+            new TextRun({
               text: metadata.blueprintId,
               color: this.textPrimary,
               size: 22,
@@ -514,8 +514,8 @@ export class WordGenerator {
     paragraphs.push(
       new Paragraph({
         children: [
-          new TextRun({ 
-            text: 'Generated: ', 
+          new TextRun({
+            text: 'Generated: ',
             bold: true,
             color: this.brandIndigo,
             size: 22,
@@ -597,7 +597,9 @@ export class WordGenerator {
 
     // Learning Objectives
     if (blueprint.learning_objectives?.objectives) {
-      paragraphs.push(this.createBrandedHeading('Learning Objectives', HeadingLevel.HEADING_1, true));
+      paragraphs.push(
+        this.createBrandedHeading('Learning Objectives', HeadingLevel.HEADING_1, true)
+      );
 
       blueprint.learning_objectives.objectives.forEach((obj: any, index: number) => {
         paragraphs.push(
@@ -618,13 +620,13 @@ export class WordGenerator {
           paragraphs.push(
             new Paragraph({
               children: [
-                new TextRun({ 
-                  text: 'Success Metric: ', 
+                new TextRun({
+                  text: 'Success Metric: ',
                   bold: true,
                   color: this.brandIndigo,
                   size: 20,
                 }),
-                new TextRun({ 
+                new TextRun({
                   text: obj.metric,
                   color: this.textPrimary,
                   size: 20,
@@ -639,13 +641,13 @@ export class WordGenerator {
           paragraphs.push(
             new Paragraph({
               children: [
-                new TextRun({ 
-                  text: 'Target: ', 
+                new TextRun({
+                  text: 'Target: ',
                   bold: true,
                   color: this.brandIndigo,
                   size: 20,
                 }),
-                new TextRun({ 
+                new TextRun({
                   text: obj.target,
                   color: this.textPrimary,
                   size: 20,
@@ -1258,4 +1260,3 @@ export class WordGenerator {
     return runs.length > 0 ? runs : [new TextRun({ text })];
   }
 }
-

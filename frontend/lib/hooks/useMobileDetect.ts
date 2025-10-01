@@ -30,12 +30,10 @@ export function useMobileDetect(): MobileDetectResult {
       const ua = navigator.userAgent;
       const isIOS = /iPad|iPhone|iPod/.test(ua);
       const isIPad =
-        /iPad/.test(ua) ||
-        (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+        /iPad/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
       const isMobile = /Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(ua);
       const isTablet = /iPad|Android(?!.*Mobile)/i.test(ua) || isIPad;
-      const isTouchDevice =
-        'ontouchstart' in window || navigator.maxTouchPoints > 0;
+      const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
 
       // Reduce animations on mobile, tablets, iOS devices, or when user prefers reduced motion
       const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -61,4 +59,3 @@ export function useMobileDetect(): MobileDetectResult {
 
   return result;
 }
-

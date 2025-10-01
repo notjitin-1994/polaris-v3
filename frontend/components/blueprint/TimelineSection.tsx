@@ -39,7 +39,7 @@ export function TimelineSection({ sectionKey, data }: TimelineSectionProps): Rea
 
       <div className="relative">
         {/* Timeline Line */}
-        <div className="absolute top-0 bottom-0 left-6 w-0.5 bg-primary" />
+        <div className="bg-primary absolute top-0 bottom-0 left-6 w-0.5" />
 
         {/* Timeline Items */}
         <div className="space-y-8">

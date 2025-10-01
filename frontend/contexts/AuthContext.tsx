@@ -82,10 +82,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }): React
         try {
           const { error } = await supabase.auth.signOut();
           if (error) throw error;
-          
+
           // Clear auth state
           setAuth(null, null);
-          
+
           // Redirect to login and force refresh
           if (typeof window !== 'undefined') {
             window.location.href = '/login';

@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
 import {
   Download,
   Share2,
@@ -9,10 +8,8 @@ import {
   Edit3,
   Copy,
   ExternalLink,
-  Sparkles,
   Clock,
   CheckCircle,
-  Loader2,
 } from 'lucide-react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -22,7 +19,6 @@ import { RenameDialog } from '@/components/ui/RenameDialog';
 import { getSupabaseBrowserClient } from '@/lib/supabase/client';
 import { createBrowserBlueprintService } from '@/lib/db/blueprints.client';
 import { parseAndValidateBlueprintJSON } from '@/lib/ollama/blueprintValidation';
-import type { Database } from '@/types/supabase';
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -46,11 +42,13 @@ export default function BlueprintPage({ params }: PageProps): React.JSX.Element 
   const [renamingBlueprint, setRenamingBlueprint] = useState(false);
   const [isEditingMarkdown, setIsEditingMarkdown] = useState(false);
   const [showShareMenu, setShowShareMenu] = useState(false);
+  const [showShareDialog, setShowShareDialog] = useState(false);
+  const [shareUrl, setShareUrl] = useState('');
+  const [isGeneratingShare, setIsGeneratingShare] = useState(false);
   const viewMode = 'presentation'; // Always use presentation mode
   const [showSuccessToast, setShowSuccessToast] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
   const [isExporting, setIsExporting] = useState(false);
-  const router = useRouter();
 
   // Unwrap params and fetch data
   useEffect(() => {
@@ -239,7 +237,7 @@ export default function BlueprintPage({ params }: PageProps): React.JSX.Element 
 
   if (loading) {
     return (
-      <main className="flex min-h-screen w-full items-center justify-center bg-background p-4">
+      <main className="bg-background flex min-h-screen w-full items-center justify-center p-4">
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -255,7 +253,7 @@ export default function BlueprintPage({ params }: PageProps): React.JSX.Element 
 
   if (error || !user || !data) {
     return (
-      <main className="flex min-h-screen w-full items-center justify-center bg-background p-4">
+      <main className="bg-background flex min-h-screen w-full items-center justify-center p-4">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -293,7 +291,7 @@ export default function BlueprintPage({ params }: PageProps): React.JSX.Element 
         typeof data.blueprint_json === 'string'
           ? JSON.parse(data.blueprint_json)
           : data.blueprint_json;
-      
+
       // Remove internal generation metadata if present
       if (blueprintData && typeof blueprintData === 'object') {
         const { _generation_metadata, ...cleanBlueprint } = blueprintData as any;
@@ -329,18 +327,6 @@ export default function BlueprintPage({ params }: PageProps): React.JSX.Element 
       <h1 className="font-heading line-clamp-1 text-sm font-bold text-white sm:text-base">
         {blueprintTitle}
       </h1>
-      <div className="hidden md:flex items-center gap-3 text-text-secondary text-xs">
-        <span className="flex items-center gap-1 whitespace-nowrap">
-          <Clock className="h-3 w-3" />
-          {createdDate}
-        </span>
-        {blueprintData && (
-          <span className="flex items-center gap-1 whitespace-nowrap">
-            <CheckCircle className="text-success h-3 w-3" />
-            Active
-          </span>
-        )}
-      </div>
     </div>
   );
 
@@ -380,24 +366,27 @@ export default function BlueprintPage({ params }: PageProps): React.JSX.Element 
               initial={{ opacity: 0, scale: 0.95, y: -10 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: -10 }}
-              className="glass-card absolute top-full right-0 z-50 mt-2 w-48"
+              className="glass-card absolute top-full right-0 z-50 mt-2 w-56"
             >
+              <button
+                className="text-text-secondary flex w-full items-center gap-3 px-4 py-3 text-sm transition-colors hover:bg-white/5 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
+                onClick={handleGenerateShareLink}
+                disabled={isGeneratingShare}
+              >
+                {isGeneratingShare ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <Share2 className="h-4 w-4" />
+                )}
+                Create Public Link
+              </button>
+              <div className="border-t border-white/10" />
               <button
                 className="text-text-secondary flex w-full items-center gap-3 px-4 py-3 text-sm transition-colors hover:bg-white/5 hover:text-white"
                 onClick={handleCopyLink}
               >
                 <Copy className="h-4 w-4" />
-                Copy Link
-              </button>
-              <button
-                className="text-text-secondary flex w-full items-center gap-3 px-4 py-3 text-sm transition-colors hover:bg-white/5 hover:text-white"
-                onClick={() => {
-                  setShowShareMenu(false);
-                  showToast('Opening email client...');
-                }}
-              >
-                <ExternalLink className="h-4 w-4" />
-                Share via Email
+                Copy Private Link
               </button>
             </motion.div>
           )}
@@ -409,7 +398,7 @@ export default function BlueprintPage({ params }: PageProps): React.JSX.Element 
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
         type="button"
-        className="pressable inline-flex h-8 w-8 items-center justify-center rounded-lg bg-secondary hover:bg-secondary/90 text-secondary-foreground shadow-lg transition-all hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
+        className="pressable bg-secondary hover:bg-secondary/90 text-secondary-foreground inline-flex h-8 w-8 items-center justify-center rounded-lg shadow-lg transition-all hover:shadow-xl disabled:cursor-not-allowed disabled:opacity-50"
         onClick={handleExportPDF}
         disabled={isExporting}
         title="Export blueprint as PDF"
@@ -421,7 +410,7 @@ export default function BlueprintPage({ params }: PageProps): React.JSX.Element 
   );
 
   return (
-    <main className="relative min-h-screen w-full overflow-hidden bg-background">
+    <main className="bg-background relative min-h-screen w-full overflow-hidden">
       {/* Animated Background Pattern */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="bg-primary/10 absolute -top-40 -right-40 h-80 w-80 animate-pulse rounded-full blur-3xl" />
@@ -466,8 +455,8 @@ export default function BlueprintPage({ params }: PageProps): React.JSX.Element 
           {/* Decorative Line with Teal Glow */}
           <div className="mb-8 flex items-center gap-4">
             <div className="relative h-px flex-1">
-              <div className="absolute inset-0 bg-primary blur-sm" />
-              <div className="relative h-full bg-primary" />
+              <div className="bg-primary absolute inset-0 blur-sm" />
+              <div className="bg-primary relative h-full" />
             </div>
           </div>
 
@@ -510,6 +499,113 @@ export default function BlueprintPage({ params }: PageProps): React.JSX.Element 
         placeholder="Enter blueprint name..."
         maxLength={100}
       />
+
+      {/* Share Dialog */}
+      <AnimatePresence>
+        {showShareDialog && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm"
+            onClick={() => setShowShareDialog(false)}
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+              className="glass-card relative max-w-lg overflow-hidden"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Decorative Background */}
+              <div className="absolute inset-0 overflow-hidden">
+                <div className="bg-primary/20 absolute -top-20 -right-20 h-40 w-40 rounded-full blur-3xl" />
+                <div className="bg-secondary/20 absolute -bottom-20 -left-20 h-40 w-40 rounded-full blur-3xl" />
+              </div>
+
+              {/* Content */}
+              <div className="relative z-10 p-6 sm:p-8">
+                {/* Header */}
+                <div className="mb-6 text-center">
+                  <motion.div
+                    initial={{ scale: 0, rotate: -180 }}
+                    animate={{ scale: 1, rotate: 0 }}
+                    transition={{ delay: 0.1, type: 'spring' }}
+                    className="border-primary/30 bg-primary/20 mb-4 inline-flex h-16 w-16 items-center justify-center rounded-full border backdrop-blur-xl"
+                  >
+                    <Share2 className="text-primary h-8 w-8" />
+                  </motion.div>
+                  <h3 className="text-foreground mb-2 text-xl font-bold">
+                    Public Share Link Created
+                  </h3>
+                  <p className="text-text-secondary text-sm">
+                    Anyone with this link can view the analytics dashboard for this blueprint
+                  </p>
+                </div>
+
+                {/* Share URL Input */}
+                <div className="mb-6">
+                  <label className="text-text-secondary mb-2 block text-xs font-medium tracking-wider uppercase">
+                    Share Link
+                  </label>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="text"
+                      value={shareUrl}
+                      readOnly
+                      className="text-foreground placeholder:text-text-disabled focus:border-secondary focus:ring-secondary/50 flex-1 rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-sm focus:ring-2 focus:outline-none"
+                    />
+                    <motion.button
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={handleCopyShareLink}
+                      className="bg-secondary text-secondary-foreground hover:bg-secondary/90 inline-flex h-11 items-center gap-2 rounded-lg px-4 font-medium shadow-lg transition-all hover:shadow-xl"
+                    >
+                      <Copy className="h-4 w-4" />
+                      <span>Copy</span>
+                    </motion.button>
+                  </div>
+                </div>
+
+                {/* Quick Actions */}
+                <div className="mb-6 space-y-2">
+                  <motion.a
+                    href={shareUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    className="border-primary/30 text-primary hover:border-primary/50 hover:bg-primary/10 bg-primary/5 flex items-center justify-center gap-2 rounded-lg border px-4 py-3 text-sm font-medium transition-all"
+                  >
+                    <ExternalLink className="h-4 w-4" />
+                    <span>Preview Public Dashboard</span>
+                  </motion.a>
+                </div>
+
+                {/* Info Box */}
+                <div className="border-primary/30 bg-primary/10 mb-6 rounded-lg border p-4">
+                  <p className="text-text-secondary text-xs leading-relaxed">
+                    <strong className="text-foreground">Note:</strong> This link provides read-only
+                    access to the analytics dashboard. No personal information or questionnaire
+                    answers are shared. You can disable sharing anytime by deleting this blueprint.
+                  </p>
+                </div>
+
+                {/* Close Button */}
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => setShowShareDialog(false)}
+                  className="border-foreground/20 text-foreground hover:bg-foreground/5 w-full rounded-lg border px-4 py-3 font-medium transition-all"
+                >
+                  Close
+                </motion.button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </main>
   );
 }

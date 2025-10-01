@@ -402,9 +402,7 @@ export async function submitStarmapJobForProcessing(
 /**
  * Check async job status
  */
-export async function checkAsyncJobStatus(
-  jobId: string
-): Promise<{
+export async function checkAsyncJobStatus(jobId: string): Promise<{
   data: { status: string; progress: number; result?: string; error?: string } | null;
   error: any;
 }> {

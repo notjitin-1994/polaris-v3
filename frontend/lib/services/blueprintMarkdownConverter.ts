@@ -73,7 +73,7 @@ function convertSectionToMarkdown(section: any): string {
       if (module.delivery_method) {
         md += `**Delivery Method:** ${module.delivery_method}\n\n`;
       }
-      
+
       if (module.topics && module.topics.length > 0) {
         md += `**Topics:**\n\n`;
         module.topics.forEach((topic: string) => {
@@ -81,7 +81,7 @@ function convertSectionToMarkdown(section: any): string {
         });
         md += '\n';
       }
-      
+
       if (module.learning_activities && module.learning_activities.length > 0) {
         md += `**Learning Activities:**\n\n`;
         module.learning_activities.forEach((activity: any) => {
@@ -93,7 +93,7 @@ function convertSectionToMarkdown(section: any): string {
         });
         md += '\n';
       }
-      
+
       if (module.assessment) {
         md += `**Assessment:**\n\n`;
         md += `- Type: ${module.assessment.type}\n`;
@@ -116,7 +116,7 @@ function convertSectionToMarkdown(section: any): string {
       md += `| ${kpi.metric} | ${kpi.target} | ${kpi.measurement_method} | ${kpi.frequency} |\n`;
     });
     md += '\n';
-    
+
     // Add evaluation methods if present
     if (section.evaluation_methods && section.evaluation_methods.length > 0) {
       md += '### Evaluation Methods\n\n';
@@ -127,7 +127,7 @@ function convertSectionToMarkdown(section: any): string {
       });
       md += '\n';
     }
-    
+
     return md;
   }
 
@@ -139,12 +139,12 @@ function convertSectionToMarkdown(section: any): string {
       md += `| ${metric.metric} | ${metric.current_baseline} | ${metric.target} | ${metric.measurement_method} | ${metric.timeline} |\n`;
     });
     md += '\n';
-    
+
     // Add reporting cadence if present
     if (section.reporting_cadence) {
       md += `**Reporting Cadence:** ${section.reporting_cadence}\n\n`;
     }
-    
+
     // Add dashboard requirements if present
     if (section.dashboard_requirements && section.dashboard_requirements.length > 0) {
       md += '### Dashboard Requirements\n\n';
@@ -153,7 +153,7 @@ function convertSectionToMarkdown(section: any): string {
       });
       md += '\n';
     }
-    
+
     return md;
   }
 
@@ -165,7 +165,7 @@ function convertSectionToMarkdown(section: any): string {
       md += `| ${risk.risk} | ${risk.probability} | ${risk.impact} | ${risk.mitigation_strategy} |\n`;
     });
     md += '\n';
-    
+
     // Add contingency plans if present
     if (section.contingency_plans && section.contingency_plans.length > 0) {
       md += '### Contingency Plans\n\n';
@@ -174,7 +174,7 @@ function convertSectionToMarkdown(section: any): string {
       });
       md += '\n';
     }
-    
+
     return md;
   }
 
@@ -234,11 +234,11 @@ function convertSectionToMarkdown(section: any): string {
 
     return md;
   }
-  
+
   // Handle instructional strategy modalities
   if (section.modalities && Array.isArray(section.modalities)) {
     let md = section.overview ? `${section.overview}\n\n` : '';
-    
+
     md += '### Learning Modalities\n\n';
     section.modalities.forEach((modality: any) => {
       md += `#### ${modality.type} (${modality.allocation_percent}%)\n\n`;
@@ -247,11 +247,11 @@ function convertSectionToMarkdown(section: any): string {
         md += `**Tools:** ${modality.tools.join(', ')}\n\n`;
       }
     });
-    
+
     if (section.cohort_model) {
       md += `### Cohort Model\n\n${section.cohort_model}\n\n`;
     }
-    
+
     if (section.accessibility_considerations && section.accessibility_considerations.length > 0) {
       md += '### Accessibility Considerations\n\n';
       section.accessibility_considerations.forEach((consideration: string) => {
@@ -259,26 +259,32 @@ function convertSectionToMarkdown(section: any): string {
       });
       md += '\n';
     }
-    
+
     return md;
   }
-  
+
   // Handle target audience demographics
   if (section.demographics || section.learning_preferences) {
     let md = '';
-    
+
     if (section.demographics) {
       md += '### Demographics\n\n';
-      
+
       if (section.demographics.roles && section.demographics.roles.length > 0) {
         md += `**Roles:** ${section.demographics.roles.join(', ')}\n\n`;
       }
-      
-      if (section.demographics.experience_levels && section.demographics.experience_levels.length > 0) {
+
+      if (
+        section.demographics.experience_levels &&
+        section.demographics.experience_levels.length > 0
+      ) {
         md += `**Experience Levels:** ${section.demographics.experience_levels.join(', ')}\n\n`;
       }
-      
-      if (section.demographics.department_distribution && section.demographics.department_distribution.length > 0) {
+
+      if (
+        section.demographics.department_distribution &&
+        section.demographics.department_distribution.length > 0
+      ) {
         md += '**Department Distribution:**\n\n';
         md += '| Department | Percentage |\n';
         md += '|------------|------------|\n';
@@ -288,7 +294,7 @@ function convertSectionToMarkdown(section: any): string {
         md += '\n';
       }
     }
-    
+
     if (section.learning_preferences && section.learning_preferences.modalities) {
       md += '### Learning Preferences\n\n';
       md += '| Modality | Percentage |\n';
@@ -298,19 +304,22 @@ function convertSectionToMarkdown(section: any): string {
       });
       md += '\n';
     }
-    
+
     return md;
   }
-  
+
   // Handle sustainability plan
   if (section.maintenance_schedule || section.scaling_considerations) {
     let md = section.content ? `${section.content}\n\n` : '';
-    
+
     if (section.maintenance_schedule) {
       md += '### Maintenance Schedule\n\n';
       md += `**Review Frequency:** ${section.maintenance_schedule.review_frequency}\n\n`;
-      
-      if (section.maintenance_schedule.update_triggers && section.maintenance_schedule.update_triggers.length > 0) {
+
+      if (
+        section.maintenance_schedule.update_triggers &&
+        section.maintenance_schedule.update_triggers.length > 0
+      ) {
         md += '**Update Triggers:**\n\n';
         section.maintenance_schedule.update_triggers.forEach((trigger: string) => {
           md += `- ${trigger}\n`;
@@ -318,7 +327,7 @@ function convertSectionToMarkdown(section: any): string {
         md += '\n';
       }
     }
-    
+
     if (section.scaling_considerations && section.scaling_considerations.length > 0) {
       md += '### Scaling Considerations\n\n';
       section.scaling_considerations.forEach((consideration: string) => {
@@ -326,7 +335,7 @@ function convertSectionToMarkdown(section: any): string {
       });
       md += '\n';
     }
-    
+
     return md;
   }
 

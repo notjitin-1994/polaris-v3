@@ -28,8 +28,8 @@ function LoadingContent({ id }: { id: string }): React.JSX.Element {
   const [status, setStatus] = useState('Preparing your questions...');
   const [currentStep, setCurrentStep] = useState(1);
   const [error, setError] = useState<string | null>(null);
-  const [generationSource, setGenerationSource] = useState<'perplexity' | 'ollama' | null>(null);
-  const [fallbackUsed, setFallbackUsed] = useState(false);
+  const [_generationSource, setGenerationSource] = useState<'perplexity' | 'ollama' | null>(null);
+  const [_fallbackUsed, setFallbackUsed] = useState(false);
 
   useEffect(() => {
     let progressInterval: NodeJS.Timeout | null = null;
@@ -183,9 +183,7 @@ function LoadingContent({ id }: { id: string }): React.JSX.Element {
       <main className="relative flex flex-1 items-center justify-center overflow-hidden px-4 py-8 sm:px-6 lg:px-8">
         {/* Ambient glow background */}
         <div className="pointer-events-none absolute inset-0 z-0">
-          <div
-            className="absolute inset-0 bg-primary/[0.02]"
-          />
+          <div className="bg-primary/[0.02] absolute inset-0" />
         </div>
 
         <div className="relative z-10 mx-auto w-full max-w-3xl">
@@ -236,7 +234,7 @@ function LoadingContent({ id }: { id: string }): React.JSX.Element {
                 </div>
                 <div className="bg-surface h-2 overflow-hidden rounded-full">
                   <motion.div
-                    className="h-full bg-primary"
+                    className="bg-primary h-full"
                     initial={{ width: '0%' }}
                     animate={{ width: `${progress}%` }}
                     transition={{ duration: 0.3 }}

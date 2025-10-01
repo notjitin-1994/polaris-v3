@@ -165,23 +165,36 @@ export async function POST(req: NextRequest): Promise<NextResponse<GenerateBluep
       .eq('user_id', userId);
 
     // Build context for generation
+    const staticAnswers = blueprint.static_answers as Record<string, unknown>;
+    const dynamicAnswers = blueprint.dynamic_answers as Record<string, unknown>;
+
+    const getNestedValue = (obj: Record<string, unknown>, path: string[]): string => {
+      let current: unknown = obj;
+      for (const key of path) {
+        if (current && typeof current === 'object' && key in current) {
+          current = (current as Record<string, unknown>)[key];
+        } else {
+          return '';
+        }
+      }
+      return typeof current === 'string' ? current : '';
+    };
+
     const context = {
       blueprintId,
       userId,
-      staticAnswers: blueprint.static_answers as Record<string, any>,
-      dynamicAnswers: blueprint.dynamic_answers as Record<string, any>,
+      staticAnswers,
+      dynamicAnswers,
       organization:
-        (blueprint.static_answers as any)?.organization?.name ||
-        (blueprint.static_answers as any)?.organization ||
+        getNestedValue(staticAnswers, ['organization', 'name']) ||
+        (typeof staticAnswers?.organization === 'string' ? staticAnswers.organization : '') ||
         'Organization',
-      role: (blueprint.static_answers as any)?.role || 'Manager',
+      role: (typeof staticAnswers?.role === 'string' ? staticAnswers.role : '') || 'Manager',
       industry:
-        (blueprint.static_answers as any)?.organization?.industry ||
-        (blueprint.static_answers as any)?.industry ||
+        getNestedValue(staticAnswers, ['organization', 'industry']) ||
+        (typeof staticAnswers?.industry === 'string' ? staticAnswers.industry : '') ||
         'General',
-      learningObjectives: extractLearningObjectives(
-        blueprint.dynamic_answers as Record<string, any>
-      ),
+      learningObjectives: extractLearningObjectives(dynamicAnswers),
     };
 
     // Generate blueprint using orchestrator service

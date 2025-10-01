@@ -9,7 +9,7 @@ export const Brand = memo(function Brand() {
     >
       {/* Subtle glow effect on hover */}
       <div
-        className="absolute inset-0 rounded-xl bg-primary/5 opacity-0 blur-xl transition-opacity duration-300 group-hover:opacity-100"
+        className="bg-primary/5 absolute inset-0 rounded-xl opacity-0 blur-xl transition-opacity duration-300 group-hover:opacity-100"
         aria-hidden="true"
       />
 

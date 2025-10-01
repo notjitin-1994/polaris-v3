@@ -86,7 +86,7 @@ export const PolarisPerks = memo(function PolarisPerks() {
               aria-hidden
             />
             <span
-              className="pointer-events-none absolute -inset-px rounded-xl bg-primary/10 opacity-0 transition-opacity group-hover:opacity-100"
+              className="bg-primary/10 pointer-events-none absolute -inset-px rounded-xl opacity-0 transition-opacity group-hover:opacity-100"
               aria-hidden
             />
 

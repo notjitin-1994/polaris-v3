@@ -72,15 +72,15 @@ export function ContentOutlineInfographic({
     const days = duration.match(/(\d+)\s*(?:day|days|d)\b/i);
     const hours = duration.match(/(\d+)\s*(?:hour|hours|hr|h)\b/i);
     const minutes = duration.match(/(\d+)\s*(?:minute|minutes|min|m)\b/i);
-    
+
     // Convert to learning hours (not calendar hours):
     // 1 week = 10 study hours, 1 day = 2 study hours
-    const totalHours = 
-      (weeks ? parseInt(weeks[1]) * 10 : 0) + 
-      (days ? parseInt(days[1]) * 2 : 0) + 
-      (hours ? parseInt(hours[1]) : 0) + 
+    const totalHours =
+      (weeks ? parseInt(weeks[1]) * 10 : 0) +
+      (days ? parseInt(days[1]) * 2 : 0) +
+      (hours ? parseInt(hours[1]) : 0) +
       (minutes ? parseInt(minutes[1]) / 60 : 0);
-    
+
     return sum + totalHours;
   }, 0);
 
@@ -92,14 +92,15 @@ export function ContentOutlineInfographic({
           <motion.div
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
-            className="rounded-xl bg-primary/20 p-3"
+            className="bg-primary/20 rounded-xl p-3"
           >
-            <BookOpen className="h-6 w-6 text-primary" />
+            <BookOpen className="text-primary h-6 w-6" />
           </motion.div>
           <div>
             <h3 className="text-xl font-bold text-white">{modules.length} Learning Modules</h3>
-            <p className="text-sm text-text-secondary">
-              {totalDuration.toFixed(0)} hours total • {modules.reduce((sum, m) => sum + (m.learning_activities?.length || 0), 0)} activities
+            <p className="text-text-secondary text-sm">
+              {totalDuration.toFixed(0)} hours total •{' '}
+              {modules.reduce((sum, m) => sum + (m.learning_activities?.length || 0), 0)} activities
             </p>
           </div>
         </div>
@@ -107,7 +108,7 @@ export function ContentOutlineInfographic({
         <div className="flex gap-2">
           <button
             onClick={expandAll}
-            className="flex items-center gap-2 rounded-lg border border-primary/30 bg-primary/10 px-3 py-2 text-sm font-medium text-white transition-all hover:bg-primary/20"
+            className="border-primary/30 bg-primary/10 hover:bg-primary/20 flex items-center gap-2 rounded-lg border px-3 py-2 text-sm font-medium text-white transition-all"
           >
             <CheckCircle2 className="h-4 w-4" />
             Expand All
@@ -134,13 +135,13 @@ export function ContentOutlineInfographic({
             className="glass-card rounded-xl border border-white/10 p-4"
           >
             <div className="mb-2 flex items-center justify-between">
-              <span className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/20 text-sm font-bold text-primary">
+              <span className="bg-primary/20 text-primary flex h-8 w-8 items-center justify-center rounded-full text-sm font-bold">
                 {index + 1}
               </span>
-              <Clock className="h-4 w-4 text-text-secondary" />
+              <Clock className="text-text-secondary h-4 w-4" />
             </div>
             <h4 className="mb-1 line-clamp-2 text-sm font-semibold text-white">{module.title}</h4>
-            <p className="text-xs text-primary">{module.duration}</p>
+            <p className="text-primary text-xs">{module.duration}</p>
           </motion.div>
         ))}
       </motion.div>
@@ -148,7 +149,7 @@ export function ContentOutlineInfographic({
       {/* Module Cards with Timeline Connection */}
       <div className="relative space-y-4">
         {/* Timeline Line */}
-        <div className="absolute left-6 top-8 bottom-8 w-0.5 bg-primary" />
+        <div className="bg-primary absolute top-8 bottom-8 left-6 w-0.5" />
 
         {modules.map((module, index) => (
           <motion.div
@@ -161,7 +162,7 @@ export function ContentOutlineInfographic({
             {/* Timeline Node */}
             <motion.div
               whileHover={{ scale: 1.2 }}
-              className="absolute left-0 top-6 z-10 flex h-12 w-12 items-center justify-center rounded-full bg-primary"
+              className="bg-primary absolute top-6 left-0 z-10 flex h-12 w-12 items-center justify-center rounded-full"
             >
               <span className="text-lg font-bold text-white">{index + 1}</span>
             </motion.div>
@@ -180,15 +181,15 @@ export function ContentOutlineInfographic({
                   <div className="flex-1">
                     <div className="mb-2 flex items-center gap-3">
                       <h4 className="flex-1 text-lg font-bold text-white">{module.title}</h4>
-                      <span className="whitespace-nowrap rounded-full bg-primary/20 px-4 py-1 text-sm font-medium text-primary">
+                      <span className="bg-primary/20 text-primary rounded-full px-4 py-1 text-sm font-medium whitespace-nowrap">
                         {module.duration}
                       </span>
                     </div>
-                    <p className="text-sm text-text-secondary">{module.description}</p>
+                    <p className="text-text-secondary text-sm">{module.description}</p>
                     {module.delivery_method && (
                       <div className="mt-2 flex items-center gap-2">
-                        <PlayCircle className="h-4 w-4 text-secondary" />
-                        <span className="text-xs text-secondary">{module.delivery_method}</span>
+                        <PlayCircle className="text-secondary h-4 w-4" />
+                        <span className="text-secondary text-xs">{module.delivery_method}</span>
                       </div>
                     )}
                   </div>
@@ -197,7 +198,7 @@ export function ContentOutlineInfographic({
                     transition={{ duration: 0.3 }}
                     className="ml-4 rounded-full bg-white/5 p-2"
                   >
-                    <ChevronDown className="h-4 w-4 text-text-secondary" />
+                    <ChevronDown className="text-text-secondary h-4 w-4" />
                   </motion.div>
                 </button>
 
@@ -215,7 +216,7 @@ export function ContentOutlineInfographic({
                         {/* Topics */}
                         {module.topics && module.topics.length > 0 && (
                           <div>
-                            <p className="mb-2 text-sm font-semibold text-text-secondary">
+                            <p className="text-text-secondary mb-2 text-sm font-semibold">
                               Topics Covered:
                             </p>
                             <div className="flex flex-wrap gap-2">
@@ -237,7 +238,7 @@ export function ContentOutlineInfographic({
                         {/* Learning Activities */}
                         {module.learning_activities && module.learning_activities.length > 0 && (
                           <div>
-                            <p className="mb-3 text-sm font-semibold text-text-secondary">
+                            <p className="text-text-secondary mb-3 text-sm font-semibold">
                               Learning Activities:
                             </p>
                             <div className="space-y-2">
@@ -249,24 +250,26 @@ export function ContentOutlineInfographic({
                                   transition={{ delay: aIndex * 0.1 }}
                                   className="flex items-start gap-3 rounded-lg bg-white/5 p-4"
                                 >
-                                  <div className="mt-1 flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-secondary/20 text-xs font-bold text-secondary">
+                                  <div className="bg-secondary/20 text-secondary mt-1 flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full text-xs font-bold">
                                     {aIndex + 1}
                                   </div>
                                   <div className="flex-1">
                                     <div className="mb-1 flex items-center gap-2">
-                                      <span className="text-sm font-medium text-secondary">
+                                      <span className="text-secondary text-sm font-medium">
                                         {activity.type}
                                       </span>
                                       {activity.duration && (
                                         <>
-                                          <span className="text-xs text-text-secondary">•</span>
-                                          <span className="text-xs text-primary">
+                                          <span className="text-text-secondary text-xs">•</span>
+                                          <span className="text-primary text-xs">
                                             {activity.duration}
                                           </span>
                                         </>
                                       )}
                                     </div>
-                                    <p className="text-sm text-text-secondary">{activity.activity}</p>
+                                    <p className="text-text-secondary text-sm">
+                                      {activity.activity}
+                                    </p>
                                   </div>
                                 </motion.div>
                               ))}
@@ -276,14 +279,14 @@ export function ContentOutlineInfographic({
 
                         {/* Assessment */}
                         {module.assessment && (
-                          <div className="rounded-lg border border-success/30 bg-success/5 p-4">
+                          <div className="border-success/30 bg-success/5 rounded-lg border p-4">
                             <div className="mb-2 flex items-center gap-2">
-                              <Target className="h-5 w-5 text-success" />
-                              <p className="text-sm font-semibold text-success">
+                              <Target className="text-success h-5 w-5" />
+                              <p className="text-success text-sm font-semibold">
                                 Assessment: {module.assessment.type}
                               </p>
                             </div>
-                            <p className="text-sm text-text-secondary">
+                            <p className="text-text-secondary text-sm">
                               {module.assessment.description}
                             </p>
                           </div>
@@ -300,4 +303,3 @@ export function ContentOutlineInfographic({
     </div>
   );
 }
-

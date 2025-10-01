@@ -29,7 +29,7 @@ export const ScaleInput: React.FC<BaseInputProps> = ({
 
   const inputId = `scale-${question.id}`;
   const hasError = !!error;
-  
+
   // Defensive: Ensure scaleConfig exists with defaults
   const config = question.scaleConfig || {
     min: 1,
@@ -38,11 +38,11 @@ export const ScaleInput: React.FC<BaseInputProps> = ({
     minLabel: 'Low',
     maxLabel: 'High',
   };
-  
+
   const min = config.min ?? 1;
   const max = config.max ?? 5;
   const step = config.step ?? 1;
-  
+
   // Log for debugging
   console.log('[ScaleInput] Rendering scale:', {
     questionId: question.id,

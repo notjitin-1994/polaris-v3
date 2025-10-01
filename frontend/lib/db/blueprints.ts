@@ -536,7 +536,7 @@ export class BlueprintService {
   /**
    * World-class blueprint resume routing logic.
    * Intelligently determines the next page based on blueprint state.
-   * 
+   *
    * Flow decision order:
    * - If error status → check if recoverable, route to appropriate step
    * - If generating → check if stuck, route to generating or retry
@@ -570,10 +570,14 @@ export class BlueprintService {
       console.log('[BlueprintService] Resume routing analysis:', {
         blueprintId,
         status: data.status,
-        hasStaticAnswers: !!data.static_answers && Object.keys(data.static_answers as any).length > 0,
-        hasDynamicQuestions: Array.isArray(data.dynamic_questions) && data.dynamic_questions.length > 0,
-        hasDynamicAnswers: !!data.dynamic_answers && Object.keys(data.dynamic_answers as any).length > 0,
-        hasBlueprintJson: !!data.blueprint_json && Object.keys(data.blueprint_json as any).length > 0,
+        hasStaticAnswers:
+          !!data.static_answers && Object.keys(data.static_answers as any).length > 0,
+        hasDynamicQuestions:
+          Array.isArray(data.dynamic_questions) && data.dynamic_questions.length > 0,
+        hasDynamicAnswers:
+          !!data.dynamic_answers && Object.keys(data.dynamic_answers as any).length > 0,
+        hasBlueprintJson:
+          !!data.blueprint_json && Object.keys(data.blueprint_json as any).length > 0,
         hasBlueprintMarkdown: !!data.blueprint_markdown,
         questionnaireVersion: data.questionnaire_version,
       });
@@ -581,25 +585,25 @@ export class BlueprintService {
       // 1) Handle ERROR status - try to recover gracefully
       if (data.status === 'error') {
         console.warn('[BlueprintService] Blueprint in error state, attempting recovery');
-        
+
         // If we have dynamic answers, user was likely at generation stage
-        const hasDynamicAnswers = data.dynamic_answers && 
-          Object.keys(data.dynamic_answers as any).length > 0;
-        
+        const hasDynamicAnswers =
+          data.dynamic_answers && Object.keys(data.dynamic_answers as any).length > 0;
+
         if (hasDynamicAnswers) {
           // User completed dynamic questionnaire, retry generation
           return `/generating/${blueprintId}`;
         }
-        
+
         // Otherwise, restart from where they left off
         const staticComplete = this.isStaticComplete(
           data.static_answers as Record<string, unknown> | null | undefined
         );
-        
+
         if (!staticComplete) {
           return `/static-wizard?bid=${blueprintId}`;
         }
-        
+
         // Static complete but no dynamic answers - regenerate questions
         return `/loading/${blueprintId}`;
       }
@@ -608,39 +612,44 @@ export class BlueprintService {
       if (data.status === 'generating') {
         const updatedAt = new Date(data.updated_at as string);
         const minutesSinceUpdate = (Date.now() - updatedAt.getTime()) / 1000 / 60;
-        
+
         // If generating for more than 10 minutes, likely stuck
         if (minutesSinceUpdate > 10) {
           console.warn('[BlueprintService] Blueprint stuck in generating state, will retry');
           // Stay on generating page which will retry
         } else {
-          console.log('[BlueprintService] Blueprint actively generating, routing to generating page');
+          console.log(
+            '[BlueprintService] Blueprint actively generating, routing to generating page'
+          );
         }
-        
+
         return `/generating/${blueprintId}`;
       }
 
       // 3) Handle COMPLETED status - validate and route to viewer
       if (data.status === 'completed') {
         // Validate completion - must have either markdown or JSON
-        const hasContent = data.blueprint_markdown || 
+        const hasContent =
+          data.blueprint_markdown ||
           (data.blueprint_json && Object.keys(data.blueprint_json as any).length > 0);
-        
+
         if (hasContent) {
           console.log('[BlueprintService] Blueprint completed, routing to viewer');
           return `/blueprint/${blueprintId}`;
         } else {
           // Status is completed but no content - data integrity issue
-          console.error('[BlueprintService] Blueprint marked complete but has no content, regenerating');
-          
+          console.error(
+            '[BlueprintService] Blueprint marked complete but has no content, regenerating'
+          );
+
           // Check if we have answers to regenerate from
-          const hasDynamicAnswers = data.dynamic_answers && 
-            Object.keys(data.dynamic_answers as any).length > 0;
-          
+          const hasDynamicAnswers =
+            data.dynamic_answers && Object.keys(data.dynamic_answers as any).length > 0;
+
           if (hasDynamicAnswers) {
             return `/generating/${blueprintId}`;
           }
-          
+
           // Fall back to dynamic questionnaire
           return `/dynamic-wizard/${blueprintId}`;
         }
@@ -651,7 +660,7 @@ export class BlueprintService {
       const staticComplete = this.isStaticComplete(
         data.static_answers as Record<string, unknown> | null | undefined
       );
-      
+
       if (!staticComplete) {
         console.log('[BlueprintService] Static answers incomplete, routing to static wizard');
         return `/static-wizard?bid=${blueprintId}`;
@@ -660,9 +669,11 @@ export class BlueprintService {
       // 5) Check dynamic questions presence
       const hasDynamicQuestions =
         Array.isArray(data.dynamic_questions) && (data.dynamic_questions as unknown[]).length > 0;
-      
+
       if (!hasDynamicQuestions) {
-        console.log('[BlueprintService] No dynamic questions, routing to loading page to generate them');
+        console.log(
+          '[BlueprintService] No dynamic questions, routing to loading page to generate them'
+        );
         return `/loading/${blueprintId}`;
       }
 
@@ -671,7 +682,7 @@ export class BlueprintService {
         data.dynamic_questions as unknown,
         (data.dynamic_answers as Record<string, unknown> | null | undefined) || {}
       );
-      
+
       if (!dynamicComplete) {
         console.log('[BlueprintService] Dynamic answers incomplete, routing to dynamic wizard');
         return `/dynamic-wizard/${blueprintId}`;
@@ -680,7 +691,6 @@ export class BlueprintService {
       // 7) All questionnaires complete → generate blueprint
       console.log('[BlueprintService] All questionnaires complete, routing to generation');
       return `/generating/${blueprintId}`;
-      
     } catch (err) {
       console.error('[BlueprintService] Exception in getNextRouteForBlueprint:', err);
       // Safe fallback - start from beginning

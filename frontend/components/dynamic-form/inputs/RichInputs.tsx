@@ -221,7 +221,7 @@ export const EnhancedScaleInput: React.FC<BaseInputProps> = ({
       label: config.labels?.[index] || String(i),
     });
   }
-  
+
   // Log for debugging
   console.log('[EnhancedScaleInput] Rendering enhanced scale:', {
     questionId: question.id,

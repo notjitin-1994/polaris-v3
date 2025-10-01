@@ -18,7 +18,7 @@ let cachedSystemPrompt: string | null = null;
 
 export function buildSystemPrompt(): string {
   if (cachedSystemPrompt) return cachedSystemPrompt;
-  
+
   // Use comprehensive prompt matching Perplexity's format
   cachedSystemPrompt = `You are an expert Learning Experience Designer with deep knowledge of instructional design principles, adult learning theory, and organizational development.
 
@@ -120,7 +120,7 @@ QUESTION DESIGN BEST PRACTICES:
 - Avoid duplication across sections
 
 Return ONLY valid JSON matching the schema above.`;
-  
+
   return cachedSystemPrompt;
 }
 

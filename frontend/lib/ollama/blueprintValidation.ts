@@ -136,24 +136,24 @@ function mapFullToBlueprint(input: FullBlueprint): Blueprint {
 
 function parseDurationToHours(duration: string | undefined): number {
   if (!duration) return 0;
-  
+
   // Extract leading number; tolerate formats like "2h", "1.5h", "90m", "35 minutes", "2 hours"
   const hoursMatch = duration.match(/([0-9]+(?:\.[0-9]+)?)\s*(?:h|hour|hours)/i);
   if (hoursMatch) {
     return Math.max(0, Math.round(parseFloat(hoursMatch[1])));
   }
-  
+
   const minutesMatch = duration.match(/([0-9]+)\s*(?:m|min|mins|minute|minutes)/i);
   if (minutesMatch) {
     const mins = parseInt(minutesMatch[1], 10);
     return Math.max(0, Math.round(mins / 60));
   }
-  
+
   const numberMatch = duration.match(/^[0-9]+(?:\.[0-9]+)?$/);
   if (numberMatch) {
     return Math.max(0, Math.round(parseFloat(numberMatch[0])));
   }
-  
+
   return 0;
 }
 
@@ -186,7 +186,7 @@ function mapFullLikeToBlueprint(input: unknown): Blueprint | null {
   const title = org && org.length > 0 ? `${org} Learning Blueprint` : 'Learning Blueprint';
   const overviewParts: string[] = [];
   if (role) overviewParts.push(`Role: ${role}`);
-  
+
   // Handle executive_summary if present
   if (obj.executive_summary && typeof obj.executive_summary === 'object') {
     const execSummary = obj.executive_summary as Record<string, unknown>;
@@ -216,7 +216,7 @@ function mapFullLikeToBlueprint(input: unknown): Blueprint | null {
   // Learning objectives - handle both arrays and objects with objectives property
   const learningObjectivesRaw = obj.learning_objectives ?? obj.objectives;
   let objectives: Array<Record<string, unknown>> = [];
-  
+
   if (Array.isArray(learningObjectivesRaw)) {
     objectives = learningObjectivesRaw as Array<Record<string, unknown>>;
   } else if (learningObjectivesRaw && typeof learningObjectivesRaw === 'object') {
@@ -225,9 +225,15 @@ function mapFullLikeToBlueprint(input: unknown): Blueprint | null {
       objectives = objWithObjectives.objectives as Array<Record<string, unknown>>;
     }
   }
-  
+
   const learningObjectives = objectives
-    .map((o) => (typeof o?.title === 'string' ? o.title : typeof o?.description === 'string' ? o.description : null))
+    .map((o) =>
+      typeof o?.title === 'string'
+        ? o.title
+        : typeof o?.description === 'string'
+          ? o.description
+          : null
+    )
     .filter((s): s is string => !!s && s.trim().length > 0);
   if (learningObjectives.length === 0) {
     learningObjectives.push('Define measurable learning objectives');
@@ -235,7 +241,7 @@ function mapFullLikeToBlueprint(input: unknown): Blueprint | null {
 
   // Modules from content_outline - handle both array and object with modules property
   let contentOutline: Array<Record<string, unknown>> = [];
-  
+
   if (Array.isArray(obj.content_outline)) {
     contentOutline = obj.content_outline as Array<Record<string, unknown>>;
   } else if (obj.content_outline && typeof obj.content_outline === 'object') {
@@ -257,7 +263,7 @@ function mapFullLikeToBlueprint(input: unknown): Blueprint | null {
       ? (m.topics as string[]).filter((t) => typeof t === 'string' && t.trim().length > 0)
       : [];
     const prerequisites = Array.isArray(m?.prerequisites) ? (m.prerequisites as string[]) : [];
-    
+
     // Handle activities - Claude generates learning_activities array
     const activities: string[] = [];
     if (Array.isArray(m?.learning_activities)) {
@@ -325,13 +331,13 @@ function mapFullLikeToBlueprint(input: unknown): Blueprint | null {
   const human = Array.isArray(resourcesObj?.human_resources)
     ? (resourcesObj?.human_resources as Array<Record<string, unknown>>)
     : Array.isArray(resourcesObj?.human)
-    ? (resourcesObj?.human as Array<Record<string, unknown>>)
-    : [];
+      ? (resourcesObj?.human as Array<Record<string, unknown>>)
+      : [];
   const tools = Array.isArray(resourcesObj?.tools_and_platforms)
     ? (resourcesObj?.tools_and_platforms as Array<Record<string, unknown>>)
     : Array.isArray(resourcesObj?.tools)
-    ? (resourcesObj?.tools as Array<Record<string, unknown>>)
-    : [];
+      ? (resourcesObj?.tools as Array<Record<string, unknown>>)
+      : [];
   let budget: Array<Record<string, unknown>> = [];
   if (resourcesObj?.budget && typeof resourcesObj.budget === 'object') {
     const budgetObj = resourcesObj.budget as Record<string, unknown>;

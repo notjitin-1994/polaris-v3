@@ -345,7 +345,7 @@ export function BlueprintCard({
                   'text-white',
                   'transition-all duration-200',
                   'shadow-secondary/20 hover:shadow-secondary/30 shadow-lg',
-                  'disabled:opacity-50 disabled:cursor-not-allowed'
+                  'disabled:cursor-not-allowed disabled:opacity-50'
                 )}
                 onClick={() => onResume(blueprint.id)}
                 disabled={isResuming}
@@ -385,7 +385,7 @@ export function BlueprintCard({
                 title="View Blueprint"
                 aria-label="View Blueprint"
               >
-                <Eye className="h-4 w-4 text-secondary-foreground" />
+                <Eye className="text-secondary-foreground h-4 w-4" />
               </Link>
             )}
 

@@ -44,7 +44,7 @@ export function ResumeDialog({ isOpen, onClose, onResume, onStartFresh }: Resume
         <div className="max-h-96 overflow-y-auto p-6">
           {isLoading ? (
             <div className="flex items-center justify-center py-8">
-              <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-secondary"></div>
+              <div className="border-secondary h-8 w-8 animate-spin rounded-full border-b-2"></div>
               <span className="text-foreground/60 ml-2">Loading...</span>
             </div>
           ) : promptData.items.length === 0 ? (

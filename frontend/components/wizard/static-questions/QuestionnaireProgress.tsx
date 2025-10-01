@@ -21,7 +21,7 @@ export function QuestionnaireProgress({
       <div className="relative">
         <div className="h-2 w-full overflow-hidden rounded-full bg-white/5 shadow-inner">
           <div
-            className="relative h-full rounded-full bg-primary transition-all duration-700 ease-out"
+            className="bg-primary relative h-full rounded-full transition-all duration-700 ease-out"
             style={{
               width: `${progress}%`,
               boxShadow:

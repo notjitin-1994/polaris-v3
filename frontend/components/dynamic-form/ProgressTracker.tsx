@@ -28,7 +28,7 @@ export const ProgressTracker: React.FC<ProgressTrackerProps> = ({
 
         <div className="h-2 w-full rounded-full bg-white/5 shadow-inner">
           <div
-            className="relative h-2 rounded-full bg-primary transition-all duration-700 ease-out"
+            className="bg-primary relative h-2 rounded-full transition-all duration-700 ease-out"
             // One-off: Dynamic width for real-time progress indicator
             style={{
               width: `${progressPercentage}%`,

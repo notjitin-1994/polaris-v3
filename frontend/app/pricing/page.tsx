@@ -210,13 +210,11 @@ export default function PricingPage(): React.JSX.Element {
       <div className="relative mx-auto max-w-7xl px-4 py-16">
         {/* Hero Section */}
         <header className="animate-in fade-in slide-in-from-bottom-4 mb-12 text-center duration-700">
-          <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/10 bg-primary/20 px-3 py-1">
+          <div className="bg-primary/20 mb-4 inline-flex items-center gap-2 rounded-full border border-white/10 px-3 py-1">
             <span className="text-primary text-xs font-medium">✨ Limited Time</span>
             <span className="text-xs text-white/80">Save 20% with annual billing</span>
           </div>
-          <h1 className="text-display font-heading text-primary">
-            Launch Your Ideas Into Orbit
-          </h1>
+          <h1 className="text-display font-heading text-primary">Launch Your Ideas Into Orbit</h1>
           <p className="text-body text-text-secondary mx-auto mt-4 max-w-2xl">
             Transform your thoughts into powerful{' '}
             <span className="text-primary font-medium">Starmaps</span> with AI-powered intelligence
@@ -306,7 +304,7 @@ export default function PricingPage(): React.JSX.Element {
                 {/* Popular Badge */}
                 {p.popular && (
                   <div className="absolute -top-4 left-1/2 z-10 -translate-x-1/2">
-                    <div className="text-primary-foreground rounded-full bg-primary px-4 py-1 text-xs font-bold shadow-lg">
+                    <div className="text-primary-foreground bg-primary rounded-full px-4 py-1 text-xs font-bold shadow-lg">
                       MOST POPULAR
                     </div>
                   </div>
@@ -525,7 +523,7 @@ export default function PricingPage(): React.JSX.Element {
                   {/* Active Indicator */}
                   {active && (
                     <div className="absolute -top-4 left-1/2 z-10 -translate-x-1/2">
-                      <div className="text-primary-foreground rounded-full bg-primary px-4 py-1 text-xs font-bold shadow-lg">
+                      <div className="text-primary-foreground bg-primary rounded-full px-4 py-1 text-xs font-bold shadow-lg">
                         RECOMMENDED FOR {teamSeats} SEATS
                       </div>
                     </div>
@@ -699,7 +697,7 @@ export default function PricingPage(): React.JSX.Element {
             </p>
           </div>
 
-          <div className="relative overflow-hidden rounded-2xl border border-neutral-200 bg-primary/10 shadow-2xl dark:border-neutral-800">
+          <div className="bg-primary/10 relative overflow-hidden rounded-2xl border border-neutral-200 shadow-2xl dark:border-neutral-800">
             <div className="relative p-8 md:p-10">
               <div className="grid gap-8 md:grid-cols-2">
                 {/* Left Content */}
@@ -726,7 +724,7 @@ export default function PricingPage(): React.JSX.Element {
                   {/* Enterprise Features Grid */}
                   <div className="grid grid-cols-1 gap-4">
                     <div className="flex items-start gap-3">
-                      <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-primary/20">
+                      <div className="bg-primary/20 flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg">
                         <svg
                           className="h-5 w-5 text-purple-400"
                           fill="none"
@@ -750,7 +748,7 @@ export default function PricingPage(): React.JSX.Element {
                     </div>
 
                     <div className="flex items-start gap-3">
-                      <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-primary/20">
+                      <div className="bg-primary/20 flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg">
                         <svg
                           className="h-5 w-5 text-purple-400"
                           fill="none"
@@ -774,7 +772,7 @@ export default function PricingPage(): React.JSX.Element {
                     </div>
 
                     <div className="flex items-start gap-3">
-                      <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-primary/20">
+                      <div className="bg-primary/20 flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg">
                         <svg
                           className="h-5 w-5 text-purple-400"
                           fill="none"
@@ -801,13 +799,11 @@ export default function PricingPage(): React.JSX.Element {
 
                 {/* Right Content - Pricing */}
                 <div className="flex flex-col justify-center">
-                  <div className="rounded-2xl border border-neutral-200 bg-surface p-8 text-center dark:border-neutral-800">
+                  <div className="bg-surface rounded-2xl border border-neutral-200 p-8 text-center dark:border-neutral-800">
                     <div className="mb-4">
                       <span className="text-text-disabled text-sm">Starting at</span>
                       <div className="mt-2 flex items-baseline justify-center gap-1">
-                        <span className="text-5xl font-bold text-primary">
-                          $199/year
-                        </span>
+                        <span className="text-primary text-5xl font-bold">$199/year</span>
                       </div>
                       <p className="text-text-disabled mt-2 text-sm">Tailored to your needs</p>
                     </div>
@@ -859,7 +855,7 @@ export default function PricingPage(): React.JSX.Element {
 
                     <a
                       href="mailto:sales@smartslate.io"
-                      className="hover:shadow-secondary/25 inline-flex w-full transform items-center justify-center gap-2 rounded-xl bg-secondary px-6 py-3 font-medium text-white transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg"
+                      className="hover:shadow-secondary/25 bg-secondary inline-flex w-full transform items-center justify-center gap-2 rounded-xl px-6 py-3 font-medium text-white transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg"
                     >
                       <svg
                         className="h-5 w-5"

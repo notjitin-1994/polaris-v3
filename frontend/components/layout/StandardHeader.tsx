@@ -103,7 +103,7 @@ export function StandardHeader({
       {/* Subtle background effects */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
         <SwirlBackground count={12} minSize={32} maxSize={64} opacityMin={0.02} opacityMax={0.06} />
-        <div className="absolute inset-0 bg-primary/[0.02]" />
+        <div className="bg-primary/[0.02] absolute inset-0" />
       </div>
 
       {/* Content */}
@@ -112,11 +112,11 @@ export function StandardHeader({
       >
         <div className="flex items-center justify-between gap-4">
           {/* Left side: Back button + Title (inline for compact) */}
-          <div className="min-w-0 flex-1 flex items-center gap-3">
+          <div className="flex min-w-0 flex-1 items-center gap-3">
             {backHref && (
               <Link
                 href={backHref}
-                className={`group text-text-secondary hover:text-foreground focus-visible:ring-primary/50 inline-flex items-center justify-center transition-all duration-200 focus-visible:rounded focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none active:scale-[0.98] ${isCompact ? 'h-8 w-8 shrink-0 rounded-lg border border-white/10 bg-white/5 hover:bg-white/10' : 'gap-1.5 mb-4'}`}
+                className={`group text-text-secondary hover:text-foreground focus-visible:ring-primary/50 inline-flex items-center justify-center transition-all duration-200 focus-visible:rounded focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none active:scale-[0.98] ${isCompact ? 'h-8 w-8 shrink-0 rounded-lg border border-white/10 bg-white/5 hover:bg-white/10' : 'mb-4 gap-1.5'}`}
                 title={backLabel}
                 aria-label={backLabel}
               >
@@ -124,13 +124,11 @@ export function StandardHeader({
                   className={`transition-transform group-hover:-translate-x-0.5 ${isCompact ? 'h-3.5 w-3.5' : 'h-4 w-4'}`}
                   aria-hidden="true"
                 />
-                {!isCompact && (
-                  <span className="font-medium text-sm">{backLabel}</span>
-                )}
+                {!isCompact && <span className="text-sm font-medium">{backLabel}</span>}
               </Link>
             )}
 
-            <div className="min-w-0 flex-1 flex items-center gap-3">
+            <div className="flex min-w-0 flex-1 items-center gap-3">
               {typeof title === 'string' ? (
                 <h1
                   className={`font-heading text-foreground leading-tight font-bold tracking-tight ${isCompact ? 'text-sm sm:text-base' : 'text-2xl sm:text-3xl lg:text-4xl'}`}
@@ -145,17 +143,14 @@ export function StandardHeader({
 
             {subtitle && !isCompact && (
               <p
-                className={`text-text-secondary mt-2 max-w-3xl leading-relaxed text-sm sm:text-base`}
+                className={`text-text-secondary mt-2 max-w-3xl text-sm leading-relaxed sm:text-base`}
               >
                 {subtitle}
               </p>
             )}
 
             {showDecorativeLine && (
-              <div
-                aria-hidden="true"
-                className="mt-4 h-px w-12 bg-primary/60"
-              />
+              <div aria-hidden="true" className="bg-primary/60 mt-4 h-px w-12" />
             )}
           </div>
 

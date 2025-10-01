@@ -17,13 +17,16 @@ interface TimelineInfographicProps {
   critical_path?: string[];
 }
 
-export function TimelineInfographic({ phases, critical_path }: TimelineInfographicProps): React.JSX.Element {
+export function TimelineInfographic({
+  phases,
+  critical_path,
+}: TimelineInfographicProps): React.JSX.Element {
   return (
     <div className="space-y-6">
       {/* Critical Path Indicator */}
       {critical_path && critical_path.length > 0 && (
-        <div className="glass rounded-xl border border-warning/30 bg-warning/5 p-4">
-          <h4 className="mb-2 flex items-center gap-2 text-sm font-semibold text-warning">
+        <div className="glass border-warning/30 bg-warning/5 rounded-xl border p-4">
+          <h4 className="text-warning mb-2 flex items-center gap-2 text-sm font-semibold">
             <ArrowRight className="h-4 w-4" />
             Critical Path
           </h4>
@@ -34,11 +37,11 @@ export function TimelineInfographic({ phases, critical_path }: TimelineInfograph
       {/* Timeline */}
       <div className="relative space-y-8">
         {/* Vertical Line */}
-        <div className="absolute left-6 top-4 bottom-4 w-0.5 bg-primary" />
+        <div className="bg-primary absolute top-4 bottom-4 left-6 w-0.5" />
 
         {phases.map((phase, index) => {
           const isCritical = critical_path?.includes(phase.phase);
-          
+
           return (
             <motion.div
               key={index}
@@ -49,10 +52,8 @@ export function TimelineInfographic({ phases, critical_path }: TimelineInfograph
             >
               {/* Timeline Node */}
               <div
-                className={`absolute left-3 top-2 h-6 w-6 rounded-full border-4 ${
-                  isCritical
-                    ? 'border-warning bg-warning/20'
-                    : 'border-primary bg-primary/20'
+                className={`absolute top-2 left-3 h-6 w-6 rounded-full border-4 ${
+                  isCritical ? 'border-warning bg-warning/20' : 'border-primary bg-primary/20'
                 } backdrop-blur-sm`}
               />
 
@@ -83,7 +84,7 @@ export function TimelineInfographic({ phases, critical_path }: TimelineInfograph
                     </div>
                   </div>
                   {isCritical && (
-                    <span className="rounded-full bg-warning/20 px-3 py-1 text-xs font-medium text-warning">
+                    <span className="bg-warning/20 text-warning rounded-full px-3 py-1 text-xs font-medium">
                       Critical
                     </span>
                   )}
@@ -119,4 +120,3 @@ export function TimelineInfographic({ phases, critical_path }: TimelineInfograph
     </div>
   );
 }
-

@@ -6,7 +6,18 @@ import remarkGfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw';
 import rehypeSanitize from 'rehype-sanitize';
 import rehypeHighlight from 'rehype-highlight';
-import { BookOpen, Calendar, Target, Zap, BarChart3, FileText, Sparkles, ChevronLeft, ChevronRight, List } from 'lucide-react';
+import {
+  BookOpen,
+  Calendar,
+  Target,
+  Zap,
+  BarChart3,
+  FileText,
+  Sparkles,
+  ChevronLeft,
+  ChevronRight,
+  List,
+} from 'lucide-react';
 import 'highlight.js/styles/tokyo-night-dark.css';
 import type { AnyBlueprint } from '@/lib/ollama/schema';
 import { BlueprintDashboard } from './BlueprintDashboard';
@@ -34,27 +45,27 @@ interface MarkdownSection {
 // Helper to detect if blueprint has comprehensive structure (Claude or Ollama with FullBlueprint)
 function isComprehensiveBlueprint(blueprint: any): boolean {
   if (!blueprint || typeof blueprint !== 'object') return false;
-  
+
   // Check for Claude schema (comprehensive JSON structure)
   const hasClaudeSchema = Boolean(
     blueprint.metadata ||
-    blueprint.executive_summary ||
-    blueprint.learning_objectives ||
-    blueprint.content_outline ||
-    blueprint.assessment_strategy ||
-    blueprint.implementation_timeline
+      blueprint.executive_summary ||
+      blueprint.learning_objectives ||
+      blueprint.content_outline ||
+      blueprint.assessment_strategy ||
+      blueprint.implementation_timeline
   );
-  
+
   // Check for Ollama FullBlueprint schema (extended structure)
   const hasOllamaFullSchema = Boolean(
     blueprint.objectives ||
-    blueprint.instructional_strategy ||
-    blueprint.content_outline ||
-    blueprint.implementation_roadmap ||
-    blueprint.infographics ||
-    blueprint.dashboard
+      blueprint.instructional_strategy ||
+      blueprint.content_outline ||
+      blueprint.implementation_roadmap ||
+      blueprint.infographics ||
+      blueprint.dashboard
   );
-  
+
   return hasClaudeSchema || hasOllamaFullSchema;
 }
 
@@ -64,10 +75,10 @@ function normalizeBlueprint(blueprint: any): BlueprintJSON {
   if (blueprint.learning_objectives || blueprint.executive_summary) {
     return blueprint as BlueprintJSON;
   }
-  
+
   // Normalize Ollama FullBlueprint to Claude schema
   const normalized: any = { ...blueprint };
-  
+
   // Map objectives -> learning_objectives
   if (blueprint.objectives && !normalized.learning_objectives) {
     normalized.learning_objectives = {
@@ -75,7 +86,7 @@ function normalizeBlueprint(blueprint: any): BlueprintJSON {
       displayType: 'infographic',
     };
   }
-  
+
   // Map content_outline array -> content_outline.modules
   if (Array.isArray(blueprint.content_outline) && !blueprint.content_outline.modules) {
     normalized.content_outline = {
@@ -83,20 +94,23 @@ function normalizeBlueprint(blueprint: any): BlueprintJSON {
         ...module,
         title: module.title || module.module,
         topics: module.topics || [],
-        learning_activities: module.activities?.map((activity: string) => ({
-          activity,
-          type: 'Exercise',
-          duration: '30 minutes',
-        })) || [],
-        assessment: module.assessments ? {
-          type: 'Mixed',
-          description: module.assessments.join(', '),
-        } : undefined,
+        learning_activities:
+          module.activities?.map((activity: string) => ({
+            activity,
+            type: 'Exercise',
+            duration: '30 minutes',
+          })) || [],
+        assessment: module.assessments
+          ? {
+              type: 'Mixed',
+              description: module.assessments.join(', '),
+            }
+          : undefined,
       })),
       displayType: 'timeline',
     };
   }
-  
+
   // Map timeline -> implementation_timeline
   if (blueprint.timeline && !normalized.implementation_timeline) {
     if (blueprint.timeline.phases) {
@@ -113,21 +127,22 @@ function normalizeBlueprint(blueprint: any): BlueprintJSON {
       };
     }
   }
-  
+
   // Map assessment -> assessment_strategy
   if (blueprint.assessment && !normalized.assessment_strategy) {
     normalized.assessment_strategy = {
       overview: 'Comprehensive assessment strategy',
       kpis: blueprint.assessment.kpis || [],
-      evaluation_methods: blueprint.assessment.methods?.map((method: string) => ({
-        method,
-        timing: 'Ongoing',
-        weight: '10%',
-      })) || [],
+      evaluation_methods:
+        blueprint.assessment.methods?.map((method: string) => ({
+          method,
+          timing: 'Ongoing',
+          weight: '10%',
+        })) || [],
       displayType: 'infographic',
     };
   }
-  
+
   // Add metadata if missing
   if (!normalized.metadata) {
     normalized.metadata = {
@@ -139,36 +154,36 @@ function normalizeBlueprint(blueprint: any): BlueprintJSON {
       model: 'ollama',
     };
   }
-  
+
   return normalized as BlueprintJSON;
 }
 
 // Split markdown into logical sections based on H1 and H2 headers
 function splitMarkdownIntoSections(markdown: string): MarkdownSection[] {
   const sections: MarkdownSection[] = [];
-  
+
   // Split by H1 or H2 headers (# or ##)
   const headerRegex = /^(#{1,2})\s+(.+)$/gm;
   const matches = Array.from(markdown.matchAll(headerRegex));
-  
+
   if (matches.length === 0) {
     // No headers found, return entire content as one section
     return [{ title: 'Content', content: markdown, index: 0 }];
   }
-  
+
   // Extract sections between headers
   for (let i = 0; i < matches.length; i++) {
     const match = matches[i];
     const nextMatch = matches[i + 1];
     const headerLevel = match[1].length;
     const title = match[2].trim();
-    
+
     // Only split on H1 and H2 headers
     if (headerLevel <= 2) {
       const startIndex = match.index!;
       const endIndex = nextMatch ? nextMatch.index! : markdown.length;
       const content = markdown.slice(startIndex, endIndex).trim();
-      
+
       sections.push({
         title,
         content,
@@ -176,12 +191,12 @@ function splitMarkdownIntoSections(markdown: string): MarkdownSection[] {
       });
     }
   }
-  
+
   // If we still don't have sections (e.g., only H3+ headers), return whole content
   if (sections.length === 0) {
     return [{ title: 'Content', content: markdown, index: 0 }];
   }
-  
+
   return sections;
 }
 
@@ -266,7 +281,7 @@ export function BlueprintRenderer({
         <div className="mb-10">
           <div className="relative">
             {/* Tab Background Glow */}
-            <div className="absolute inset-0 rounded-2xl bg-primary/10 blur-xl" />
+            <div className="bg-primary/10 absolute inset-0 rounded-2xl blur-xl" />
 
             <div className="relative flex items-center gap-2 rounded-2xl border border-white/10 bg-white/5 p-1.5 backdrop-blur-xl">
               {tabs.map((tab) => {
@@ -287,7 +302,7 @@ export function BlueprintRenderer({
                     {isActive && (
                       <motion.div
                         layoutId="activeTab"
-                        className="border-primary/50 absolute inset-0 rounded-xl border bg-primary/30"
+                        className="border-primary/50 bg-primary/30 absolute inset-0 rounded-xl border"
                         transition={{
                           type: 'spring',
                           stiffness: 400,
@@ -300,12 +315,12 @@ export function BlueprintRenderer({
                     <div className="relative z-10 flex items-center gap-2">
                       <Icon
                         className={`h-4 w-4 transition-all duration-300 ${
-                          isActive
-                            ? 'text-primary drop-shadow-glow'
-                            : 'group-hover:text-primary'
+                          isActive ? 'text-primary drop-shadow-glow' : 'group-hover:text-primary'
                         }`}
                       />
-                      <span className={`font-heading text-sm font-semibold ${isActive ? 'text-white' : ''}`}>
+                      <span
+                        className={`font-heading text-sm font-semibold ${isActive ? 'text-white' : ''}`}
+                      >
                         {tab.label}
                       </span>
                     </div>
@@ -366,7 +381,7 @@ export function BlueprintRenderer({
                       initial={{ opacity: 0, scale: 0.8 }}
                       animate={{ opacity: 1, scale: 1 }}
                       transition={{ delay: 0.1 }}
-                      className="border-primary/30 inline-flex items-center gap-2 rounded-full border bg-primary/20 px-4 py-2"
+                      className="border-primary/30 bg-primary/20 inline-flex items-center gap-2 rounded-full border px-4 py-2"
                     >
                       <BookOpen className="text-primary h-4 w-4" />
                       <span className="text-primary font-medium">Learning Blueprint</span>
@@ -384,7 +399,7 @@ export function BlueprintRenderer({
                       initial={{ opacity: 0, scale: 0.8 }}
                       animate={{ opacity: 1, scale: 1 }}
                       transition={{ delay: 0.3 }}
-                      className="border-secondary/40 inline-flex items-center gap-2 rounded-full border bg-secondary/20 px-4 py-2"
+                      className="border-secondary/40 bg-secondary/20 inline-flex items-center gap-2 rounded-full border px-4 py-2"
                     >
                       <Sparkles className="text-secondary h-4 w-4" />
                       <span className="text-secondary">AI Enhanced</span>
@@ -425,15 +440,17 @@ export function BlueprintRenderer({
                                   onClick={() => goToPage(index)}
                                   className={`text-text-secondary flex w-full items-start gap-3 rounded-lg px-3 py-2.5 text-left text-sm transition-all ${
                                     currentPage === index
-                                      ? 'bg-primary/20 text-primary border border-primary/30'
+                                      ? 'bg-primary/20 text-primary border-primary/30 border'
                                       : 'hover:bg-white/5 hover:text-white'
                                   }`}
                                 >
-                                  <span className={`mt-0.5 flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full text-xs font-bold ${
-                                    currentPage === index
-                                      ? 'bg-primary/30 text-primary'
-                                      : 'bg-white/10 text-white/70'
-                                  }`}>
+                                  <span
+                                    className={`mt-0.5 flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full text-xs font-bold ${
+                                      currentPage === index
+                                        ? 'bg-primary/30 text-primary'
+                                        : 'bg-white/10 text-white/70'
+                                    }`}
+                                  >
                                     {index + 1}
                                   </span>
                                   <span className="line-clamp-2 flex-1">{section.title}</span>
@@ -456,7 +473,7 @@ export function BlueprintRenderer({
                     exit={{ opacity: 0, x: -20 }}
                     className="mb-6 flex items-center gap-3 border-b border-white/10 pb-4"
                   >
-                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary">
+                    <div className="bg-primary flex h-10 w-10 items-center justify-center rounded-xl">
                       <span className="text-lg font-bold text-white">{currentPage + 1}</span>
                     </div>
                     <div>
@@ -483,7 +500,7 @@ export function BlueprintRenderer({
                     components={{
                       h1: ({ children, ...props }) => (
                         <h1
-                          className="font-heading mt-8 mb-6 border-b border-primary/30 pb-4 text-4xl font-bold text-white"
+                          className="font-heading border-primary/30 mt-8 mb-6 border-b pb-4 text-4xl font-bold text-white"
                           {...props}
                         >
                           {children}
@@ -494,7 +511,7 @@ export function BlueprintRenderer({
                           className="font-heading group text-primary mt-8 mb-4 flex items-center gap-3 text-3xl font-bold"
                           {...props}
                         >
-                          <span className="h-8 w-1 rounded-full bg-primary transition-all group-hover:h-10" />
+                          <span className="bg-primary h-8 w-1 rounded-full transition-all group-hover:h-10" />
                           {children}
                         </h2>
                       ),
@@ -555,8 +572,8 @@ export function BlueprintRenderer({
                             (props as unknown as { className?: string }).className?.includes(
                               'counter-reset-item'
                             )
-                              ? 'before:counter-increment-item before:text-primary before:absolute before:top-0 before:left-0 before:flex before:h-6 before:w-6 before:items-center before:justify-center before:rounded-full before:bg-primary/20 before:text-xs before:font-bold before:content-[counter(item)]'
-                              : 'before:absolute before:top-[0.6em] before:left-0 before:h-2 before:w-2 before:rounded-full before:bg-primary before:content-[""]'
+                              ? 'before:counter-increment-item before:text-primary before:bg-primary/20 before:absolute before:top-0 before:left-0 before:flex before:h-6 before:w-6 before:items-center before:justify-center before:rounded-full before:text-xs before:font-bold before:content-[counter(item)]'
+                              : 'before:bg-primary before:absolute before:top-[0.6em] before:left-0 before:h-2 before:w-2 before:rounded-full before:content-[""]'
                           }`}
                           {...props}
                         >
@@ -609,7 +626,7 @@ export function BlueprintRenderer({
                       ),
                       blockquote: ({ children, ...props }) => (
                         <blockquote
-                          className="border-primary text-text-secondary my-6 rounded-r-lg border-l-4 bg-primary/10 py-4 pr-4 pl-6 italic"
+                          className="border-primary text-text-secondary bg-primary/10 my-6 rounded-r-lg border-l-4 py-4 pr-4 pl-6 italic"
                           {...props}
                         >
                           <div className="flex gap-3">
@@ -626,10 +643,7 @@ export function BlueprintRenderer({
                         </div>
                       ),
                       thead: ({ children, ...props }) => (
-                        <thead
-                          className="bg-primary/10"
-                          {...props}
-                        >
+                        <thead className="bg-primary/10" {...props}>
                           {children}
                         </thead>
                       ),
@@ -650,10 +664,7 @@ export function BlueprintRenderer({
                         </td>
                       ),
                       hr: ({ ...props }) => (
-                        <hr
-                          className="my-8 h-px border-0 bg-primary/30"
-                          {...props}
-                        />
+                        <hr className="bg-primary/30 my-8 h-px border-0" {...props} />
                       ),
                     }}
                   >
@@ -682,7 +693,9 @@ export function BlueprintRenderer({
                             : 'bg-primary/20 hover:bg-primary/30 border-primary/30 text-primary hover:text-primary-light border'
                         }`}
                       >
-                        <ChevronLeft className={`h-5 w-5 transition-transform ${currentPage > 0 ? 'group-hover:-translate-x-1' : ''}`} />
+                        <ChevronLeft
+                          className={`h-5 w-5 transition-transform ${currentPage > 0 ? 'group-hover:-translate-x-1' : ''}`}
+                        />
                         <span className="hidden sm:inline">Previous</span>
                       </motion.button>
 
@@ -693,9 +706,7 @@ export function BlueprintRenderer({
                             key={index}
                             onClick={() => goToPage(index)}
                             className={`group relative transition-all ${
-                              currentPage === index
-                                ? 'h-3 w-8'
-                                : 'h-3 w-3 hover:w-8'
+                              currentPage === index ? 'h-3 w-8' : 'h-3 w-3 hover:w-8'
                             }`}
                             title={section.title}
                           >
@@ -723,7 +734,9 @@ export function BlueprintRenderer({
                         }`}
                       >
                         <span className="hidden sm:inline">Next</span>
-                        <ChevronRight className={`h-5 w-5 transition-transform ${currentPage < totalPages - 1 ? 'group-hover:translate-x-1' : ''}`} />
+                        <ChevronRight
+                          className={`h-5 w-5 transition-transform ${currentPage < totalPages - 1 ? 'group-hover:translate-x-1' : ''}`}
+                        />
                       </motion.button>
                     </div>
 
@@ -740,7 +753,7 @@ export function BlueprintRenderer({
                           initial={{ width: 0 }}
                           animate={{ width: `${((currentPage + 1) / totalPages) * 100}%` }}
                           transition={{ duration: 0.5, ease: 'easeInOut' }}
-                          className="h-full bg-primary"
+                          className="bg-primary h-full"
                         />
                       </div>
                     </div>
@@ -748,14 +761,16 @@ export function BlueprintRenderer({
                 )}
 
                 {/* Enhanced Footer */}
-                <div className={`border-t border-white/10 pt-6 ${hasPagination ? 'mt-8' : 'mt-12'}`}>
+                <div
+                  className={`border-t border-white/10 pt-6 ${hasPagination ? 'mt-8' : 'mt-12'}`}
+                >
                   <div className="flex items-center justify-between">
                     <div className="text-text-disabled flex items-center gap-3 text-sm">
                       <Calendar className="h-4 w-4" />
                       <span>Generated with SmartSlate AI</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <span className="text-primary rounded-full bg-primary/10 px-3 py-1 text-xs">
+                      <span className="text-primary bg-primary/10 rounded-full px-3 py-1 text-xs">
                         Version 1.0
                       </span>
                     </div>

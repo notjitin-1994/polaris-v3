@@ -28,7 +28,7 @@ function GeneratingContent({ id }: { id: string }): React.JSX.Element {
   const [status, setStatus] = useState('Initializing blueprint generation...');
   const [currentStep, setCurrentStep] = useState(1);
   const [error, setError] = useState<string | null>(null);
-  const [model, setModel] = useState<'claude-sonnet-4' | 'claude-opus-4' | 'ollama' | null>(null);
+  const [_model, setModel] = useState<'claude-sonnet-4' | 'claude-opus-4' | 'ollama' | null>(null);
 
   useEffect(() => {
     let progressInterval: NodeJS.Timeout | null = null;
@@ -210,7 +210,7 @@ function GeneratingContent({ id }: { id: string }): React.JSX.Element {
                 </div>
                 <div className="bg-surface h-2 overflow-hidden rounded-full">
                   <motion.div
-                    className="h-full bg-primary"
+                    className="bg-primary h-full"
                     initial={{ width: '0%' }}
                     animate={{ width: `${progress}%` }}
                     transition={{ duration: 0.3 }}

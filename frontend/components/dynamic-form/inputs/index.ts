@@ -82,7 +82,7 @@ inputRegistry.setFallback('text');
  */
 export const getInputComponent = (type: InputType | string) => {
   const result = inputRegistry.getWithFallback(type);
-  
+
   // Enhanced debugging for scale types
   if (type === 'scale' || type === 'enhanced_scale') {
     console.log('[getInputComponent] Scale type requested:', {
@@ -94,7 +94,7 @@ export const getInputComponent = (type: InputType | string) => {
       componentName: result.component.name || result.component.displayName,
     });
   }
-  
+
   return result.component;
 };
 

@@ -146,7 +146,7 @@ function DemoContent(): React.JSX.Element {
                 </div>
                 <div className="bg-surface h-2 overflow-hidden rounded-full">
                   <motion.div
-                    className="h-full bg-primary"
+                    className="bg-primary h-full"
                     initial={{ width: '0%' }}
                     animate={{ width: `${progress}%` }}
                     transition={{ duration: 0.3 }}
