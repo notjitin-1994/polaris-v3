@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Sparkles, Clock, AlertCircle, ExternalLink, BarChart3, TrendingUp } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { InteractiveBlueprintDashboard } from '@/components/blueprint/InteractiveBlueprintDashboard';
@@ -55,7 +56,35 @@ export default function SharedBlueprintPage({ params }: PageProps): React.JSX.El
   const [data, setData] = useState<BlueprintData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [hideHeader, setHideHeader] = useState(false);
   const router = useRouter();
+
+  // Auto-hide header on scroll down, show on scroll up
+  useEffect(() => {
+    let lastScrollY = window.scrollY;
+    let ticking = false;
+
+    const handleScroll = () => {
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          const currentScrollY = window.scrollY;
+
+          if (currentScrollY < lastScrollY || currentScrollY <= 50) {
+            setHideHeader(false);
+          } else if (currentScrollY > lastScrollY && currentScrollY > 100) {
+            setHideHeader(true);
+          }
+
+          lastScrollY = currentScrollY;
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   useEffect(() => {
     async function loadSharedBlueprint() {
@@ -203,65 +232,65 @@ export default function SharedBlueprintPage({ params }: PageProps): React.JSX.El
         <div className="bg-primary/5 absolute top-1/2 left-1/2 h-96 w-96 -translate-x-1/2 -translate-y-1/2 animate-pulse rounded-full blur-3xl delay-500" />
       </div>
 
-      {/* Header */}
-      <header className="glass-card relative z-20 border-b border-white/10 px-4 py-4 sm:px-6">
-        <div className="mx-auto flex max-w-7xl items-center justify-between">
-          {/* Logo & Badge */}
-          <div className="flex items-center gap-3 sm:gap-4">
-            <motion.div
-              initial={{ scale: 0, rotate: -180 }}
-              animate={{ scale: 1, rotate: 0 }}
-              transition={{ type: 'spring', stiffness: 200 }}
-              className="bg-primary/20 border-primary/30 flex h-10 w-10 items-center justify-center rounded-xl border backdrop-blur-xl sm:h-12 sm:w-12"
-            >
-              <Sparkles className="text-primary h-5 w-5 sm:h-6 sm:w-6" />
-            </motion.div>
-            <div>
-              <h1 className="text-foreground text-base font-bold sm:text-lg">SmartSlate</h1>
-              <p className="text-text-secondary text-xs">Shared Learning Blueprint</p>
+      {/* Floating Glassmorphic Header - SmartSlate Final Design */}
+      <motion.header
+        initial={{ opacity: 0, y: -20, scale: 0.95 }}
+        animate={{
+          opacity: hideHeader ? 0 : 1,
+          y: hideHeader ? -20 : 0,
+          scale: hideHeader ? 0.95 : 1,
+        }}
+        transition={{ duration: 0.4, ease: [0.4, 0, 0.2, 1] }}
+        style={{
+          visibility: hideHeader ? 'hidden' : 'visible',
+        }}
+        className="fixed top-4 left-1/2 z-50 w-[calc(100vw-32px)] max-w-7xl -translate-x-1/2 sm:top-8 sm:w-[calc(100vw-64px)]"
+      >
+        {/* Glassmorphic Background with Teal Border */}
+        <div className="absolute inset-0 rounded-2xl border border-[#A7DADB] bg-[rgba(9,21,33,0.4)] shadow-[0_10px_15px_-3px_rgba(0,0,0,0.1),0_4px_6px_-2px_rgba(0,0,0,0.05)] backdrop-blur-[16px] backdrop-saturate-[180%]" />
+
+        {/* Content */}
+        <div className="relative flex items-center justify-between px-6 py-2 sm:px-12 sm:py-3">
+          {/* Logo */}
+          <Link href="/" className="flex items-center transition-transform hover:scale-105">
+            <div className="relative h-12 w-40 sm:h-12 sm:w-40">
+              <Image
+                src="/images/logos/logo.png"
+                alt="SmartSlate"
+                fill
+                className="object-contain"
+                priority
+              />
             </div>
+          </Link>
+
+          {/* Center: Blueprint Title with Starmap */}
+          <div className="hidden flex-1 items-center justify-center px-8 md:flex">
+            <h1 className="truncate text-center text-sm font-medium text-white lg:text-base">
+              {blueprintTitle} Starmap
+            </h1>
           </div>
 
           {/* CTA Button */}
           <motion.a
-            href="/"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="bg-secondary text-secondary-foreground hover:bg-secondary/90 inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium shadow-lg transition-all hover:shadow-xl sm:px-4 sm:py-2.5"
+            href="https://polaris.smartslate.io"
+            target="_blank"
+            rel="noopener noreferrer"
+            whileHover={{ y: -2 }}
+            whileTap={{ scale: 0.98 }}
+            className="bg-secondary hover:bg-secondary/90 rounded px-4 py-2 text-sm font-semibold text-white/90 shadow-lg transition-all hover:text-white hover:shadow-[0_8px_25px_rgba(0,0,0,0.15)] sm:px-6 sm:py-2.5 sm:text-base"
           >
-            <TrendingUp className="h-4 w-4" />
-            <span className="hidden sm:inline">Create Your Own</span>
+            <span className="hidden sm:inline">Create New Starmap</span>
             <span className="sm:hidden">Create</span>
           </motion.a>
         </div>
-      </header>
+      </motion.header>
+
+      {/* Spacer to prevent content from hiding under fixed header */}
+      <div className="h-20 sm:h-24" />
 
       {/* Content */}
       <div className="relative z-10 mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-        {/* Title Section */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          className="mb-8 text-center"
-        >
-          <div className="border-primary/30 bg-primary/20 mb-4 inline-flex items-center gap-2 rounded-full border px-4 py-2 backdrop-blur-xl">
-            <BarChart3 className="text-primary h-4 w-4" />
-            <span className="text-primary text-xs font-bold tracking-wider uppercase">
-              Public Analytics Dashboard
-            </span>
-          </div>
-
-          <h2 className="text-foreground mb-2 text-2xl font-bold sm:text-3xl lg:text-4xl">
-            {blueprintTitle}
-          </h2>
-
-          <div className="text-text-secondary flex items-center justify-center gap-2 text-sm">
-            <Clock className="h-4 w-4" />
-            <span>Created {createdDate}</span>
-          </div>
-        </motion.div>
-
         {/* Dashboard Content */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -281,9 +310,12 @@ export default function SharedBlueprintPage({ params }: PageProps): React.JSX.El
           {blueprintData ? (
             <>
               {isComprehensiveBlueprint(blueprintData) ? (
-                <InteractiveBlueprintDashboard blueprint={normalizeBlueprint(blueprintData)} />
+                <InteractiveBlueprintDashboard
+                  blueprint={normalizeBlueprint(blueprintData)}
+                  isPublicView={true}
+                />
               ) : (
-                <BlueprintDashboard blueprint={blueprintData} />
+                <BlueprintDashboard blueprint={blueprintData} isPublicView={true} />
               )}
             </>
           ) : (

@@ -33,9 +33,13 @@ import type { AnyBlueprint } from '@/lib/ollama/schema';
 
 interface BlueprintDashboardProps {
   blueprint: AnyBlueprint;
+  isPublicView?: boolean;
 }
 
-export function BlueprintDashboard({ blueprint }: BlueprintDashboardProps): React.JSX.Element {
+export function BlueprintDashboard({
+  blueprint,
+  isPublicView = false,
+}: BlueprintDashboardProps): React.JSX.Element {
   const ref = React.useRef(null);
   const isInView = useInView(ref, { once: true, margin: '-100px' });
   const [mounted, setMounted] = useState(false);

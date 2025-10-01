@@ -16,11 +16,13 @@ interface ExecutiveSummaryInfographicProps {
     role?: string;
     generated_at?: string;
   };
+  isPublicView?: boolean;
 }
 
 export function ExecutiveSummaryInfographic({
   content,
   metadata,
+  isPublicView = false,
 }: ExecutiveSummaryInfographicProps): React.JSX.Element {
   // Extract key sentences for highlights (first 3 sentences)
   const sentences = content.split(/[.!?]+/).filter((s) => s.trim().length > 20);
@@ -61,28 +63,30 @@ export function ExecutiveSummaryInfographic({
             </div>
 
             {/* AI Modify Button with Vibrant Glow & Pulse */}
-            <motion.button
-              animate={{
-                boxShadow: [
-                  '0 0 15px rgba(167,218,219,0.5)',
-                  '0 0 20px rgba(167,218,219,0.7)',
-                  '0 0 15px rgba(167,218,219,0.5)',
-                ],
-              }}
-              transition={{
-                duration: 2.5,
-                repeat: Infinity,
-                ease: 'easeInOut',
-              }}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => console.log('Modify Strategic Overview')}
-              className="pressable border-primary bg-primary/10 text-primary hover:bg-primary/20 hover:border-primary inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full border-2 transition-all hover:shadow-[0_0_25px_rgba(167,218,219,0.8)]"
-              title="Modify with AI"
-              aria-label="Modify Strategic Overview with AI"
-            >
-              <Wand2 className="h-4 w-4 drop-shadow-[0_0_8px_rgba(167,218,219,0.9)]" />
-            </motion.button>
+            {!isPublicView && (
+              <motion.button
+                animate={{
+                  boxShadow: [
+                    '0 0 15px rgba(167,218,219,0.5)',
+                    '0 0 20px rgba(167,218,219,0.7)',
+                    '0 0 15px rgba(167,218,219,0.5)',
+                  ],
+                }}
+                transition={{
+                  duration: 2.5,
+                  repeat: Infinity,
+                  ease: 'easeInOut',
+                }}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => console.log('Modify Strategic Overview')}
+                className="pressable border-primary bg-primary/10 text-primary hover:bg-primary/20 hover:border-primary inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full border-2 transition-all hover:shadow-[0_0_25px_rgba(167,218,219,0.8)]"
+                title="Modify with AI"
+                aria-label="Modify Strategic Overview with AI"
+              >
+                <Wand2 className="h-4 w-4 drop-shadow-[0_0_8px_rgba(167,218,219,0.9)]" />
+              </motion.button>
+            )}
           </div>
 
           <p className="text-text-secondary text-base leading-relaxed">{content}</p>

@@ -27,9 +27,10 @@ export const GlobalLayout = memo(function GlobalLayout({
   const { user, signOut } = useAuth();
   const pathname = usePathname();
 
-  // Don't show global layout for auth pages
+  // Don't show global layout for auth pages and public share pages
   const isAuthPage = pathname?.startsWith('/login') || pathname?.startsWith('/signup');
-  if (isAuthPage) {
+  const isPublicSharePage = pathname?.startsWith('/share/');
+  if (isAuthPage || isPublicSharePage) {
     return <>{children}</>;
   }
 

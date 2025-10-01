@@ -40,6 +40,7 @@ import { useMobileDetect } from '@/lib/hooks/useMobileDetect';
 
 interface InteractiveBlueprintDashboardProps {
   blueprint: BlueprintJSON;
+  isPublicView?: boolean;
 }
 
 interface SectionDef {
@@ -54,6 +55,7 @@ interface SectionDef {
 
 export function InteractiveBlueprintDashboard({
   blueprint,
+  isPublicView = false,
 }: InteractiveBlueprintDashboardProps): React.JSX.Element {
   const ref = React.useRef(null);
   const isInView = useInView(ref, { once: true, margin: '-100px' });
@@ -342,6 +344,7 @@ export function InteractiveBlueprintDashboard({
           <ExecutiveSummaryInfographic
             content={blueprint.executive_summary.content}
             metadata={blueprint.metadata}
+            isPublicView={isPublicView}
           />
         </motion.div>
       )}
@@ -414,6 +417,7 @@ export function InteractiveBlueprintDashboard({
             isExpanded={expandedSections.has('objectives')}
             onToggle={() => toggleSection('objectives')}
             ref={(el) => (sectionRefs.current['objectives'] = el)}
+            isPublicView={isPublicView}
           >
             <ObjectivesInfographic
               objectives={objectives}
@@ -429,6 +433,7 @@ export function InteractiveBlueprintDashboard({
             isExpanded={expandedSections.has('target_audience')}
             onToggle={() => toggleSection('target_audience')}
             ref={(el) => (sectionRefs.current['target_audience'] = el)}
+            isPublicView={isPublicView}
           >
             <TargetAudienceInfographic data={blueprint.target_audience} />
           </ExpandableSection>
@@ -441,6 +446,7 @@ export function InteractiveBlueprintDashboard({
             isExpanded={expandedSections.has('content_outline')}
             onToggle={() => toggleSection('content_outline')}
             ref={(el) => (sectionRefs.current['content_outline'] = el)}
+            isPublicView={isPublicView}
           >
             <ContentOutlineInfographic modules={modules} />
           </ExpandableSection>
@@ -453,6 +459,7 @@ export function InteractiveBlueprintDashboard({
             isExpanded={expandedSections.has('resources')}
             onToggle={() => toggleSection('resources')}
             ref={(el) => (sectionRefs.current['resources'] = el)}
+            isPublicView={isPublicView}
           >
             <BudgetResourcesInfographic
               budget={blueprint.resources.budget}
@@ -469,6 +476,7 @@ export function InteractiveBlueprintDashboard({
             isExpanded={expandedSections.has('assessment')}
             onToggle={() => toggleSection('assessment')}
             ref={(el) => (sectionRefs.current['assessment'] = el)}
+            isPublicView={isPublicView}
           >
             <AssessmentStrategyInfographic
               kpis={blueprint.assessment_strategy.kpis}
@@ -486,6 +494,7 @@ export function InteractiveBlueprintDashboard({
             isExpanded={expandedSections.has('timeline')}
             onToggle={() => toggleSection('timeline')}
             ref={(el) => (sectionRefs.current['timeline'] = el)}
+            isPublicView={isPublicView}
           >
             <TimelineInfographic
               phases={blueprint.implementation_timeline.phases}
@@ -501,6 +510,7 @@ export function InteractiveBlueprintDashboard({
             isExpanded={expandedSections.has('risks')}
             onToggle={() => toggleSection('risks')}
             ref={(el) => (sectionRefs.current['risks'] = el)}
+            isPublicView={isPublicView}
           >
             <RiskMitigationInfographic
               risks={blueprint.risk_mitigation.risks}
@@ -516,6 +526,7 @@ export function InteractiveBlueprintDashboard({
             isExpanded={expandedSections.has('metrics')}
             onToggle={() => toggleSection('metrics')}
             ref={(el) => (sectionRefs.current['metrics'] = el)}
+            isPublicView={isPublicView}
           >
             <SuccessMetricsInfographic
               metrics={blueprint.success_metrics.metrics}
@@ -531,6 +542,7 @@ export function InteractiveBlueprintDashboard({
             isExpanded={expandedSections.has('strategy')}
             onToggle={() => toggleSection('strategy')}
             ref={(el) => (sectionRefs.current['strategy'] = el)}
+            isPublicView={isPublicView}
           >
             <InstructionalStrategyInfographic
               overview={blueprint.instructional_strategy.overview}
@@ -550,6 +562,7 @@ export function InteractiveBlueprintDashboard({
             isExpanded={expandedSections.has('sustainability')}
             onToggle={() => toggleSection('sustainability')}
             ref={(el) => (sectionRefs.current['sustainability'] = el)}
+            isPublicView={isPublicView}
           >
             <SustainabilityPlanInfographic
               content={blueprint.sustainability_plan.content}
@@ -571,8 +584,9 @@ const ExpandableSection = React.forwardRef<
     isExpanded: boolean;
     onToggle: () => void;
     children: React.ReactNode;
+    isPublicView?: boolean;
   }
->(({ section, isExpanded, onToggle, children }, ref) => {
+>(({ section, isExpanded, onToggle, children, isPublicView = false }, ref) => {
   const Icon = section.icon;
 
   const handleModify = (e: React.MouseEvent) => {
@@ -604,9 +618,9 @@ const ExpandableSection = React.forwardRef<
 
         {/* Right Side Controls */}
         <div className="ml-4 flex shrink-0 items-center gap-2">
-          {/* AI Modify Button with Vibrant Glow & Pulse - Only visible when expanded */}
-          {isExpanded && (
-            <motion.button
+          {/* AI Modify Button with Vibrant Glow & Pulse - Hidden in public view */}
+          {isExpanded && !isPublicView && (
+            <motion.div
               animate={{
                 boxShadow: [
                   '0 0 15px rgba(167,218,219,0.5)',
@@ -621,13 +635,25 @@ const ExpandableSection = React.forwardRef<
               }}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              onClick={handleModify}
-              className="pressable border-primary bg-primary/10 text-primary hover:bg-primary/20 hover:border-primary inline-flex h-8 w-8 items-center justify-center rounded-full border-2 transition-all hover:shadow-[0_0_25px_rgba(167,218,219,0.8)]"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleModify(e);
+              }}
+              className="pressable border-primary bg-primary/10 text-primary hover:bg-primary/20 hover:border-primary inline-flex h-8 w-8 cursor-pointer items-center justify-center rounded-full border-2 transition-all hover:shadow-[0_0_25px_rgba(167,218,219,0.8)]"
               title="Modify with AI"
               aria-label="Modify section with AI"
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  handleModify(e);
+                }
+              }}
             >
               <Wand2 className="h-4 w-4 drop-shadow-[0_0_8px_rgba(167,218,219,0.9)]" />
-            </motion.button>
+            </motion.div>
           )}
 
           {/* Collapse/Expand Button */}
