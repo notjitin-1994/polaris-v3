@@ -112,7 +112,7 @@ const CERTIFICATION_OPTIONS = [
   },
 ];
 
-export function EvaluationStep(): JSX.Element {
+export function EvaluationStep(): React.JSX.Element {
   const {
     register,
     formState: { errors },
@@ -123,9 +123,15 @@ export function EvaluationStep(): JSX.Element {
   // Register all nested fields
   React.useEffect(() => {
     register('evaluation.level1.methods', { required: 'At least one feedback method is required' });
-    register('evaluation.level1.satisfactionTarget', { required: 'Satisfaction target is required' });
-    register('evaluation.level2.assessmentMethods', { required: 'At least one assessment method is required' });
-    register('evaluation.level2.passingRequired', { required: 'Passing requirement must be specified' });
+    register('evaluation.level1.satisfactionTarget', {
+      required: 'Satisfaction target is required',
+    });
+    register('evaluation.level2.assessmentMethods', {
+      required: 'At least one assessment method is required',
+    });
+    register('evaluation.level2.passingRequired', {
+      required: 'Passing requirement must be specified',
+    });
     register('evaluation.level2.passingScore');
     register('evaluation.level2.attemptsAllowed');
     register('evaluation.level3.measureBehavior');
@@ -148,13 +154,13 @@ export function EvaluationStep(): JSX.Element {
   return (
     <div className="animate-fade-in-up space-y-8">
       <p className="text-body text-text-secondary leading-relaxed">
-        Let's plan how you'll measure the success of this learning initiative across 4
-        levels (Kirkpatrick Model)
+        Let's plan how you'll measure the success of this learning initiative across 4 levels
+        (Kirkpatrick Model)
       </p>
 
       {/* LEVEL 1: REACTION */}
-      <div className="space-y-4 rounded-xl border-[1.5px] border-success/30 bg-success/5 p-6">
-        <h3 className="text-heading font-semibold text-foreground font-heading">
+      <div className="border-success/30 bg-success/5 space-y-4 rounded-xl border-[1.5px] p-6">
+        <h3 className="text-heading text-foreground font-heading font-semibold">
           Level 1: Reaction
         </h3>
         <p className="text-body text-text-secondary">
@@ -185,8 +191,8 @@ export function EvaluationStep(): JSX.Element {
       </div>
 
       {/* LEVEL 2: LEARNING */}
-      <div className="space-y-4 rounded-xl border-[1.5px] border-info/30 bg-info/5 p-6">
-        <h3 className="text-heading font-semibold text-foreground font-heading">
+      <div className="border-info/30 bg-info/5 space-y-4 rounded-xl border-[1.5px] p-6">
+        <h3 className="text-heading text-foreground font-heading font-semibold">
           Level 2: Learning
         </h3>
         <p className="text-body text-text-secondary">
@@ -203,7 +209,9 @@ export function EvaluationStep(): JSX.Element {
           required
         />
 
-        <ConditionalFields showWhen={!((level2.assessmentMethods || []) as string[]).includes('none')}>
+        <ConditionalFields
+          showWhen={!((level2.assessmentMethods || []) as string[]).includes('none')}
+        >
           <ToggleSwitch
             label="Is passing required?"
             value={level2.passingRequired ? 'yes' : 'no'}
@@ -240,8 +248,8 @@ export function EvaluationStep(): JSX.Element {
       </div>
 
       {/* LEVEL 3: BEHAVIOR */}
-      <div className="space-y-4 rounded-xl border-[1.5px] border-warning/30 bg-warning/5 p-6">
-        <h3 className="text-heading font-semibold text-foreground font-heading">
+      <div className="border-warning/30 bg-warning/5 space-y-4 rounded-xl border-[1.5px] p-6">
+        <h3 className="text-heading text-foreground font-heading font-semibold">
           Level 3: Behavior (Transfer)
         </h3>
         <p className="text-body text-text-secondary">
@@ -296,11 +304,13 @@ export function EvaluationStep(): JSX.Element {
       </div>
 
       {/* LEVEL 4: RESULTS */}
-      <div className="space-y-4 rounded-xl border-[1.5px] border-secondary/30 bg-secondary/5 p-6">
-        <h3 className="text-heading font-semibold text-foreground font-heading">
+      <div className="border-secondary/30 bg-secondary/5 space-y-4 rounded-xl border-[1.5px] p-6">
+        <h3 className="text-heading text-foreground font-heading font-semibold">
           Level 4: Results (Business Impact)
         </h3>
-        <p className="text-body text-text-secondary">What business results will this training impact?</p>
+        <p className="text-body text-text-secondary">
+          What business results will this training impact?
+        </p>
 
         <ToggleSwitch
           label="Will you measure business impact/ROI?"
@@ -315,18 +325,17 @@ export function EvaluationStep(): JSX.Element {
 
         <ConditionalFields showWhen={level4.measureROI}>
           <div className="space-y-3">
-            <label className="block text-[15px] font-medium text-foreground">
+            <label className="text-foreground block text-[15px] font-medium">
               What metrics will you track?
             </label>
-            <p className="text-[13px] text-text-secondary">
-              Type business KPIs and press Enter to add (e.g., "Sales revenue", "Error
-              reduction %")
+            <p className="text-text-secondary text-[13px]">
+              Type business KPIs and press Enter to add (e.g., "Sales revenue", "Error reduction %")
             </p>
             <div className="flex flex-wrap gap-2">
               {((level4.metrics || []) as string[]).map((metric, index) => (
                 <span
                   key={index}
-                  className="inline-flex items-center gap-2 rounded-full border-[1.5px] border-primary/30 bg-primary/10 px-3.5 py-1.5 text-[14px] font-medium text-primary-accent"
+                  className="border-primary/30 bg-primary/10 text-primary-accent inline-flex items-center gap-2 rounded-full border-[1.5px] px-3.5 py-1.5 text-[14px] font-medium"
                 >
                   {metric}
                   <button
@@ -340,7 +349,12 @@ export function EvaluationStep(): JSX.Element {
                     }}
                     className="rounded-full p-0.5 transition-colors hover:bg-white/10"
                   >
-                    <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg
+                      className="h-3.5 w-3.5"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
                       <path
                         strokeLinecap="round"
                         strokeLinejoin="round"
@@ -366,7 +380,7 @@ export function EvaluationStep(): JSX.Element {
                   }
                 }
               }}
-              className="w-full h-[3.25rem] rounded-[0.875rem] border-[1.5px] border-neutral-200 bg-[rgba(13,27,42,0.4)] px-4 text-base text-foreground placeholder-text-disabled transition-all duration-300 outline-none focus:border-primary focus:shadow-[0_0_0_3px_rgba(167,218,219,0.15)]"
+              className="text-foreground placeholder-text-disabled focus:border-primary h-[3.25rem] w-full rounded-[0.875rem] border-[1.5px] border-neutral-200 bg-[rgba(13,27,42,0.4)] px-4 text-base transition-all duration-300 outline-none focus:shadow-[0_0_0_3px_rgba(167,218,219,0.15)]"
             />
           </div>
 
@@ -410,16 +424,20 @@ export function EvaluationStep(): JSX.Element {
       <QuestionnaireInfoBox title="Why evaluation matters">
         <ul className="list-inside list-disc space-y-1.5 text-[13px]">
           <li>
-            <strong className="font-semibold text-foreground">Level 1:</strong> Improve training quality and engagement
+            <strong className="text-foreground font-semibold">Level 1:</strong> Improve training
+            quality and engagement
           </li>
           <li>
-            <strong className="font-semibold text-foreground">Level 2:</strong> Ensure learning actually happened
+            <strong className="text-foreground font-semibold">Level 2:</strong> Ensure learning
+            actually happened
           </li>
           <li>
-            <strong className="font-semibold text-foreground">Level 3:</strong> Confirm skills transfer to the job
+            <strong className="text-foreground font-semibold">Level 3:</strong> Confirm skills
+            transfer to the job
           </li>
           <li>
-            <strong className="font-semibold text-foreground">Level 4:</strong> Demonstrate business value and ROI
+            <strong className="text-foreground font-semibold">Level 4:</strong> Demonstrate business
+            value and ROI
           </li>
         </ul>
         <p className="mt-3 text-[13px]">

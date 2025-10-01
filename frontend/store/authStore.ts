@@ -132,6 +132,6 @@ export const useAuthStore = create<AuthState>()(
         autoLogin: state.autoLogin,
         lastActivity: state.lastActivity,
       }),
-    },
-  ),
+    }
+  )
 );

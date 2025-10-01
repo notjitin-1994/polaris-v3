@@ -94,7 +94,7 @@ export const ExportHistory: React.FC<ExportHistoryProps> = ({ className = '' }) 
     return (
       <div className={`p-4 ${className}`}>
         <div className="text-center text-gray-500">
-          <Clock className="w-12 h-12 mx-auto mb-4 text-gray-300" />
+          <Clock className="mx-auto mb-4 h-12 w-12 text-gray-300" />
           <p>No export history found</p>
           <p className="text-sm">Your exports will appear here</p>
         </div>
@@ -104,7 +104,7 @@ export const ExportHistory: React.FC<ExportHistoryProps> = ({ className = '' }) 
 
   return (
     <div className={`${className}`}>
-      <div className="flex items-center justify-between mb-4">
+      <div className="mb-4 flex items-center justify-between">
         <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Export History</h3>
         <button
           onClick={handleClearAll}
@@ -122,11 +122,11 @@ export const ExportHistory: React.FC<ExportHistoryProps> = ({ className = '' }) 
           return (
             <div
               key={entry.id}
-              className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4 hover:shadow-md transition-shadow"
+              className="rounded-lg border border-gray-200 bg-white p-4 transition-shadow hover:shadow-md dark:border-gray-700 dark:bg-gray-800"
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <Icon className={`w-5 h-5 ${colorClass}`} />
+                  <Icon className={`h-5 w-5 ${colorClass}`} />
                   <div>
                     <div className="font-medium text-gray-900 dark:text-white">
                       {entry.fileName}
@@ -141,17 +141,17 @@ export const ExportHistory: React.FC<ExportHistoryProps> = ({ className = '' }) 
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => handleDownload(entry)}
-                    className="p-2 text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                    className="p-2 text-gray-400 transition-colors hover:text-blue-600 dark:hover:text-blue-400"
                     title="Download"
                   >
-                    <Download className="w-4 h-4" />
+                    <Download className="h-4 w-4" />
                   </button>
                   <button
                     onClick={() => handleDelete(entry.id)}
-                    className="p-2 text-gray-400 hover:text-red-600 dark:hover:text-red-400 transition-colors"
+                    className="p-2 text-gray-400 transition-colors hover:text-red-600 dark:hover:text-red-400"
                     title="Delete"
                   >
-                    <Trash2 className="w-4 h-4" />
+                    <Trash2 className="h-4 w-4" />
                   </button>
                 </div>
               </div>
@@ -160,7 +160,7 @@ export const ExportHistory: React.FC<ExportHistoryProps> = ({ className = '' }) 
         })}
       </div>
 
-      <div className="mt-4 text-xs text-gray-500 dark:text-gray-400 text-center">
+      <div className="mt-4 text-center text-xs text-gray-500 dark:text-gray-400">
         {history.length} export{history.length !== 1 ? 's' : ''} in history
       </div>
     </div>

@@ -13,7 +13,7 @@ export function ConditionalFields({
   showWhen,
   children,
   className,
-}: ConditionalFieldsProps): JSX.Element | null {
+}: ConditionalFieldsProps): React.JSX.Element | null {
   const shouldShow = React.useMemo(() => {
     if (typeof showWhen === 'boolean') {
       return showWhen;
@@ -26,9 +26,5 @@ export function ConditionalFields({
     return null;
   }
 
-  return (
-    <div className={cn('animate-fade-in-up space-y-4', className)}>
-      {children}
-    </div>
-  );
+  return <div className={cn('animate-fade-in-up space-y-4', className)}>{children}</div>;
 }

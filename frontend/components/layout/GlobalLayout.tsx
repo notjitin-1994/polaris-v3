@@ -52,6 +52,11 @@ export const GlobalLayout = memo(function GlobalLayout({
         currentHeaderSubtitle =
           "Let's start by understanding your learning objectives and requirements. This will help us generate personalized questions for your blueprint.";
         break;
+      case '/pricing':
+        currentHeaderTitle = 'Polaris Pricing Plans';
+        currentHeaderSubtitle =
+          'Choose the perfect plan for your journey • 14-day free trial • No credit card required';
+        break;
       case pathname?.startsWith('/dynamic-wizard') ? pathname : '':
         currentHeaderTitle = 'Dynamic Questionnaire';
         currentHeaderSubtitle =
@@ -75,7 +80,7 @@ export const GlobalLayout = memo(function GlobalLayout({
   }
 
   // Pages that handle their own headers
-  const pagesWithOwnHeaders = ['/', '/static-wizard', '/generating', '/blueprint'];
+  const pagesWithOwnHeaders = ['/', '/static-wizard', '/generating', '/blueprint', '/pricing'];
 
   const shouldShowHeader = !pagesWithOwnHeaders.some((path) => pathname?.startsWith(path));
 

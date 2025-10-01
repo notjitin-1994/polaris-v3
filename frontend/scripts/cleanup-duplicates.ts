@@ -33,7 +33,7 @@ interface BlueprintVersion {
 
 async function findDuplicates(): Promise<{ [userId: string]: BlueprintVersion[] }> {
   console.log('🔍 Finding blueprints with multiple generations...');
-  
+
   const { data: blueprints, error } = await supabase
     .from('blueprint_generator')
     .select('id, user_id, version, status, created_at')
@@ -47,8 +47,8 @@ async function findDuplicates(): Promise<{ [userId: string]: BlueprintVersion[] 
 
   // Group by user_id to find duplicates
   const duplicates: { [userId: string]: BlueprintVersion[] } = {};
-  
-  blueprints?.forEach(blueprint => {
+
+  blueprints?.forEach((blueprint) => {
     if (!duplicates[blueprint.user_id]) {
       duplicates[blueprint.user_id] = [];
     }
@@ -66,11 +66,14 @@ async function findDuplicates(): Promise<{ [userId: string]: BlueprintVersion[] 
   return usersWithDuplicates;
 }
 
-async function cleanupUserDuplicates(userId: string, versions: BlueprintVersion[]): Promise<number> {
+async function cleanupUserDuplicates(
+  userId: string,
+  versions: BlueprintVersion[]
+): Promise<number> {
   console.log(`\n👤 User ${userId}: Found ${versions.length} generations`);
-  
+
   // Find the latest completed version
-  const completedVersions = versions.filter(v => v.status === 'completed');
+  const completedVersions = versions.filter((v) => v.status === 'completed');
   if (completedVersions.length === 0) {
     console.log(`   ⚠️  No completed versions found, skipping cleanup`);
     return 0;
@@ -80,9 +83,7 @@ async function cleanupUserDuplicates(userId: string, versions: BlueprintVersion[
   console.log(`   ✅ Keeping version ${latestCompleted.version} (${latestCompleted.status})`);
 
   // Delete all other versions
-  const versionsToDelete = versions
-    .filter(v => v.id !== latestCompleted.id)
-    .map(v => v.id);
+  const versionsToDelete = versions.filter((v) => v.id !== latestCompleted.id).map((v) => v.id);
 
   if (versionsToDelete.length === 0) {
     console.log(`   ℹ️  No duplicates to remove`);
@@ -91,10 +92,7 @@ async function cleanupUserDuplicates(userId: string, versions: BlueprintVersion[
 
   console.log(`   🗑️  Deleting ${versionsToDelete.length} duplicate(s)...`);
 
-  const { error } = await supabase
-    .from('blueprint_generator')
-    .delete()
-    .in('id', versionsToDelete);
+  const { error } = await supabase.from('blueprint_generator').delete().in('id', versionsToDelete);
 
   if (error) {
     console.error(`   ❌ Error deleting duplicates:`, error);
@@ -108,10 +106,10 @@ async function cleanupUserDuplicates(userId: string, versions: BlueprintVersion[
 async function main() {
   try {
     console.log('🚀 Starting duplicate cleanup process...\n');
-    
+
     const duplicates = await findDuplicates();
     const userIds = Object.keys(duplicates);
-    
+
     if (userIds.length === 0) {
       console.log('✅ No duplicates found! All blueprints have only one generation.');
       return;
@@ -128,7 +126,6 @@ async function main() {
     console.log(`\n🎉 Cleanup complete!`);
     console.log(`📈 Total duplicates removed: ${totalRemoved}`);
     console.log(`👥 Users affected: ${userIds.length}`);
-    
   } catch (error) {
     console.error('💥 Cleanup failed:', error);
     process.exit(1);
@@ -137,4 +134,3 @@ async function main() {
 
 // Run the script
 main();
-

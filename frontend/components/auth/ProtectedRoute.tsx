@@ -6,7 +6,7 @@ import { useSession } from '@/hooks/useSession';
 
 type ProtectedRouteProps = { children: React.ReactNode };
 
-export default function ProtectedRoute({ children }: ProtectedRouteProps): JSX.Element {
+export default function ProtectedRoute({ children }: ProtectedRouteProps): React.JSX.Element {
   const { user, loading } = useSession();
   const router = useRouter();
   const pathname = usePathname();

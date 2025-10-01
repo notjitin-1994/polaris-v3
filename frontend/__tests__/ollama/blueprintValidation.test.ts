@@ -42,7 +42,7 @@ describe('parseAndValidateBlueprintJSON', () => {
 
     expect(() => parseAndValidateBlueprintJSON(invalidJson)).toThrow(ValidationError);
     expect(() => parseAndValidateBlueprintJSON(invalidJson)).toThrow(
-      'Invalid JSON string provided for blueprint',
+      'Invalid JSON string provided for blueprint'
     );
   });
 
@@ -54,7 +54,7 @@ describe('parseAndValidateBlueprintJSON', () => {
 
     expect(() => parseAndValidateBlueprintJSON(invalidBlueprintJson)).toThrow(ValidationError);
     expect(() => parseAndValidateBlueprintJSON(invalidBlueprintJson)).toThrow(
-      'Blueprint JSON failed schema validation',
+      'Blueprint JSON failed schema validation'
     );
   });
 
@@ -141,7 +141,7 @@ describe('parseAndValidateBlueprintJSON', () => {
     });
 
     expect(() => parseAndValidateBlueprintJSON(blueprintWithInvalidModule)).toThrow(
-      ValidationError,
+      ValidationError
     );
   });
 

@@ -50,7 +50,7 @@ export function DynamicQuestionsLoader({
   showStatusIndicator = true,
   statusText = 'Preparing',
   className = '',
-}: DynamicQuestionsLoaderProps): JSX.Element {
+}: DynamicQuestionsLoaderProps): React.JSX.Element {
   const [dots, setDots] = useState('');
 
   // Animate loading dots
@@ -153,7 +153,7 @@ export function DynamicQuestionsLoaderCard({
   showStatusIndicator = true,
   statusText,
   className = '',
-}: DynamicQuestionsLoaderCardProps): JSX.Element {
+}: DynamicQuestionsLoaderCardProps): React.JSX.Element {
   return (
     <div className={`animate-scale-in ${className}`}>
       <div className="glass-card overflow-hidden">

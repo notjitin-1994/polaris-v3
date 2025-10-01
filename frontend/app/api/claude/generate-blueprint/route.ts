@@ -10,7 +10,7 @@ import { ClaudeClient, ClaudeApiError } from '@/lib/claude/client';
 import { validateAndNormalizeBlueprint } from '@/lib/claude/validation';
 import { createServiceLogger } from '@/lib/logging';
 
-const logger = createServiceLogger('api-claude');
+const logger = createServiceLogger('api');
 
 export interface GenerateBlueprintRequest {
   model?: string;
@@ -48,7 +48,7 @@ export async function POST(req: NextRequest): Promise<NextResponse<GenerateBluep
 
     // Validate required fields
     if (!systemPrompt || !userPrompt || !blueprintId) {
-      logger.warn('claude.api.invalid_request', {
+      logger.warn('claude.api.invalid_request', 'Invalid request body', {
         hasSystemPrompt: !!systemPrompt,
         hasUserPrompt: !!userPrompt,
         hasBlueprintId: !!blueprintId,
@@ -63,7 +63,7 @@ export async function POST(req: NextRequest): Promise<NextResponse<GenerateBluep
       );
     }
 
-    logger.info('claude.api.request_received', {
+    logger.info('claude.api.request_received', 'Claude request received', {
       blueprintId,
       model: model || 'default',
       systemPromptLength: systemPrompt.length,
@@ -94,7 +94,7 @@ export async function POST(req: NextRequest): Promise<NextResponse<GenerateBluep
 
     const duration = Date.now() - startTime;
 
-    logger.info('claude.api.success', {
+    logger.info('claude.api.success', 'Claude blueprint generated', {
       blueprintId,
       model: response.model,
       duration,
@@ -120,7 +120,7 @@ export async function POST(req: NextRequest): Promise<NextResponse<GenerateBluep
 
     // Handle Claude API errors
     if (error instanceof ClaudeApiError) {
-      logger.error('claude.api.claude_error', {
+      logger.error('claude.api.claude_error', 'Claude API error', {
         duration,
         statusCode: error.statusCode,
         errorType: error.errorType,
@@ -138,7 +138,7 @@ export async function POST(req: NextRequest): Promise<NextResponse<GenerateBluep
 
     // Handle validation errors
     if (error instanceof Error && error.name === 'ValidationError') {
-      logger.error('claude.api.validation_error', {
+      logger.error('claude.api.validation_error', 'Validation error', {
         duration,
         message: error.message,
       });
@@ -153,7 +153,7 @@ export async function POST(req: NextRequest): Promise<NextResponse<GenerateBluep
     }
 
     // Handle unknown errors
-    logger.error('claude.api.unknown_error', {
+    logger.error('claude.api.unknown_error', 'Unknown error during Claude generation', {
       duration,
       error: (error as Error).message,
     });

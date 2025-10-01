@@ -32,7 +32,7 @@ export function NumberSpinner({
   required = false,
   disabled = false,
   className,
-}: NumberSpinnerProps): JSX.Element {
+}: NumberSpinnerProps): React.JSX.Element {
   const hasError = !!error;
 
   const increment = () => {
@@ -54,16 +54,16 @@ export function NumberSpinner({
 
   return (
     <div className={cn('space-y-3', className)}>
-      <label className="block text-[15px] font-medium text-foreground leading-tight">
+      <label className="text-foreground block text-[15px] leading-tight font-medium">
         {label}
         {required && (
-          <span className="ml-1.5 text-primary font-semibold" aria-label="required">
+          <span className="text-primary ml-1.5 font-semibold" aria-label="required">
             *
           </span>
         )}
       </label>
 
-      {helpText && <p className="text-[13px] text-text-secondary leading-snug">{helpText}</p>}
+      {helpText && <p className="text-text-secondary text-[13px] leading-snug">{helpText}</p>}
 
       <div className="flex items-center gap-3">
         <div className="flex items-center overflow-hidden rounded-xl border-[1.5px] border-neutral-200 bg-white/5">
@@ -73,12 +73,17 @@ export function NumberSpinner({
             disabled={disabled || value <= min}
             className={cn(
               'flex h-11 w-11 items-center justify-center transition-colors',
-              'hover:bg-white/10 focus-visible:ring-2 focus-visible:ring-secondary/50',
+              'focus-visible:ring-secondary/50 hover:bg-white/10 focus-visible:ring-2',
               (disabled || value <= min) && 'cursor-not-allowed opacity-50'
             )}
             aria-label="Decrease"
           >
-            <svg className="h-4 w-4 text-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg
+              className="text-foreground h-4 w-4"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M20 12H4" />
             </svg>
           </button>
@@ -92,7 +97,7 @@ export function NumberSpinner({
             step={step}
             disabled={disabled}
             className={cn(
-              'w-20 border-x border-neutral-200 bg-transparent py-2.5 text-center text-base text-foreground font-medium',
+              'text-foreground w-20 border-x border-neutral-200 bg-transparent py-2.5 text-center text-base font-medium',
               'focus:outline-none',
               disabled && 'cursor-not-allowed opacity-50'
             )}
@@ -105,23 +110,33 @@ export function NumberSpinner({
             disabled={disabled || value >= max}
             className={cn(
               'flex h-11 w-11 items-center justify-center transition-colors',
-              'hover:bg-white/10 focus-visible:ring-2 focus-visible:ring-secondary/50',
+              'focus-visible:ring-secondary/50 hover:bg-white/10 focus-visible:ring-2',
               (disabled || value >= max) && 'cursor-not-allowed opacity-50'
             )}
             aria-label="Increase"
           >
-            <svg className="h-4 w-4 text-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" />
+            <svg
+              className="text-foreground h-4 w-4"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2.5}
+                d="M12 4v16m8-8H4"
+              />
             </svg>
           </button>
         </div>
 
-        {suffix && <span className="text-[15px] text-text-secondary font-medium">{suffix}</span>}
+        {suffix && <span className="text-text-secondary text-[15px] font-medium">{suffix}</span>}
       </div>
 
       {hasError && (
         <p
-          className="animate-fade-in flex items-center gap-1 text-[13px] text-error font-medium"
+          className="animate-fade-in text-error flex items-center gap-1 text-[13px] font-medium"
           role="alert"
           aria-live="polite"
         >

@@ -79,7 +79,7 @@ export class StateDebugger {
   // Validate state integrity
   static validateState(
     state: any,
-    storeName: string,
+    storeName: string
   ): {
     isValid: boolean;
     errors: string[];

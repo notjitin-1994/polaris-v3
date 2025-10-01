@@ -9,34 +9,34 @@ export const FormSkeleton: React.FC<{ className?: string }> = ({ className }) =>
     {/* Progress bar skeleton */}
     <div className="space-y-2">
       <div className="flex justify-between">
-        <div className="h-4 bg-neutral-200 rounded w-16 dark:bg-neutral-700" />
-        <div className="h-4 bg-neutral-200 rounded w-12 dark:bg-neutral-700" />
+        <div className="h-4 w-16 rounded bg-neutral-200 dark:bg-neutral-700" />
+        <div className="h-4 w-12 rounded bg-neutral-200 dark:bg-neutral-700" />
       </div>
-      <div className="w-full bg-neutral-200 rounded-full h-2 dark:bg-neutral-700" />
+      <div className="h-2 w-full rounded-full bg-neutral-200 dark:bg-neutral-700" />
     </div>
 
     {/* Section skeleton */}
     <div className="space-y-4">
       <div className="space-y-2">
-        <div className="h-6 bg-neutral-200 rounded w-48 dark:bg-neutral-700" />
-        <div className="h-4 bg-neutral-200 rounded w-64 dark:bg-neutral-700" />
+        <div className="h-6 w-48 rounded bg-neutral-200 dark:bg-neutral-700" />
+        <div className="h-4 w-64 rounded bg-neutral-200 dark:bg-neutral-700" />
       </div>
 
       {/* Questions skeleton */}
       <div className="space-y-4">
         {Array.from({ length: 3 }).map((_, index) => (
           <div key={index} className="space-y-2">
-            <div className="h-4 bg-neutral-200 rounded w-32 dark:bg-neutral-700" />
-            <div className="h-10 bg-neutral-200 rounded w-full dark:bg-neutral-700" />
+            <div className="h-4 w-32 rounded bg-neutral-200 dark:bg-neutral-700" />
+            <div className="h-10 w-full rounded bg-neutral-200 dark:bg-neutral-700" />
           </div>
         ))}
       </div>
     </div>
 
     {/* Action buttons skeleton */}
-    <div className="flex justify-between pt-6 border-t border-neutral-200 dark:border-neutral-700">
-      <div className="h-10 bg-neutral-200 rounded w-20 dark:bg-neutral-700" />
-      <div className="h-10 bg-neutral-200 rounded w-24 dark:bg-neutral-700" />
+    <div className="flex justify-between border-t border-neutral-200 pt-6 dark:border-neutral-700">
+      <div className="h-10 w-20 rounded bg-neutral-200 dark:bg-neutral-700" />
+      <div className="h-10 w-24 rounded bg-neutral-200 dark:bg-neutral-700" />
     </div>
   </div>
 );
@@ -44,15 +44,15 @@ export const FormSkeleton: React.FC<{ className?: string }> = ({ className }) =>
 export const SectionSkeleton: React.FC<{ className?: string }> = ({ className }) => (
   <div className={cn('space-y-4', className)}>
     <div className="space-y-2">
-      <div className="h-6 bg-neutral-200 rounded w-48 dark:bg-neutral-700" />
-      <div className="h-4 bg-neutral-200 rounded w-64 dark:bg-neutral-700" />
+      <div className="h-6 w-48 rounded bg-neutral-200 dark:bg-neutral-700" />
+      <div className="h-4 w-64 rounded bg-neutral-200 dark:bg-neutral-700" />
     </div>
 
     <div className="space-y-4">
       {Array.from({ length: 3 }).map((_, index) => (
         <div key={index} className="space-y-2">
-          <div className="h-4 bg-neutral-200 rounded w-32 dark:bg-neutral-700" />
-          <div className="h-10 bg-neutral-200 rounded w-full dark:bg-neutral-700" />
+          <div className="h-4 w-32 rounded bg-neutral-200 dark:bg-neutral-700" />
+          <div className="h-10 w-full rounded bg-neutral-200 dark:bg-neutral-700" />
         </div>
       ))}
     </div>
@@ -61,8 +61,8 @@ export const SectionSkeleton: React.FC<{ className?: string }> = ({ className })
 
 export const InputSkeleton: React.FC<{ className?: string }> = ({ className }) => (
   <div className={cn('space-y-2', className)}>
-    <div className="h-4 bg-neutral-200 rounded w-24 dark:bg-neutral-700" />
-    <div className="h-10 bg-neutral-200 rounded w-full dark:bg-neutral-700" />
+    <div className="h-4 w-24 rounded bg-neutral-200 dark:bg-neutral-700" />
+    <div className="h-10 w-full rounded bg-neutral-200 dark:bg-neutral-700" />
   </div>
 );
 
@@ -80,9 +80,9 @@ export const LoadingSpinner: React.FC<{
   return (
     <div
       className={cn(
-        'animate-spin rounded-full border-2 border-neutral-300 border-t-primary',
+        'border-t-primary animate-spin rounded-full border-2 border-neutral-300',
         sizeClasses[size],
-        className,
+        className
       )}
     />
   );
@@ -99,11 +99,11 @@ export const LoadingOverlay: React.FC<{
   return (
     <div
       className={cn(
-        'fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50',
-        className,
+        'bg-opacity-50 fixed inset-0 z-50 flex items-center justify-center bg-black',
+        className
       )}
     >
-      <div className="bg-white rounded-lg p-6 shadow-xl dark:bg-neutral-800">
+      <div className="rounded-lg bg-white p-6 shadow-xl dark:bg-neutral-800">
         <div className="flex items-center space-x-3">
           <LoadingSpinner size="lg" />
           <span className="text-lg font-medium text-neutral-900 dark:text-white">{message}</span>
@@ -131,7 +131,7 @@ export const SaveStatusIndicator: React.FC<{
       case 'saved':
         return (
           <div className="flex items-center space-x-2 text-green-600 dark:text-green-400">
-            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+            <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
               <path
                 fillRule="evenodd"
                 d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
@@ -144,7 +144,7 @@ export const SaveStatusIndicator: React.FC<{
       case 'error':
         return (
           <div className="flex items-center space-x-2 text-red-600 dark:text-red-400">
-            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+            <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
               <path
                 fillRule="evenodd"
                 d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
@@ -183,7 +183,7 @@ export const ShimmerEffect: React.FC<{ className?: string }> = ({ className }) =
       'relative overflow-hidden',
       'before:absolute before:inset-0 before:-translate-x-full',
       'before:animate-[shimmer_2s_infinite] before:bg-white/20',
-      className,
+      className
     )}
   />
 );

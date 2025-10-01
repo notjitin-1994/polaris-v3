@@ -202,7 +202,7 @@ export default function BlueprintPage({ params }: PageProps): React.JSX.Element 
 
     const markdown = data.blueprint_markdown ?? '# Blueprint\n\nNo content available.';
     const blueprintTitle = data.title ?? 'Learning Blueprint';
-    
+
     const blob = new Blob([markdown], { type: 'text/markdown' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -244,13 +244,13 @@ export default function BlueprintPage({ params }: PageProps): React.JSX.Element 
 
   if (loading) {
     return (
-      <main className="flex min-h-screen w-full items-center justify-center bg-gradient-to-br from-background via-background to-primary-950/20 p-4">
+      <main className="from-background via-background to-primary-950/20 flex min-h-screen w-full items-center justify-center bg-gradient-to-br p-4">
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           className="glass-card max-w-md p-8 text-center"
         >
-          <div className="mx-auto mb-6 h-16 w-16 animate-spin rounded-full border-4 border-primary-400/30 border-t-primary-400" />
+          <div className="border-primary-400/30 border-t-primary-400 mx-auto mb-6 h-16 w-16 animate-spin rounded-full border-4" />
           <div className="skeleton-brand mx-auto mb-4 h-8 w-48 rounded-xl" />
           <div className="skeleton-brand mx-auto h-4 w-32 rounded-lg" />
         </motion.div>
@@ -260,25 +260,25 @@ export default function BlueprintPage({ params }: PageProps): React.JSX.Element 
 
   if (error || !user || !data) {
     return (
-      <main className="flex min-h-screen w-full items-center justify-center bg-gradient-to-br from-background via-background to-error/10 p-4">
+      <main className="from-background via-background to-error/10 flex min-h-screen w-full items-center justify-center bg-gradient-to-br p-4">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           className="glass-card max-w-md p-8 text-center"
         >
-          <div className="mb-6 inline-flex h-16 w-16 items-center justify-center rounded-full bg-error/10">
-            <ExternalLink className="h-8 w-8 text-error" />
+          <div className="bg-error/10 mb-6 inline-flex h-16 w-16 items-center justify-center rounded-full">
+            <ExternalLink className="text-error h-8 w-8" />
           </div>
-          <h2 className="mb-2 text-xl font-bold text-foreground">
+          <h2 className="text-foreground mb-2 text-xl font-bold">
             {!user ? 'Authentication Required' : 'Blueprint Not Found'}
           </h2>
-          <p className="mb-6 text-text-secondary">
+          <p className="text-text-secondary mb-6">
             {!user
               ? 'Please sign in to view this blueprint.'
               : 'The blueprint you are looking for does not exist or you do not have access to it.'}
           </p>
           <Link
-            className="inline-flex items-center gap-2 rounded-xl bg-primary px-6 py-3 font-medium text-primary-foreground transition-all hover:bg-primary/90 hover:shadow-lg"
+            className="bg-primary text-primary-foreground hover:bg-primary/90 inline-flex items-center gap-2 rounded-xl px-6 py-3 font-medium transition-all hover:shadow-lg"
             href="/"
           >
             <ArrowLeft className="h-4 w-4" />
@@ -320,20 +320,20 @@ export default function BlueprintPage({ params }: PageProps): React.JSX.Element 
         transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
         className="hidden sm:block"
       >
-        <Sparkles className="h-5 w-5 text-primary-400" />
+        <Sparkles className="text-primary-400 h-5 w-5" />
       </motion.div>
       <div className="flex flex-col">
         <h1 className="font-heading line-clamp-1 text-sm font-bold text-white sm:text-base md:text-lg">
           {blueprintTitle}
         </h1>
-        <div className="flex items-center gap-4 text-xs text-text-secondary">
+        <div className="text-text-secondary flex items-center gap-4 text-xs">
           <span className="flex items-center gap-1">
             <Clock className="h-3 w-3" />
             {createdDate}
           </span>
           {blueprintData && (
             <span className="flex items-center gap-1">
-              <CheckCircle className="h-3 w-3 text-success" />
+              <CheckCircle className="text-success h-3 w-3" />
               Active Blueprint
             </span>
           )}
@@ -346,10 +346,10 @@ export default function BlueprintPage({ params }: PageProps): React.JSX.Element 
   const rightActions = (
     <div className="flex items-center gap-2">
       {/* View Mode Toggle */}
-      <div className="hidden lg:flex items-center rounded-lg border border-white/10 bg-white/5 p-1">
+      <div className="hidden items-center rounded-lg border border-white/10 bg-white/5 p-1 lg:flex">
         <button
           type="button"
-          className={`px-3 py-1.5 text-xs font-medium transition-all rounded ${
+          className={`rounded px-3 py-1.5 text-xs font-medium transition-all ${
             viewMode === 'default'
               ? 'bg-primary/20 text-primary-300'
               : 'text-white/70 hover:text-white'
@@ -360,7 +360,7 @@ export default function BlueprintPage({ params }: PageProps): React.JSX.Element 
         </button>
         <button
           type="button"
-          className={`px-3 py-1.5 text-xs font-medium transition-all rounded ${
+          className={`rounded px-3 py-1.5 text-xs font-medium transition-all ${
             viewMode === 'focused'
               ? 'bg-primary/20 text-primary-300'
               : 'text-white/70 hover:text-white'
@@ -371,7 +371,7 @@ export default function BlueprintPage({ params }: PageProps): React.JSX.Element 
         </button>
         <button
           type="button"
-          className={`px-3 py-1.5 text-xs font-medium transition-all rounded ${
+          className={`rounded px-3 py-1.5 text-xs font-medium transition-all ${
             viewMode === 'presentation'
               ? 'bg-primary/20 text-primary-300'
               : 'text-white/70 hover:text-white'
@@ -415,17 +415,17 @@ export default function BlueprintPage({ params }: PageProps): React.JSX.Element 
               initial={{ opacity: 0, scale: 0.95, y: -10 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: -10 }}
-              className="absolute right-0 top-full mt-2 z-50 w-48 glass-card"
+              className="glass-card absolute top-full right-0 z-50 mt-2 w-48"
             >
               <button
-                className="flex w-full items-center gap-3 px-4 py-3 text-sm text-text-secondary transition-colors hover:bg-white/5 hover:text-white"
+                className="text-text-secondary flex w-full items-center gap-3 px-4 py-3 text-sm transition-colors hover:bg-white/5 hover:text-white"
                 onClick={handleCopyLink}
               >
                 <Copy className="h-4 w-4" />
                 Copy Link
               </button>
               <button
-                className="flex w-full items-center gap-3 px-4 py-3 text-sm text-text-secondary transition-colors hover:bg-white/5 hover:text-white"
+                className="text-text-secondary flex w-full items-center gap-3 px-4 py-3 text-sm transition-colors hover:bg-white/5 hover:text-white"
                 onClick={() => {
                   setShowShareMenu(false);
                   showToast('Opening email client...');
@@ -445,7 +445,7 @@ export default function BlueprintPage({ params }: PageProps): React.JSX.Element 
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           type="button"
-          className="pressable inline-flex h-9 items-center gap-2 rounded-xl bg-gradient-to-r from-primary-500 to-primary-600 px-4 text-sm font-medium text-white shadow-lg transition-all hover:from-primary-600 hover:to-primary-700 hover:shadow-xl"
+          className="pressable from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 inline-flex h-9 items-center gap-2 rounded-xl bg-gradient-to-r px-4 text-sm font-medium text-white shadow-lg transition-all hover:shadow-xl"
           onClick={() => setShowExportMenu(!showExportMenu)}
           title="Export blueprint"
           aria-label="Export blueprint"
@@ -460,11 +460,11 @@ export default function BlueprintPage({ params }: PageProps): React.JSX.Element 
               initial={{ opacity: 0, scale: 0.95, y: -10 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: -10 }}
-              className="absolute right-0 top-full mt-2 z-50 w-56 glass-card"
+              className="glass-card absolute top-full right-0 z-50 mt-2 w-56"
             >
               <div className="p-2">
                 <button
-                  className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-text-secondary transition-all hover:bg-error/10 hover:text-error"
+                  className="text-text-secondary hover:bg-error/10 hover:text-error flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-all"
                   onClick={handleExportPDF}
                   disabled={isExporting}
                 >
@@ -475,7 +475,7 @@ export default function BlueprintPage({ params }: PageProps): React.JSX.Element 
                   </div>
                 </button>
                 <button
-                  className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-text-secondary transition-all hover:bg-primary/10 hover:text-primary-300"
+                  className="text-text-secondary hover:bg-primary/10 hover:text-primary-300 flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-all"
                   onClick={handleExportMarkdown}
                   disabled={isExporting}
                 >
@@ -486,7 +486,7 @@ export default function BlueprintPage({ params }: PageProps): React.JSX.Element 
                   </div>
                 </button>
                 <button
-                  className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-text-secondary transition-all hover:bg-success/10 hover:text-success"
+                  className="text-text-secondary hover:bg-success/10 hover:text-success flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-all"
                   onClick={handleExportJSON}
                   disabled={isExporting}
                 >
@@ -505,12 +505,12 @@ export default function BlueprintPage({ params }: PageProps): React.JSX.Element 
   );
 
   return (
-    <main className="relative min-h-screen w-full overflow-hidden bg-gradient-to-br from-background via-background to-primary-950/10">
+    <main className="from-background via-background to-primary-950/10 relative min-h-screen w-full overflow-hidden bg-gradient-to-br">
       {/* Animated Background Pattern */}
       <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute -top-40 -right-40 h-80 w-80 rounded-full bg-primary-500/10 blur-3xl animate-pulse" />
-        <div className="absolute -bottom-40 -left-40 h-80 w-80 rounded-full bg-secondary/10 blur-3xl animate-pulse delay-1000" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-96 w-96 rounded-full bg-primary-400/5 blur-3xl animate-pulse delay-500" />
+        <div className="bg-primary-500/10 absolute -top-40 -right-40 h-80 w-80 animate-pulse rounded-full blur-3xl" />
+        <div className="bg-secondary/10 absolute -bottom-40 -left-40 h-80 w-80 animate-pulse rounded-full blur-3xl delay-1000" />
+        <div className="bg-primary-400/5 absolute top-1/2 left-1/2 h-96 w-96 -translate-x-1/2 -translate-y-1/2 animate-pulse rounded-full blur-3xl delay-500" />
       </div>
 
       {/* Header */}
@@ -534,8 +534,8 @@ export default function BlueprintPage({ params }: PageProps): React.JSX.Element 
           viewMode === 'focused'
             ? 'mx-auto max-w-4xl'
             : viewMode === 'presentation'
-            ? 'mx-auto max-w-7xl'
-            : 'mx-auto max-w-6xl'
+              ? 'mx-auto max-w-7xl'
+              : 'mx-auto max-w-6xl'
         } px-4 py-8 sm:px-6 sm:py-12 lg:px-8`}
       >
         {/* Main Content Card */}
@@ -548,23 +548,23 @@ export default function BlueprintPage({ params }: PageProps): React.JSX.Element 
           }`}
         >
           {/* Content Header */}
-          <div className="mb-8 pb-6 border-b border-white/10">
+          <div className="mb-8 border-b border-white/10 pb-6">
             <div className="flex items-start justify-between">
               <div>
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="px-3 py-1 rounded-full bg-gradient-to-r from-primary-500/20 to-primary-600/20 text-primary-300 text-xs font-semibold">
+                <div className="mb-2 flex items-center gap-2">
+                  <span className="from-primary-500/20 to-primary-600/20 text-primary-300 rounded-full bg-gradient-to-r px-3 py-1 text-xs font-semibold">
                     AI Generated
                   </span>
-                  <span className="px-3 py-1 rounded-full bg-white/10 text-text-secondary text-xs">
+                  <span className="text-text-secondary rounded-full bg-white/10 px-3 py-1 text-xs">
                     Version 1.0
                   </span>
                 </div>
                 <button
                   onClick={() => setRenamingBlueprint(true)}
-                  className="group flex items-center gap-2 hover:text-primary-300 transition-colors"
+                  className="group hover:text-primary-300 flex items-center gap-2 transition-colors"
                 >
                   <h2 className="text-2xl font-bold text-white">{blueprintTitle}</h2>
-                  <Edit3 className="h-4 w-4 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <Edit3 className="h-4 w-4 opacity-0 transition-opacity group-hover:opacity-100" />
                 </button>
               </div>
             </div>
@@ -585,26 +585,24 @@ export default function BlueprintPage({ params }: PageProps): React.JSX.Element 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5 }}
-          className="mt-8 glass-card p-4"
+          className="glass-card mt-8 p-4"
         >
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <button className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/5 hover:bg-white/10 text-text-secondary hover:text-white transition-all">
+              <button className="text-text-secondary flex items-center gap-2 rounded-lg bg-white/5 px-4 py-2 transition-all hover:bg-white/10 hover:text-white">
                 <Eye className="h-4 w-4" />
                 <span className="text-sm">Preview Mode</span>
               </button>
-              <button className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/5 hover:bg-white/10 text-text-secondary hover:text-white transition-all">
+              <button className="text-text-secondary flex items-center gap-2 rounded-lg bg-white/5 px-4 py-2 transition-all hover:bg-white/10 hover:text-white">
                 <Palette className="h-4 w-4" />
                 <span className="text-sm">Customize Theme</span>
               </button>
-              <button className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/5 hover:bg-white/10 text-text-secondary hover:text-white transition-all">
+              <button className="text-text-secondary flex items-center gap-2 rounded-lg bg-white/5 px-4 py-2 transition-all hover:bg-white/10 hover:text-white">
                 <Maximize2 className="h-4 w-4" />
                 <span className="text-sm">Fullscreen</span>
               </button>
             </div>
-            <div className="text-xs text-text-disabled">
-              Last updated: Just now
-            </div>
+            <div className="text-text-disabled text-xs">Last updated: Just now</div>
           </div>
         </motion.div>
       </motion.div>
@@ -616,10 +614,10 @@ export default function BlueprintPage({ params }: PageProps): React.JSX.Element 
             initial={{ opacity: 0, y: 50, scale: 0.9 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 50, scale: 0.9 }}
-            className="fixed bottom-6 right-6 z-50"
+            className="fixed right-6 bottom-6 z-50"
           >
-            <div className="flex items-center gap-3 rounded-xl bg-success/20 border border-success/30 backdrop-blur-xl px-4 py-3 shadow-2xl">
-              <CheckCircle className="h-5 w-5 text-success" />
+            <div className="bg-success/20 border-success/30 flex items-center gap-3 rounded-xl border px-4 py-3 shadow-2xl backdrop-blur-xl">
+              <CheckCircle className="text-success h-5 w-5" />
               <span className="text-sm font-medium text-white">{toastMessage}</span>
             </div>
           </motion.div>

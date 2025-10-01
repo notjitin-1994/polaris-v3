@@ -28,7 +28,7 @@ export function DynamicQuestionsStepExample({
   staticAnswers,
   onQuestionsGenerated,
   onComplete,
-}: DynamicQuestionsStepProps): JSX.Element {
+}: DynamicQuestionsStepProps): React.JSX.Element {
   const [loading, setLoading] = useState(true);
   const [generationPhase, setGenerationPhase] = useState('Initializing AI analysis...');
   const [statusText, setStatusText] = useState('Preparing');
@@ -171,7 +171,7 @@ function simulateDelay(ms: number): Promise<void> {
 /**
  * Example: Using the Card variant in a full-page context
  */
-export function DynamicQuestionsPageExample(): JSX.Element {
+export function DynamicQuestionsPageExample(): React.JSX.Element {
   const [loading, setLoading] = useState(true);
   const [phase, setPhase] = useState({
     message: 'Initializing AI analysis...',

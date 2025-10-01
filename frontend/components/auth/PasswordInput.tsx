@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import type React from 'react';
 
 type Props = {
   label: string;
@@ -11,7 +12,7 @@ type Props = {
   name?: string;
 };
 
-function IconEye({ className = '' }: { className?: string }): JSX.Element {
+function IconEye({ className = '' }: { className?: string }): React.JSX.Element {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -30,7 +31,7 @@ function IconEye({ className = '' }: { className?: string }): JSX.Element {
   );
 }
 
-function IconEyeOff({ className = '' }: { className?: string }): JSX.Element {
+function IconEyeOff({ className = '' }: { className?: string }): React.JSX.Element {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -58,7 +59,7 @@ export function PasswordInput({
   placeholder,
   autoComplete,
   name,
-}: Props): JSX.Element {
+}: Props): React.JSX.Element {
   const [visible, setVisible] = useState(false);
 
   return (

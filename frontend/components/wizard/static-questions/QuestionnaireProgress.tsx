@@ -12,34 +12,36 @@ export function QuestionnaireProgress({
   currentStep,
   totalSteps,
   steps,
-}: QuestionnaireProgressProps): JSX.Element {
+}: QuestionnaireProgressProps): React.JSX.Element {
   const progress = ((currentStep + 1) / totalSteps) * 100;
-  
+
   return (
-    <div className="animate-fade-in-up space-y-6 mb-10">
+    <div className="animate-fade-in-up mb-10 space-y-6">
       {/* Progress bar with segments */}
       <div className="relative">
         <div className="h-2 w-full overflow-hidden rounded-full bg-white/5 shadow-inner">
           <div
-            className="relative h-full rounded-full bg-gradient-to-r from-primary-accent via-primary-accent-light to-primary-accent transition-all duration-700 ease-out"
+            className="from-primary-accent via-primary-accent-light to-primary-accent relative h-full rounded-full bg-gradient-to-r transition-all duration-700 ease-out"
             style={{
               width: `${progress}%`,
-              boxShadow: '0 0 16px rgba(167, 218, 219, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.3)',
+              boxShadow:
+                '0 0 16px rgba(167, 218, 219, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.3)',
             }}
           >
             {/* Animated shimmer effect */}
-            <div 
+            <div
               className="absolute inset-0 rounded-full"
               style={{
-                background: 'linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.3) 50%, transparent 100%)',
+                background:
+                  'linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.3) 50%, transparent 100%)',
                 animation: 'shimmer 2s infinite',
               }}
             />
           </div>
         </div>
-        
+
         {/* Progress dots */}
-        <div className="absolute top-1/2 left-0 right-0 -translate-y-1/2 flex justify-between px-1">
+        <div className="absolute top-1/2 right-0 left-0 flex -translate-y-1/2 justify-between px-1">
           {Array.from({ length: totalSteps }).map((_, index) => (
             <div
               key={index}
@@ -57,15 +59,15 @@ export function QuestionnaireProgress({
       <div className="flex items-start justify-between">
         <div className="flex-1 space-y-2">
           <div className="flex items-center gap-3">
-            <span className="inline-flex items-center justify-center h-7 px-3 rounded-full bg-primary/10 border border-primary/20 text-[13px] font-semibold text-primary-accent tracking-wide">
+            <span className="bg-primary/10 border-primary/20 text-primary-accent inline-flex h-7 items-center justify-center rounded-full border px-3 text-[13px] font-semibold tracking-wide">
               Step {currentStep + 1} of {totalSteps}
             </span>
           </div>
-          <h3 className="text-[22px] font-semibold text-foreground font-heading leading-tight tracking-tight">
+          <h3 className="text-foreground font-heading text-[22px] leading-tight font-semibold tracking-tight">
             {steps[currentStep]?.label}
           </h3>
           {steps[currentStep]?.description && (
-            <p className="text-[15px] text-text-secondary leading-relaxed max-w-lg">
+            <p className="text-text-secondary max-w-lg text-[15px] leading-relaxed">
               {steps[currentStep]?.description}
             </p>
           )}

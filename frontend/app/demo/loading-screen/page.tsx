@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import type React from 'react';
 import {
   DynamicQuestionsLoader,
   DynamicQuestionsLoaderCard,
@@ -16,7 +17,7 @@ import { QuestionnaireLayout } from '@/components/wizard/static-questions/Questi
  * 3. Full-page loader with layout
  * 4. Dynamic message updates
  */
-export default function LoadingScreenDemoPage(): JSX.Element {
+export default function LoadingScreenDemoPage(): React.JSX.Element {
   const [currentPhase, setCurrentPhase] = useState(0);
   const [showDemo, setShowDemo] = useState<'inline' | 'card' | 'fullpage'>('inline');
 

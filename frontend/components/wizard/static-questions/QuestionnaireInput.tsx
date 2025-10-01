@@ -24,10 +24,10 @@ export function QuestionnaireInput({
   required = false,
   multiline = false,
   rows = 4,
-}: QuestionnaireInputProps): JSX.Element {
+}: QuestionnaireInputProps): React.JSX.Element {
   // Create unique ID for label association
   const inputId = React.useId();
-  
+
   const baseClasses = `
     w-full rounded-[0.875rem] border-[1.5px] bg-[rgba(13,27,42,0.4)] px-4 text-base text-foreground placeholder-text-disabled 
     outline-none transition-all duration-300 font-normal
@@ -46,14 +46,15 @@ export function QuestionnaireInput({
 
   return (
     <div className="space-y-2.5">
-      <label htmlFor={inputId} className="block text-[15px] font-medium text-foreground leading-tight">
+      <label
+        htmlFor={inputId}
+        className="text-foreground block text-[15px] leading-tight font-medium"
+      >
         {label}
         {required && <span className="text-primary ml-1.5 font-semibold">*</span>}
       </label>
 
-      {helpText && (
-        <p className="text-[13px] text-text-secondary leading-snug">{helpText}</p>
-      )}
+      {helpText && <p className="text-text-secondary text-[13px] leading-snug">{helpText}</p>}
 
       {multiline ? (
         <textarea
@@ -75,8 +76,17 @@ export function QuestionnaireInput({
       )}
 
       {error && (
-        <div className="animate-fade-in flex items-start gap-2 text-[13px] text-error font-medium" role="alert" aria-live="polite">
-          <svg className="h-4 w-4 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+        <div
+          className="animate-fade-in text-error flex items-start gap-2 text-[13px] font-medium"
+          role="alert"
+          aria-live="polite"
+        >
+          <svg
+            className="mt-0.5 h-4 w-4 flex-shrink-0"
+            fill="currentColor"
+            viewBox="0 0 20 20"
+            aria-hidden="true"
+          >
             <path
               fillRule="evenodd"
               d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"

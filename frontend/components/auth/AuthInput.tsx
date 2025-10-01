@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
+import type React from 'react';
 
 type IdentifierValue = { kind: 'email'; email: string } | { kind: 'unknown'; raw: string };
 
@@ -19,7 +20,7 @@ function detect(input: string): IdentifierValue {
   return { kind: 'unknown', raw: input };
 }
 
-export function AuthInput({ value, onChange, placeholder }: Props): JSX.Element {
+export function AuthInput({ value, onChange, placeholder }: Props): React.JSX.Element {
   useEffect(() => {
     const parsed = detect(value);
     onChange(value, parsed);

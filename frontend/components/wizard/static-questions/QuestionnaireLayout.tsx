@@ -32,7 +32,7 @@ export function QuestionnaireLayout({
   children,
   currentStep,
   totalSteps,
-}: QuestionnaireLayoutProps): JSX.Element {
+}: QuestionnaireLayoutProps): React.JSX.Element {
   const [viewport, setViewport] = useState<{ width: number; height: number }>({
     width: 0,
     height: 0,
@@ -118,19 +118,21 @@ export function QuestionnaireLayout({
   }, [viewport]);
 
   return (
-    <div className="relative flex min-h-screen w-full items-center justify-center overflow-hidden bg-background px-4 py-12 sm:px-6 lg:px-8">
+    <div className="bg-background relative flex min-h-screen w-full items-center justify-center overflow-hidden px-4 py-12 sm:px-6 lg:px-8">
       {/* Refined ambient glow */}
       <div className="pointer-events-none absolute inset-0 z-0">
-        <div 
-          className="absolute inset-0" 
-          style={{
-            background: 'radial-gradient(circle at 50% 0%, rgba(167, 218, 219, 0.04) 0%, transparent 60%)',
-          }}
-        />
-        <div 
+        <div
           className="absolute inset-0"
           style={{
-            background: 'radial-gradient(circle at 100% 100%, rgba(79, 70, 229, 0.03) 0%, transparent 50%)',
+            background:
+              'radial-gradient(circle at 50% 0%, rgba(167, 218, 219, 0.04) 0%, transparent 60%)',
+          }}
+        />
+        <div
+          className="absolute inset-0"
+          style={{
+            background:
+              'radial-gradient(circle at 100% 100%, rgba(79, 70, 229, 0.03) 0%, transparent 50%)',
           }}
         />
       </div>

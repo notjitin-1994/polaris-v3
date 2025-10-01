@@ -42,7 +42,7 @@ const DEVICES = [
   { value: 'smartphone', label: 'Smartphone' },
 ];
 
-export function LearnerProfileStep(): JSX.Element {
+export function LearnerProfileStep(): React.JSX.Element {
   const {
     register,
     formState: { errors },
@@ -163,7 +163,8 @@ export function LearnerProfileStep(): JSX.Element {
             <p className="mb-2 font-medium">🎓 Why learner analysis matters:</p>
             <p className="text-white/70">
               Understanding your learners helps us match content to their existing knowledge level,
-              design for their actual learning environment, and respect their time and motivation constraints.
+              design for their actual learning environment, and respect their time and motivation
+              constraints.
             </p>
           </div>
         </div>

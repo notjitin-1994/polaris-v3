@@ -13,7 +13,7 @@ interface StateDebuggerProps {
 
 export function StateDebuggerComponent({ isOpen, onClose }: StateDebuggerProps) {
   const [activeTab, setActiveTab] = useState<'state' | 'history' | 'performance' | 'time-travel'>(
-    'state',
+    'state'
   );
   const [stateHistory, setStateHistory] = useState<unknown[]>([]);
   const [memoryUsage, setMemoryUsage] = useState<unknown>(null);
@@ -49,18 +49,18 @@ export function StateDebuggerComponent({ isOpen, onClose }: StateDebuggerProps) 
 
   // Connect to Redux DevTools
   useEffect(() => {
-    if (isOpen) {
-      const stores = {
-        blueprint: blueprintStore,
-        ui: uiStore,
-        auth: authStore,
-      };
-      devToolsIntegration.connect(stores);
+    if (!isOpen) return;
 
-      return () => {
-        devToolsIntegration.disconnect();
-      };
-    }
+    const stores = {
+      blueprint: blueprintStore,
+      ui: uiStore,
+      auth: authStore,
+    };
+    devToolsIntegration.connect(stores);
+
+    return () => {
+      devToolsIntegration.disconnect();
+    };
   }, [isOpen, blueprintStore, uiStore, authStore]);
 
   if (!isOpen) return null;
@@ -110,13 +110,10 @@ export function StateDebuggerComponent({ isOpen, onClose }: StateDebuggerProps) 
   };
 
   const takeSnapshot = () => {
-    const blueprintState = blueprintStore.getState();
-    const uiState = uiStore.getState();
-    const authState = authStore.getState();
-
-    TimeTravelDebugger.takeSnapshot('blueprint', blueprintState);
-    TimeTravelDebugger.takeSnapshot('ui', uiState);
-    TimeTravelDebugger.takeSnapshot('auth', authState);
+    // The hooks already return the current state
+    TimeTravelDebugger.takeSnapshot('blueprint', blueprintStore);
+    TimeTravelDebugger.takeSnapshot('ui', uiStore);
+    TimeTravelDebugger.takeSnapshot('auth', authStore);
 
     // Update snapshots
     const snapshots = TimeTravelDebugger.getSnapshots();
@@ -124,9 +121,9 @@ export function StateDebuggerComponent({ isOpen, onClose }: StateDebuggerProps) 
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full mx-4 max-h-modal overflow-hidden">
-        <div className="p-6 border-b border-gray-200">
+    <div className="bg-opacity-50 fixed inset-0 z-50 flex items-center justify-center bg-black">
+      <div className="max-h-modal mx-4 w-full max-w-4xl overflow-hidden rounded-lg bg-white shadow-xl">
+        <div className="border-b border-gray-200 p-6">
           <div className="flex items-center justify-between">
             <h2 className="text-2xl font-bold text-gray-900">State Debugger</h2>
             <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
@@ -137,7 +134,7 @@ export function StateDebuggerComponent({ isOpen, onClose }: StateDebuggerProps) 
 
         <div className="p-6">
           {/* Tabs */}
-          <div className="flex space-x-1 mb-6">
+          <div className="mb-6 flex space-x-1">
             {[
               { id: 'state', label: 'State' },
               { id: 'history', label: 'History' },
@@ -149,7 +146,7 @@ export function StateDebuggerComponent({ isOpen, onClose }: StateDebuggerProps) 
                 onClick={() =>
                   setActiveTab(tab.id as 'state' | 'history' | 'performance' | 'time-travel')
                 }
-                className={`px-4 py-2 text-sm font-medium rounded-md ${
+                className={`rounded-md px-4 py-2 text-sm font-medium ${
                   activeTab === tab.id
                     ? 'bg-blue-100 text-blue-700'
                     : 'text-gray-500 hover:text-gray-700'
@@ -167,33 +164,33 @@ export function StateDebuggerComponent({ isOpen, onClose }: StateDebuggerProps) 
                 <div className="flex space-x-2">
                   <button
                     onClick={exportState}
-                    className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                    className="rounded-md bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
                   >
                     Export State
                   </button>
-                  <label className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 cursor-pointer">
+                  <label className="cursor-pointer rounded-md bg-gray-200 px-4 py-2 text-gray-700 hover:bg-gray-300">
                     Import State
                     <input type="file" accept=".json" onChange={importState} className="hidden" />
                   </label>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
                   <div>
-                    <h3 className="font-semibold text-gray-900 mb-2">Blueprint Store</h3>
-                    <pre className="bg-gray-50 p-3 rounded text-xs overflow-auto max-h-32">
-                      {JSON.stringify(blueprintStore.getState(), null, 2)}
+                    <h3 className="mb-2 font-semibold text-gray-900">Blueprint Store</h3>
+                    <pre className="max-h-32 overflow-auto rounded bg-gray-50 p-3 text-xs">
+                      {JSON.stringify(blueprintStore, null, 2)}
                     </pre>
                   </div>
                   <div>
-                    <h3 className="font-semibold text-gray-900 mb-2">UI Store</h3>
-                    <pre className="bg-gray-50 p-3 rounded text-xs overflow-auto max-h-32">
-                      {JSON.stringify(uiStore.getState(), null, 2)}
+                    <h3 className="mb-2 font-semibold text-gray-900">UI Store</h3>
+                    <pre className="max-h-32 overflow-auto rounded bg-gray-50 p-3 text-xs">
+                      {JSON.stringify(uiStore, null, 2)}
                     </pre>
                   </div>
                   <div>
-                    <h3 className="font-semibold text-gray-900 mb-2">Auth Store</h3>
-                    <pre className="bg-gray-50 p-3 rounded text-xs overflow-auto max-h-32">
-                      {JSON.stringify(authStore.getState(), null, 2)}
+                    <h3 className="mb-2 font-semibold text-gray-900">Auth Store</h3>
+                    <pre className="max-h-32 overflow-auto rounded bg-gray-50 p-3 text-xs">
+                      {JSON.stringify(authStore, null, 2)}
                     </pre>
                   </div>
                 </div>
@@ -202,20 +199,20 @@ export function StateDebuggerComponent({ isOpen, onClose }: StateDebuggerProps) 
 
             {activeTab === 'history' && (
               <div className="space-y-4">
-                <div className="flex justify-between items-center">
+                <div className="flex items-center justify-between">
                   <h3 className="font-semibold text-gray-900">State Change History</h3>
                   <button
                     onClick={() => StateDebugger.clearStateHistory()}
-                    className="px-3 py-1 text-sm bg-red-200 text-red-700 rounded hover:bg-red-300"
+                    className="rounded bg-red-200 px-3 py-1 text-sm text-red-700 hover:bg-red-300"
                   >
                     Clear History
                   </button>
                 </div>
 
                 <div className="space-y-2">
-                  {stateHistory.map((entry, index) => (
-                    <div key={index} className="border border-gray-200 rounded p-3">
-                      <div className="flex justify-between items-start">
+                  {stateHistory.map((entry: any, index) => (
+                    <div key={index} className="rounded border border-gray-200 p-3">
+                      <div className="flex items-start justify-between">
                         <div>
                           <div className="font-medium text-gray-900">
                             {entry.store} - {entry.action}
@@ -226,7 +223,7 @@ export function StateDebuggerComponent({ isOpen, onClose }: StateDebuggerProps) 
                         </div>
                         <button
                           onClick={() => console.log('State:', entry.state)}
-                          className="px-2 py-1 text-xs bg-gray-200 text-gray-700 rounded hover:bg-gray-300"
+                          className="rounded bg-gray-200 px-2 py-1 text-xs text-gray-700 hover:bg-gray-300"
                         >
                           Log
                         </button>
@@ -241,28 +238,28 @@ export function StateDebuggerComponent({ isOpen, onClose }: StateDebuggerProps) 
               <div className="space-y-4">
                 <h3 className="font-semibold text-gray-900">Performance Metrics</h3>
 
-                {memoryUsage && (
-                  <div className="bg-gray-50 p-4 rounded">
-                    <h4 className="font-medium text-gray-900 mb-2">Memory Usage</h4>
+                {(memoryUsage as any) && (
+                  <div className="rounded bg-gray-50 p-4">
+                    <h4 className="mb-2 font-medium text-gray-900">Memory Usage</h4>
                     <div className="space-y-2">
                       <div className="flex justify-between">
                         <span>Used:</span>
-                        <span>{(memoryUsage.used / 1024 / 1024).toFixed(2)} MB</span>
+                        <span>{((memoryUsage as any).used / 1024 / 1024).toFixed(2)} MB</span>
                       </div>
                       <div className="flex justify-between">
                         <span>Total:</span>
-                        <span>{(memoryUsage.total / 1024 / 1024).toFixed(2)} MB</span>
+                        <span>{((memoryUsage as any).total / 1024 / 1024).toFixed(2)} MB</span>
                       </div>
                       <div className="flex justify-between">
                         <span>Percentage:</span>
-                        <span>{memoryUsage.percentage.toFixed(2)}%</span>
+                        <span>{(memoryUsage as any).percentage.toFixed(2)}%</span>
                       </div>
                     </div>
                   </div>
                 )}
 
-                <div className="bg-gray-50 p-4 rounded">
-                  <h4 className="font-medium text-gray-900 mb-2">Performance Monitoring</h4>
+                <div className="rounded bg-gray-50 p-4">
+                  <h4 className="mb-2 font-medium text-gray-900">Performance Monitoring</h4>
                   <p className="text-sm text-gray-600">
                     Performance monitoring is active. Check the console for warnings.
                   </p>
@@ -272,20 +269,20 @@ export function StateDebuggerComponent({ isOpen, onClose }: StateDebuggerProps) 
 
             {activeTab === 'time-travel' && (
               <div className="space-y-4">
-                <div className="flex justify-between items-center">
+                <div className="flex items-center justify-between">
                   <h3 className="font-semibold text-gray-900">Time Travel Debugging</h3>
                   <button
                     onClick={takeSnapshot}
-                    className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                    className="rounded-md bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
                   >
                     Take Snapshot
                   </button>
                 </div>
 
                 <div className="space-y-2">
-                  {snapshots.map((snapshot, index) => (
-                    <div key={index} className="border border-gray-200 rounded p-3">
-                      <div className="flex justify-between items-start">
+                  {snapshots.map((snapshot: any, index) => (
+                    <div key={index} className="rounded border border-gray-200 p-3">
+                      <div className="flex items-start justify-between">
                         <div>
                           <div className="font-medium text-gray-900">
                             {snapshot.store} - {snapshot.timestamp.toISOString()}
@@ -293,7 +290,7 @@ export function StateDebuggerComponent({ isOpen, onClose }: StateDebuggerProps) 
                         </div>
                         <button
                           onClick={() => restoreSnapshot(index)}
-                          className="px-3 py-1 text-sm bg-blue-200 text-blue-700 rounded hover:bg-blue-300"
+                          className="rounded bg-blue-200 px-3 py-1 text-sm text-blue-700 hover:bg-blue-300"
                         >
                           Restore
                         </button>

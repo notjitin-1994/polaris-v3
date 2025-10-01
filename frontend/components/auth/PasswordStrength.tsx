@@ -1,5 +1,7 @@
 'use client';
 
+import type React from 'react';
+
 type Props = {
   value: string;
 };
@@ -20,7 +22,7 @@ function getStrength(password: string): { score: number; label: string; color: s
   return { score, label: 'Strong', color: 'bg-emerald-500' };
 }
 
-export function PasswordStrength({ value }: Props): JSX.Element | null {
+export function PasswordStrength({ value }: Props): React.JSX.Element | null {
   const strength = getStrength(value);
 
   if (!value) return null;

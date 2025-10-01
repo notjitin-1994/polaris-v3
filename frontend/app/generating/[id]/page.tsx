@@ -1,216 +1,334 @@
+/**
+ * Blueprint Generation Loading Page
+ * Displays loading state while Claude generates the learning blueprint
+ */
+
 'use client';
 
-import React, { useEffect, useRef, useState, use } from 'react';
+import { useEffect, useState, use } from 'react';
+import type React from 'react';
 import { useRouter } from 'next/navigation';
-import { SwirlBackground } from '@/components/layout/SwirlBackground';
+import { motion } from 'framer-motion';
+import { Sparkles, CheckCircle, AlertCircle } from 'lucide-react';
+import ProtectedRoute from '@/components/auth/ProtectedRoute';
+import { AuthProvider, useAuth } from '@/contexts/AuthContext';
+import { StandardHeader } from '@/components/layout/StandardHeader';
+import { createServiceLogger } from '@/lib/logging';
+
+const logger = createServiceLogger('ui');
 
 interface GeneratingPageProps {
   params: Promise<{ id: string }>;
 }
 
-export default function GeneratingPage({ params }: GeneratingPageProps): JSX.Element {
+function GeneratingContent({ id }: { id: string }): React.JSX.Element {
   const router = useRouter();
-  const { id } = use(params);
-  const [status, setStatus] = useState<string>('Preparing your blueprint...');
-  const [progress, setProgress] = useState<number>(0);
+  const { user } = useAuth();
+  const [progress, setProgress] = useState(0);
+  const [status, setStatus] = useState('Initializing blueprint generation...');
+  const [currentStep, setCurrentStep] = useState(1);
   const [error, setError] = useState<string | null>(null);
-  const eventSourceRef = useRef<EventSource | null>(null);
+  const [model, setModel] = useState<'claude-sonnet-4' | 'claude-opus-4' | 'ollama' | null>(null);
 
   useEffect(() => {
     let progressInterval: NodeJS.Timeout | null = null;
+    let statusInterval: NodeJS.Timeout | null = null;
     let completed = false;
 
+    const steps = [
+      'Analyzing questionnaire responses...',
+      'Generating learning objectives...',
+      'Designing instructional strategy...',
+      'Creating content outline...',
+      'Planning resources and timeline...',
+      'Finalizing assessment strategy...',
+    ];
+
+    // Simulated progress (smooth animation)
     const startProgress = () => {
       progressInterval = setInterval(() => {
         setProgress((prev) => {
           if (prev >= 90 || completed) return prev;
-          return Math.min(90, prev + Math.random() * 7);
+          return Math.min(90, prev + Math.random() * 3);
         });
-      }, 300);
+      }, 400);
     };
 
-    const stopProgress = () => {
+    // Cycle through steps
+    const startStepRotation = () => {
+      statusInterval = setInterval(() => {
+        setCurrentStep((prev) => {
+          const nextStep = (prev % steps.length) + 1;
+          setStatus(steps[nextStep - 1]);
+          return nextStep;
+        });
+      }, 8000); // Change step every 8 seconds
+    };
+
+    const stopIntervals = () => {
       if (progressInterval) clearInterval(progressInterval);
+      if (statusInterval) clearInterval(statusInterval);
     };
 
-    const start = async () => {
-      // Use fetch stream via EventSource poly path: We expose an SSE endpoint already
-      const url = '/api/generate-blueprint';
+    const generateBlueprint = async () => {
+      const startTime = Date.now();
+
       try {
         startProgress();
-        setStatus('Aggregating your responses...');
-        const es = new EventSource(`${url}?bid=${encodeURIComponent(id)}`);
-        // However our API expects POST with JSON. We'll create a small POST-to-SSE bridge using fetch + ReadableStream in this client.
-        // Fallback to POST streaming
-      } catch {
-        // no-op; we use POST stream below
-      }
+        startStepRotation();
 
-      try {
-        setStatus('Generating your blueprint...');
-        const response = await fetch('/api/generate-blueprint', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ blueprintId: id }),
+        logger.info('blueprint.generation.ui.start', 'Starting blueprint generation from UI', {
+          blueprintId: id,
+          userId: user?.id,
         });
 
-        if (
-          !response.ok &&
-          response.headers.get('content-type')?.includes('text/event-stream') !== true
-        ) {
-          const err = await response.json().catch(() => ({}));
-          throw new Error(err?.error || 'Failed to start generation');
+        // Call blueprint generation endpoint
+        const response = await fetch('/api/blueprints/generate', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            blueprintId: id,
+          }),
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+
+          logger.error('blueprint.generation.ui.error', 'Blueprint generation failed', {
+            blueprintId: id,
+            statusCode: response.status,
+            error: errorData.error,
+            duration: Date.now() - startTime,
+          });
+
+          throw new Error(errorData.error || 'Failed to generate blueprint');
         }
 
-        // Read SSE stream manually
-        const reader = response.body?.getReader();
-        const decoder = new TextDecoder();
-        let buffered = '';
-        if (!reader) throw new Error('No readable stream');
+        const result = await response.json();
 
-        // Pump
-        while (true) {
-          const { done, value } = await reader.read();
-          if (done) break;
-          buffered += decoder.decode(value, { stream: true });
-          // Parse SSE events
-          const events = buffered.split('\n\n');
-          // Keep the last partial chunk in buffer
-          buffered = events.pop() || '';
-          for (const evt of events) {
-            const lines = evt.split('\n');
-            const typeLine = lines.find((l) => l.startsWith('event: '));
-            const dataLine = lines.find((l) => l.startsWith('data: '));
-            const eventType = typeLine ? typeLine.slice('event: '.length) : 'message';
-            const dataRaw = dataLine ? dataLine.slice('data: '.length) : '{}';
-            let data: any = {};
-            try {
-              data = JSON.parse(dataRaw);
-            } catch {
-              /* ignore */
-            }
+        completed = true;
+        stopIntervals();
 
-            if (eventType === 'progress') {
-              setStatus('Generating your blueprint...');
-              setProgress((p) => Math.min(95, p + 2));
-            } else if (eventType === 'warning') {
-              // Non-fatal duplicate warning
-              setStatus(data?.message || 'Finalizing...');
-            } else if (eventType === 'error') {
-              setError(data?.message || 'Failed to generate blueprint');
-              completed = true;
-              setProgress(100);
-            } else if (eventType === 'complete') {
-              completed = true;
-              setStatus('Blueprint ready! Redirecting...');
-              setProgress(100);
-              const savedId: string | undefined = data?.savedBlueprintId;
-              // Redirect to view page; fallback to dashboard
-              setTimeout(() => {
-                if (savedId) router.push(`/blueprint/${savedId}`);
-                else router.push('/');
-              }, 900);
-            } else if (eventType === 'error') {
-              // If backend returned a saved fallback id, still redirect to view it
-              const savedId: string | undefined = data?.savedBlueprintId;
-              if (savedId) {
-                completed = true;
-                setStatus('Showing fallback blueprint...');
-                setProgress(100);
-                setTimeout(() => router.push(`/blueprint/${savedId}`), 900);
-              }
-            }
-          }
-        }
-      } catch (e) {
-        setError(e instanceof Error ? e.message : 'Unexpected error');
         setProgress(100);
-      } finally {
-        stopProgress();
+        setStatus('Blueprint generated successfully!');
+        setModel(result.metadata?.model);
+
+        logger.info('blueprint.generation.ui.complete', 'Blueprint generated successfully', {
+          blueprintId: id,
+          model: result.metadata?.model,
+          duration: Date.now() - startTime,
+          fallbackUsed: result.metadata?.fallbackUsed,
+        });
+
+        // Redirect to blueprint viewer
+        setTimeout(() => {
+          router.push(`/blueprint/${id}`);
+        }, 1500);
+      } catch (error) {
+        completed = true;
+        stopIntervals();
+
+        setError((error as Error).message);
+        setStatus('Generation failed');
+        setProgress(100);
+
+        logger.error('blueprint.generation.ui.fatal_error', 'Fatal error during generation', {
+          blueprintId: id,
+          error: (error as Error).message,
+          duration: Date.now() - startTime,
+        });
       }
     };
 
-    void start();
+    generateBlueprint();
+
     return () => {
-      stopProgress();
-      if (eventSourceRef.current) eventSourceRef.current.close();
+      stopIntervals();
     };
-  }, [id, router]);
+  }, [id, router, user?.id]);
 
   return (
-    <main className="relative flex min-h-screen w-full items-center justify-center overflow-hidden bg-[#020C1B] text-[rgb(224,224,224)]">
-      <div className="page-enter animate-fade-in-up relative z-10 mx-auto w-full max-w-2xl px-4">
-        <div className="glass-card relative overflow-hidden p-8 text-center sm:p-12">
-          {/* Header area swirls */}
-          <div className="pointer-events-none absolute inset-0" aria-hidden="true">
-            <SwirlBackground
-              count={8}
-              minSize={40}
-              maxSize={72}
-              opacityMin={0.02}
-              opacityMax={0.05}
-            />
-          </div>
-          {/* Premium Loading Indicator */}
-          <div className="mb-10 inline-flex items-center justify-center">
-            <div className="relative">
-              <div className="h-20 w-20 animate-spin rounded-full border-[3px] border-neutral-300/30 border-t-primary" 
-                   style={{ animationDuration: '1s' }} />
-              <div className="absolute inset-0 h-20 w-20 animate-spin rounded-full border-[3px] border-transparent border-b-primary-accent-light" 
-                   style={{ animationDuration: '1.5s', animationDirection: 'reverse' }} />
-              <div className="absolute inset-2 h-16 w-16 rounded-full bg-primary/10 blur-lg animate-pulse" />
+    <div className="min-h-screen bg-[#020C1B]">
+      {/* Header */}
+      <StandardHeader
+        title="Generating Your Learning Blueprint"
+        subtitle="Our AI is analyzing your responses and creating a comprehensive, personalized learning blueprint. This typically takes 30-60 seconds."
+        backHref="/"
+        backLabel="Back to Dashboard"
+        user={user}
+      />
+
+      {/* Main Content */}
+      <main className="w-full px-4 py-8 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-3xl">
+          <div className="glass rounded-2xl p-8 md:p-12">
+            {/* Icon */}
+            <div className="mb-8 flex justify-center">
+              {error ? (
+                <div className="bg-error/10 flex h-20 w-20 items-center justify-center rounded-full">
+                  <AlertCircle className="text-error h-10 w-10" />
+                </div>
+              ) : progress === 100 && !error ? (
+                <motion.div
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ type: 'spring', duration: 0.5 }}
+                  className="bg-success/10 flex h-20 w-20 items-center justify-center rounded-full"
+                >
+                  <CheckCircle className="text-success h-10 w-10" />
+                </motion.div>
+              ) : (
+                <motion.div
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 3, repeat: Infinity, ease: 'linear' }}
+                  className="bg-primary/10 flex h-20 w-20 items-center justify-center rounded-full"
+                >
+                  <Sparkles className="text-primary h-10 w-10" />
+                </motion.div>
+              )}
             </div>
-          </div>
 
-          {/* Status Message */}
-          <h1 className="font-heading animate-fade-in-up mb-3 text-display text-foreground">
-            {error ? 'Generation Error' : 'Generating Your Blueprint'}
-          </h1>
-          <p className="animate-fade-in-up animate-delay-150 mb-8 text-body text-text-secondary">
-            {status}
-          </p>
+            {/* Status Message */}
+            <h2 className="text-title text-foreground mb-3 text-center">
+              {error
+                ? 'Generation Failed'
+                : progress === 100
+                  ? 'Blueprint Ready!'
+                  : 'Generating Blueprint'}
+            </h2>
 
-          {/* Premium Progress Bar */}
-          <div className="animate-fade-in-up animate-delay-300 mb-8 w-full">
-            <div className="relative h-2.5 overflow-hidden rounded-full bg-white/5 shadow-inner">
-              <div
-                className="relative h-full rounded-full bg-gradient-to-r from-primary-accent via-primary-accent-light to-primary-accent transition-all duration-500 ease-out"
-                style={{ 
-                  width: `${progress}%`,
-                  boxShadow: '0 0 16px rgba(167, 218, 219, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.3)'
-                }}
-              >
-                {/* Animated shimmer */}
-                <div 
-                  className="absolute inset-0 rounded-full"
-                  style={{
-                    background: 'linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.3) 50%, transparent 100%)',
-                    animation: 'shimmer 2s infinite',
-                  }}
-                />
+            <p className="text-body text-text-secondary mb-8 text-center">{error || status}</p>
+
+            {/* Progress Bar */}
+            {!error && (
+              <div className="mx-auto mb-6 max-w-md">
+                <div className="text-text-secondary mb-2 flex justify-between text-sm">
+                  <span>Progress</span>
+                  <span>{Math.round(progress)}%</span>
+                </div>
+                <div className="bg-surface h-2 overflow-hidden rounded-full">
+                  <motion.div
+                    className="from-primary to-secondary h-full bg-gradient-to-r"
+                    initial={{ width: '0%' }}
+                    animate={{ width: `${progress}%` }}
+                    transition={{ duration: 0.3 }}
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* Powered by Solara Badge */}
+            <div className="mt-6 flex justify-center">
+              <div className="glass-strong rounded-full px-4 py-2 text-xs">
+                <span className="text-text-secondary">Powered by </span>
+                <span
+                  className="font-semibold text-[#FFD700]"
+                  style={{ textShadow: '0 0 10px rgba(255, 215, 0, 0.3)' }}
+                >
+                  Solara
+                </span>
               </div>
             </div>
-            <div className="mt-3 flex items-center justify-between">
-              <span className="text-[13px] text-text-disabled font-medium">Progress</span>
-              <span className="text-[15px] font-semibold text-primary-accent tracking-wide">{Math.round(progress)}%</span>
-            </div>
+
+            {/* Step Indicators */}
+            {!error && progress < 100 && (
+              <div className="mt-8 flex justify-center gap-2">
+                {[1, 2, 3, 4, 5, 6].map((step) => (
+                  <motion.div
+                    key={step}
+                    className={`h-2 w-2 rounded-full ${
+                      step === currentStep
+                        ? 'bg-primary'
+                        : step < currentStep
+                          ? 'bg-secondary'
+                          : 'bg-surface'
+                    }`}
+                    animate={
+                      step === currentStep
+                        ? {
+                            scale: [1, 1.3, 1],
+                            opacity: [0.7, 1, 0.7],
+                          }
+                        : {}
+                    }
+                    transition={{
+                      duration: 1.5,
+                      repeat: Infinity,
+                      ease: 'easeInOut',
+                    }}
+                  />
+                ))}
+              </div>
+            )}
+
+            {/* Error Actions */}
+            {error && (
+              <div className="mt-6 flex justify-center gap-4">
+                <button
+                  onClick={() => router.push('/')}
+                  className="bg-surface text-foreground hover:bg-surface/80 rounded-xl px-6 py-3 text-sm font-medium transition-colors"
+                >
+                  Back to Dashboard
+                </button>
+                <button
+                  onClick={() => router.refresh()}
+                  className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-xl px-6 py-3 text-sm font-medium transition-colors"
+                >
+                  Try Again
+                </button>
+              </div>
+            )}
           </div>
 
-          {/* Error Message */}
-          {error && (
-            <div className="animate-fade-in-up rounded-lg border border-error/30 bg-error/10 p-4">
-              <p className="text-body font-medium text-error">{error}</p>
-            </div>
-          )}
-
-          {/* Info Message */}
+          {/* Info Card */}
           {!error && progress < 100 && (
-            <p className="animate-fade-in-up animate-delay-500 text-caption text-text-disabled">
-              This may take a moment. Please don't close this page.
-            </p>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 1 }}
+              className="glass-strong mt-6 rounded-xl p-6"
+            >
+              <h3 className="text-foreground mb-3 text-sm font-semibold">What's happening?</h3>
+              <ul className="text-text-secondary space-y-2 text-sm">
+                <li className="flex items-start gap-2">
+                  <CheckCircle className="text-success mt-0.5 h-4 w-4 flex-shrink-0" />
+                  <span>Analyzing your questionnaire responses</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle className="text-success mt-0.5 h-4 w-4 flex-shrink-0" />
+                  <span>Creating personalized learning objectives</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle className="text-success mt-0.5 h-4 w-4 flex-shrink-0" />
+                  <span>Designing instructional strategies</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  {progress > 60 ? (
+                    <CheckCircle className="text-success mt-0.5 h-4 w-4 flex-shrink-0" />
+                  ) : (
+                    <div className="border-primary mt-0.5 h-4 w-4 flex-shrink-0 animate-spin rounded-full border-2 border-t-transparent" />
+                  )}
+                  <span>Generating comprehensive blueprint</span>
+                </li>
+              </ul>
+            </motion.div>
           )}
         </div>
-      </div>
-    </main>
+      </main>
+    </div>
+  );
+}
+
+export default function GeneratingPage({ params }: GeneratingPageProps): React.JSX.Element {
+  const unwrappedParams = use(params);
+
+  return (
+    <AuthProvider>
+      <ProtectedRoute>
+        <GeneratingContent id={unwrappedParams.id} />
+      </ProtectedRoute>
+    </AuthProvider>
   );
 }

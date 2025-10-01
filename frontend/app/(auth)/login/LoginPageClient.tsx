@@ -2,6 +2,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import type React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import SwirlBackground from '@/components/SwirlBackground';
@@ -9,7 +10,7 @@ import HeaderSwirlBackground from '@/components/HeaderSwirlBackground';
 import { PolarisPerks } from '@/components/auth/PolarisPerks';
 import { LoginFormContent } from '@/components/auth/LoginFormContent';
 
-export default function LoginPageClient(): JSX.Element {
+export default function LoginPageClient(): React.JSX.Element {
   const [isMobile, setIsMobile] = useState(false);
 
   // Only handle mobile detection, not auth - that's handled server-side

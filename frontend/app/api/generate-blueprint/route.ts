@@ -159,10 +159,10 @@ export async function POST(req: Request): Promise<Response> {
             // Stream controller likely already closed by client disconnect
             isClosed = true;
             try {
-            // Cancel upstream reader to stop reading more chunks
-            reader?.cancel().catch(() => {
-              // Ignore cancellation errors
-            });
+              // Cancel upstream reader to stop reading more chunks
+              reader?.cancel().catch(() => {
+                // Ignore cancellation errors
+              });
             } catch {}
             return false;
           }
@@ -213,8 +213,8 @@ export async function POST(req: Request): Promise<Response> {
                   // Stream is complete, attempt final validation
                   try {
                     currentBlueprint = parseAndValidateBlueprintJSON(fullContent);
-                  } catch (e) {
-                    validationError = e;
+                  } catch (e: unknown) {
+                    validationError = e instanceof Error ? e : new Error(String(e));
                     console.error('Final blueprint validation failed during streaming:', e);
                   }
                 }
@@ -253,7 +253,7 @@ export async function POST(req: Request): Promise<Response> {
                 details: error instanceof Error ? error.message : '',
                 blueprint: fallbackBlueprint,
                 markdown: fallbackMarkdown,
-                savedBlueprintId,
+                savedBlueprintId: savedFallbackId,
               });
             }
           } catch (persistError) {

@@ -53,7 +53,7 @@ const HeaderSwirlBackground = memo(
         aria-hidden="true"
       >
         {/* Subtle ambient backdrop without gradients */}
-        <div className="absolute inset-0 bg-primary/5" />
+        <div className="bg-primary/5 absolute inset-0" />
 
         {/* Subtle noise overlay via SVG data URI for depth */}
         <div

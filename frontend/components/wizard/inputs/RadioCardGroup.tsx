@@ -33,15 +33,15 @@ export function RadioCardGroup({
   required = false,
   disabled = false,
   className,
-}: RadioCardGroupProps): JSX.Element {
+}: RadioCardGroupProps): React.JSX.Element {
   const hasError = !!error;
 
   return (
     <div className={cn('space-y-3', className)}>
-      <label className="block text-body font-medium text-text-secondary">
+      <label className="text-body text-text-secondary block font-medium">
         {label}
         {required && (
-          <span className="ml-1 text-primary" aria-label="required">
+          <span className="text-primary ml-1" aria-label="required">
             *
           </span>
         )}
@@ -58,7 +58,7 @@ export function RadioCardGroup({
             disabled={disabled}
             className={cn(
               'group relative rounded-xl p-4 text-left transition-all duration-200',
-              'border focus-visible:ring-2 focus-visible:ring-secondary/50 focus-visible:ring-offset-2',
+              'focus-visible:ring-secondary/50 border focus-visible:ring-2 focus-visible:ring-offset-2',
               disabled && 'cursor-not-allowed opacity-50',
               value === option.value
                 ? 'border-primary bg-primary/10'
@@ -70,13 +70,9 @@ export function RadioCardGroup({
             <div className="flex items-start gap-3">
               <div className="flex-1 space-y-1">
                 <div className="flex items-center gap-2">
-                  <span className="font-semibold text-foreground">{option.label}</span>
+                  <span className="text-foreground font-semibold">{option.label}</span>
                   {value === option.value && (
-                    <svg
-                      className="h-5 w-5 text-primary"
-                      fill="currentColor"
-                      viewBox="0 0 20 20"
-                    >
+                    <svg className="text-primary h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
                       <path
                         fillRule="evenodd"
                         d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
@@ -87,7 +83,9 @@ export function RadioCardGroup({
                 </div>
                 <p className="text-caption text-text-secondary">{option.description}</p>
                 {option.example && (
-                  <p className="mt-1 text-caption italic text-text-disabled">Example: {option.example}</p>
+                  <p className="text-caption text-text-disabled mt-1 italic">
+                    Example: {option.example}
+                  </p>
                 )}
               </div>
             </div>
@@ -97,7 +95,7 @@ export function RadioCardGroup({
 
       {hasError && (
         <p
-          className="animate-fade-in flex items-center gap-1 text-caption text-error"
+          className="animate-fade-in text-caption text-error flex items-center gap-1"
           role="alert"
           aria-live="polite"
         >

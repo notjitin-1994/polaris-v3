@@ -36,7 +36,7 @@ class DashboardExportService {
   async exportImage(
     elementId: string,
     format: 'png' | 'jpg',
-    options: Partial<ExportOptions> = {},
+    options: Partial<ExportOptions> = {}
   ): Promise<void> {
     try {
       const canvas = await this.captureElement(elementId);
@@ -145,7 +145,7 @@ class DashboardExportService {
   async exportDashboard(
     data: DashboardData,
     elementId: string,
-    options: ExportOptions,
+    options: ExportOptions
   ): Promise<void> {
     const { format } = options;
 

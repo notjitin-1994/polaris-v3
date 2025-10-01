@@ -41,9 +41,7 @@ export const learningGapSchemaV2 = z.object({
 });
 
 // V1 backward compatibility
-export const learningGapSchemaV1 = z
-  .string()
-  .min(10, 'Please provide at least 10 characters');
+export const learningGapSchemaV1 = z.string().min(10, 'Please provide at least 10 characters');
 
 // ==================== STEP 5: Resources ====================
 export const resourcesSchemaV2 = z.object({
@@ -61,7 +59,9 @@ export const resourcesSchemaV2 = z.object({
     contentDevelopers: z.number().int().min(0).default(0),
     multimediaSpecialists: z.number().int().min(0).default(0),
     smeAvailability: z.number().int().min(1).max(5).default(3),
-    experienceLevel: z.enum(['beginner', 'intermediate', 'advanced', 'expert']).default('intermediate'),
+    experienceLevel: z
+      .enum(['beginner', 'intermediate', 'advanced', 'expert'])
+      .default('intermediate'),
   }),
   technology: z.object({
     lms: z.string().min(1, 'LMS selection required'),
@@ -85,11 +85,15 @@ export const deliveryStrategySchema = z.object({
   interactivityLevel: z.number().int().min(1).max(5).default(3),
   practiceOpportunities: z.array(z.string()).default([]),
   socialLearning: z.array(z.string()).default([]),
-  reinforcement: z.enum(['none', 'emails', 'microlearning', 'coaching', 'community']).default('none'),
+  reinforcement: z
+    .enum(['none', 'emails', 'microlearning', 'coaching', 'community'])
+    .default('none'),
 });
 
 // ==================== STEP 7: Constraints ====================
-export const constraintsSchema = z.array(z.string()).min(1, 'Please select at least one constraint');
+export const constraintsSchema = z
+  .array(z.string())
+  .min(1, 'Please select at least one constraint');
 
 // ==================== STEP 8: Evaluation ====================
 export const evaluationSchema = z.object({

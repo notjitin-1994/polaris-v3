@@ -122,7 +122,7 @@ export const defaultErrorHandler = new DefaultErrorHandler();
 
 export function withErrorHandling<T extends unknown[], R>(
   fn: (...args: T) => Promise<R>,
-  errorHandler: ErrorHandler = defaultErrorHandler,
+  errorHandler: ErrorHandler = defaultErrorHandler
 ) {
   return async (...args: T): Promise<R> => {
     try {

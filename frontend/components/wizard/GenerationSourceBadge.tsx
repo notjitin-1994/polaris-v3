@@ -20,7 +20,7 @@ export function GenerationSourceBadge({
   fallbackUsed = false,
   className = '',
   size = 'md',
-}: GenerationSourceBadgeProps): JSX.Element {
+}: GenerationSourceBadgeProps): React.JSX.Element {
   const sizeClasses = {
     sm: 'px-2 py-1 text-xs gap-1.5',
     md: 'px-4 py-2 text-sm gap-2',

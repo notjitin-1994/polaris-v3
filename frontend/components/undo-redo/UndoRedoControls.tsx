@@ -94,7 +94,7 @@ export function UndoRedoControls({ className = '' }: UndoRedoControlsProps) {
       <button
         onClick={handleUndo}
         disabled={!canUndo}
-        className="px-3 py-1.5 text-sm bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+        className="rounded-md bg-gray-200 px-3 py-1.5 text-sm text-gray-700 transition-colors hover:bg-gray-300 disabled:cursor-not-allowed disabled:opacity-50"
         title="Undo (Ctrl+Z)"
       >
         Undo
@@ -103,7 +103,7 @@ export function UndoRedoControls({ className = '' }: UndoRedoControlsProps) {
       <button
         onClick={handleRedo}
         disabled={!canRedo}
-        className="px-3 py-1.5 text-sm bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+        className="rounded-md bg-gray-200 px-3 py-1.5 text-sm text-gray-700 transition-colors hover:bg-gray-300 disabled:cursor-not-allowed disabled:opacity-50"
         title="Redo (Ctrl+Y)"
       >
         Redo
@@ -112,7 +112,7 @@ export function UndoRedoControls({ className = '' }: UndoRedoControlsProps) {
       {(canUndo || canRedo) && (
         <button
           onClick={handleClearHistory}
-          className="px-3 py-1.5 text-sm bg-red-200 text-red-700 rounded-md hover:bg-red-300 transition-colors"
+          className="rounded-md bg-red-200 px-3 py-1.5 text-sm text-red-700 transition-colors hover:bg-red-300"
           title="Clear History"
         >
           Clear

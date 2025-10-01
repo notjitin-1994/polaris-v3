@@ -29,7 +29,7 @@ export function CurrencyInput({
   disabled = false,
   allowApproximate = false,
   className,
-}: CurrencyInputProps): JSX.Element {
+}: CurrencyInputProps): React.JSX.Element {
   const hasError = !!error;
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -55,23 +55,23 @@ export function CurrencyInput({
 
   return (
     <div className={cn('space-y-3', className)}>
-      <label className="block text-[15px] font-medium text-foreground leading-tight">
+      <label className="text-foreground block text-[15px] leading-tight font-medium">
         {label}
         {required && (
-          <span className="ml-1.5 text-primary font-semibold" aria-label="required">
+          <span className="text-primary ml-1.5 font-semibold" aria-label="required">
             *
           </span>
         )}
       </label>
 
-      {helpText && <p className="text-[13px] text-text-secondary leading-snug">{helpText}</p>}
+      {helpText && <p className="text-text-secondary text-[13px] leading-snug">{helpText}</p>}
 
       <div className="relative">
         <div
           className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4"
           aria-hidden="true"
         >
-          <span className="text-base font-semibold text-primary-accent">
+          <span className="text-primary-accent text-base font-semibold">
             {getCurrencySymbol(currency)}
           </span>
         </div>
@@ -82,14 +82,14 @@ export function CurrencyInput({
           placeholder={placeholder}
           disabled={disabled}
           className={cn(
-            'w-full h-[3.25rem] rounded-[0.875rem] border-[1.5px] bg-[rgba(13,27,42,0.4)] py-3 pl-11 pr-4 text-base text-foreground placeholder-text-disabled font-normal',
-            'outline-none transition-all duration-300',
+            'text-foreground placeholder-text-disabled h-[3.25rem] w-full rounded-[0.875rem] border-[1.5px] bg-[rgba(13,27,42,0.4)] py-3 pr-4 pl-11 text-base font-normal',
+            'transition-all duration-300 outline-none',
             'shadow-[inset_0_1px_2px_rgba(0,0,0,0.1),0_1px_3px_rgba(0,0,0,0.05)]',
             'hover:border-[var(--border-strong)] hover:bg-[rgba(13,27,42,0.5)]',
             hasError
               ? 'border-error/70 focus:border-error focus:bg-[rgba(13,27,42,0.6)] focus:shadow-[0_0_0_3px_rgba(239,68,68,0.15),inset_0_1px_2px_rgba(0,0,0,0.1)]'
-              : 'border-[var(--border-medium)] focus:border-primary focus:bg-[rgba(13,27,42,0.6)] focus:shadow-[0_0_0_3px_rgba(167,218,219,0.15),inset_0_1px_2px_rgba(0,0,0,0.1),var(--glow-subtle)]',
-            disabled && 'cursor-not-allowed opacity-50 bg-[rgba(13,27,42,0.3)]'
+              : 'focus:border-primary border-[var(--border-medium)] focus:bg-[rgba(13,27,42,0.6)] focus:shadow-[0_0_0_3px_rgba(167,218,219,0.15),inset_0_1px_2px_rgba(0,0,0,0.1),var(--glow-subtle)]',
+            disabled && 'cursor-not-allowed bg-[rgba(13,27,42,0.3)] opacity-50'
           )}
           aria-label={label}
           aria-invalid={hasError}
@@ -97,12 +97,12 @@ export function CurrencyInput({
       </div>
 
       {allowApproximate && (
-        <p className="text-[13px] text-text-secondary italic">Approximate amounts are fine</p>
+        <p className="text-text-secondary text-[13px] italic">Approximate amounts are fine</p>
       )}
 
       {hasError && (
         <p
-          className="animate-fade-in flex items-center gap-1 text-[13px] text-error font-medium"
+          className="animate-fade-in text-error flex items-center gap-1 text-[13px] font-medium"
           role="alert"
           aria-live="polite"
         >

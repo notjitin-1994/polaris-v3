@@ -34,7 +34,7 @@ const eslintConfig = [
         { argsIgnorePattern: '^_', varsIgnorePattern: '^_' },
       ],
       'react-hooks/exhaustive-deps': 'warn',
-      
+
       // Anti-pattern Rules - Prevent gradients and other violations
       'no-restricted-syntax': [
         'error',
@@ -63,15 +63,17 @@ const eslintConfig = [
         // Inline style objects
         {
           selector: 'JSXAttribute[name.name="style"] > JSXExpressionContainer',
-          message: 'Inline styles are not allowed. Use Tailwind utility classes instead. Exceptions: filter for glass effects or critical animations.',
+          message:
+            'Inline styles are not allowed. Use Tailwind utility classes instead. Exceptions: filter for glass effects or critical animations.',
         },
         // Hardcoded colors in class names (warn, not error)
         {
-          selector: 'Literal[value=/(bg|text|border)-(red|blue|green|yellow|purple|pink|indigo|gray|slate)-(\\d{3})/]',
+          selector:
+            'Literal[value=/(bg|text|border)-(red|blue|green|yellow|purple|pink|indigo|gray|slate)-(\\d{3})/]',
           message: 'Consider using semantic color tokens instead of hardcoded Tailwind colors.',
         },
       ],
-      
+
       // Additional inline style checks
       'react/forbid-component-props': [
         'warn',
@@ -79,12 +81,13 @@ const eslintConfig = [
           forbid: [
             {
               propName: 'style',
-              message: 'Inline styles are discouraged. Use Tailwind utility classes instead. If absolutely necessary for dynamic values, ensure it\'s documented.',
+              message:
+                "Inline styles are discouraged. Use Tailwind utility classes instead. If absolutely necessary for dynamic values, ensure it's documented.",
             },
           ],
         },
       ],
-      
+
       // Warn about specific style properties
       'no-restricted-properties': [
         'warn',

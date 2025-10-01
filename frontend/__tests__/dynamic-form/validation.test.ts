@@ -100,7 +100,7 @@ describe('Validation Engine', () => {
 
       // Too long
       expect(engine.validateField('required-text', 'A'.repeat(51), {})).toBe(
-        'Maximum 50 characters',
+        'Maximum 50 characters'
       );
 
       // Valid length
@@ -145,7 +145,7 @@ describe('Validation Engine', () => {
 
       // Too many selections
       expect(engine.validateField('multiselect-field', ['sports', 'music', 'art'], {})).toBe(
-        'Maximum 2 selections allowed',
+        'Maximum 2 selections allowed'
       );
 
       // Valid selections
@@ -289,7 +289,7 @@ describe('Validation Engine', () => {
 
       // Invalid field
       expect(validateField(mockFormSchema, 'required-text', 'Hi', formData)).toBe(
-        'Minimum 3 characters',
+        'Minimum 3 characters'
       );
     });
   });

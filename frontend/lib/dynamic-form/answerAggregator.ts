@@ -113,7 +113,7 @@ export class AnswerAggregator {
       } else {
         // No conflicts, use the most recent value
         const mostRecent = fieldValues.reduce((latest, current) =>
-          new Date(current.timestamp) > new Date(latest.timestamp) ? current : latest,
+          new Date(current.timestamp) > new Date(latest.timestamp) ? current : latest
         );
         aggregatedData[fieldId] = mostRecent.value;
       }
@@ -131,13 +131,13 @@ export class AnswerAggregator {
    */
   private detectFieldConflicts(
     fieldId: string,
-    fieldValues: Array<{ value: unknown; timestamp: string; formId: string }>,
+    fieldValues: Array<{ value: unknown; timestamp: string; formId: string }>
   ): AnswerConflict[] {
     const conflicts: AnswerConflict[] = [];
 
     // Sort by timestamp
     const sortedValues = fieldValues.sort(
-      (a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime(),
+      (a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
     );
 
     for (let i = 0; i < sortedValues.length - 1; i++) {
@@ -171,7 +171,7 @@ export class AnswerAggregator {
   private resolveFieldConflicts(
     fieldId: string,
     fieldValues: Array<{ value: unknown; timestamp: string; formId: string }>,
-    _conflicts: AnswerConflict[],
+    _conflicts: AnswerConflict[]
   ): unknown {
     if (this.options.autoResolveConflicts) {
       switch (this.options.conflictResolutionStrategy) {
@@ -194,10 +194,10 @@ export class AnswerAggregator {
    * Resolve by timestamp (most recent wins)
    */
   private resolveByTimestamp(
-    fieldValues: Array<{ value: unknown; timestamp: string; formId: string }>,
+    fieldValues: Array<{ value: unknown; timestamp: string; formId: string }>
   ): unknown {
     const mostRecent = fieldValues.reduce((latest, current) =>
-      new Date(current.timestamp) > new Date(latest.timestamp) ? current : latest,
+      new Date(current.timestamp) > new Date(latest.timestamp) ? current : latest
     );
     return mostRecent.value;
   }
@@ -206,7 +206,7 @@ export class AnswerAggregator {
    * Resolve by priority (custom priority logic)
    */
   private resolveByPriority(
-    fieldValues: Array<{ value: unknown; timestamp: string; formId: string }>,
+    fieldValues: Array<{ value: unknown; timestamp: string; formId: string }>
   ): unknown {
     // For now, use timestamp as priority
     // In a real implementation, you might have user roles, form versions, etc.
@@ -217,7 +217,7 @@ export class AnswerAggregator {
    * Resolve by merging values
    */
   private resolveByMerge(
-    fieldValues: Array<{ value: unknown; timestamp: string; formId: string }>,
+    fieldValues: Array<{ value: unknown; timestamp: string; formId: string }>
   ): unknown {
     const values = fieldValues.map((v) => v.value);
 
@@ -285,7 +285,7 @@ export class AnswerAggregator {
    * Determine resolution strategy
    */
   private determineResolutionStrategy(
-    _conflicts: AnswerConflict[],
+    _conflicts: AnswerConflict[]
   ): ConflictResolution['resolution'] {
     if (this.options.autoResolveConflicts) {
       return this.options.conflictResolutionStrategy as ConflictResolution['resolution'];
@@ -328,7 +328,7 @@ export class AnswerAggregator {
  * Create an answer aggregator instance
  */
 export const createAnswerAggregator = (
-  options?: Partial<AnswerAggregatorOptions>,
+  options?: Partial<AnswerAggregatorOptions>
 ): AnswerAggregator => {
   return new AnswerAggregator(options);
 };

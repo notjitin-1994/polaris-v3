@@ -15,7 +15,7 @@ export class ConflictResolver {
     localVersion: number,
     remoteVersion: number,
     localData: any,
-    remoteData: any,
+    remoteData: any
   ): ConflictData | null {
     // Version conflict
     if (localVersion !== remoteVersion) {
@@ -203,7 +203,7 @@ export const conflictUIHelpers = {
 
   // Get resolution options for UI
   getResolutionOptions: (
-    conflict: ConflictData,
+    conflict: ConflictData
   ): Array<{
     value: ConflictResolutionStrategy;
     label: string;

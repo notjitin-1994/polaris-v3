@@ -75,7 +75,7 @@ describe('DynamicFormRenderer', () => {
         onSubmit={mockOnSubmit}
         onSave={mockOnSave}
         onValidationChange={mockOnValidationChange}
-      />,
+      />
     );
 
     expect(screen.getByText('Test Form')).toBeInTheDocument();
@@ -90,7 +90,7 @@ describe('DynamicFormRenderer', () => {
         onSave={mockOnSave}
         onValidationChange={mockOnValidationChange}
         showProgress={true}
-      />,
+      />
     );
 
     expect(screen.getByText('Progress')).toBeInTheDocument();
@@ -104,7 +104,7 @@ describe('DynamicFormRenderer', () => {
         onSubmit={mockOnSubmit}
         onSave={mockOnSave}
         onValidationChange={mockOnValidationChange}
-      />,
+      />
     );
 
     expect(screen.getByText('Personal Information')).toBeInTheDocument();
@@ -120,7 +120,7 @@ describe('DynamicFormRenderer', () => {
         onSubmit={mockOnSubmit}
         onSave={mockOnSave}
         onValidationChange={mockOnValidationChange}
-      />,
+      />
     );
 
     // Wait for component to stabilize
@@ -178,7 +178,7 @@ describe('DynamicFormRenderer', () => {
         onSubmit={mockOnSubmit}
         onSave={mockOnSave}
         onValidationChange={mockOnValidationChange}
-      />,
+      />
     );
 
     // Fill in form data
@@ -196,7 +196,7 @@ describe('DynamicFormRenderer', () => {
         const submitButton = screen.getByText('Submit Form');
         expect(submitButton).not.toBeDisabled();
       },
-      { timeout: 3000 },
+      { timeout: 3000 }
     );
 
     // Submit form
@@ -218,7 +218,7 @@ describe('DynamicFormRenderer', () => {
         onSubmit={mockOnSubmit}
         onSave={mockOnSave}
         onValidationChange={mockOnValidationChange}
-      />,
+      />
     );
 
     // Fill in some data
@@ -241,7 +241,7 @@ describe('DynamicFormRenderer', () => {
         onSubmit={mockOnSubmit}
         onSave={mockOnSave}
         onValidationChange={mockOnValidationChange}
-      />,
+      />
     );
 
     // Try to submit without filling required fields
@@ -255,7 +255,7 @@ describe('DynamicFormRenderer', () => {
         const emailError = screen.queryByText('Email Address is required');
         expect(nameError || emailError).toBeTruthy();
       },
-      { timeout: 3000 },
+      { timeout: 3000 }
     );
   });
 
@@ -266,7 +266,7 @@ describe('DynamicFormRenderer', () => {
         onSubmit={mockOnSubmit}
         onSave={mockOnSave}
         onValidationChange={mockOnValidationChange}
-      />,
+      />
     );
 
     // Change a field value
@@ -286,7 +286,7 @@ describe('DynamicFormRenderer', () => {
         onSave={mockOnSave}
         onValidationChange={mockOnValidationChange}
         disabled={true}
-      />,
+      />
     );
 
     const nameInput = screen.getByLabelText('Full Name');
@@ -307,7 +307,7 @@ describe('DynamicFormRenderer', () => {
         onSubmit={slowSubmit}
         onSave={mockOnSave}
         onValidationChange={mockOnValidationChange}
-      />,
+      />
     );
 
     // Fill in form data
@@ -325,7 +325,7 @@ describe('DynamicFormRenderer', () => {
         const submitButton = screen.getByText('Submit Form');
         expect(submitButton).not.toBeDisabled();
       },
-      { timeout: 3000 },
+      { timeout: 3000 }
     );
 
     // Submit form
@@ -337,7 +337,7 @@ describe('DynamicFormRenderer', () => {
       () => {
         expect(screen.getByText('Submitting...')).toBeInTheDocument();
       },
-      { timeout: 3000 },
+      { timeout: 3000 }
     );
     expect(submitButton).toBeDisabled();
 
@@ -356,7 +356,7 @@ describe('DynamicFormRenderer', () => {
         onSubmit={mockOnSubmit}
         onSave={mockOnSave}
         onValidationChange={mockOnValidationChange}
-      />,
+      />
     );
 
     // Fill in some data
@@ -381,7 +381,7 @@ describe('DynamicFormRenderer', () => {
         onSubmit={mockOnSubmit}
         onSave={mockOnSave}
         onValidationChange={mockOnValidationChange}
-      />,
+      />
     );
 
     // Should start with first section

@@ -35,7 +35,7 @@ const REGIONS = [
   'Africa',
 ];
 
-export function OrganizationStep(): JSX.Element {
+export function OrganizationStep(): React.JSX.Element {
   const {
     register,
     formState: { errors },
@@ -114,7 +114,9 @@ export function OrganizationStep(): JSX.Element {
         <label className="block text-sm font-medium text-white/90">
           Geographic Regions (Optional)
         </label>
-        <p className="text-xs text-white/50">Select up to 3 regions where training will be delivered</p>
+        <p className="text-xs text-white/50">
+          Select up to 3 regions where training will be delivered
+        </p>
         <div className="flex flex-wrap gap-2">
           {REGIONS.map((region) => (
             <button
@@ -145,9 +147,7 @@ export function OrganizationStep(): JSX.Element {
           ))}
         </div>
         {regions.length > 0 && (
-          <p className="text-xs text-white/60">
-            {regions.length} / 3 regions selected
-          </p>
+          <p className="text-xs text-white/60">{regions.length} / 3 regions selected</p>
         )}
       </div>
 
@@ -174,8 +174,9 @@ export function OrganizationStep(): JSX.Element {
           <div className="text-sm" style={{ color: '#d0edf0' }}>
             <p className="mb-2 font-medium">Why organizational context matters:</p>
             <p className="text-white/70">
-              Understanding your organization helps us tailor recommendations to your industry standards,
-              scale considerations, and regional requirements (language, compliance, time zones).
+              Understanding your organization helps us tailor recommendations to your industry
+              standards, scale considerations, and regional requirements (language, compliance, time
+              zones).
             </p>
           </div>
         </div>

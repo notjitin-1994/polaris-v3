@@ -112,7 +112,7 @@ export class ValidationEngine {
     rule: ValidationRule,
     value: any,
     question: Question,
-    formData: Record<string, any>,
+    formData: Record<string, any>
   ): string | null {
     switch (rule.type) {
       case 'required':
@@ -309,7 +309,7 @@ export class ValidationEngine {
    */
   private evaluateCondition(
     conditional: NonNullable<Question['conditional']>,
-    formData: Record<string, any>,
+    formData: Record<string, any>
   ): boolean {
     const fieldValue = formData[conditional.field];
     const conditionValue = conditional.value;
@@ -393,7 +393,7 @@ export const createValidationEngine = (formSchema: FormSchema): ValidationEngine
  */
 export const validateFormData = (
   formSchema: FormSchema,
-  formData: Record<string, any>,
+  formData: Record<string, any>
 ): ValidationResult => {
   const engine = createValidationEngine(formSchema);
   return engine.validateForm(formData);
@@ -406,7 +406,7 @@ export const validateField = (
   formSchema: FormSchema,
   questionId: string,
   value: any,
-  formData: Record<string, any> = {},
+  formData: Record<string, any> = {}
 ): string | null => {
   const engine = createValidationEngine(formSchema);
   return engine.validateField(questionId, value, formData);

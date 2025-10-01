@@ -29,7 +29,7 @@ export class PerformanceOptimizer {
   // Debounce function calls
   static debounce<T extends (...args: any[]) => any>(
     func: T,
-    wait: number,
+    wait: number
   ): (...args: Parameters<T>) => void {
     let timeout: NodeJS.Timeout;
 
@@ -42,7 +42,7 @@ export class PerformanceOptimizer {
   // Throttle function calls
   static throttle<T extends (...args: any[]) => any>(
     func: T,
-    limit: number,
+    limit: number
   ): (...args: Parameters<T>) => void {
     let inThrottle: boolean;
 
@@ -58,7 +58,7 @@ export class PerformanceOptimizer {
   // Memoize expensive computations
   static memoize<T extends (...args: any[]) => any>(
     func: T,
-    keyFn?: (...args: Parameters<T>) => string,
+    keyFn?: (...args: Parameters<T>) => string
   ): T {
     const cache = new Map<string, ReturnType<T>>();
 
@@ -78,7 +78,7 @@ export class PerformanceOptimizer {
   // Create a selector with memoization
   static createMemoizedSelector<T, R>(
     selector: (state: T) => R,
-    equalityFn?: (a: R, b: R) => boolean,
+    equalityFn?: (a: R, b: R) => boolean
   ): (state: T) => R {
     let lastResult: R;
     let lastState: T;
@@ -150,7 +150,7 @@ export const storeOptimizations = {
   createOptimizedSubscription: <T>(
     store: any,
     selector: (state: T) => any,
-    equalityFn?: (a: any, b: any) => boolean,
+    equalityFn?: (a: any, b: any) => boolean
   ) => {
     let lastValue: any;
     const subscribers = new Set<(value: any) => void>();

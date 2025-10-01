@@ -29,11 +29,11 @@ const CustomTooltip = ({
   payload?: Array<{ payload: TimelineData }>;
   label?: string;
 }) => {
-  if (active && payload && payload.length) {
+  if (active && payload && payload.length && label) {
     const data = payload[0].payload;
     return (
       <motion.div
-        className="bg-white dark:bg-neutral-800 p-4 rounded-lg shadow-lg border border-neutral-200 dark:border-neutral-700"
+        className="rounded-lg border border-neutral-200 bg-white p-4 shadow-lg dark:border-neutral-700 dark:bg-neutral-800"
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.2 }}
@@ -41,17 +41,17 @@ const CustomTooltip = ({
         <p className="text-sm font-medium text-neutral-900 dark:text-neutral-100">
           {format(parseISO(label), 'MMM dd, yyyy')}
         </p>
-        <div className="space-y-1 mt-2">
-          <p className="text-sm text-info dark:text-info">
+        <div className="mt-2 space-y-1">
+          <p className="text-info dark:text-info text-sm">
             Learning Hours: <span className="font-semibold">{data.learningHours}h</span>
           </p>
-          <p className="text-sm text-success dark:text-success">
+          <p className="text-success dark:text-success text-sm">
             Progress: <span className="font-semibold">{data.progressPercentage}%</span>
           </p>
           {data.milestones && data.milestones.length > 0 && (
             <div className="mt-2">
-              <p className="text-xs text-neutral-600 dark:text-neutral-400 mb-1">Milestones:</p>
-              <ul className="text-xs space-y-1">
+              <p className="mb-1 text-xs text-neutral-600 dark:text-neutral-400">Milestones:</p>
+              <ul className="space-y-1 text-xs">
                 {data.milestones.map((milestone: string, index: number) => (
                   <li key={index} className="text-neutral-700 dark:text-neutral-300">
                     • {milestone}
@@ -67,7 +67,7 @@ const CustomTooltip = ({
   return null;
 };
 
-export function TimelineChart({ data, className }: TimelineChartProps): JSX.Element {
+export function TimelineChart({ data, className }: TimelineChartProps): React.JSX.Element {
   // Transform data for better chart display
   const chartData = data.map((item) => ({
     ...item,
@@ -90,7 +90,7 @@ export function TimelineChart({ data, className }: TimelineChartProps): JSX.Elem
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
-      <div className="flex items-center justify-between mb-6">
+      <div className="mb-6 flex items-center justify-between">
         <div>
           <h3 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100">
             Learning Timeline
@@ -201,7 +201,7 @@ export function TimelineChart({ data, className }: TimelineChartProps): JSX.Elem
               strokeDasharray="5 5"
               label={{
                 value: 'Milestone',
-                position: 'topRight',
+                position: 'top' as any,
                 offset: 10,
                 style: { fill: 'var(--warning)', fontSize: '10px' },
               }}

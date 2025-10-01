@@ -29,12 +29,16 @@ const itemVariants = {
     y: 0,
     transition: {
       duration: 0.5,
-      ease: 'easeOut',
+      ease: [0.16, 1, 0.3, 1] as const,
     },
   },
 };
 
-export function DashboardLayout({ data, children, className }: DashboardLayoutProps): JSX.Element {
+export function DashboardLayout({
+  data,
+  children,
+  className,
+}: DashboardLayoutProps): React.JSX.Element {
   return (
     <motion.div
       className={cn('min-h-screen bg-slate-50 dark:bg-slate-900', className)}

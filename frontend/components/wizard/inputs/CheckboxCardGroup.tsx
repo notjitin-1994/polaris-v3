@@ -34,7 +34,7 @@ export function CheckboxCardGroup({
   disabled = false,
   allowMultiple = true,
   className,
-}: CheckboxCardGroupProps): JSX.Element {
+}: CheckboxCardGroupProps): React.JSX.Element {
   const hasError = !!error;
 
   const handleToggle = (optionValue: string) => {
@@ -50,10 +50,10 @@ export function CheckboxCardGroup({
 
   return (
     <div className={cn('space-y-3', className)}>
-      <label className="block text-body font-medium text-text-secondary">
+      <label className="text-body text-text-secondary block font-medium">
         {label}
         {required && (
-          <span className="ml-1 text-primary" aria-label="required">
+          <span className="text-primary ml-1" aria-label="required">
             *
           </span>
         )}
@@ -73,7 +73,7 @@ export function CheckboxCardGroup({
               disabled={disabled}
               className={cn(
                 'group relative rounded-xl p-4 text-left transition-all duration-200',
-                'border focus-visible:ring-2 focus-visible:ring-secondary/50 focus-visible:ring-offset-2',
+                'focus-visible:ring-secondary/50 border focus-visible:ring-2 focus-visible:ring-offset-2',
                 disabled && 'cursor-not-allowed opacity-50',
                 isSelected
                   ? 'border-primary bg-primary/10'
@@ -93,18 +93,19 @@ export function CheckboxCardGroup({
                     )}
                   >
                     {isSelected && (
-                      <svg
-                        className="h-3 w-3"
-                        fill="currentColor"
-                        viewBox="0 0 12 12"
-                      >
-                        <path d="M10 3L4.5 8.5 2 6" stroke="currentColor" strokeWidth="2" fill="none" />
+                      <svg className="h-3 w-3" fill="currentColor" viewBox="0 0 12 12">
+                        <path
+                          d="M10 3L4.5 8.5 2 6"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          fill="none"
+                        />
                       </svg>
                     )}
                   </div>
                 </div>
                 <div className="flex-1 space-y-1">
-                  <span className="font-semibold text-foreground">{option.label}</span>
+                  <span className="text-foreground font-semibold">{option.label}</span>
                   <p className="text-caption text-text-secondary">{option.description}</p>
                 </div>
               </div>
@@ -115,7 +116,7 @@ export function CheckboxCardGroup({
 
       {hasError && (
         <p
-          className="animate-fade-in flex items-center gap-1 text-caption text-error"
+          className="animate-fade-in text-caption text-error flex items-center gap-1"
           role="alert"
           aria-live="polite"
         >

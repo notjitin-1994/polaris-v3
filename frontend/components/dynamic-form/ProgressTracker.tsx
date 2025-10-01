@@ -28,11 +28,12 @@ export const ProgressTracker: React.FC<ProgressTrackerProps> = ({
 
         <div className="h-2 w-full rounded-full bg-white/5 shadow-inner">
           <div
-            className="relative h-2 rounded-full bg-gradient-to-r from-primary-accent via-primary-accent-light to-primary-accent transition-all duration-700 ease-out"
+            className="from-primary-accent via-primary-accent-light to-primary-accent relative h-2 rounded-full bg-gradient-to-r transition-all duration-700 ease-out"
             // One-off: Dynamic width for real-time progress indicator
-            style={{ 
+            style={{
               width: `${progressPercentage}%`,
-              boxShadow: '0 0 16px rgba(167, 218, 219, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.3)'
+              boxShadow:
+                '0 0 16px rgba(167, 218, 219, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.3)',
             }}
             role="progressbar"
             aria-valuenow={progressPercentage}
@@ -41,10 +42,11 @@ export const ProgressTracker: React.FC<ProgressTrackerProps> = ({
             aria-label={`Form progress: ${progressPercentage}% complete`}
           >
             {/* Animated shimmer effect */}
-            <div 
+            <div
               className="absolute inset-0 rounded-full"
               style={{
-                background: 'linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.3) 50%, transparent 100%)',
+                background:
+                  'linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.3) 50%, transparent 100%)',
                 animation: 'shimmer 2s infinite',
               }}
             />
@@ -69,10 +71,10 @@ export const ProgressTracker: React.FC<ProgressTrackerProps> = ({
                   key={index}
                   className={cn(
                     'h-2 flex-1 rounded-full transition-all duration-300',
-                    isCompleted 
-                      ? 'bg-primary-accent shadow-[0_0_8px_rgba(167,218,219,0.6)]' 
-                      : isCurrent 
-                        ? 'bg-secondary-accent shadow-[0_0_8px_rgba(79,70,229,0.5)]' 
+                    isCompleted
+                      ? 'bg-primary-accent shadow-[0_0_8px_rgba(167,218,219,0.6)]'
+                      : isCurrent
+                        ? 'bg-secondary-accent shadow-[0_0_8px_rgba(79,70,229,0.5)]'
                         : 'bg-white/5'
                   )}
                   title={`Section ${sectionNumber}${isCompleted ? ' (Completed)' : isCurrent ? ' (Current)' : ' (Upcoming)'}`}
@@ -114,10 +116,10 @@ export const ProgressTracker: React.FC<ProgressTrackerProps> = ({
                 className={cn(
                   'rounded-lg p-2 text-center transition-all duration-300',
                   isReached
-                    ? 'bg-primary-accent/10 text-primary-accent border border-primary-accent/30 shadow-[0_0_8px_rgba(167,218,219,0.3)]'
+                    ? 'bg-primary-accent/10 text-primary-accent border-primary-accent/30 border shadow-[0_0_8px_rgba(167,218,219,0.3)]'
                     : isCurrent
-                      ? 'bg-secondary-accent/10 text-secondary-accent border border-secondary-accent/30'
-                      : 'bg-white/5 text-text-disabled border border-white/10'
+                      ? 'bg-secondary-accent/10 text-secondary-accent border-secondary-accent/30 border'
+                      : 'text-text-disabled border border-white/10 bg-white/5'
                 )}
               >
                 <div className="text-lg">{icon}</div>
@@ -130,9 +132,9 @@ export const ProgressTracker: React.FC<ProgressTrackerProps> = ({
 
       {/* Completion message */}
       {progressPercentage === 100 && (
-        <div className="rounded-lg border border-primary-accent/30 bg-primary-accent/10 p-3 shadow-[0_0_12px_rgba(167,218,219,0.3)]">
+        <div className="border-primary-accent/30 bg-primary-accent/10 rounded-lg border p-3 shadow-[0_0_12px_rgba(167,218,219,0.3)]">
           <div className="flex items-center">
-            <div className="mr-2 text-primary-accent">
+            <div className="text-primary-accent mr-2">
               <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
                 <path
                   fillRule="evenodd"
@@ -141,7 +143,7 @@ export const ProgressTracker: React.FC<ProgressTrackerProps> = ({
                 />
               </svg>
             </div>
-            <span className="text-sm font-medium text-primary-accent">
+            <span className="text-primary-accent text-sm font-medium">
               All sections completed! Ready to submit.
             </span>
           </div>

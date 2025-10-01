@@ -1,6 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
+import type React from 'react';
 import { useRouter } from 'next/navigation';
 import type { Session, User } from '@supabase/supabase-js';
 import { getSupabaseBrowserClient } from '@/lib/supabase/client';
@@ -18,7 +19,7 @@ type AuthContextValue = {
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
-export function AuthProvider({ children }: { children: React.ReactNode }): JSX.Element {
+export function AuthProvider({ children }: { children: React.ReactNode }): React.JSX.Element {
   const supabase = getSupabaseBrowserClient();
   const router = useRouter();
   const [session, setSession] = useState<Session | null>(null);

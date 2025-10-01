@@ -53,7 +53,7 @@ export interface BlueprintState {
   setProgress: (progress: Partial<BlueprintProgress>) => void;
   updateCurrentStep: (step: BlueprintProgress['currentStep']) => void;
   markStepCompleted: (
-    step: keyof Omit<BlueprintProgress, 'currentStep' | 'completionPercentage'>,
+    step: keyof Omit<BlueprintProgress, 'currentStep' | 'completionPercentage'>
   ) => void;
   calculateCompletionPercentage: () => void;
 
@@ -254,6 +254,6 @@ export const useBlueprintStore = create<BlueprintState>()(
         autoSaveEnabled: state.autoSaveEnabled,
         lastSavedAt: state.lastSavedAt,
       }),
-    },
-  ),
+    }
+  )
 );

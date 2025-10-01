@@ -191,7 +191,7 @@ describe('ExportService', () => {
         mockBlueprint,
         options,
         mockDashboardData,
-        mockMetadata,
+        mockMetadata
       );
 
       expect(result.success).toBe(true);
@@ -211,7 +211,7 @@ describe('ExportService', () => {
         mockBlueprint,
         options,
         undefined,
-        mockMetadata,
+        mockMetadata
       );
 
       expect(result.success).toBe(true);
@@ -230,7 +230,7 @@ describe('ExportService', () => {
         mockBlueprint,
         options,
         undefined,
-        mockMetadata,
+        mockMetadata
       );
 
       expect(result.success).toBe(true);
@@ -255,7 +255,7 @@ describe('ExportService', () => {
         mockBlueprint,
         options,
         mockDashboardData,
-        mockMetadata,
+        mockMetadata
       );
 
       expect(result.success).toBe(false);

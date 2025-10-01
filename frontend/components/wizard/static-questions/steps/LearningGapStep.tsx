@@ -4,11 +4,7 @@ import React from 'react';
 import { useFormContext } from 'react-hook-form';
 import type { StaticQuestionsFormValues } from '@/components/wizard/static-questions/types';
 import { QuestionnaireInput } from '@/components/wizard/static-questions/QuestionnaireInput';
-import {
-  RadioCardGroup,
-  CheckboxPillGroup,
-  EnhancedScale,
-} from '@/components/wizard/inputs';
+import { RadioCardGroup, CheckboxPillGroup, EnhancedScale } from '@/components/wizard/inputs';
 
 const GAP_TYPES = [
   {
@@ -86,7 +82,7 @@ const BLOOMS_LEVELS = [
   },
 ];
 
-export function LearningGapStep(): JSX.Element {
+export function LearningGapStep(): React.JSX.Element {
   const {
     register,
     formState: { errors },
@@ -228,9 +224,9 @@ export function LearningGapStep(): JSX.Element {
                 <strong>D</strong>egree: How well (criteria for success)
               </li>
             </ul>
-            <p className="mt-2 text-xs italic text-white/60">
-              Example: &quot;Sales reps will demonstrate the AI features to clients during product demos
-              with 90% accuracy&quot;
+            <p className="mt-2 text-xs text-white/60 italic">
+              Example: &quot;Sales reps will demonstrate the AI features to clients during product
+              demos with 90% accuracy&quot;
             </p>
           </div>
         </div>

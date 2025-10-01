@@ -200,7 +200,7 @@ describe('MarkdownGenerator', () => {
       expect(markdown).toContain('## Resources');
       expect(markdown).toContain('| Name | Type | URL |');
       expect(markdown).toContain(
-        '| Resource 1 | book | [https://example\\.com/resource1](https://example.com/resource1) |',
+        '| Resource 1 | book | [https://example\\.com/resource1](https://example.com/resource1) |'
       );
       expect(markdown).toContain('| Resource 2 | video | N/A |');
     });
@@ -251,7 +251,7 @@ describe('MarkdownGenerator', () => {
 
       expect(markdown).toContain('# Test \\[Special\\] Characters \\* Bold \\_ Italic');
       expect(markdown).toContain(
-        'This has \\*\\*bold\\*\\* and \\*italic\\* text with \\`code\\` and \\[links\\]\\(https://example\\.com\\)',
+        'This has \\*\\*bold\\*\\* and \\*italic\\* text with \\`code\\` and \\[links\\]\\(https://example\\.com\\)'
       );
     });
 

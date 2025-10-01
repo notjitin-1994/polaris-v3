@@ -17,7 +17,7 @@ export class BatchExportService {
   async exportMultipleBlueprints(
     blueprints: Blueprint[],
     options: BatchExportOptions,
-    dashboardDataMap?: Map<string, DashboardData>,
+    dashboardDataMap?: Map<string, DashboardData>
   ): Promise<ExportResult> {
     try {
       const zip = new JSZip();
@@ -50,7 +50,7 @@ export class BatchExportService {
           const result = await exportService.exportBlueprint(
             blueprint,
             exportOptions,
-            dashboardData,
+            dashboardData
           );
 
           if (result.success && result.data) {
@@ -108,7 +108,7 @@ export class BatchExportService {
   async exportBlueprintInAllFormats(
     blueprint: Blueprint,
     options: Partial<BatchExportOptions> = {},
-    dashboardData?: DashboardData,
+    dashboardData?: DashboardData
   ): Promise<ExportResult> {
     const formats: ExportFormat[] = ['pdf', 'markdown', 'json'];
     const zip = new JSZip();
@@ -172,7 +172,7 @@ export class BatchExportService {
   async exportDashboardData(
     blueprints: Blueprint[],
     dashboardDataMap: Map<string, DashboardData>,
-    options: Partial<BatchExportOptions> = {},
+    options: Partial<BatchExportOptions> = {}
   ): Promise<ExportResult> {
     try {
       const zip = new JSZip();

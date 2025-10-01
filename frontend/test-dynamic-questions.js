@@ -48,10 +48,14 @@ async function testDynamicQuestionsAPI() {
     if (result.sections) {
       console.log(`- Sections: ${result.sections.length}`);
       result.sections.forEach((section, i) => {
-        console.log(`  Section ${i + 1}: "${section.title}" (${section.questions?.length || 0} questions)`);
+        console.log(
+          `  Section ${i + 1}: "${section.title}" (${section.questions?.length || 0} questions)`
+        );
         if (section.questions) {
           section.questions.forEach((q, j) => {
-            console.log(`    ${j + 1}. ${q.question_text || q.question} [${q.input_type || q.type}]`);
+            console.log(
+              `    ${j + 1}. ${q.question_text || q.question} [${q.input_type || q.type}]`
+            );
             if (q.options) {
               console.log(`       Options: ${q.options.join(', ')}`);
             }
@@ -67,4 +71,3 @@ async function testDynamicQuestionsAPI() {
 }
 
 testDynamicQuestionsAPI().catch(console.error);
-

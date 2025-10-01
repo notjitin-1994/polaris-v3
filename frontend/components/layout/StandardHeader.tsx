@@ -103,9 +103,7 @@ export function StandardHeader({
       {/* Swirl Background */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
         <SwirlBackground count={12} minSize={32} maxSize={64} opacityMin={0.03} opacityMax={0.08} />
-        <div
-          className="absolute inset-0 bg-primary/5"
-        />
+        <div className="bg-primary/5 absolute inset-0" />
       </div>
 
       {/* Content */}
@@ -147,10 +145,7 @@ export function StandardHeader({
             )}
 
             {showDecorativeLine && (
-              <div
-                aria-hidden="true"
-                className="mt-4 h-px w-16 bg-neutral-300"
-              />
+              <div aria-hidden="true" className="mt-4 h-px w-16 bg-neutral-300" />
             )}
           </div>
 

@@ -74,7 +74,7 @@ const baseQuestionSchema = z.object({
         value: z.string(),
         label: z.string(),
         disabled: z.boolean().default(false),
-      }),
+      })
     )
     .optional(),
   scaleConfig: z
@@ -109,7 +109,7 @@ export const selectQuestionSchema = baseQuestionSchema.extend({
         value: z.string(),
         label: z.string(),
         disabled: z.boolean().default(false),
-      }),
+      })
     )
     .min(1, 'Select questions require options'),
   allowClear: z.boolean().default(false),
@@ -123,7 +123,7 @@ export const multiselectQuestionSchema = baseQuestionSchema.extend({
         value: z.string(),
         label: z.string(),
         disabled: z.boolean().default(false),
-      }),
+      })
     )
     .min(1, 'Multiselect questions require options'),
   maxSelections: z.number().int().min(1).optional(),
@@ -176,7 +176,7 @@ export const radioPillsQuestionSchema = baseQuestionSchema.extend({
         label: z.string(),
         icon: z.string().optional(),
         disabled: z.boolean().default(false),
-      }),
+      })
     )
     .min(2, 'Radio pills require at least 2 options')
     .max(6, 'Radio pills work best with 2-6 options'),
@@ -192,7 +192,7 @@ export const radioCardsQuestionSchema = baseQuestionSchema.extend({
         description: z.string().optional(),
         icon: z.string().optional(),
         disabled: z.boolean().default(false),
-      }),
+      })
     )
     .min(2, 'Radio cards require at least 2 options')
     .max(4, 'Radio cards work best with 2-4 options'),
@@ -207,7 +207,7 @@ export const checkboxPillsQuestionSchema = baseQuestionSchema.extend({
         label: z.string(),
         icon: z.string().optional(),
         disabled: z.boolean().default(false),
-      }),
+      })
     )
     .min(2, 'Checkbox pills require at least 2 options')
     .max(8, 'Checkbox pills work best with 2-8 options'),
@@ -224,7 +224,7 @@ export const checkboxCardsQuestionSchema = baseQuestionSchema.extend({
         description: z.string().optional(),
         icon: z.string().optional(),
         disabled: z.boolean().default(false),
-      }),
+      })
     )
     .min(2, 'Checkbox cards require at least 2 options')
     .max(6, 'Checkbox cards work best with 2-6 options'),
@@ -266,7 +266,7 @@ export const toggleSwitchQuestionSchema = baseQuestionSchema.extend({
         value: z.string(),
         label: z.string(),
         icon: z.string().optional(),
-      }),
+      })
     )
     .length(2, 'Toggle switch requires exactly 2 options'),
 });
@@ -363,7 +363,7 @@ export const validationResultSchema = z.object({
       fieldId: z.string(),
       message: z.string(),
       type: z.string(),
-    }),
+    })
   ),
   warnings: z
     .array(
@@ -371,7 +371,7 @@ export const validationResultSchema = z.object({
         fieldId: z.string(),
         message: z.string(),
         type: z.string(),
-      }),
+      })
     )
     .optional(),
 });
@@ -457,7 +457,7 @@ export const createEmptyFormState = (formId: string): FormState => ({
 });
 
 export const validateFormSchema = (
-  data: unknown,
+  data: unknown
 ): { success: boolean; data?: FormSchema; error?: string } => {
   try {
     const result = formSchema.parse(data);

@@ -76,7 +76,10 @@ const CustomLegend = ({ payload }: { payload: Array<{ value: string; color: stri
   </div>
 );
 
-export function ModuleBreakdownChart({ data, className }: ModuleBreakdownChartProps): JSX.Element {
+export function ModuleBreakdownChart({
+  data,
+  className,
+}: ModuleBreakdownChartProps): React.JSX.Element {
   // Aggregate data by status
   const chartData = data.reduce(
     (acc, module) => {
@@ -98,6 +101,7 @@ export function ModuleBreakdownChart({ data, className }: ModuleBreakdownChartPr
       status: string;
       value: number;
       color: string;
+      percentage?: number;
     }>
   );
 
@@ -115,14 +119,7 @@ export function ModuleBreakdownChart({ data, className }: ModuleBreakdownChartPr
     innerRadius,
     outerRadius,
     percentage,
-  }: {
-    cx: number;
-    cy: number;
-    midAngle: number;
-    innerRadius: number;
-    outerRadius: number;
-    percentage: number;
-  }) => {
+  }: any) => {
     if (percentage < 10) return null; // Don't show label if less than 10%
 
     const RADIAN = Math.PI / 180;
@@ -201,7 +198,7 @@ export function ModuleBreakdownChart({ data, className }: ModuleBreakdownChartPr
 
       {/* Detailed stats */}
       <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-3">
-        {chartData.map((item) => (
+        {chartData.map((item, index) => (
           <motion.div
             key={item.status}
             className="text-center"

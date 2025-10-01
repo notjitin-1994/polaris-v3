@@ -117,7 +117,7 @@ describe('DefaultErrorHandler', () => {
 
       expect(consoleErrorSpy).toHaveBeenCalledWith('Export error:', error, context);
       expect(alertSpy).toHaveBeenCalledWith(
-        'Export failed: Invalid data provided. Please check your input.',
+        'Export failed: Invalid data provided. Please check your input.'
       );
     });
 
@@ -128,7 +128,7 @@ describe('DefaultErrorHandler', () => {
 
       expect(consoleErrorSpy).toHaveBeenCalledWith('Export error:', error, undefined);
       expect(alertSpy).toHaveBeenCalledWith(
-        'Export failed. Please try again or contact support if the issue persists.',
+        'Export failed. Please try again or contact support if the issue persists.'
       );
     });
 
@@ -138,7 +138,7 @@ describe('DefaultErrorHandler', () => {
       handler.handle(error);
 
       expect(alertSpy).toHaveBeenCalledWith(
-        'Export failed: Export is taking too long. Please try again.',
+        'Export failed: Export is taking too long. Please try again.'
       );
     });
 
@@ -148,7 +148,7 @@ describe('DefaultErrorHandler', () => {
       handler.handle(error);
 
       expect(alertSpy).toHaveBeenCalledWith(
-        'Export failed: Export file is too large. Please reduce the data size.',
+        'Export failed: Export file is too large. Please reduce the data size.'
       );
     });
 
@@ -166,7 +166,7 @@ describe('DefaultErrorHandler', () => {
       handler.handle(error);
 
       expect(alertSpy).toHaveBeenCalledWith(
-        'Export failed: Export service unavailable. Please try again later.',
+        'Export failed: Export service unavailable. Please try again later.'
       );
     });
   });
@@ -279,7 +279,7 @@ describe('validateExportFormat', () => {
 
   it('should throw error for unsupported format', () => {
     expect(() => validateExportFormat('xml', ['pdf', 'markdown', 'json'])).toThrow(
-      ExportFormatError,
+      ExportFormatError
     );
   });
 });

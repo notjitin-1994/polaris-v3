@@ -17,7 +17,7 @@ export const dynamic = 'force-dynamic';
 // Request schema
 const requestSchema = z.object({
   blueprintId: z.string().uuid('Invalid blueprint ID'),
-  answers: z.record(z.any()),
+  answers: z.record(z.string(), z.unknown()),
   completed: z.boolean().default(false),
 });
 

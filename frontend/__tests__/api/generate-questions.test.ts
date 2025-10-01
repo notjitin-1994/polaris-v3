@@ -48,7 +48,7 @@ describe('POST /api/generate-questions', () => {
         duration: '30m',
         learningObjectives: ['Obj1'],
         targetAudience: 'Developers',
-      }),
+      })
     );
     expect(res.status).toBe(200);
     const json = await res.json();

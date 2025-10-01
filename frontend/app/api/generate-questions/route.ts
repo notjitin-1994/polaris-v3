@@ -25,8 +25,8 @@ export async function POST(request: Request): Promise<Response> {
   if (!parsed.success) {
     return NextResponse.json(
       { error: 'Invalid request', details: parsed.error.flatten() },
-    { status: 400 }
-  );
+      { status: 400 }
+    );
   }
 
   const input: GenerationInput = parsed.data;

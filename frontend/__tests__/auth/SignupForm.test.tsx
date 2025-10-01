@@ -33,7 +33,7 @@ describe('SignupForm', () => {
     render(
       <AuthProvider>
         <SignupForm />
-      </AuthProvider>,
+      </AuthProvider>
     );
     fireEvent.change(screen.getByLabelText(/email/i), { target: { value: 'a@b.com' } });
     fireEvent.change(screen.getByLabelText(/^password$/i), { target: { value: 'secret1' } });

@@ -62,7 +62,7 @@ export function mapOllamaToFormSchema(ollamaQuestions: DynamicQuestions): FormSc
         }
 
         const mappedType = mapInputType(question.input_type);
-        
+
         // Build base question
         const q: any = {
           id: question.id,
@@ -84,18 +84,23 @@ export function mapOllamaToFormSchema(ollamaQuestions: DynamicQuestions): FormSc
 
         // Handle options for selection types
         const hasOptions = question.options && Array.isArray(question.options);
-        if (hasOptions && (
-          mappedType === 'select' ||
-          mappedType === 'multiselect' ||
-          mappedType === 'radio_pills' ||
-          mappedType === 'radio_cards' ||
-          mappedType === 'checkbox_pills' ||
-          mappedType === 'checkbox_cards' ||
-          mappedType === 'toggle_switch'
-        )) {
+        if (
+          hasOptions &&
+          (mappedType === 'select' ||
+            mappedType === 'multiselect' ||
+            mappedType === 'radio_pills' ||
+            mappedType === 'radio_cards' ||
+            mappedType === 'checkbox_pills' ||
+            mappedType === 'checkbox_cards' ||
+            mappedType === 'toggle_switch')
+        ) {
           q.options = question.options.map((option: any) => {
             if (typeof option === 'string') {
-              return { value: option.toLowerCase().replace(/\s+/g, '_'), label: option, disabled: false };
+              return {
+                value: option.toLowerCase().replace(/\s+/g, '_'),
+                label: option,
+                disabled: false,
+              };
             }
             return {
               value: option.value || option.label?.toLowerCase().replace(/\s+/g, '_') || '',
@@ -108,7 +113,10 @@ export function mapOllamaToFormSchema(ollamaQuestions: DynamicQuestions): FormSc
         }
 
         // Handle max_selections for multi-select types
-        if (question.max_selections && (mappedType === 'checkbox_pills' || mappedType === 'checkbox_cards')) {
+        if (
+          question.max_selections &&
+          (mappedType === 'checkbox_pills' || mappedType === 'checkbox_cards')
+        ) {
           q.maxSelections = question.max_selections;
         }
 
@@ -232,7 +240,7 @@ function mapInputType(ollamaType: string): Question['type'] {
     case 'date':
     case 'calendar':
       return 'date';
-    
+
     // Traditional selection
     case 'single_select':
     case 'select':
@@ -240,7 +248,7 @@ function mapInputType(ollamaType: string): Question['type'] {
     case 'multi_select':
     case 'multiselect':
       return 'multiselect';
-    
+
     // Rich visual selection inputs
     case 'radio_pills':
       return 'radio_pills';
@@ -250,7 +258,7 @@ function mapInputType(ollamaType: string): Question['type'] {
       return 'checkbox_pills';
     case 'checkbox_cards':
       return 'checkbox_cards';
-    
+
     // Scales & sliders
     case 'scale':
       return 'scale';
@@ -259,7 +267,7 @@ function mapInputType(ollamaType: string): Question['type'] {
     case 'labeled_slider':
     case 'slider':
       return 'labeled_slider';
-    
+
     // Specialized inputs
     case 'toggle_switch':
     case 'toggle':
@@ -269,7 +277,7 @@ function mapInputType(ollamaType: string): Question['type'] {
     case 'number_spinner':
     case 'spinner':
       return 'number_spinner';
-    
+
     default:
       console.warn(`Unknown Ollama input type: ${ollamaType}, defaulting to text`);
       return 'text';

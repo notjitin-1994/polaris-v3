@@ -105,8 +105,8 @@ export const useBlueprintStore = create<BlueprintState>()(
           }
         }
       },
-    },
-  ),
+    }
+  )
 );
 
 // Selectors for better performance
@@ -160,7 +160,7 @@ export const blueprintSelectors = {
         bp.title.toLowerCase().includes(lowercaseQuery) ||
         bp.description.toLowerCase().includes(lowercaseQuery) ||
         bp.learningObjective.toLowerCase().includes(lowercaseQuery) ||
-        bp.targetAudience.toLowerCase().includes(lowercaseQuery),
+        bp.targetAudience.toLowerCase().includes(lowercaseQuery)
     );
   },
 };

@@ -1,9 +1,10 @@
 'use client';
 
 import { useState } from 'react';
+import type React from 'react';
 import { getSupabaseBrowserClient } from '@/lib/supabase/client';
 
-export function GoogleOAuthButton(): JSX.Element {
+export function GoogleOAuthButton(): React.JSX.Element {
   const [loading, setLoading] = useState(false);
 
   async function onClick(): Promise<void> {

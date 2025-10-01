@@ -20,7 +20,7 @@ const COMMON_CONSTRAINTS = [
   'Limited technical resources',
 ];
 
-export function ConstraintsStep(): JSX.Element {
+export function ConstraintsStep(): React.JSX.Element {
   const {
     register,
     formState: { errors },

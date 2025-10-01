@@ -22,7 +22,7 @@ interface DrillDownProviderProps {
   children: ReactNode;
 }
 
-export function DrillDownProvider({ children }: DrillDownProviderProps): JSX.Element {
+export function DrillDownProvider({ children }: DrillDownProviderProps): React.JSX.Element {
   const [drillDownState, setDrillDownState] = useState<DrillDownState | null>(null);
 
   const drillDown = (path: string[], data: unknown, filters: Record<string, unknown> = {}) => {

@@ -20,7 +20,7 @@ describe('AnswerAggregationService', () => {
         saveState: 'idle',
         errorMessage: null,
       },
-      true,
+      true
     ); // The true parameter tells Zustand to replace the state entirely
 
     useFormStore.setState(
@@ -38,7 +38,7 @@ describe('AnswerAggregationService', () => {
         formSchema: null,
         validationEngine: null,
       },
-      true,
+      true
     );
 
     answerAggregationService.clearCache();
@@ -62,7 +62,7 @@ describe('AnswerAggregationService', () => {
       expect.arrayContaining([
         { questionId: 'learningObjective', answer: 'Learn Vitest' },
         { questionId: 'duration', answer: 5 },
-      ]),
+      ])
     );
     expect(staticAnswers.length).toBe(5); // All 5 static fields should be present even if empty
   });
@@ -81,7 +81,7 @@ describe('AnswerAggregationService', () => {
       expect.arrayContaining([
         { questionId: 'question1', answer: 'Answer 1' },
         { questionId: 'question2', answer: 123 },
-      ]),
+      ])
     );
     expect(dynamicAnswers.length).toBe(2);
   });
@@ -105,10 +105,10 @@ describe('AnswerAggregationService', () => {
 
     const aggregated = await answerAggregationService.getAggregatedAnswers();
     expect(aggregated.staticResponses).toEqual(
-      expect.arrayContaining([{ questionId: 'learningObjective', answer: 'Learn Aggregation' }]),
+      expect.arrayContaining([{ questionId: 'learningObjective', answer: 'Learn Aggregation' }])
     );
     expect(aggregated.dynamicResponses).toEqual(
-      expect.arrayContaining([{ questionId: 'dynamicQ1', answer: 'Dynamic Answer' }]),
+      expect.arrayContaining([{ questionId: 'dynamicQ1', answer: 'Dynamic Answer' }])
     );
     expect(aggregated.staticResponses.length).toBe(5);
     expect(aggregated.dynamicResponses.length).toBe(1);
@@ -166,7 +166,7 @@ describe('AnswerAggregationService', () => {
     // Verify that new aggregation would not use old data (since cache is cleared)
     const newAggregated = await answerAggregationService.getAggregatedAnswers();
     expect(
-      newAggregated.staticResponses.find((a) => a.questionId === 'learningObjective')?.answer,
+      newAggregated.staticResponses.find((a) => a.questionId === 'learningObjective')?.answer
     ).toBe('');
     expect(newAggregated.dynamicResponses.length).toBe(0);
   });
