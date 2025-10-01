@@ -25,7 +25,7 @@ className="glass-card overflow-hidden"
 - ✨ Authentic glassmorphic effect with gradient borders
 - ✨ Optimized backdrop blur (`18px` → `20px` on mobile)
 - ✨ More translucent background for better depth perception
-- ✨ Swirl patterns visible through the glass
+-   Swirl patterns visible through the glass
 - ✨ Cleaner CSS without pseudo-element complexity
 
 ---
