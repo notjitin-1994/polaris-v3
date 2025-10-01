@@ -44,17 +44,17 @@ export function DarkModeToggle({ className }: DarkModeToggleProps) {
     <button
       onClick={toggleTheme}
       className={cn(
-        'glass text-foreground rounded-lg px-3 py-2',
-        'hover:glass-strong focus-visible:ring-2 focus-visible:outline-none',
-        'focus-visible:ring-primary/50 focus-visible:ring-offset-2',
-        'focus-visible:ring-offset-background transition-all duration-200',
-        'flex items-center gap-2',
+        'glass rounded-xl px-3 py-2',
+        'text-foreground hover:glass-strong',
+        'focus-visible:ring-primary/50 focus-visible:ring-2 focus-visible:ring-offset-2',
+        'transition-all duration-200 focus-visible:outline-none',
+        'flex items-center gap-2 active:scale-95',
         className
       )}
       aria-label={`Toggle theme (current: ${getLabel()})`}
       title={`Current theme: ${getLabel()}`}
     >
-      {getIcon()}
+      <span className="transition-transform duration-200 hover:rotate-12">{getIcon()}</span>
       <span className="text-sm font-medium">{getLabel()}</span>
     </button>
   );

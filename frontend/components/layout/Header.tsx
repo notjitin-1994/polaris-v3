@@ -81,29 +81,29 @@ export const Header = memo(function Header({
 
   return (
     <motion.header
-      className={`bg-background/80 sticky top-0 z-10 border-b border-neutral-200 backdrop-blur-xl ${className}`}
+      className={`glass sticky top-0 z-50 border-b border-neutral-200/50 ${className}`}
       initial={{ y: -20, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
-      transition={{ duration: 0.5 }}
+      transition={{ duration: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
     >
-      <div className="relative mx-auto max-w-7xl px-4 py-3 sm:py-4">
-        {/* Decorative gradient */}
+      <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        {/* Subtle ambient glow */}
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute inset-x-0 -top-24 h-48 bg-gradient-to-br from-blue-400/10 via-purple-400/5 to-transparent blur-2xl"
+          className="from-primary/[0.03] pointer-events-none absolute inset-x-0 -top-32 h-64 bg-gradient-to-b via-transparent to-transparent"
         />
 
-        <div className="relative">
+        <div className="relative py-4">
           {/* Mobile header */}
-          <div className="flex items-center gap-2 md:hidden">
-            <Brand size="lg" />
-            <div className="ml-auto inline-flex items-center gap-2">
+          <div className="flex items-center justify-between gap-3 md:hidden">
+            <Brand />
+            <div className="flex items-center gap-2">
               <DarkModeToggle />
               <div className="relative">
                 <button
                   type="button"
                   onClick={() => setShowUserMenu(!showUserMenu)}
-                  className="hover:bg-foreground/5 inline-flex h-9 w-9 items-center justify-center rounded-full transition"
+                  className="touch-target-sm hover:bg-foreground/5 focus-visible:ring-primary/50 rounded-full transition-all duration-200 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none active:scale-95"
                   aria-label="User menu"
                 >
                   <UserAvatar user={user} sizeClass="w-8 h-8" />
@@ -111,18 +111,23 @@ export const Header = memo(function Header({
 
                 {/* Mobile user menu */}
                 {showUserMenu && (
-                  <div className="bg-paper absolute top-full right-0 z-50 mt-2 w-48 rounded-lg border border-neutral-200 shadow-xl">
-                    <div className="p-2">
+                  <motion.div
+                    className="glass-strong absolute top-full right-0 z-50 mt-2 w-48 overflow-hidden rounded-xl border border-neutral-200/50 shadow-xl"
+                    initial={{ opacity: 0, scale: 0.95, y: -10 }}
+                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <div className="p-1.5">
                       <button
                         type="button"
                         onClick={handleLogout}
-                        className="text-text-secondary hover:bg-foreground/5 flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm transition"
+                        className="text-text-secondary hover:bg-foreground/5 hover:text-foreground flex w-full items-center gap-2.5 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200 active:scale-[0.98]"
                       >
                         <IconLogout className="h-4 w-4" />
                         <span>Sign out</span>
                       </button>
                     </div>
-                  </div>
+                  </motion.div>
                 )}
               </div>
               {onMobileMenuToggle && (
@@ -130,9 +135,9 @@ export const Header = memo(function Header({
                   type="button"
                   onClick={onMobileMenuToggle}
                   aria-label="Open menu"
-                  className="bg-background/50 text-text-secondary hover:text-foreground inline-flex h-9 w-9 items-center justify-center rounded-lg border border-neutral-200 transition"
+                  className="touch-target-sm bg-background/50 text-text-secondary hover:bg-foreground/5 hover:text-foreground focus-visible:ring-primary/50 flex items-center justify-center rounded-lg border border-neutral-200/50 transition-all duration-200 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none active:scale-95"
                 >
-                  <IconSidebarToggle className="h-5 w-5" />
+                  <IconSidebarToggle className="h-4 w-4" />
                 </button>
               )}
             </div>
@@ -140,61 +145,70 @@ export const Header = memo(function Header({
 
           {/* Desktop header content */}
           <div className="hidden md:block">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.1 }}
-            >
-              <div className="flex items-start justify-between">
-                <div>
-                  <h1 className="text-foreground text-2xl font-bold tracking-tight sm:text-3xl md:text-4xl">
-                    {pageInfo.title}
-                  </h1>
-                  <p className="text-text-secondary mt-2 max-w-3xl text-sm sm:text-base">
-                    {pageInfo.subtitle}
-                  </p>
-                </div>
+            <div className="flex items-start justify-between gap-6">
+              <motion.div
+                className="min-w-0 flex-1"
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.5, delay: 0.1 }}
+              >
+                <h1 className="text-foreground font-heading text-2xl leading-tight font-bold tracking-tight sm:text-3xl lg:text-4xl">
+                  {pageInfo.title}
+                </h1>
+                <p className="text-text-secondary mt-2 max-w-3xl text-sm leading-relaxed sm:text-base">
+                  {pageInfo.subtitle}
+                </p>
 
-                <div className="flex items-center gap-2">
-                  <DarkModeToggle />
-                  <div className="relative">
-                    <button
-                      type="button"
-                      onClick={() => setShowUserMenu(!showUserMenu)}
-                      className="hover:bg-foreground/5 flex items-center gap-2 rounded-lg px-3 py-2 transition"
-                      aria-label="User menu"
+                {/* Minimal accent line */}
+                <div
+                  aria-hidden="true"
+                  className="from-primary/60 mt-4 h-px w-12 bg-gradient-to-r to-transparent"
+                />
+              </motion.div>
+
+              <motion.div
+                className="flex shrink-0 items-center gap-2"
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.5, delay: 0.15 }}
+              >
+                <DarkModeToggle />
+                <div className="relative">
+                  <button
+                    type="button"
+                    onClick={() => setShowUserMenu(!showUserMenu)}
+                    className="hover:bg-foreground/5 focus-visible:ring-primary/50 flex items-center gap-2.5 rounded-xl px-3 py-2 transition-all duration-200 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none active:scale-[0.98]"
+                    aria-label="User menu"
+                  >
+                    <UserAvatar user={user} sizeClass="w-8 h-8" />
+                    <span className="text-text-secondary text-sm font-medium">
+                      {getFirstName()}
+                    </span>
+                  </button>
+
+                  {/* Desktop user menu */}
+                  {showUserMenu && (
+                    <motion.div
+                      className="glass-strong absolute top-full right-0 z-50 mt-2 w-48 overflow-hidden rounded-xl border border-neutral-200/50 shadow-xl"
+                      initial={{ opacity: 0, scale: 0.95, y: -10 }}
+                      animate={{ opacity: 1, scale: 1, y: 0 }}
+                      transition={{ duration: 0.2 }}
                     >
-                      <UserAvatar user={user} sizeClass="w-8 h-8" />
-                      <span className="text-text-secondary text-sm font-medium">
-                        {getFirstName()}
-                      </span>
-                    </button>
-
-                    {/* Desktop user menu */}
-                    {showUserMenu && (
-                      <div className="bg-paper absolute top-full right-0 z-50 mt-2 w-48 rounded-lg border border-neutral-200 shadow-xl">
-                        <div className="p-2">
-                          <button
-                            type="button"
-                            onClick={handleLogout}
-                            className="text-text-secondary hover:bg-foreground/5 flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm transition"
-                          >
-                            <IconLogout className="h-4 w-4" />
-                            <span>Sign out</span>
-                          </button>
-                        </div>
+                      <div className="p-1.5">
+                        <button
+                          type="button"
+                          onClick={handleLogout}
+                          className="text-text-secondary hover:bg-foreground/5 hover:text-foreground flex w-full items-center gap-2.5 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200 active:scale-[0.98]"
+                        >
+                          <IconLogout className="h-4 w-4" />
+                          <span>Sign out</span>
+                        </button>
                       </div>
-                    )}
-                  </div>
+                    </motion.div>
+                  )}
                 </div>
-              </div>
-
-              {/* Decorative line */}
-              <div
-                aria-hidden="true"
-                className="from-primary mt-3 h-px w-16 bg-gradient-to-r to-transparent"
-              />
-            </motion.div>
+              </motion.div>
+            </div>
           </div>
         </div>
       </div>

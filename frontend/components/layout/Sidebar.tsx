@@ -200,7 +200,7 @@ export function Sidebar({ user, onSignOut }: SidebarProps) {
         <nav className="flex-1 space-y-6 overflow-y-auto px-4 py-4" aria-label="Primary navigation">
           {/* Quick Access Section */}
           <div className="space-y-1.5">
-            <h2 className="text-primary mb-2 px-3 text-[9px] font-bold tracking-wider uppercase">
+            <h2 className="text-primary mb-2 px-3 text-[6.3px] font-bold tracking-wider uppercase">
               Quick Access
             </h2>
             {collapsedQuickItems.map(({ title, icon: Icon, path, badge, disabled }) => {
@@ -236,7 +236,7 @@ export function Sidebar({ user, onSignOut }: SidebarProps) {
 
           {/* Product Links */}
           <div className="space-y-1">
-            <h2 className="text-primary mb-2 px-3 text-[9px] font-bold tracking-wider uppercase">
+            <h2 className="text-primary mb-2 px-3 text-[6.3px] font-bold tracking-wider uppercase">
               Explore Suite
             </h2>
             {productLinks.map(({ name, path, badge, badgeType }) => {

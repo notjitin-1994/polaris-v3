@@ -5,24 +5,21 @@ export const Brand = memo(function Brand() {
   return (
     <Link
       href="/"
-      className="group hover:bg-foreground/5 focus-visible:ring-secondary/50 relative -mx-2 flex items-center gap-3 rounded-lg px-2 py-1.5 transition-all duration-200 focus-visible:ring-2 focus-visible:ring-offset-2 active:scale-[0.98]"
+      className="group hover:bg-foreground/5 focus-visible:ring-primary/50 relative -mx-2 flex items-center gap-3 rounded-xl px-2 py-1.5 transition-all duration-200 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none active:scale-[0.98]"
     >
-      {/* Glow effect behind logo */}
+      {/* Subtle glow effect on hover */}
       <div
-        className="from-primary/10 via-secondary/10 to-primary/10 absolute inset-0 rounded-lg bg-gradient-to-r opacity-0 blur-xl transition-opacity duration-500 group-hover:opacity-100"
+        className="from-primary/5 via-secondary/5 to-primary/5 absolute inset-0 rounded-xl bg-gradient-to-r opacity-0 blur-xl transition-opacity duration-300 group-hover:opacity-100"
         aria-hidden="true"
       />
 
-      {/* Logo with subtle glow */}
+      {/* Logo */}
       <div className="relative">
-        <div
-          className="from-primary/30 to-secondary/30 absolute inset-0 rounded-lg bg-gradient-to-br opacity-40 blur-md"
-          aria-hidden="true"
-        />
         <img
           src="/logo.png"
           alt="SmartSlate"
-          className="relative h-7 w-auto drop-shadow-sm transition-all duration-300 select-none group-hover:drop-shadow-md"
+          className="relative h-7 w-auto drop-shadow-sm transition-all duration-300 select-none group-hover:scale-[1.02] group-hover:drop-shadow-md"
+          draggable="false"
         />
       </div>
     </Link>

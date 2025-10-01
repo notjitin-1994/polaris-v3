@@ -51,7 +51,7 @@ interface UserAvatarProps {
 export const UserAvatar = memo(function UserAvatar({
   user,
   sizeClass,
-  textClass = 'text-sm font-semibold text-white/90',
+  textClass = 'text-sm font-semibold text-foreground',
 }: UserAvatarProps) {
   const [imgError, setImgError] = useState(false);
   const avatarUrl = resolveUserAvatarUrl(user);
@@ -62,17 +62,18 @@ export const UserAvatar = memo(function UserAvatar({
       <img
         src={avatarUrl as string}
         alt="User avatar"
-        className={`${sizeClass} rounded-full border border-white/10 bg-white/5 object-cover`}
+        className={`${sizeClass} bg-background rounded-full border-2 border-neutral-200/30 object-cover ring-1 ring-neutral-200/20 transition-all duration-200`}
         loading="lazy"
         referrerPolicy="no-referrer"
         onError={() => setImgError(true)}
+        draggable="false"
       />
     );
   }
 
   return (
     <span
-      className={`${sizeClass} inline-flex items-center justify-center overflow-hidden rounded-full border border-white/10 bg-white/5`}
+      className={`${sizeClass} from-primary/10 to-secondary/10 inline-flex items-center justify-center overflow-hidden rounded-full border-2 border-neutral-200/30 bg-gradient-to-br ring-1 ring-neutral-200/20`}
     >
       <span className={textClass}>{getUserInitial(user)}</span>
     </span>
