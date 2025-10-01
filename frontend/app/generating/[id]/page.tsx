@@ -223,10 +223,7 @@ function GeneratingContent({ id }: { id: string }): React.JSX.Element {
             <div className="mt-6 flex justify-center">
               <div className="glass-strong rounded-full px-4 py-2 text-xs">
                 <span className="text-text-secondary">Powered by </span>
-                <span
-                  className="font-semibold text-[#FFD700]"
-                  style={{ textShadow: '0 0 10px rgba(255, 215, 0, 0.3)' }}
-                >
+                <span className="font-semibold text-[#FFD700] drop-shadow-[0_0_10px_rgba(255,215,0,0.3)]">
                   Solara
                 </span>
               </div>
@@ -290,7 +287,7 @@ function GeneratingContent({ id }: { id: string }): React.JSX.Element {
               transition={{ delay: 1 }}
               className="glass-strong mt-6 rounded-xl p-6"
             >
-              <h3 className="text-foreground mb-3 text-sm font-semibold">What's happening?</h3>
+              <h3 className="text-foreground mb-3 text-sm font-semibold">What&apos;s happening?</h3>
               <ul className="text-text-secondary space-y-2 text-sm">
                 <li className="flex items-start gap-2">
                   <CheckCircle className="text-success mt-0.5 h-4 w-4 flex-shrink-0" />
