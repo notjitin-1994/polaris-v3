@@ -46,13 +46,13 @@ export const DateInput: React.FC<BaseInputProps> = ({
       />
 
       {question.helpText && (
-        <p id={`${inputId}-help`} className="text-sm text-foreground/60 mt-1">
+        <p id={`${inputId}-help`} className="text-foreground/60 mt-1 text-sm">
           {question.helpText}
         </p>
       )}
 
       {(question.minDate || question.maxDate) && (
-        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+        <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
           {question.minDate && question.maxDate
             ? `Date range: ${question.minDate} - ${question.maxDate}`
             : question.minDate

@@ -7,7 +7,13 @@ import { glob } from 'glob';
 interface ArbitraryValue {
   file: string;
   line: number;
-  type: 'inline-style' | 'arbitrary-spacing' | 'arbitrary-size' | 'border-radius' | 'opacity' | 'color';
+  type:
+    | 'inline-style'
+    | 'arbitrary-spacing'
+    | 'arbitrary-size'
+    | 'border-radius'
+    | 'opacity'
+    | 'color';
   value: string;
   context: string;
   count?: number;
@@ -29,7 +35,7 @@ interface AuditReport {
 class ArbitraryValueAuditor {
   private report: AuditReport;
   private readonly frontendPath: string;
-  
+
   constructor() {
     this.frontendPath = path.resolve(__dirname, '..');
     this.report = {
@@ -42,23 +48,23 @@ class ArbitraryValueAuditor {
       opacityValues: new Map(),
       colorValues: new Map(),
       frequentValues: new Map(),
-      recommendations: []
+      recommendations: [],
     };
   }
 
   async audit(): Promise<AuditReport> {
     const files = await glob('**/*.{tsx,jsx}', {
       cwd: this.frontendPath,
-      ignore: ['node_modules/**', 'build/**', 'dist/**', '.next/**']
+      ignore: ['node_modules/**', 'build/**', 'dist/**', '.next/**'],
     });
 
     this.report.totalFiles = files.length;
-    
+
     for (const file of files) {
       const filePath = path.join(this.frontendPath, file);
       const content = fs.readFileSync(filePath, 'utf-8');
       const lines = content.split('\n');
-      
+
       lines.forEach((line, index) => {
         this.analyzeLine(file, line, index + 1);
       });
@@ -66,7 +72,7 @@ class ArbitraryValueAuditor {
 
     this.generateRecommendations();
     this.analyzeFrequency();
-    
+
     return this.report;
   }
 
@@ -80,34 +86,37 @@ class ArbitraryValueAuditor {
           line: lineNumber,
           type: 'inline-style',
           value: match[1].trim(),
-          context: line.trim()
+          context: line.trim(),
         });
         this.report.totalIssues++;
       }
     }
 
     // Check for arbitrary Tailwind values
-    const arbitraryPattern = /(?:px|py|pt|pb|pl|pr|p|mx|my|mt|mb|ml|mr|m|w|h|min-w|max-w|min-h|max-h|gap|space-x|space-y)-\[([^\]]+)\]/g;
+    const arbitraryPattern =
+      /(?:px|py|pt|pb|pl|pr|p|mx|my|mt|mb|ml|mr|m|w|h|min-w|max-w|min-h|max-h|gap|space-x|space-y)-\[([^\]]+)\]/g;
     let arbitraryMatch;
     while ((arbitraryMatch = arbitraryPattern.exec(line)) !== null) {
       const value = arbitraryMatch[0];
-      const isSpacing = /^(?:px|py|pt|pb|pl|pr|p|mx|my|mt|mb|ml|mr|m|gap|space-x|space-y)-/.test(value);
+      const isSpacing = /^(?:px|py|pt|pb|pl|pr|p|mx|my|mt|mb|ml|mr|m|gap|space-x|space-y)-/.test(
+        value
+      );
       const isSize = /^(?:w|h|min-w|max-w|min-h|max-h)-/.test(value);
-      
+
       const item: ArbitraryValue = {
         file,
         line: lineNumber,
         type: isSpacing ? 'arbitrary-spacing' : isSize ? 'arbitrary-size' : 'arbitrary-spacing',
         value: arbitraryMatch[0],
-        context: line.trim()
+        context: line.trim(),
       };
-      
+
       if (isSpacing) {
         this.report.arbitrarySpacing.push(item);
       } else if (isSize) {
         this.report.arbitrarySizes.push(item);
       }
-      
+
       this.report.totalIssues++;
       this.trackFrequency(value, file);
     }
@@ -125,13 +134,14 @@ class ArbitraryValueAuditor {
         line: lineNumber,
         type: 'border-radius',
         value,
-        context: line.trim()
+        context: line.trim(),
       });
       this.trackFrequency(value, file);
     }
 
     // Check for opacity values
-    const opacityPattern = /(?:bg|text|border)-(?:white|black|gray|slate|zinc|neutral|stone|red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose)\/(\d+)/g;
+    const opacityPattern =
+      /(?:bg|text|border)-(?:white|black|gray|slate|zinc|neutral|stone|red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose)\/(\d+)/g;
     let opacityMatch;
     while ((opacityMatch = opacityPattern.exec(line)) !== null) {
       const opacity = opacityMatch[1];
@@ -144,7 +154,7 @@ class ArbitraryValueAuditor {
         line: lineNumber,
         type: 'opacity',
         value: fullValue,
-        context: line.trim()
+        context: line.trim(),
       });
       this.trackFrequency(fullValue, file);
     }
@@ -162,7 +172,7 @@ class ArbitraryValueAuditor {
         line: lineNumber,
         type: 'color',
         value,
-        context: line.trim()
+        context: line.trim(),
       });
       this.trackFrequency(value, file);
       this.report.totalIssues++;
@@ -183,7 +193,7 @@ class ArbitraryValueAuditor {
     const sortedFrequent = Array.from(this.report.frequentValues.entries())
       .sort((a, b) => b[1].count - a[1].count)
       .filter(([_, data]) => data.count >= 3);
-    
+
     // Create new map with sorted values
     this.report.frequentValues = new Map(sortedFrequent);
   }
@@ -193,26 +203,34 @@ class ArbitraryValueAuditor {
 
     // Inline styles recommendations
     if (this.report.inlineStyles.length > 0) {
-      const uniqueStyles = new Set(this.report.inlineStyles.map(s => s.value));
-      recommendations.push(`Found ${this.report.inlineStyles.length} inline styles across ${uniqueStyles.size} unique patterns. Consider converting to Tailwind classes or CSS variables.`);
+      const uniqueStyles = new Set(this.report.inlineStyles.map((s) => s.value));
+      recommendations.push(
+        `Found ${this.report.inlineStyles.length} inline styles across ${uniqueStyles.size} unique patterns. Consider converting to Tailwind classes or CSS variables.`
+      );
     }
 
     // Arbitrary spacing recommendations
     if (this.report.arbitrarySpacing.length > 0) {
-      const uniqueSpacing = new Set(this.report.arbitrarySpacing.map(s => s.value));
-      recommendations.push(`Found ${this.report.arbitrarySpacing.length} arbitrary spacing values across ${uniqueSpacing.size} unique patterns. Consider using standard Tailwind spacing scale.`);
+      const uniqueSpacing = new Set(this.report.arbitrarySpacing.map((s) => s.value));
+      recommendations.push(
+        `Found ${this.report.arbitrarySpacing.length} arbitrary spacing values across ${uniqueSpacing.size} unique patterns. Consider using standard Tailwind spacing scale.`
+      );
     }
 
     // Border radius recommendations
     const borderRadiusCount = this.report.borderRadiusVariations.size;
     if (borderRadiusCount > 5) {
-      recommendations.push(`Found ${borderRadiusCount} different border-radius variations. Consider standardizing to 3-4 consistent values.`);
+      recommendations.push(
+        `Found ${borderRadiusCount} different border-radius variations. Consider standardizing to 3-4 consistent values.`
+      );
     }
 
     // Opacity recommendations
     const opacityCount = this.report.opacityValues.size;
     if (opacityCount > 8) {
-      recommendations.push(`Found ${opacityCount} different opacity values. Consider standardizing to a limited set of opacity tokens.`);
+      recommendations.push(
+        `Found ${opacityCount} different opacity values. Consider standardizing to a limited set of opacity tokens.`
+      );
     }
 
     // Frequent values that should be tokenized
@@ -221,7 +239,9 @@ class ArbitraryValueAuditor {
       .map(([value, data]) => ({ value, count: data.count, files: data.files.size }));
 
     if (tokenizeCandidates.length > 0) {
-      recommendations.push(`Found ${tokenizeCandidates.length} values used 3+ times that should be extracted to tokens.`);
+      recommendations.push(
+        `Found ${tokenizeCandidates.length} values used 3+ times that should be extracted to tokens.`
+      );
       tokenizeCandidates.slice(0, 10).forEach(({ value, count, files }) => {
         recommendations.push(`  - "${value}": used ${count} times across ${files} files`);
       });
@@ -243,12 +263,14 @@ class ArbitraryValueAuditor {
     console.log(`📝 Inline Styles (${this.report.inlineStyles.length} found):`);
     if (this.report.inlineStyles.length > 0) {
       const grouped = this.groupByFile(this.report.inlineStyles);
-      Object.entries(grouped).slice(0, 5).forEach(([file, items]) => {
-        console.log(`  ${file}:`);
-        items.slice(0, 3).forEach(item => {
-          console.log(`    Line ${item.line}: ${item.value.substring(0, 60)}...`);
+      Object.entries(grouped)
+        .slice(0, 5)
+        .forEach(([file, items]) => {
+          console.log(`  ${file}:`);
+          items.slice(0, 3).forEach((item) => {
+            console.log(`    Line ${item.line}: ${item.value.substring(0, 60)}...`);
+          });
         });
-      });
       if (this.report.inlineStyles.length > 15) {
         console.log(`  ... and ${this.report.inlineStyles.length - 15} more`);
       }
@@ -257,11 +279,13 @@ class ArbitraryValueAuditor {
 
     console.log(`📏 Arbitrary Spacing Values (${this.report.arbitrarySpacing.length} found):`);
     if (this.report.arbitrarySpacing.length > 0) {
-      const uniqueValues = new Set(this.report.arbitrarySpacing.map(s => s.value));
-      Array.from(uniqueValues).slice(0, 10).forEach(value => {
-        const count = this.report.arbitrarySpacing.filter(s => s.value === value).length;
-        console.log(`  ${value}: used ${count} times`);
-      });
+      const uniqueValues = new Set(this.report.arbitrarySpacing.map((s) => s.value));
+      Array.from(uniqueValues)
+        .slice(0, 10)
+        .forEach((value) => {
+          const count = this.report.arbitrarySpacing.filter((s) => s.value === value).length;
+          console.log(`  ${value}: used ${count} times`);
+        });
       if (uniqueValues.size > 10) {
         console.log(`  ... and ${uniqueValues.size - 10} more unique values`);
       }
@@ -270,11 +294,13 @@ class ArbitraryValueAuditor {
 
     console.log(`📐 Arbitrary Size Values (${this.report.arbitrarySizes.length} found):`);
     if (this.report.arbitrarySizes.length > 0) {
-      const uniqueValues = new Set(this.report.arbitrarySizes.map(s => s.value));
-      Array.from(uniqueValues).slice(0, 10).forEach(value => {
-        const count = this.report.arbitrarySizes.filter(s => s.value === value).length;
-        console.log(`  ${value}: used ${count} times`);
-      });
+      const uniqueValues = new Set(this.report.arbitrarySizes.map((s) => s.value));
+      Array.from(uniqueValues)
+        .slice(0, 10)
+        .forEach((value) => {
+          const count = this.report.arbitrarySizes.filter((s) => s.value === value).length;
+          console.log(`  ${value}: used ${count} times`);
+        });
       if (uniqueValues.size > 10) {
         console.log(`  ... and ${uniqueValues.size - 10} more unique values`);
       }
@@ -309,7 +335,7 @@ class ArbitraryValueAuditor {
     console.log();
 
     console.log(`💡 Recommendations:`);
-    this.report.recommendations.forEach(rec => {
+    this.report.recommendations.forEach((rec) => {
       console.log(`  ${rec}`);
     });
     console.log();
@@ -318,26 +344,28 @@ class ArbitraryValueAuditor {
     const reportPath = path.join(this.frontendPath, 'arbitrary-values-audit.json');
     const reportData = {
       ...this.report,
-      borderRadiusVariations: Array.from(this.report.borderRadiusVariations.entries()).map(([key, values]) => ({
-        value: key,
-        occurrences: values.length,
-        locations: values.slice(0, 5)
-      })),
+      borderRadiusVariations: Array.from(this.report.borderRadiusVariations.entries()).map(
+        ([key, values]) => ({
+          value: key,
+          occurrences: values.length,
+          locations: values.slice(0, 5),
+        })
+      ),
       opacityValues: Array.from(this.report.opacityValues.entries()).map(([key, values]) => ({
         opacity: key,
         occurrences: values.length,
-        locations: values.slice(0, 5)
+        locations: values.slice(0, 5),
       })),
       colorValues: Array.from(this.report.colorValues.entries()).map(([key, values]) => ({
         color: key,
         occurrences: values.length,
-        locations: values.slice(0, 5)
+        locations: values.slice(0, 5),
       })),
       frequentValues: Array.from(this.report.frequentValues.entries()).map(([value, data]) => ({
         value,
         count: data.count,
-        files: Array.from(data.files)
-      }))
+        files: Array.from(data.files),
+      })),
     };
 
     fs.writeFileSync(reportPath, JSON.stringify(reportData, null, 2));
@@ -347,13 +375,16 @@ class ArbitraryValueAuditor {
   }
 
   private groupByFile(items: ArbitraryValue[]): Record<string, ArbitraryValue[]> {
-    return items.reduce((acc, item) => {
-      if (!acc[item.file]) {
-        acc[item.file] = [];
-      }
-      acc[item.file].push(item);
-      return acc;
-    }, {} as Record<string, ArbitraryValue[]>);
+    return items.reduce(
+      (acc, item) => {
+        if (!acc[item.file]) {
+          acc[item.file] = [];
+        }
+        acc[item.file].push(item);
+        return acc;
+      },
+      {} as Record<string, ArbitraryValue[]>
+    );
   }
 }
 

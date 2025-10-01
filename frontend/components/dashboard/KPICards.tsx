@@ -25,7 +25,7 @@ function KPICard({
   delay = 0,
   suffix = '',
   prefix = '',
-}: KPICardProps): JSX.Element {
+}: KPICardProps): React.JSX.Element {
   const [displayValue, setDisplayValue] = useState(0);
   const count = useMotionValue(0);
   const rounded = useTransform(count, (latest) => Math.round(latest));
@@ -49,7 +49,7 @@ function KPICard({
 
   return (
     <motion.div
-      className="relative group"
+      className="group relative"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay, duration: 0.5 }}
@@ -59,31 +59,31 @@ function KPICard({
         className={cn(
           'glass rounded-2xl p-6 transition-all duration-300',
           'hover:glass-strong hover:shadow-xl',
-          'group-hover:scale-105',
+          'group-hover:scale-105'
         )}
       >
         {/* Background gradient effect */}
         <div
           className={cn(
-            'absolute inset-0 rounded-xl opacity-5 group-hover:opacity-10 transition-opacity duration-300',
-            color,
+            'absolute inset-0 rounded-xl opacity-5 transition-opacity duration-300 group-hover:opacity-10',
+            color
           )}
         />
 
         <div className="relative z-10">
-          <div className="flex items-center justify-between mb-4">
+          <div className="mb-4 flex items-center justify-between">
             <div
               className={cn(
-                'p-3 rounded-lg',
+                'rounded-lg p-3',
                 color,
-                'bg-opacity-10 group-hover:bg-opacity-20 transition-all duration-300',
+                'bg-opacity-10 group-hover:bg-opacity-20 transition-all duration-300'
               )}
             >
               {icon}
             </div>
             <div className="text-right">
               <motion.div
-                className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-slate-100"
+                className="text-2xl font-bold text-slate-900 sm:text-3xl dark:text-slate-100"
                 key={value}
               >
                 {prefix}
@@ -93,13 +93,13 @@ function KPICard({
             </div>
           </div>
 
-          <h3 className="text-sm font-medium text-slate-600 dark:text-slate-400 group-hover:text-slate-700 dark:group-hover:text-slate-300 transition-colors">
+          <h3 className="text-sm font-medium text-slate-600 transition-colors group-hover:text-slate-700 dark:text-slate-400 dark:group-hover:text-slate-300">
             {title}
           </h3>
         </div>
 
         {/* Animated progress bar */}
-        <div className="absolute bottom-0 left-0 right-0 h-1 bg-slate-200 dark:bg-slate-700 rounded-b-xl overflow-hidden">
+        <div className="absolute right-0 bottom-0 left-0 h-1 overflow-hidden rounded-b-xl bg-slate-200 dark:bg-slate-700">
           <motion.div
             className={cn('h-full', color)}
             initial={{ width: 0 }}
@@ -117,40 +117,40 @@ interface KPICardsProps {
   className?: string;
 }
 
-export function KPICards({ kpis, className }: KPICardsProps): JSX.Element {
+export function KPICards({ kpis, className }: KPICardsProps): React.JSX.Element {
   const cards = [
     {
       title: 'Total Learning Hours',
       value: kpis.totalLearningHours,
-      icon: <Clock className="w-6 h-6 text-blue-600" />,
+      icon: <Clock className="h-6 w-6 text-blue-600" />,
       color: 'bg-blue-500',
       delay: 0,
     },
     {
       title: 'Total Modules',
       value: kpis.totalModules,
-      icon: <BookOpen className="w-6 h-6 text-green-600" />,
+      icon: <BookOpen className="h-6 w-6 text-green-600" />,
       color: 'bg-green-500',
       delay: 0.2,
     },
     {
       title: 'Completed Modules',
       value: kpis.completedModules,
-      icon: <CheckCircle className="w-6 h-6 text-emerald-600" />,
+      icon: <CheckCircle className="h-6 w-6 text-emerald-600" />,
       color: 'bg-emerald-500',
       delay: 0.4,
     },
     {
       title: 'Total Resources',
       value: kpis.totalResources,
-      icon: <FileText className="w-6 h-6 text-purple-600" />,
+      icon: <FileText className="h-6 w-6 text-purple-600" />,
       color: 'bg-purple-500',
       delay: 0.6,
     },
   ];
 
   return (
-    <div className={cn('grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6', className)}>
+    <div className={cn('grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 lg:grid-cols-4', className)}>
       {cards.map((card) => (
         <KPICard
           key={card.title}

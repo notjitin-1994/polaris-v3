@@ -75,7 +75,7 @@ const CONTENT_SOURCES = [
   },
 ];
 
-export function ResourcesStep(): JSX.Element {
+export function ResourcesStep(): React.JSX.Element {
   const {
     register,
     formState: { errors },

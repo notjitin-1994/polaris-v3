@@ -11,7 +11,7 @@ interface DrillDownViewProps {
   className?: string;
 }
 
-export function DrillDownView({ className }: DrillDownViewProps): JSX.Element {
+export function DrillDownView({ className }: DrillDownViewProps): React.JSX.Element {
   const { drillDownState, drillUp, resetDrillDown } = useDrillDown();
 
   if (!drillDownState || drillDownState.path.length === 0) {
@@ -92,7 +92,7 @@ interface DrillDownContentProps {
   filters: Record<string, unknown>;
 }
 
-function DrillDownContent({ data, filters }: DrillDownContentProps): JSX.Element {
+function DrillDownContent({ data, filters }: DrillDownContentProps): React.JSX.Element {
   if (typeof data === 'object' && data !== null) {
     return (
       <div className="space-y-6">

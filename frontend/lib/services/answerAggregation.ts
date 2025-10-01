@@ -42,7 +42,7 @@ class AnswerAggregationService {
       ([questionId, answer]) => ({
         questionId,
         answer: this.validateAndSanitize(answer),
-      }),
+      })
     );
 
     staticResponses.forEach((answer) => staticAnswerSchema.parse(answer));
@@ -59,7 +59,7 @@ class AnswerAggregationService {
       ([questionId, answer]) => ({
         questionId,
         answer: this.validateAndSanitize(answer),
-      }),
+      })
     );
 
     dynamicResponses.forEach((answer) => dynamicAnswerSchema.parse(answer));

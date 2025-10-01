@@ -20,7 +20,7 @@ const PREDEFINED_ROLES = [
   'Custom (Specify below)',
 ];
 
-export function RoleStep(): JSX.Element {
+export function RoleStep(): React.JSX.Element {
   const {
     register,
     formState: { errors },
@@ -69,7 +69,7 @@ export function RoleStep(): JSX.Element {
         label="What is your role?"
         value={selectedOption}
         onChange={handleDropdownChange}
-        options={PREDEFINED_ROLES.map(r => ({ value: r, label: r }))}
+        options={PREDEFINED_ROLES.map((r) => ({ value: r, label: r }))}
         placeholder="Select your role..."
         error={errors.role?.message}
         helpText="Your role relevant to this learning initiative"
@@ -94,21 +94,23 @@ export function RoleStep(): JSX.Element {
       {/* Info Box */}
       <QuestionnaireInfoBox title="Why this matters">
         <p className="mb-3">
-          Your role helps us understand your perspective and decision-making authority, so we
-          can tailor recommendations to your needs.
+          Your role helps us understand your perspective and decision-making authority, so we can
+          tailor recommendations to your needs.
         </p>
         <ul className="list-inside list-disc space-y-1.5 text-[13px]">
           <li>
-            If you&apos;re a <strong className="font-semibold text-foreground">manager/director</strong>: We&apos;ll focus on strategic
-            alignment and ROI
+            If you&apos;re a{' '}
+            <strong className="text-foreground font-semibold">manager/director</strong>: We&apos;ll
+            focus on strategic alignment and ROI
           </li>
           <li>
-            If you&apos;re a <strong className="font-semibold text-foreground">designer/specialist</strong>: We&apos;ll dive deeper into
-            implementation details
+            If you&apos;re a{' '}
+            <strong className="text-foreground font-semibold">designer/specialist</strong>:
+            We&apos;ll dive deeper into implementation details
           </li>
           <li>
-            If you&apos;re a <strong className="font-semibold text-foreground">consultant</strong>: We&apos;ll consider client-facing
-            aspects and scalability
+            If you&apos;re a <strong className="text-foreground font-semibold">consultant</strong>:
+            We&apos;ll consider client-facing aspects and scalability
           </li>
         </ul>
       </QuestionnaireInfoBox>

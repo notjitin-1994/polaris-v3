@@ -33,7 +33,7 @@ describe('LoginForm', () => {
     render(
       <AuthProvider>
         <LoginForm />
-      </AuthProvider>,
+      </AuthProvider>
     );
 
     const btn = await screen.findByRole('button', { name: /sign in/i });

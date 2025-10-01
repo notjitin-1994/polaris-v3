@@ -32,16 +32,16 @@ const CustomTooltip = ({
     const data = payload[0].payload;
     return (
       <motion.div
-        className="bg-white dark:bg-neutral-800 p-4 rounded-lg shadow-lg border border-neutral-200 dark:border-neutral-700"
+        className="rounded-lg border border-neutral-200 bg-white p-4 shadow-lg dark:border-neutral-700 dark:bg-neutral-800"
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.2 }}
       >
         <p className="text-sm font-medium text-neutral-900 dark:text-neutral-100">{label}</p>
-        <div className="space-y-1 mt-2">
+        <div className="mt-2 space-y-1">
           <p className="text-sm">
             <span
-              className="inline-block w-3 h-3 rounded-full mr-2"
+              className="mr-2 inline-block h-3 w-3 rounded-full"
               // One-off: Dynamic color from activity data - varies per activity type
               style={{ backgroundColor: data.color }}
             />
@@ -57,15 +57,15 @@ const CustomTooltip = ({
   return null;
 };
 
-const CustomBar = (props: { fill: string; payload: ActivityData; [key: string]: unknown }) => {
-  const { fill, payload, ...rest } = props;
+const CustomBar = (props: any) => {
+  const { fill, payload, index = 0, ...rest } = props;
   return (
     <motion.rect
       {...rest}
       fill={fill}
       initial={{ scaleY: 0 }}
       animate={{ scaleY: 1 }}
-      transition={{ duration: 0.8, delay: payload.index * 0.1 }}
+      transition={{ duration: 0.8, delay: index * 0.1 }}
       // One-off: Specific transform origin for radial animation effect
       style={{ transformOrigin: 'bottom' }}
     />
@@ -75,7 +75,7 @@ const CustomBar = (props: { fill: string; payload: ActivityData; [key: string]: 
 export function ActivityDistributionChart({
   data,
   className,
-}: ActivityDistributionChartProps): JSX.Element {
+}: ActivityDistributionChartProps): React.JSX.Element {
   // Sort data by hours in descending order for better visualization
   const sortedData = [...data].sort((a, b) => b.hours - a.hours);
 
@@ -89,7 +89,7 @@ export function ActivityDistributionChart({
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
-      <div className="flex items-center justify-between mb-6">
+      <div className="mb-6 flex items-center justify-between">
         <div>
           <h3 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100">
             Activity Distribution
@@ -145,7 +145,7 @@ export function ActivityDistributionChart({
 
             <Tooltip content={<CustomTooltip />} />
 
-            <Bar dataKey="hours" radius={[4, 4, 0, 0]} shape={<CustomBar />}>
+            <Bar dataKey="hours" radius={[4, 4, 0, 0]} shape={CustomBar}>
               {sortedData.map((entry, index) => (
                 <Cell key={`cell-${index}`} fill={entry.color} />
               ))}
@@ -155,7 +155,7 @@ export function ActivityDistributionChart({
       </div>
 
       {/* Legend */}
-      <div className="flex flex-wrap justify-center gap-4 mt-6">
+      <div className="mt-6 flex flex-wrap justify-center gap-4">
         {sortedData.map((item, index) => (
           <motion.div
             key={item.category}
@@ -165,7 +165,7 @@ export function ActivityDistributionChart({
             transition={{ delay: 0.2 + index * 0.1 }}
           >
             {/* One-off: Dynamic color from chart data model */}
-            <div className="w-3 h-3 rounded-full" style={{ backgroundColor: item.color }} />
+            <div className="h-3 w-3 rounded-full" style={{ backgroundColor: item.color }} />
             <span className="text-sm text-neutral-600 dark:text-neutral-400">
               {item.category}: {item.hours}h ({item.percentage.toFixed(1)}%)
             </span>
@@ -174,9 +174,9 @@ export function ActivityDistributionChart({
       </div>
 
       {/* Additional stats */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
+      <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2">
         <motion.div
-          className="bg-neutral-50 dark:bg-neutral-800 rounded-lg p-4"
+          className="rounded-lg bg-neutral-50 p-4 dark:bg-neutral-800"
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.4 }}
@@ -193,7 +193,7 @@ export function ActivityDistributionChart({
         </motion.div>
 
         <motion.div
-          className="bg-neutral-50 dark:bg-neutral-800 rounded-lg p-4"
+          className="rounded-lg bg-neutral-50 p-4 dark:bg-neutral-800"
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.5 }}

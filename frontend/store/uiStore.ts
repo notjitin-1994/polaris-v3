@@ -203,7 +203,7 @@ export const useUIStore = create<UIState>()(
           if (notification && !notification.read) {
             return {
               notifications: state.notifications.map((n) =>
-                n.id === id ? { ...n, read: true } : n,
+                n.id === id ? { ...n, read: true } : n
               ),
               unreadCount: state.unreadCount - 1,
             };
@@ -282,6 +282,6 @@ export const useUIStore = create<UIState>()(
         compactMode: state.compactMode,
         sidebarState: state.sidebarState,
       }),
-    },
-  ),
+    }
+  )
 );

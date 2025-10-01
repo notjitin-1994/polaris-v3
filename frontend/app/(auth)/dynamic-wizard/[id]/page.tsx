@@ -9,9 +9,13 @@ import ProtectedRoute from '@/components/auth/ProtectedRoute';
 import { AuthProvider, useAuth } from '@/contexts/AuthContext';
 import { DynamicFormRenderer } from '@/components/dynamic-form';
 import { DynamicQuestionsLoader } from '@/components/wizard/dynamic-questions';
+import { GenerationSourceBadge } from '@/components/wizard/GenerationSourceBadge';
 import { createBrowserBlueprintService } from '@/lib/db/blueprints.client';
 import { BlueprintRow } from '@/lib/db/blueprints';
 import { StandardHeader } from '@/components/layout/StandardHeader';
+import { createServiceLogger } from '@/lib/logging';
+
+const logger = createServiceLogger('ui');
 
 interface DynamicWizardPageProps {
   params: Promise<{ id: string }>;
@@ -23,6 +27,8 @@ function DynamicWizardContent({ id }: { id: string }): React.JSX.Element {
   const [blueprint, setBlueprint] = useState<BlueprintRow | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [generationSource, setGenerationSource] = useState<'perplexity' | 'ollama' | null>(null);
+  const [fallbackUsed, setFallbackUsed] = useState(false);
 
   const loadBlueprint = useCallback(async () => {
     try {
@@ -42,6 +48,21 @@ function DynamicWizardContent({ id }: { id: string }): React.JSX.Element {
         'Dynamic questions length:',
         Array.isArray(data.dynamic_questions) ? data.dynamic_questions.length : 'not an array'
       );
+
+      // Extract generation metadata if available
+      if (data.dynamic_questions_raw && typeof data.dynamic_questions_raw === 'object') {
+        const raw: any = data.dynamic_questions_raw;
+        if (raw.metadata) {
+          setGenerationSource(raw.metadata.source || null);
+          setFallbackUsed(raw.metadata.fallbackUsed || false);
+
+          logger.info('dynamic_questions.wizard.loaded', 'Dynamic wizard loaded with metadata', {
+            blueprintId: id,
+            source: raw.metadata.source,
+            fallbackUsed: raw.metadata.fallbackUsed,
+          });
+        }
+      }
 
       setBlueprint(data);
     } catch (error) {
@@ -231,6 +252,17 @@ function DynamicWizardContent({ id }: { id: string }): React.JSX.Element {
       {/* Main Content */}
       <main className="w-full px-4 py-8 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-6xl">
+          {/* Generation Source Badge */}
+          {generationSource && (
+            <div className="animate-fade-in-up mb-6 flex justify-center">
+              <GenerationSourceBadge
+                source={generationSource}
+                fallbackUsed={fallbackUsed}
+                size="md"
+              />
+            </div>
+          )}
+
           <DynamicFormRenderer
             formSchema={{
               id: `dynamic-${blueprint.id}`,

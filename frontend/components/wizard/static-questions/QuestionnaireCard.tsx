@@ -11,9 +11,9 @@ type QuestionnaireCardProps = {
 export function QuestionnaireCard({
   children,
   showLogo = true,
-}: QuestionnaireCardProps): JSX.Element {
+}: QuestionnaireCardProps): React.JSX.Element {
   return (
-    <div className="glass-card p-8 md:p-10 space-y-8">
+    <div className="glass-card space-y-8 p-8 md:p-10">
       {showLogo && (
         <div className="animate-fade-in flex items-center justify-center pb-2">
           <Image
@@ -21,14 +21,12 @@ export function QuestionnaireCard({
             alt="SmartSlate"
             width={140}
             height={38}
-            className="h-10 w-auto opacity-90 hover:opacity-100 transition-opacity duration-300"
+            className="h-10 w-auto opacity-90 transition-opacity duration-300 hover:opacity-100"
             priority
           />
         </div>
       )}
-      <div className="space-y-6">
-        {children}
-      </div>
+      <div className="space-y-6">{children}</div>
     </div>
   );
 }

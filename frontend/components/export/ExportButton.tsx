@@ -49,7 +49,7 @@ export const ExportButton: React.FC<ExportButtonProps> = ({
         blueprint,
         options,
         dashboardData,
-        metadata,
+        metadata
       );
 
       if (result.success) {
@@ -91,7 +91,7 @@ export const ExportButton: React.FC<ExportButtonProps> = ({
           blueprint,
           options,
           dashboardData,
-          metadata,
+          metadata
         );
 
         results.set(format, result);
@@ -137,16 +137,11 @@ export const ExportButton: React.FC<ExportButtonProps> = ({
   return (
     <>
       <div className={`flex gap-2 ${className}`}>
-        <Button
-          onClick={handleExportAll}
-          disabled={isExporting}
-          variant="primary"
-          size="md"
-        >
+        <Button onClick={handleExportAll} disabled={isExporting} variant="primary" size="md">
           {isExporting ? (
-            <Loader2 className="w-4 h-4 animate-spin mr-2" aria-hidden="true" />
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />
           ) : (
-            <Download className="w-4 h-4 mr-2" aria-hidden="true" />
+            <Download className="mr-2 h-4 w-4" aria-hidden="true" />
           )}
           {isExporting ? 'Exporting...' : 'Export All'}
         </Button>
@@ -155,31 +150,31 @@ export const ExportButton: React.FC<ExportButtonProps> = ({
           <button
             onClick={() => handleExport('pdf')}
             disabled={isExporting}
-            className="glass px-3 py-2 rounded-lg text-white bg-error/80 dark:bg-error/70 hover:bg-error/90 dark:hover:bg-error/80 transition-all duration-200 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-error/50 focus-visible:ring-offset-2"
+            className="glass bg-error/80 dark:bg-error/70 hover:bg-error/90 dark:hover:bg-error/80 focus-visible:ring-error/50 flex items-center gap-2 rounded-lg px-3 py-2 text-white transition-all duration-200 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
             title="Export as PDF"
             aria-label="Export as PDF"
           >
-            <FileImage className="w-4 h-4" aria-hidden="true" />
+            <FileImage className="h-4 w-4" aria-hidden="true" />
           </button>
 
           <button
             onClick={() => handleExport('markdown')}
             disabled={isExporting}
-            className="glass px-3 py-2 rounded-lg text-white bg-neutral-600 dark:bg-neutral-700 hover:bg-neutral-700 dark:hover:bg-neutral-600 transition-all duration-200 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-500/50 focus-visible:ring-offset-2"
+            className="glass flex items-center gap-2 rounded-lg bg-neutral-600 px-3 py-2 text-white transition-all duration-200 hover:bg-neutral-700 focus-visible:ring-2 focus-visible:ring-neutral-500/50 focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 dark:bg-neutral-700 dark:hover:bg-neutral-600"
             title="Export as Markdown"
             aria-label="Export as Markdown"
           >
-            <FileText className="w-4 h-4" aria-hidden="true" />
+            <FileText className="h-4 w-4" aria-hidden="true" />
           </button>
 
           <button
             onClick={() => handleExport('json')}
             disabled={isExporting}
-            className="glass px-3 py-2 rounded-lg text-white bg-success/80 dark:bg-success/70 hover:bg-success/90 dark:hover:bg-success/80 transition-all duration-200 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-success/50 focus-visible:ring-offset-2"
+            className="glass bg-success/80 dark:bg-success/70 hover:bg-success/90 dark:hover:bg-success/80 focus-visible:ring-success/50 flex items-center gap-2 rounded-lg px-3 py-2 text-white transition-all duration-200 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
             title="Export as JSON"
             aria-label="Export as JSON"
           >
-            <Code className="w-4 h-4" aria-hidden="true" />
+            <Code className="h-4 w-4" aria-hidden="true" />
           </button>
         </div>
       </div>

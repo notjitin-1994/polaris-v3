@@ -49,28 +49,34 @@ const optionSchema = z.union([
 ]);
 
 // Configuration schemas for rich input types
-const scaleConfigSchema = z.object({
-  min: z.number().default(1),
-  max: z.number().default(5),
-  min_label: z.string().optional(),
-  max_label: z.string().optional(),
-  labels: z.array(z.string()).optional(), // Emojis for each step
-  step: z.number().default(1),
-}).optional();
+const scaleConfigSchema = z
+  .object({
+    min: z.number().default(1),
+    max: z.number().default(5),
+    min_label: z.string().optional(),
+    max_label: z.string().optional(),
+    labels: z.array(z.string()).optional(), // Emojis for each step
+    step: z.number().default(1),
+  })
+  .optional();
 
-const sliderConfigSchema = z.object({
-  min: z.number().default(0),
-  max: z.number().default(100),
-  step: z.number().default(1),
-  unit: z.string().optional(), // e.g., "hours/week", "%"
-  markers: z.array(z.number()).optional(),
-}).optional();
+const sliderConfigSchema = z
+  .object({
+    min: z.number().default(0),
+    max: z.number().default(100),
+    step: z.number().default(1),
+    unit: z.string().optional(), // e.g., "hours/week", "%"
+    markers: z.array(z.number()).optional(),
+  })
+  .optional();
 
-const numberConfigSchema = z.object({
-  min: z.number().default(0),
-  max: z.number().default(999),
-  step: z.number().default(1),
-}).optional();
+const numberConfigSchema = z
+  .object({
+    min: z.number().default(0),
+    max: z.number().default(999),
+    step: z.number().default(1),
+  })
+  .optional();
 
 // New question shape (preferred) - now with rich input support
 const baseQuestionSchemaNew = z.object({

@@ -7,7 +7,7 @@ export type UserProfileUpdate = Database['public']['Tables']['user_profiles']['U
 
 export async function upsertUserProfile(
   profile: UserProfileInsert,
-  client?: Awaited<ReturnType<typeof getSupabaseServerClient>>,
+  client?: Awaited<ReturnType<typeof getSupabaseServerClient>>
 ): Promise<UserProfileRow> {
   const supabaseClient = client ?? (await getSupabaseServerClient());
   const { data, error } = await supabaseClient
@@ -21,7 +21,7 @@ export async function upsertUserProfile(
 
 export async function getUserProfile(
   userId: string,
-  client?: Awaited<ReturnType<typeof getSupabaseServerClient>>,
+  client?: Awaited<ReturnType<typeof getSupabaseServerClient>>
 ): Promise<UserProfileRow | null> {
   const supabaseClient = client ?? (await getSupabaseServerClient());
   const { data, error } = await supabaseClient

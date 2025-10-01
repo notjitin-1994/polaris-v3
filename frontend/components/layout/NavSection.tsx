@@ -26,26 +26,30 @@ export const NavSection = memo(function NavSection({
   const [open, setOpen] = useState<boolean>(defaultOpen);
 
   return (
-    <div className="select-none">
+    <div className="space-y-1 select-none">
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="pressable font-heading flex w-full items-center justify-between rounded-lg px-3 py-2 text-sm font-semibold text-[#a7dadb] transition hover:bg-white/5"
+        className="group text-text-disabled hover:text-foreground hover:bg-foreground/5 active:bg-foreground/10 focus-visible:ring-secondary/50 flex w-full items-center justify-between rounded-lg px-3 py-2 text-xs font-bold tracking-wider uppercase transition-all duration-200 focus-visible:ring-2 focus-visible:ring-offset-1"
         aria-expanded={open}
         aria-controls={`section-${title.replace(/\s+/g, '-')}`}
       >
         <span>{title}</span>
-        <span
-          className={`inline-block text-xs text-white/70 transition-transform ${open ? 'rotate-90' : ''}`}
+        <svg
+          className={`h-3.5 w-3.5 transition-transform duration-300 ${open ? 'rotate-90' : ''}`}
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          strokeWidth={2.5}
         >
-          ▶
-        </span>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+        </svg>
       </button>
       <div
         id={`section-${title.replace(/\s+/g, '-')}`}
-        className={`${open ? 'block' : 'hidden'} mt-1 pl-2`}
+        className={`overflow-hidden transition-all duration-300 ease-out ${open ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'} `}
       >
-        <ul className="space-y-0.5">
+        <ul className="space-y-0.5 py-1">
           {items.map((item) => {
             const { label, tagText, tagTone } =
               typeof item === 'string'
@@ -53,27 +57,29 @@ export const NavSection = memo(function NavSection({
                 : item;
             return (
               <li key={label}>
-                <a
-                  href="#"
+                <button
+                  type="button"
                   onClick={(e) => {
                     e.preventDefault();
                     onItemClick?.(item);
                   }}
-                  className="pressable flex items-center justify-between rounded-lg px-3 py-1.5 text-sm text-white/75 transition hover:bg-[#a7dadb]/5 hover:text-[#a7dadb] focus-visible:text-[#a7dadb] active:text-[#a7dadb]"
+                  className="group text-text-secondary hover:text-foreground hover:bg-foreground/5 focus-visible:ring-secondary/50 flex w-full items-center justify-between gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200 focus-visible:ring-2 focus-visible:ring-offset-1 active:scale-[0.98]"
                 >
-                  <span className="truncate">{label}</span>
+                  <span className="flex-1 truncate text-left">{label}</span>
                   {tagText && (
                     <span
-                      className={`ml-3 inline-flex shrink-0 items-center rounded-full border px-2 py-0.5 text-[10px] font-medium ${
+                      className={`inline-flex shrink-0 items-center rounded-full border px-2 py-0.5 text-[10px] font-semibold tracking-wide uppercase transition-all duration-200 ${
                         tagTone === 'preview'
-                          ? 'border-[#7bc5c7]/30 bg-[#7bc5c7]/10 text-[#d0edf0]'
-                          : 'border-white/10 bg-white/5 text-white/60'
-                      }`}
+                          ? 'border-secondary/30 bg-secondary/10 text-secondary'
+                          : tagTone === 'soon'
+                            ? 'border-primary/30 bg-primary/10 text-primary'
+                            : 'text-text-disabled border-neutral-300 bg-neutral-100 dark:border-neutral-700 dark:bg-neutral-800'
+                      } `}
                     >
                       {tagText}
                     </span>
                   )}
-                </a>
+                </button>
               </li>
             );
           })}

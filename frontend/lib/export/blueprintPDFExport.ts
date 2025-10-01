@@ -55,7 +55,7 @@ export async function exportBlueprintToPDF(data: BlueprintExportData): Promise<v
 
   // Build HTML content
   let htmlContent = '';
-  
+
   // Add cover page
   htmlContent += generateCoverPage(blueprintTitle, createdDate);
 
@@ -71,7 +71,7 @@ export async function exportBlueprintToPDF(data: BlueprintExportData): Promise<v
   exportContainer.innerHTML = htmlContent;
 
   // Wait for fonts and rendering
-  await new Promise(resolve => setTimeout(resolve, 500));
+  await new Promise((resolve) => setTimeout(resolve, 500));
 
   const opt = {
     margin: [10, 10, 10, 10],
@@ -248,7 +248,10 @@ function generateMarkdownPage(markdown: string, date: string): string {
         /^\d+\. (.+$)/gim,
         '<li style="color: #475569; margin-bottom: 10px; line-height: 1.7; list-style-position: outside; margin-left: 20px;">$1</li>'
       )
-      .replace(/\n\n/g, '</p><p style="color: #475569; margin: 0 0 18px 0; line-height: 1.8; font-size: 15px;">')
+      .replace(
+        /\n\n/g,
+        '</p><p style="color: #475569; margin: 0 0 18px 0; line-height: 1.8; font-size: 15px;">'
+      )
       .replace(/\n/g, '<br />');
   };
 

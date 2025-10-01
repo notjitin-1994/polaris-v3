@@ -193,7 +193,7 @@ export const useFormStore = create<FormStore>()(
           set({
             errors: result.errors.reduce(
               (acc, err) => ({ ...acc, [err.fieldId]: err.message }),
-              {},
+              {}
             ),
             isValid: result.isValid,
           });
@@ -309,12 +309,12 @@ export const useFormStore = create<FormStore>()(
           completedSections: state.completedSections,
           lastSaved: state.lastSaved,
         }),
-      },
+      }
     ),
     {
       name: 'form-store',
-    },
-  ),
+    }
+  )
 );
 
 // Selectors for better performance

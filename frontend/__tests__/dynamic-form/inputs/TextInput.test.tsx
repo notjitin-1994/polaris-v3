@@ -22,7 +22,7 @@ describe('TextInput', () => {
 
   it('renders with correct label and attributes', () => {
     render(
-      <TextInput question={mockQuestion} value="" onChange={mockOnChange} onBlur={mockOnBlur} />,
+      <TextInput question={mockQuestion} value="" onChange={mockOnChange} onBlur={mockOnBlur} />
     );
 
     expect(screen.getByLabelText('Test Text Input')).toBeInTheDocument();
@@ -32,7 +32,7 @@ describe('TextInput', () => {
 
   it('handles value changes correctly', () => {
     render(
-      <TextInput question={mockQuestion} value="" onChange={mockOnChange} onBlur={mockOnBlur} />,
+      <TextInput question={mockQuestion} value="" onChange={mockOnChange} onBlur={mockOnBlur} />
     );
 
     const input = screen.getByLabelText('Test Text Input');
@@ -43,7 +43,7 @@ describe('TextInput', () => {
 
   it('handles blur events correctly', () => {
     render(
-      <TextInput question={mockQuestion} value="" onChange={mockOnChange} onBlur={mockOnBlur} />,
+      <TextInput question={mockQuestion} value="" onChange={mockOnChange} onBlur={mockOnBlur} />
     );
 
     const input = screen.getByLabelText('Test Text Input');
@@ -60,7 +60,7 @@ describe('TextInput', () => {
         onChange={mockOnChange}
         onBlur={mockOnBlur}
         error="This field is required"
-      />,
+      />
     );
 
     expect(screen.getByText('This field is required')).toBeInTheDocument();
@@ -75,7 +75,7 @@ describe('TextInput', () => {
         onChange={mockOnChange}
         onBlur={mockOnBlur}
         disabled={true}
-      />,
+      />
     );
 
     const input = screen.getByLabelText('Test Text Input');
@@ -94,7 +94,7 @@ describe('TextInput', () => {
         value="Hello"
         onChange={mockOnChange}
         onBlur={mockOnBlur}
-      />,
+      />
     );
 
     expect(screen.getByText('5 / 50 characters')).toBeInTheDocument();
@@ -114,12 +114,12 @@ describe('TextInput', () => {
         value=""
         onChange={mockOnChange}
         onBlur={mockOnBlur}
-      />,
+      />
     );
 
     expect(consoleSpy).toHaveBeenCalledWith(
       'TextInput received non-text question:',
-      nonTextQuestion,
+      nonTextQuestion
     );
     expect(screen.queryByLabelText('Test Text Input')).not.toBeInTheDocument();
 
@@ -134,7 +134,7 @@ describe('TextInput', () => {
         onChange={mockOnChange}
         onBlur={mockOnBlur}
         className="custom-class"
-      />,
+      />
     );
 
     const wrapper = screen.getByLabelText('Test Text Input').closest('.space-y-2');
@@ -143,7 +143,7 @@ describe('TextInput', () => {
 
   it('shows placeholder text correctly', () => {
     render(
-      <TextInput question={mockQuestion} value="" onChange={mockOnChange} onBlur={mockOnBlur} />,
+      <TextInput question={mockQuestion} value="" onChange={mockOnChange} onBlur={mockOnBlur} />
     );
 
     const input = screen.getByLabelText('Test Text Input');
@@ -152,12 +152,7 @@ describe('TextInput', () => {
 
   it('handles empty value correctly', () => {
     render(
-      <TextInput
-        question={mockQuestion}
-        value={null}
-        onChange={mockOnChange}
-        onBlur={mockOnBlur}
-      />,
+      <TextInput question={mockQuestion} value={null} onChange={mockOnChange} onBlur={mockOnBlur} />
     );
 
     const input = screen.getByLabelText('Test Text Input');

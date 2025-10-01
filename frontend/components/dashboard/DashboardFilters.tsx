@@ -11,7 +11,7 @@ interface DashboardFiltersProps {
   className?: string;
 }
 
-export function DashboardFilters({ className }: DashboardFiltersProps): JSX.Element {
+export function DashboardFilters({ className }: DashboardFiltersProps): React.JSX.Element {
   const { filters, setFilters, resetFilters, settings, setSettings } = useDashboardStore();
 
   const updateDateRange = (key: 'start' | 'end', value: string) => {

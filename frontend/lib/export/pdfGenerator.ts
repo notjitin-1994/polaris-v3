@@ -162,7 +162,7 @@ export class BlueprintPDFGenerator {
    * Add resources section
    */
   private addResourcesSection(
-    resources: Array<{ name: string; type: string; url?: string }>,
+    resources: Array<{ name: string; type: string; url?: string }>
   ): void {
     this.layout.addSectionHeader('Resources', 2);
 
@@ -214,7 +214,7 @@ export class BlueprintPDFGenerator {
         20,
         this.doc.internal.pageSize.height - 15,
         this.doc.internal.pageSize.width - 20,
-        this.doc.internal.pageSize.height - 15,
+        this.doc.internal.pageSize.height - 15
       );
 
       // Page number
@@ -225,14 +225,14 @@ export class BlueprintPDFGenerator {
         `Page ${i} of ${pageCount}`,
         this.doc.internal.pageSize.width - 40,
         this.doc.internal.pageSize.height - 10,
-        { align: 'right' },
+        { align: 'right' }
       );
 
       // Export info
       this.doc.text(
         `Exported on ${new Date(metadata.exportedAt).toLocaleDateString()}`,
         20,
-        this.doc.internal.pageSize.height - 10,
+        this.doc.internal.pageSize.height - 10
       );
     }
   }

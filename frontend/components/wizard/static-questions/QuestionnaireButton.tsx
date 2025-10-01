@@ -20,7 +20,7 @@ export function QuestionnaireButton({
   disabled = false,
   loading = false,
   fullWidth = false,
-}: QuestionnaireButtonProps): JSX.Element {
+}: QuestionnaireButtonProps): React.JSX.Element {
   const baseClasses = 'btn';
   const variantClasses = {
     primary: 'btn-primary',

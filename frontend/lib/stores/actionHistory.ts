@@ -175,7 +175,7 @@ export const withActionHistory =
         return result;
       },
       get,
-      api,
+      api
     );
 
     return {

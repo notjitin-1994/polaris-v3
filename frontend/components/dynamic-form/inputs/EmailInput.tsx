@@ -46,7 +46,7 @@ export const EmailInput: React.FC<BaseInputProps> = ({
       />
 
       {question.helpText && (
-        <p id={`${inputId}-help`} className="text-sm text-foreground/60 mt-1">
+        <p id={`${inputId}-help`} className="text-foreground/60 mt-1 text-sm">
           {question.helpText}
         </p>
       )}

@@ -124,8 +124,8 @@ export const useUIStore = create<UIState>()(
           settingsDialog: state.modals.settingsDialog, // Only persist settings modal
         },
       }),
-    },
-  ),
+    }
+  )
 );
 
 // Selectors for better performance

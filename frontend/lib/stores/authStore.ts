@@ -56,8 +56,8 @@ export const useAuthStore = create<AuthState>()(
           }
         }
       },
-    },
-  ),
+    }
+  )
 );
 
 // Selectors for better performance

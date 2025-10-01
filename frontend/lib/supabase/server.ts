@@ -43,7 +43,7 @@ export async function getSupabaseServerClient() {
           });
         },
       },
-    },
+    }
   );
 }
 

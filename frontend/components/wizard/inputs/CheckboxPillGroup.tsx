@@ -33,7 +33,7 @@ export function CheckboxPillGroup({
   disabled = false,
   maxSelections,
   className,
-}: CheckboxPillGroupProps): JSX.Element {
+}: CheckboxPillGroupProps): React.JSX.Element {
   const hasError = !!error;
 
   const handleToggle = (optionValue: string) => {
@@ -50,21 +50,23 @@ export function CheckboxPillGroup({
 
   return (
     <div className={cn('space-y-3', className)}>
-      <label className="block text-[15px] font-medium text-foreground leading-tight">
+      <label className="text-foreground block text-[15px] leading-tight font-medium">
         {label}
         {required && (
-          <span className="ml-1.5 text-primary font-semibold" aria-label="required">
+          <span className="text-primary ml-1.5 font-semibold" aria-label="required">
             *
           </span>
         )}
       </label>
 
-      {helpText && <p className="text-[13px] text-text-secondary leading-snug">{helpText}</p>}
+      {helpText && <p className="text-text-secondary text-[13px] leading-snug">{helpText}</p>}
 
       <div className="flex flex-wrap gap-2.5">
         {options.map((option) => {
           const isSelected = value.includes(option.value);
-          const isDisabled = disabled || (!isSelected && maxSelections !== undefined && value.length >= maxSelections);
+          const isDisabled =
+            disabled ||
+            (!isSelected && maxSelections !== undefined && value.length >= maxSelections);
 
           return (
             <button
@@ -74,11 +76,11 @@ export function CheckboxPillGroup({
               disabled={isDisabled}
               className={cn(
                 'rounded-full px-5 py-2.5 text-[15px] font-medium transition-all duration-200',
-                'border-[1.5px] focus-visible:ring-2 focus-visible:ring-secondary/50 focus-visible:ring-offset-2',
+                'focus-visible:ring-secondary/50 border-[1.5px] focus-visible:ring-2 focus-visible:ring-offset-2',
                 isDisabled && 'cursor-not-allowed opacity-50',
                 isSelected
                   ? 'bg-primary text-primary-foreground border-primary shadow-[0_4px_12px_rgba(167,218,219,0.3)]'
-                  : 'border-neutral-300 bg-white/5 text-text-secondary hover:bg-white/10 hover:border-neutral-400 hover:text-foreground',
+                  : 'text-text-secondary hover:text-foreground border-neutral-300 bg-white/5 hover:border-neutral-400 hover:bg-white/10',
                 hasError && 'border-error/50'
               )}
               aria-pressed={isSelected}
@@ -90,14 +92,14 @@ export function CheckboxPillGroup({
       </div>
 
       {maxSelections && (
-        <p className="text-[13px] text-text-secondary font-medium">
+        <p className="text-text-secondary text-[13px] font-medium">
           {value.length} / {maxSelections} selected
         </p>
       )}
 
       {hasError && (
         <p
-          className="animate-fade-in flex items-center gap-1 text-[13px] text-error font-medium"
+          className="animate-fade-in text-error flex items-center gap-1 text-[13px] font-medium"
           role="alert"
           aria-live="polite"
         >

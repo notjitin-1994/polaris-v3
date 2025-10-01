@@ -251,7 +251,7 @@ export default function PolarisJobViewer() {
     });
   }
 
-  function formatJsonData(data: any): JSX.Element {
+  function formatJsonData(data: any): React.JSX.Element {
     if (!data || Object.keys(data).length === 0) {
       return <span className="text-white/40 italic">No data collected</span>;
     }

@@ -39,9 +39,9 @@ export async function POST(request: NextRequest): Promise<Response> {
         static_answers: blueprint.static_answers,
       });
       return NextResponse.json(
-        { 
+        {
           error: 'No static answers found. Please complete the static questionnaire first.',
-          details: 'The blueprint exists but has no static answers data.'
+          details: 'The blueprint exists but has no static answers data.',
         },
         { status: 400 }
       );
@@ -52,9 +52,9 @@ export async function POST(request: NextRequest): Promise<Response> {
     if (staticAnswersKeys.length === 0) {
       console.error('[GenerateDynamicQuestions] Static answers is empty object');
       return NextResponse.json(
-        { 
+        {
           error: 'Static answers are empty. Please fill out the questionnaire first.',
-          details: 'The static_answers object exists but has no fields.'
+          details: 'The static_answers object exists but has no fields.',
         },
         { status: 400 }
       );
@@ -107,26 +107,32 @@ export async function POST(request: NextRequest): Promise<Response> {
     const isV2 = sa.version === 2 && typeof sa.organization === 'object';
 
     let canonicalInput;
-    
+
     if (isV2) {
       // V2 Schema - extract from nested objects
       console.log('[GenerateDynamicQuestions] Using V2 schema');
-      
+
       const org = sa.organization as Record<string, unknown> | undefined;
       const learningGap = sa.learningGap as Record<string, unknown> | undefined;
       const resources = sa.resources as Record<string, unknown> | undefined;
       const deliveryStrategy = sa.deliveryStrategy as Record<string, unknown> | undefined;
-      
+
       canonicalInput = {
         role: asString(sa.role) || 'Learning Professional',
         organization: asString(org?.name) || 'Organization',
-        learningGap: asString(learningGap?.description) || asString(learningGap?.objectives) || 'Learning gap not specified',
-        resources: [
-          asString((resources?.timeline as Record<string, unknown>)?.duration),
-          asString((resources?.budget as Record<string, unknown>)?.amount),
-          asString(deliveryStrategy?.modality),
-        ].filter(Boolean).join(', ') || 'Resources not specified',
-        constraints: Array.isArray(sa.constraints) 
+        learningGap:
+          asString(learningGap?.description) ||
+          asString(learningGap?.objectives) ||
+          'Learning gap not specified',
+        resources:
+          [
+            asString((resources?.timeline as Record<string, unknown>)?.duration),
+            asString((resources?.budget as Record<string, unknown>)?.amount),
+            asString(deliveryStrategy?.modality),
+          ]
+            .filter(Boolean)
+            .join(', ') || 'Resources not specified',
+        constraints: Array.isArray(sa.constraints)
           ? sa.constraints.filter((item) => typeof item === 'string').join(', ')
           : 'No specific constraints',
         numSections: 5,
@@ -135,7 +141,7 @@ export async function POST(request: NextRequest): Promise<Response> {
     } else {
       // V1 Schema - flat string extraction (legacy fallback)
       console.log('[GenerateDynamicQuestions] Using V1 schema (legacy)');
-      
+
       canonicalInput = {
         role: firstNonEmpty(sa.role, 'Learning Professional'),
         organization: firstNonEmpty(
@@ -177,10 +183,10 @@ export async function POST(request: NextRequest): Promise<Response> {
       console.log('[GenerateDynamicQuestions] Validation successful');
     } catch (validationError) {
       console.error('[GenerateDynamicQuestions] Validation failed:', validationError);
-      
+
       if (validationError instanceof Error) {
         return NextResponse.json(
-          { 
+          {
             error: 'Invalid static answers format',
             details: validationError.message,
             receivedData: input,
@@ -251,8 +257,7 @@ export async function POST(request: NextRequest): Promise<Response> {
 
     return NextResponse.json({
       success: true,
-      dynamicQuestions:
-        (dynamicQuestions as { sections?: unknown[] }).sections ?? dynamicQuestions,
+      dynamicQuestions: (dynamicQuestions as { sections?: unknown[] }).sections ?? dynamicQuestions,
       message: 'Dynamic questions generated successfully',
     });
   } catch (error) {

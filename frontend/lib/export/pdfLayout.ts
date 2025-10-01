@@ -40,7 +40,7 @@ export class PDFLayoutManager {
       this.margins.left,
       this.currentY,
       this.doc.internal.pageSize.width - this.margins.right,
-      this.currentY,
+      this.currentY
     );
     this.currentY += 15;
   }

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import type React from 'react';
 import { AuthInput } from './AuthInput';
 import { PasswordInput } from './PasswordInput';
 import { GoogleOAuthButton } from './GoogleOAuthButton';
@@ -9,7 +10,7 @@ import { useRouter } from 'next/navigation';
 
 type IdentifierValue = { kind: 'email'; email: string } | { kind: 'unknown'; raw: string };
 
-export function LoginFormContent(): JSX.Element {
+export function LoginFormContent(): React.JSX.Element {
   const router = useRouter();
   const [identifierRaw, setIdentifierRaw] = useState('');
   const [identifier, setIdentifier] = useState<IdentifierValue>({ kind: 'unknown', raw: '' });

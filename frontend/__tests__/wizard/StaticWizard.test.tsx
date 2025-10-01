@@ -28,7 +28,7 @@ vi.mock('next/navigation', () => ({
 // Supabase client is globally mocked in vitest.setup.ts
 
 // Provide a minimal wrapper to satisfy ProtectedRoute dependency if used elsewhere
-function Wrapper({ children }: { children: React.ReactNode }): JSX.Element {
+function Wrapper({ children }: { children: React.ReactNode }): React.JSX.Element {
   return <AuthProvider>{children}</AuthProvider>;
 }
 

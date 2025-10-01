@@ -80,7 +80,7 @@ describe('State Management Integration', () => {
 
       expect(localStorageMock.setItem).toHaveBeenCalledWith(
         'resume-workflow-data',
-        expect.stringContaining('blueprint-1'),
+        expect.stringContaining('blueprint-1')
       );
     });
 

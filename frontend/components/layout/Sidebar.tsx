@@ -1,11 +1,10 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import type { User } from '@supabase/supabase-js';
 import { Brand } from '@/components/layout/Brand';
 import { UserAvatar } from '@/components/layout/UserAvatar';
-import { NavSection, type NavItem } from '@/components/layout/NavSection';
 import {
   IconSidebarToggle,
   IconApps,
@@ -16,11 +15,6 @@ import {
   IconSettings,
 } from '@/components/layout/icons';
 
-interface RecentExploration {
-  label: string;
-  timestamp: number;
-}
-
 interface SidebarProps {
   user: User | null;
   onSignOut: () => Promise<void>;
@@ -28,49 +22,43 @@ interface SidebarProps {
 
 export function Sidebar({ user, onSignOut }: SidebarProps) {
   const router = useRouter();
-  const [sidebarCollapsed, setSidebarCollapsed] = useState<boolean>(() => {
-    if (typeof window === 'undefined') return true;
-    const stored = localStorage.getItem('portal:sidebarCollapsed');
-    return stored ? stored === '1' : true;
-  });
+  const pathname = usePathname();
+  const [sidebarCollapsed, setSidebarCollapsed] = useState<boolean>(false); // Default to expanded
+  const [isMounted, setIsMounted] = useState(false);
 
-  const [recentExplorations, setRecentExplorations] = useState<RecentExploration[]>(() => {
-    if (typeof window === 'undefined') return [];
+  // Load state from localStorage after mount to avoid hydration mismatch
+  useEffect(() => {
+    setIsMounted(true);
+
+    // Load sidebar collapsed state
     try {
-      const raw = localStorage.getItem('portal:recentExplorations');
-      if (!raw) return [];
-      const parsed = JSON.parse(raw) as RecentExploration[];
-      if (!Array.isArray(parsed)) return [];
-      return parsed.slice(0, 3);
+      const stored = localStorage.getItem('portal:sidebarCollapsed');
+      if (stored) {
+        setSidebarCollapsed(stored === '1');
+      }
     } catch {
-      return [];
+      // Ignore errors
     }
-  });
+  }, []);
 
   useEffect(() => {
+    if (!isMounted) return;
     try {
       localStorage.setItem('portal:sidebarCollapsed', sidebarCollapsed ? '1' : '0');
     } catch {}
-  }, [sidebarCollapsed]);
+  }, [sidebarCollapsed, isMounted]);
 
+  // Add keyboard shortcut for sidebar toggle (Ctrl/Cmd + B)
   useEffect(() => {
-    try {
-      localStorage.setItem(
-        'portal:recentExplorations',
-        JSON.stringify(recentExplorations.slice(0, 3))
-      );
-    } catch {}
-  }, [recentExplorations]);
-
-  const handleItemClick = (section: string, item: NavItem) => {
-    const label = typeof item === 'string' ? item : item.label;
-    setRecentExplorations((prev) => {
-      const next = [{ label: `${section} > ${label}`, timestamp: Date.now() }, ...prev]
-        .filter((v, idx, arr) => idx === arr.findIndex((x) => x.label === v.label))
-        .slice(0, 3);
-      return next;
-    });
-  };
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'b') {
+        e.preventDefault();
+        setSidebarCollapsed((v) => !v);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   const getFirstName = (): string => {
     const rawName =
@@ -88,163 +76,325 @@ export function Sidebar({ user, onSignOut }: SidebarProps) {
   };
 
   const collapsedQuickItems = [
-    { title: 'Portal', icon: IconApps },
-    { title: 'Explore', icon: IconEye },
-    { title: 'Blueprints', icon: IconChecklist },
-    { title: 'Learn', icon: IconSun },
+    { title: 'Dashboard', icon: IconApps, path: '/' },
+    { title: 'Explore', icon: IconEye, path: '/explore', badge: 'Coming Soon', disabled: true },
+    { title: 'Blueprints', icon: IconChecklist, path: '/blueprints' },
+    { title: 'Learning', icon: IconSun, path: '/learning', badge: 'Coming Soon', disabled: true },
   ];
 
-  const blueprintItems: NavItem[] = [
-    'My Blueprints',
-    'Create New',
-    { label: 'Templates', tagText: 'Coming Soon', tagTone: 'info' as const },
-  ];
-
-  const learningItems: NavItem[] = [
-    'Explore Courses',
-    'My Learning Path',
-    { label: 'Certifications', tagText: 'Coming Soon', tagTone: 'info' as const },
+  const productLinks = [
+    {
+      name: 'Constellation',
+      path: '/constellation',
+      badge: 'Coming Soon',
+      badgeType: 'soon' as const,
+    },
+    { name: 'Nova', path: '/nova', badge: 'Coming Soon', badgeType: 'soon' as const },
+    { name: 'Orbit', path: '/orbit', badge: 'Coming Soon', badgeType: 'soon' as const },
+    { name: 'Spectrum', path: '/spectrum', badge: 'Coming Soon', badgeType: 'soon' as const },
   ];
 
   return (
     <aside
-      className={`hidden md:flex ${sidebarCollapsed ? 'md:w-16 lg:w-16' : 'md:w-72 lg:w-80'} flex-col border-r border-white/10 bg-slate-900/95 backdrop-blur-xl transition-[width] duration-300 ease-in-out`}
+      className={`hidden flex-col md:flex ${sidebarCollapsed ? 'md:w-20 lg:w-20' : 'md:w-72 lg:w-80'} bg-surface shadow-sm backdrop-blur-xl transition-all duration-300 ease-out`}
+      aria-label="Main navigation"
+      role="navigation"
     >
-      {/* Header */}
+      {/* Header with Brand & Toggle */}
       <div
-        className={`px-3 ${sidebarCollapsed ? 'py-2' : 'px-4 py-4'} flex items-center border-b border-white/10 ${sidebarCollapsed ? 'justify-center' : 'justify-between'} sticky top-0 z-10 gap-2`}
+        className={` ${sidebarCollapsed ? 'px-3 py-4' : 'px-6 py-5'} flex items-center ${sidebarCollapsed ? 'justify-center' : 'justify-between'} bg-surface/80 sticky top-0 z-20 backdrop-blur-sm`}
       >
-        {!sidebarCollapsed && <Brand />}
+        {!sidebarCollapsed && (
+          <div className="animate-in fade-in slide-in-from-left-2 duration-300">
+            <Brand />
+          </div>
+        )}
         <button
           type="button"
           onClick={() => setSidebarCollapsed((v) => !v)}
           aria-label={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-          className="pressable flex h-8 w-8 items-center justify-center text-white/80 transition hover:text-white"
-          title={sidebarCollapsed ? 'Expand' : 'Collapse'}
+          className="group text-text-secondary hover:text-foreground hover:bg-foreground/5 active:bg-foreground/10 focus-visible:ring-secondary/50 relative flex h-9 w-9 items-center justify-center rounded-lg transition-all duration-200 focus-visible:ring-2 focus-visible:ring-offset-2"
+          title={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
         >
-          <IconSidebarToggle className="h-5 w-5" />
+          <IconSidebarToggle
+            className={`h-5 w-5 transition-transform duration-300 ${sidebarCollapsed ? 'rotate-180' : ''}`}
+          />
         </button>
       </div>
 
-      {/* Navigation */}
+      {/* Navigation Content */}
       {sidebarCollapsed ? (
-        <div className="flex flex-1 flex-col items-center gap-3 overflow-y-auto py-4">
-          {collapsedQuickItems.map(({ title, icon: Icon }) => (
-            <button
-              key={title}
-              type="button"
-              title={title}
-              aria-label={title}
-              className="pressable flex h-10 w-10 items-center justify-center rounded-lg text-white/80 transition-transform duration-200 hover:scale-[1.04] hover:text-white"
-            >
-              <Icon className="h-5 w-5" />
-            </button>
-          ))}
+        // Collapsed View: Icon-only Quick Access
+        <div className="flex flex-1 flex-col items-center gap-2 overflow-y-auto px-3 py-4">
+          {collapsedQuickItems.map(({ title, icon: Icon, path, disabled }) => {
+            const isActive = pathname === path;
+            return (
+              <button
+                key={title}
+                type="button"
+                onClick={() => !disabled && router.push(path)}
+                disabled={disabled}
+                aria-label={title}
+                className={`group focus-visible:ring-secondary/50 relative flex h-11 w-11 items-center justify-center rounded-xl transition-all duration-200 focus-visible:ring-2 focus-visible:ring-offset-2 ${
+                  isActive
+                    ? 'bg-primary/10 text-primary shadow-sm'
+                    : disabled
+                      ? 'text-text-disabled cursor-not-allowed opacity-50'
+                      : 'text-text-secondary hover:text-foreground hover:bg-foreground/5 active:scale-95'
+                } `}
+              >
+                <Icon className="h-5 w-5" />
+                {/* Tooltip on hover */}
+                {!disabled && (
+                  <div className="bg-surface text-foreground pointer-events-none invisible absolute left-full z-50 ml-3 rounded-lg border border-neutral-200 px-3 py-1.5 text-sm font-medium whitespace-nowrap opacity-0 shadow-lg transition-all duration-200 group-hover:visible group-hover:opacity-100 dark:border-neutral-800">
+                    {title}
+                    <div className="bg-surface absolute top-1/2 left-0 h-2 w-2 -translate-x-1 -translate-y-1/2 rotate-45 border-b border-l border-neutral-200 dark:border-neutral-800" />
+                  </div>
+                )}
+                {isActive && (
+                  <div className="bg-primary absolute top-1/2 right-0 h-6 w-1 -translate-y-1/2 rounded-l-full" />
+                )}
+              </button>
+            );
+          })}
+
+          {/* Divider */}
+          <div className="my-2 h-px w-8 bg-neutral-200 dark:bg-neutral-800" />
+
+          {/* Product Links (collapsed) */}
+          {productLinks.map(({ name, path, badgeType }) => {
+            const isActive = pathname === path;
+            const initial = name.charAt(0);
+            return (
+              <button
+                key={name}
+                type="button"
+                onClick={() => router.push(path)}
+                disabled={badgeType === 'soon'}
+                aria-label={name}
+                className={`group focus-visible:ring-secondary/50 relative flex h-11 w-11 items-center justify-center rounded-xl text-xs font-bold transition-all duration-200 focus-visible:ring-2 focus-visible:ring-offset-2 ${
+                  isActive
+                    ? 'bg-primary/10 text-primary shadow-sm'
+                    : badgeType === 'soon'
+                      ? 'text-text-disabled cursor-not-allowed opacity-50'
+                      : 'text-text-secondary hover:text-foreground hover:bg-foreground/5 active:scale-95'
+                } `}
+              >
+                {initial}
+                {/* Tooltip on hover */}
+                {badgeType !== 'soon' && (
+                  <div className="bg-surface text-foreground pointer-events-none invisible absolute left-full z-50 ml-3 rounded-lg border border-neutral-200 px-3 py-1.5 text-sm font-medium whitespace-nowrap opacity-0 shadow-lg transition-all duration-200 group-hover:visible group-hover:opacity-100 dark:border-neutral-800">
+                    {name}
+                    <div className="bg-surface absolute top-1/2 left-0 h-2 w-2 -translate-x-1 -translate-y-1/2 rotate-45 border-b border-l border-neutral-200 dark:border-neutral-800" />
+                  </div>
+                )}
+                {isActive && (
+                  <div className="bg-primary absolute top-1/2 right-0 h-6 w-1 -translate-y-1/2 rounded-l-full" />
+                )}
+              </button>
+            );
+          })}
         </div>
       ) : (
-        <nav className="flex-1 space-y-3 overflow-y-auto px-3 py-4">
-          <NavSection
-            title="Blueprints"
-            items={blueprintItems}
-            defaultOpen
-            onItemClick={(item) => handleItemClick('Blueprints', item)}
-          />
-          <NavSection
-            title="Learning"
-            items={learningItems}
-            defaultOpen
-            onItemClick={(item) => handleItemClick('Learning', item)}
-          />
-
-          {/* Recent Explorations */}
-          <div className="mt-4 border-t border-white/10 pt-3">
-            <div className="font-heading px-3 py-1.5 text-sm font-bold text-[#a7dadb]">
-              Recent Explorations
-            </div>
-            <ul className="space-y-0.5">
-              {recentExplorations.map((c, idx) => (
-                <li key={`${c.label}-${c.timestamp}-${idx}`}>
-                  <div className="flex items-start justify-between gap-2 rounded-lg px-3 py-1.5 text-sm text-white/75">
-                    <span className="min-w-0 flex-1 break-words whitespace-normal">{c.label}</span>
-                    <span className="ml-3 shrink-0 text-[11px] text-white/45">
-                      {new Date(c.timestamp).toLocaleDateString()}
+        // Expanded View: Full Navigation
+        <nav className="flex-1 space-y-6 overflow-y-auto px-4 py-4" aria-label="Primary navigation">
+          {/* Quick Access Section */}
+          <div className="space-y-1.5">
+            <h2 className="text-primary mb-2 px-3 text-[9px] font-bold tracking-wider uppercase">
+              Quick Access
+            </h2>
+            {collapsedQuickItems.map(({ title, icon: Icon, path, badge, disabled }) => {
+              const isActive = pathname === path;
+              return (
+                <button
+                  key={title}
+                  type="button"
+                  onClick={() => !disabled && router.push(path)}
+                  disabled={disabled}
+                  className={`group focus-visible:ring-secondary/50 flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200 focus-visible:ring-2 focus-visible:ring-offset-2 ${
+                    isActive
+                      ? 'bg-primary/10 text-primary shadow-sm'
+                      : disabled
+                        ? 'text-text-disabled cursor-not-allowed'
+                        : 'text-text-secondary hover:text-foreground hover:bg-foreground/5 active:scale-[0.98]'
+                  } `}
+                >
+                  <Icon className="h-5 w-5 shrink-0" />
+                  <span className="flex-1 truncate text-left">{title}</span>
+                  {badge && (
+                    <span className="border-primary/40 bg-primary/10 text-primary shadow-primary/20 inline-flex shrink-0 items-center rounded-full border px-2.5 py-0.5 text-[10px] font-semibold tracking-wide uppercase shadow transition-all duration-200">
+                      {badge}
                     </span>
-                  </div>
-                </li>
-              ))}
-              {recentExplorations.length === 0 && (
-                <li>
-                  <div className="px-3 py-1.5 text-[12px] text-white/50">No recent items yet</div>
-                </li>
-              )}
-            </ul>
+                  )}
+                  {isActive && !disabled && (
+                    <div className="bg-primary absolute top-1/2 right-0 h-8 w-1 -translate-y-1/2 rounded-l-full" />
+                  )}
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Product Links */}
+          <div className="space-y-1">
+            <h2 className="text-primary mb-2 px-3 text-[9px] font-bold tracking-wider uppercase">
+              Explore Suite
+            </h2>
+            {productLinks.map(({ name, path, badge, badgeType }) => {
+              const isActive = pathname === path;
+              return (
+                <button
+                  key={name}
+                  type="button"
+                  onClick={() => router.push(path)}
+                  disabled={badgeType === 'soon'}
+                  className={`group flex w-full items-center justify-between gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200 ${
+                    isActive
+                      ? 'bg-primary/10 text-primary shadow-sm'
+                      : badgeType === 'soon'
+                        ? 'text-text-disabled cursor-not-allowed'
+                        : 'text-text-secondary hover:text-foreground hover:bg-foreground/5 focus-visible:ring-secondary/50 focus-visible:ring-2 focus-visible:ring-offset-2 active:scale-[0.98]'
+                  } `}
+                >
+                  <span className="flex-1 truncate text-left">{name}</span>
+                  <span
+                    className={`inline-flex shrink-0 items-center rounded-full border px-2.5 py-0.5 text-[10px] font-semibold tracking-wide uppercase transition-all duration-200 ${
+                      badgeType === 'preview'
+                        ? 'border-secondary/30 bg-secondary/10 text-secondary'
+                        : badgeType === 'soon'
+                          ? 'border-primary/40 bg-primary/10 text-primary shadow-primary/20 shadow'
+                          : 'text-text-disabled border-neutral-300 bg-neutral-100 dark:border-neutral-700 dark:bg-neutral-800'
+                    } `}
+                  >
+                    {badge}
+                  </span>
+                </button>
+              );
+            })}
           </div>
         </nav>
       )}
 
-      {/* Footer */}
-      <div className="mt-auto w-full">
+      {/* Footer Section */}
+      <div className="bg-surface/50 mt-auto w-full backdrop-blur-sm">
         {sidebarCollapsed ? (
-          <div className="flex flex-col items-center gap-2 px-0 py-3">
+          // Collapsed Footer
+          <div className="flex flex-col items-center gap-2 px-3 py-4">
+            {/* Subscribe Button - Collapsed */}
             <button
               type="button"
-              title={`${getCapitalizedFirstName()}'s Profile`}
-              className="pressable flex h-10 w-10 items-center justify-center rounded-full text-white/85 hover:text-white"
+              onClick={() => router.push('/pricing')}
+              title="Subscribe to Polaris"
+              aria-label="Subscribe to Polaris"
+              className="group hover:shadow-secondary/25 focus-visible:ring-secondary/50 bg-secondary hover:bg-secondary/90 relative flex h-11 w-11 items-center justify-center rounded-xl transition-all duration-200 focus-visible:ring-2 focus-visible:ring-offset-2 active:scale-95"
             >
-              <UserAvatar user={user} sizeClass="w-6 h-6" textClass="text-sm font-semibold" />
+              <svg
+                className="text-secondary-foreground h-5 w-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                strokeWidth={2.5}
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+              </svg>
+            </button>
+
+            {/* Divider */}
+            <div className="my-1 h-px w-8 bg-neutral-200 dark:bg-neutral-800" />
+
+            <button
+              type="button"
+              onClick={() => router.push('/profile')}
+              title={`${getCapitalizedFirstName()}'s Profile`}
+              aria-label={`${getCapitalizedFirstName()}'s Profile`}
+              className="group hover:bg-foreground/5 focus-visible:ring-secondary/50 relative flex h-11 w-11 items-center justify-center rounded-xl transition-all duration-200 focus-visible:ring-2 focus-visible:ring-offset-2 active:scale-95"
+            >
+              <UserAvatar user={user} sizeClass="w-8 h-8" textClass="text-sm font-bold" />
+              <div className="bg-success border-surface absolute -top-1 -right-1 h-3 w-3 rounded-full border-2" />
             </button>
             <button
               type="button"
+              onClick={() => router.push('/settings')}
               title="Settings"
-              className="pressable flex h-10 w-10 items-center justify-center rounded-lg text-white/85 hover:text-white"
+              aria-label="Settings"
+              className="group text-text-secondary hover:text-foreground hover:bg-foreground/5 focus-visible:ring-secondary/50 relative flex h-11 w-11 items-center justify-center rounded-xl transition-all duration-200 focus-visible:ring-2 focus-visible:ring-offset-2 active:scale-95"
             >
               <IconSettings className="h-5 w-5" />
             </button>
             <button
               type="button"
-              title="Logout"
               onClick={onSignOut}
-              className="pressable flex h-10 w-10 items-center justify-center rounded-lg text-white/85 hover:text-white"
+              title="Sign Out"
+              aria-label="Sign Out"
+              className="group text-text-secondary hover:text-error hover:bg-error/5 focus-visible:ring-error/50 relative flex h-11 w-11 items-center justify-center rounded-xl transition-all duration-200 focus-visible:ring-2 focus-visible:ring-offset-2 active:scale-95"
             >
               <IconLogout className="h-5 w-5" />
             </button>
           </div>
         ) : (
-          <div className="space-y-2 px-3 py-3">
+          // Expanded Footer
+          <div className="space-y-2 px-4 py-4">
+            {/* Subscribe Button - Expanded */}
             <button
               type="button"
-              className="pressable flex w-full items-center gap-2 rounded-lg px-3 py-2 transition hover:bg-white/5"
-              title={`${getCapitalizedFirstName()}'s Profile`}
+              onClick={() => router.push('/pricing')}
+              className="group hover:shadow-secondary/20 focus-visible:ring-secondary/50 bg-secondary hover:bg-secondary/90 relative w-full overflow-hidden rounded-lg transition-all duration-200 hover:shadow-md focus-visible:ring-2 focus-visible:ring-offset-2 active:scale-[0.98]"
             >
-              <UserAvatar user={user} sizeClass="w-5 h-5" />
-              <span className="text-sm font-medium text-white/90">
-                {getCapitalizedFirstName()}'s Profile
-              </span>
+              <div className="flex items-center justify-center gap-2 px-4 py-2.5">
+                <svg
+                  className="text-secondary-foreground h-4 w-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  strokeWidth={2.5}
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M13 10V3L4 14h7v7l9-11h-7z"
+                  />
+                </svg>
+                <span className="text-secondary-foreground text-sm font-semibold">
+                  Subscribe to Polaris
+                </span>
+              </div>
+            </button>
+
+            {/* Divider below subscribe removed per request; keep profile divider intact above */}
+
+            <button
+              type="button"
+              onClick={() => router.push('/profile')}
+              className="group hover:bg-foreground/5 focus-visible:ring-secondary/50 flex w-full items-center gap-3 rounded-lg px-3 py-2.5 transition-all duration-200 focus-visible:ring-2 focus-visible:ring-offset-2 active:scale-[0.98]"
+            >
+              <div className="relative">
+                <UserAvatar user={user} sizeClass="w-9 h-9" textClass="text-sm font-bold" />
+                <div className="bg-success border-surface absolute -right-0.5 -bottom-0.5 h-3 w-3 rounded-full border-2" />
+              </div>
+              <div className="min-w-0 flex-1 text-left">
+                <p className="text-foreground truncate text-sm font-semibold">
+                  {getCapitalizedFirstName()}
+                </p>
+                <p className="text-text-secondary truncate text-xs">{user?.email}</p>
+              </div>
             </button>
             <button
               type="button"
-              className="pressable inline-flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-white/85 transition hover:bg-white/5"
-              title="Settings"
+              onClick={() => router.push('/settings')}
+              className="group text-text-secondary hover:text-foreground hover:bg-foreground/5 focus-visible:ring-secondary/50 flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200 focus-visible:ring-2 focus-visible:ring-offset-2 active:scale-[0.98]"
             >
-              <IconSettings className="h-5 w-5" />
-              <span>Settings</span>
+              <IconSettings className="h-5 w-5 shrink-0" />
+              <span className="flex-1 text-left">Settings</span>
             </button>
             <button
               type="button"
               onClick={onSignOut}
-              className="pressable inline-flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-white/85 transition hover:bg-white/5"
-              title="Logout"
+              className="group text-text-secondary hover:text-error hover:bg-error/5 focus-visible:ring-error/50 flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200 focus-visible:ring-2 focus-visible:ring-offset-2 active:scale-[0.98]"
             >
-              <IconLogout className="h-5 w-5" />
-              <span>Logout</span>
+              <IconLogout className="h-5 w-5 shrink-0" />
+              <span className="flex-1 text-left">Sign Out</span>
             </button>
           </div>
         )}
-        <div
-          className={`border-t border-white/10 text-xs text-white/50 ${sidebarCollapsed ? 'flex items-center justify-center px-0 py-2' : 'px-4 py-3'}`}
-        >
-          {sidebarCollapsed ? '❤️' : 'Made with ❤️ for better education'}
-        </div>
       </div>
     </aside>
   );

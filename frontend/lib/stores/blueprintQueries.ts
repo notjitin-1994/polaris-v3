@@ -65,7 +65,7 @@ const mockApi = {
   },
 
   saveBlueprint: async (
-    blueprint: Omit<BlueprintData, 'id' | 'createdAt' | 'updatedAt' | 'version'>,
+    blueprint: Omit<BlueprintData, 'id' | 'createdAt' | 'updatedAt' | 'version'>
   ): Promise<BlueprintData> => {
     await new Promise((resolve) => setTimeout(resolve, 800));
 
@@ -153,7 +153,7 @@ export const useUpdateBlueprintMutation = () => {
         (old: BlueprintData | undefined) => {
           if (!old) return old;
           return { ...old, ...updates };
-        },
+        }
       );
 
       // Return a context object with the snapshotted value

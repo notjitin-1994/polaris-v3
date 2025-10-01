@@ -99,7 +99,7 @@ export class ResumeWorkflowManager {
 export const resumeUIHelpers = {
   // Get resume prompt data for UI
   getResumePromptData: (
-    resumeData: ResumeData[],
+    resumeData: ResumeData[]
   ): {
     count: number;
     items: Array<{

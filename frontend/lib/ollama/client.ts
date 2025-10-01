@@ -108,25 +108,26 @@ export class OllamaClient {
     const canonicalInput = parse.data; // Use canonical (transformed) shape for prompts
 
     // Build chat payload for Ollama's /api/chat endpoint
-    const createPayload = (model: string) => ({
-      model,
-      // Prefer JSON mode for structured output where supported
-      format: 'json',
-      stream: false,
-      // Keep options object as recommended by Ollama
-      options: {
+    const createPayload = (model: string) =>
+      ({
+        model,
+        // Prefer JSON mode for structured output where supported
+        format: 'json',
+        stream: false,
+        // Keep options object as recommended by Ollama
+        options: {
+          temperature: this.modelConfig.temperature,
+          num_predict: this.modelConfig.maxTokens,
+        },
+        // Back-compat fields for older servers
         temperature: this.modelConfig.temperature,
+        max_tokens: this.modelConfig.maxTokens,
         num_predict: this.modelConfig.maxTokens,
-      },
-      // Back-compat fields for older servers
-      temperature: this.modelConfig.temperature,
-      max_tokens: this.modelConfig.maxTokens,
-      num_predict: this.modelConfig.maxTokens,
-      messages: [
-        { role: 'system', content: buildSystemPrompt() },
-        { role: 'user', content: buildUserPrompt(canonicalInput) },
-      ],
-    } as const);
+        messages: [
+          { role: 'system', content: buildSystemPrompt() },
+          { role: 'user', content: buildUserPrompt(canonicalInput) },
+        ],
+      }) as const;
 
     let responseText: string;
     let usedModel = this.modelConfig.model;
@@ -139,14 +140,16 @@ export class OllamaClient {
         if (!res.ok) {
           const errorData = await res.json().catch(() => ({}));
           const errorMsg = (errorData as any).error || '';
-          
+
           // Check if it's a memory error
           if (errorMsg.includes('system memory') || errorMsg.includes('more memory')) {
             throw new Error('MEMORY_ERROR');
           }
           throw new ServiceUnavailableError(`Ollama chat failed with ${res.status}`);
         }
-        const data = (await res.json()) as { message?: { content?: string } } | { response?: string };
+        const data = (await res.json()) as
+          | { message?: { content?: string } }
+          | { response?: string };
         const content = 'message' in data ? data.message?.content : data.response;
         if (typeof content !== 'string' || content.trim().length === 0) {
           throw new ServiceUnavailableError('Empty response from Ollama');
@@ -156,24 +159,30 @@ export class OllamaClient {
     } catch (error) {
       // If primary model failed due to memory and we have a fallback, try it
       if (error instanceof Error && error.message === 'MEMORY_ERROR' && this.fallbackModel) {
-        console.warn(`[OllamaClient] Primary model ${this.modelConfig.model} failed due to insufficient memory, trying fallback model ${this.fallbackModel}`);
+        console.warn(
+          `[OllamaClient] Primary model ${this.modelConfig.model} failed due to insufficient memory, trying fallback model ${this.fallbackModel}`
+        );
         usedModel = this.fallbackModel;
         const fallbackPayload = createPayload(this.fallbackModel);
-        
+
         responseText = await this.retry(async () => {
           const res = await this.postJson('/api/chat', fallbackPayload);
           if (!res.ok) {
             throw new ServiceUnavailableError(`Ollama fallback chat failed with ${res.status}`);
           }
-          const data = (await res.json()) as { message?: { content?: string } } | { response?: string };
+          const data = (await res.json()) as
+            | { message?: { content?: string } }
+            | { response?: string };
           const content = 'message' in data ? data.message?.content : data.response;
           if (typeof content !== 'string' || content.trim().length === 0) {
             throw new ServiceUnavailableError('Empty response from Ollama fallback');
           }
           return content;
         });
-        
-        console.log(`[OllamaClient] Successfully generated questions using fallback model: ${this.fallbackModel}`);
+
+        console.log(
+          `[OllamaClient] Successfully generated questions using fallback model: ${this.fallbackModel}`
+        );
       } else {
         // Re-throw if not a memory error or no fallback available
         throw error;
@@ -190,10 +199,13 @@ export class OllamaClient {
         const repaired = repairJsonString(jsonString);
         json = JSON.parse(repaired);
       }
-      
+
       // Log the parsed JSON for debugging
-      console.log('[OllamaClient] Parsed JSON structure:', JSON.stringify(json, null, 2).substring(0, 500));
-      
+      console.log(
+        '[OllamaClient] Parsed JSON structure:',
+        JSON.stringify(json, null, 2).substring(0, 500)
+      );
+
       const validated = dynamicQuestionSchema.safeParse(json);
       if (!validated.success) {
         console.error('[OllamaClient] Schema validation failed:', validated.error);
@@ -245,10 +257,13 @@ export class OllamaClient {
         const repaired2 = repairJsonString(jsonString2);
         json2 = JSON.parse(repaired2);
       }
-      
+
       // Log the parsed JSON for debugging
-      console.log('[OllamaClient] Strict retry parsed JSON:', JSON.stringify(json2, null, 2).substring(0, 500));
-      
+      console.log(
+        '[OllamaClient] Strict retry parsed JSON:',
+        JSON.stringify(json2, null, 2).substring(0, 500)
+      );
+
       const validated2 = dynamicQuestionSchema.safeParse(json2);
       if (!validated2.success) {
         console.error('[OllamaClient] Strict schema validation failed:', validated2.error);
@@ -286,14 +301,16 @@ export class OllamaClient {
         if (!res.ok) {
           const errorData = await res.json().catch(() => ({}));
           const errorMsg = (errorData as any).error || '';
-          
+
           // Check if it's a memory error
           if (errorMsg.includes('system memory') || errorMsg.includes('more memory')) {
             throw new Error('MEMORY_ERROR');
           }
           throw new ServiceUnavailableError(`Ollama chat failed with ${res.status}`);
         }
-        const data = (await res.json()) as { message?: { content?: string } } | { response?: string };
+        const data = (await res.json()) as
+          | { message?: { content?: string } }
+          | { response?: string };
         const content = 'message' in data ? data.message?.content : data.response;
         if (typeof content !== 'string' || content.trim().length === 0) {
           throw new ServiceUnavailableError('Empty blueprint response from Ollama');
@@ -303,23 +320,29 @@ export class OllamaClient {
     } catch (error) {
       // If primary model failed due to memory and we have a fallback, try it
       if (error instanceof Error && error.message === 'MEMORY_ERROR' && this.fallbackModel) {
-        console.warn(`[OllamaClient] Primary model ${this.modelConfig.model} failed due to insufficient memory, trying fallback model ${this.fallbackModel} for blueprint generation`);
+        console.warn(
+          `[OllamaClient] Primary model ${this.modelConfig.model} failed due to insufficient memory, trying fallback model ${this.fallbackModel} for blueprint generation`
+        );
         const fallbackPayload = createPayload(this.fallbackModel);
-        
+
         responseText = await this.retry(async () => {
           const res = await this.postJson('/api/chat', fallbackPayload);
           if (!res.ok) {
             throw new ServiceUnavailableError(`Ollama fallback chat failed with ${res.status}`);
           }
-          const data = (await res.json()) as { message?: { content?: string } } | { response?: string };
+          const data = (await res.json()) as
+            | { message?: { content?: string } }
+            | { response?: string };
           const content = 'message' in data ? data.message?.content : data.response;
           if (typeof content !== 'string' || content.trim().length === 0) {
             throw new ServiceUnavailableError('Empty blueprint response from Ollama fallback');
           }
           return content;
         });
-        
-        console.log(`[OllamaClient] Successfully generated blueprint using fallback model: ${this.fallbackModel}`);
+
+        console.log(
+          `[OllamaClient] Successfully generated blueprint using fallback model: ${this.fallbackModel}`
+        );
       } else {
         // Re-throw if not a memory error or no fallback available
         throw error;

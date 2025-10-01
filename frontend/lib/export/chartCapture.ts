@@ -15,7 +15,7 @@ export class ChartCaptureService {
    */
   async captureChart(
     chartElement: HTMLElement,
-    options: Partial<ChartExportOptions> = {},
+    options: Partial<ChartExportOptions> = {}
   ): Promise<string> {
     const captureOptions = { ...this.defaultOptions, ...options };
 
@@ -37,7 +37,7 @@ export class ChartCaptureService {
     } catch (error) {
       console.warn('Chart capture failed:', error);
       throw new Error(
-        `Failed to capture chart: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        `Failed to capture chart: ${error instanceof Error ? error.message : 'Unknown error'}`
       );
     }
   }

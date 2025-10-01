@@ -12,7 +12,7 @@ export function QuestionnaireInfoBox({
   title,
   children,
   variant = 'tip',
-}: QuestionnaireInfoBoxProps): JSX.Element {
+}: QuestionnaireInfoBoxProps): React.JSX.Element {
   const variantStyles = {
     info: {
       bg: 'bg-info/8',
@@ -37,7 +37,9 @@ export function QuestionnaireInfoBox({
   const styles = variantStyles[variant];
 
   return (
-    <div className={`animate-fade-in rounded-xl ${styles.bg} border-[1.5px] ${styles.border} p-5 shadow-sm backdrop-blur-sm`}>
+    <div
+      className={`animate-fade-in rounded-xl ${styles.bg} border-[1.5px] ${styles.border} p-5 shadow-sm backdrop-blur-sm`}
+    >
       <div className="flex items-start gap-3">
         <svg
           className={`mt-0.5 h-5 w-5 flex-shrink-0 ${styles.iconColor}`}
@@ -53,11 +55,9 @@ export function QuestionnaireInfoBox({
         </svg>
         <div className="flex-1 space-y-2">
           {title && (
-            <p className={`text-[15px] font-semibold ${styles.textColor} leading-tight`}>
-              {title}
-            </p>
+            <p className={`text-[15px] font-semibold ${styles.textColor} leading-tight`}>{title}</p>
           )}
-          <div className="text-[14px] text-text-secondary leading-relaxed space-y-2">
+          <div className="text-text-secondary space-y-2 text-[14px] leading-relaxed">
             {children}
           </div>
         </div>

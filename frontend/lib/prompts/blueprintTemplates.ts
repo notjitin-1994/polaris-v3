@@ -33,7 +33,7 @@ export function generateUserPrompt(aggregatedAnswers: AggregatedAnswer): string 
       acc[curr.questionId] = curr.answer;
       return acc;
     },
-    {} as Record<string, any>,
+    {} as Record<string, any>
   );
 
   // Validate the static part against our known static questions schema for type safety
@@ -52,7 +52,7 @@ export function generateUserPrompt(aggregatedAnswers: AggregatedAnswer): string 
       acc[curr.questionId] = curr.answer;
       return acc;
     },
-    {} as Record<string, any>,
+    {} as Record<string, any>
   );
 
   const promptData: PromptInput = {

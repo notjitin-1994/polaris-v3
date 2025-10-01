@@ -19,7 +19,7 @@ type LoginFormProps = {
   className?: string;
 };
 
-export function LoginForm({ className }: LoginFormProps): JSX.Element {
+export function LoginForm({ className }: LoginFormProps): React.JSX.Element {
   const { signInWithPassword, loading } = useAuth();
   const {
     register,
@@ -34,30 +34,30 @@ export function LoginForm({ className }: LoginFormProps): JSX.Element {
   return (
     <form onSubmit={handleSubmit(onSubmit)} className={cn('space-y-4', className)}>
       <div>
-        <label htmlFor="email" className="block text-sm font-medium text-foreground">
+        <label htmlFor="email" className="text-foreground block text-sm font-medium">
           Email
         </label>
         <input
           id="email"
           type="email"
           autoComplete="email"
-          className="glass w-full px-3 py-2 rounded-md text-foreground placeholder:text-foreground/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:opacity-50"
+          className="glass text-foreground placeholder:text-foreground/50 focus-visible:ring-primary/50 focus-visible:ring-offset-background w-full rounded-md px-3 py-2 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:opacity-50"
           {...register('email')}
         />
-        {errors.email && <p className="text-error text-sm mt-1">{errors.email.message}</p>}
+        {errors.email && <p className="text-error mt-1 text-sm">{errors.email.message}</p>}
       </div>
       <div>
-        <label htmlFor="password" className="block text-sm font-medium text-foreground">
+        <label htmlFor="password" className="text-foreground block text-sm font-medium">
           Password
         </label>
         <input
           id="password"
           type="password"
           autoComplete="current-password"
-          className="glass w-full px-3 py-2 rounded-md text-foreground placeholder:text-foreground/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:opacity-50"
+          className="glass text-foreground placeholder:text-foreground/50 focus-visible:ring-primary/50 focus-visible:ring-offset-background w-full rounded-md px-3 py-2 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:opacity-50"
           {...register('password')}
         />
-        {errors.password && <p className="text-error text-sm mt-1">{errors.password.message}</p>}
+        {errors.password && <p className="text-error mt-1 text-sm">{errors.password.message}</p>}
       </div>
       <Button
         aria-busy={loading}

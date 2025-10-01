@@ -27,7 +27,7 @@ describe('BlueprintFallbackService', () => {
     const fallback = await blueprintFallbackService.handleOllamaConnectionFailure();
 
     expect(consoleSpy).toHaveBeenCalledWith(
-      'Ollama connection failed. Providing fallback blueprint.',
+      'Ollama connection failed. Providing fallback blueprint.'
     );
     expect(fallback.title).toBe('Default Learning Blueprint');
 
@@ -45,7 +45,7 @@ describe('BlueprintFallbackService', () => {
     // Current implementation doesn't use aggregatedAnswers, so it should return default
     expect(fallback.title).toBe('Default Learning Blueprint');
     expect(fallback.learningObjectives).toContain(
-      'Understand the basic concepts of a learning path',
+      'Understand the basic concepts of a learning path'
     );
   });
 

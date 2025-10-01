@@ -20,7 +20,7 @@ export const ConflictResolutionDialog: React.FC<ConflictResolutionDialogProps> =
   className,
 }) => {
   const [resolutions, setResolutions] = useState<Record<string, ConflictResolution['resolution']>>(
-    {},
+    {}
   );
   const [customValues, setCustomValues] = useState<Record<string, unknown>>({});
 
@@ -30,7 +30,7 @@ export const ConflictResolutionDialog: React.FC<ConflictResolutionDialogProps> =
 
   const handleResolutionChange = (
     conflictId: string,
-    resolution: ConflictResolution['resolution'],
+    resolution: ConflictResolution['resolution']
   ) => {
     setResolutions((prev) => ({ ...prev, [conflictId]: resolution }));
   };
@@ -102,16 +102,16 @@ export const ConflictResolutionDialog: React.FC<ConflictResolutionDialogProps> =
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto">
       <div className="flex min-h-screen items-center justify-center p-4">
-        <div className="fixed inset-0 bg-black bg-opacity-25" onClick={onCancel} />
+        <div className="bg-opacity-25 fixed inset-0 bg-black" onClick={onCancel} />
 
         <div
           className={cn(
-            'relative w-full max-w-4xl bg-white rounded-lg shadow-xl dark:bg-gray-800',
-            className,
+            'relative w-full max-w-4xl rounded-lg bg-white shadow-xl dark:bg-gray-800',
+            className
           )}
         >
           {/* Header */}
-          <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+          <div className="border-b border-gray-200 px-6 py-4 dark:border-gray-700">
             <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
               Resolve Form Conflicts
             </h2>
@@ -122,19 +122,19 @@ export const ConflictResolutionDialog: React.FC<ConflictResolutionDialogProps> =
           </div>
 
           {/* Content */}
-          <div className="px-6 py-4 max-h-96 overflow-y-auto">
+          <div className="max-h-96 overflow-y-auto px-6 py-4">
             <div className="space-y-6">
               {conflicts.map((conflict, index) => (
                 <div
                   key={`${conflict.fieldId}-${index}`}
-                  className={cn('p-4 border rounded-lg', getSeverityColor(conflict.severity))}
+                  className={cn('rounded-lg border p-4', getSeverityColor(conflict.severity))}
                 >
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
                       <h3 className="font-medium text-gray-900 dark:text-white">
                         Field: {conflict.fieldId}
                       </h3>
-                      <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                      <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
                         Conflict Type: {conflict.conflictType} | Severity: {conflict.severity}
                       </p>
                     </div>
@@ -144,24 +144,24 @@ export const ConflictResolutionDialog: React.FC<ConflictResolutionDialogProps> =
                   </div>
 
                   {/* Current vs Incoming Values */}
-                  <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
                         Current Value
                       </label>
-                      <div className="p-3 bg-white border border-gray-300 rounded-md dark:bg-gray-700 dark:border-gray-600">
-                        <pre className="text-sm text-gray-900 dark:text-white whitespace-pre-wrap">
+                      <div className="rounded-md border border-gray-300 bg-white p-3 dark:border-gray-600 dark:bg-gray-700">
+                        <pre className="text-sm whitespace-pre-wrap text-gray-900 dark:text-white">
                           {JSON.stringify(conflict.currentValue, null, 2)}
                         </pre>
                       </div>
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
                         Incoming Value
                       </label>
-                      <div className="p-3 bg-white border border-gray-300 rounded-md dark:bg-gray-700 dark:border-gray-600">
-                        <pre className="text-sm text-gray-900 dark:text-white whitespace-pre-wrap">
+                      <div className="rounded-md border border-gray-300 bg-white p-3 dark:border-gray-600 dark:bg-gray-700">
+                        <pre className="text-sm whitespace-pre-wrap text-gray-900 dark:text-white">
                           {JSON.stringify(conflict.incomingValue, null, 2)}
                         </pre>
                       </div>
@@ -170,7 +170,7 @@ export const ConflictResolutionDialog: React.FC<ConflictResolutionDialogProps> =
 
                   {/* Resolution Options */}
                   <div className="mt-4">
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
                       Resolution Strategy
                     </label>
                     <div className="space-y-2">
@@ -183,7 +183,7 @@ export const ConflictResolutionDialog: React.FC<ConflictResolutionDialogProps> =
                           onChange={(e) =>
                             handleResolutionChange(
                               conflict.fieldId,
-                              e.target.value as ConflictResolution['resolution'],
+                              e.target.value as ConflictResolution['resolution']
                             )
                           }
                           className="mr-2"
@@ -202,7 +202,7 @@ export const ConflictResolutionDialog: React.FC<ConflictResolutionDialogProps> =
                           onChange={(e) =>
                             handleResolutionChange(
                               conflict.fieldId,
-                              e.target.value as ConflictResolution['resolution'],
+                              e.target.value as ConflictResolution['resolution']
                             )
                           }
                           className="mr-2"
@@ -221,7 +221,7 @@ export const ConflictResolutionDialog: React.FC<ConflictResolutionDialogProps> =
                           onChange={(e) =>
                             handleResolutionChange(
                               conflict.fieldId,
-                              e.target.value as ConflictResolution['resolution'],
+                              e.target.value as ConflictResolution['resolution']
                             )
                           }
                           className="mr-2"
@@ -240,7 +240,7 @@ export const ConflictResolutionDialog: React.FC<ConflictResolutionDialogProps> =
                           onChange={(e) =>
                             handleResolutionChange(
                               conflict.fieldId,
-                              e.target.value as ConflictResolution['resolution'],
+                              e.target.value as ConflictResolution['resolution']
                             )
                           }
                           className="mr-2"
@@ -254,7 +254,7 @@ export const ConflictResolutionDialog: React.FC<ConflictResolutionDialogProps> =
                     {/* Custom value input */}
                     {resolutions[conflict.fieldId] === 'manual' && (
                       <div className="mt-3">
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                        <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
                           Custom Value
                         </label>
                         <textarea
@@ -262,7 +262,7 @@ export const ConflictResolutionDialog: React.FC<ConflictResolutionDialogProps> =
                           onChange={(e) =>
                             handleCustomValueChange(conflict.fieldId, e.target.value)
                           }
-                          className="w-full p-2 border border-gray-300 rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                          className="w-full rounded-md border border-gray-300 p-2 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
                           rows={3}
                           placeholder="Enter custom value..."
                         />
@@ -275,16 +275,16 @@ export const ConflictResolutionDialog: React.FC<ConflictResolutionDialogProps> =
           </div>
 
           {/* Footer */}
-          <div className="px-6 py-4 border-t border-gray-200 dark:border-gray-700 flex justify-end space-x-3">
+          <div className="flex justify-end space-x-3 border-t border-gray-200 px-6 py-4 dark:border-gray-700">
             <button
               onClick={onCancel}
-              className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-600"
+              className="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
             >
               Cancel
             </button>
             <button
               onClick={handleResolve}
-              className="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="rounded-md border border-transparent bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:outline-none"
             >
               Resolve Conflicts
             </button>

@@ -1,0 +1,183 @@
+/**
+ * Claude Blueprint Generation API Endpoint
+ * Secure server-side proxy for Claude API calls
+ * Never exposes API keys to the client
+ */
+
+import { NextRequest, NextResponse } from 'next/server';
+import { getClaudeConfig } from '@/lib/claude/config';
+import { ClaudeClient, ClaudeApiError } from '@/lib/claude/client';
+import { validateAndNormalizeBlueprint } from '@/lib/claude/validation';
+import { createServiceLogger } from '@/lib/logging';
+
+const logger = createServiceLogger('api');
+
+export interface GenerateBlueprintRequest {
+  model?: string;
+  systemPrompt: string;
+  userPrompt: string;
+  blueprintId: string;
+}
+
+export interface GenerateBlueprintResponse {
+  success: boolean;
+  blueprint?: any;
+  usage?: {
+    input_tokens: number;
+    output_tokens: number;
+  };
+  metadata?: {
+    model: string;
+    duration: number;
+    timestamp: string;
+  };
+  error?: string;
+}
+
+/**
+ * POST /api/claude/generate-blueprint
+ * Generate a learning blueprint using Claude API
+ */
+export async function POST(req: NextRequest): Promise<NextResponse<GenerateBlueprintResponse>> {
+  const startTime = Date.now();
+
+  try {
+    // Parse request body
+    const body = (await req.json()) as GenerateBlueprintRequest;
+    const { model, systemPrompt, userPrompt, blueprintId } = body;
+
+    // Validate required fields
+    if (!systemPrompt || !userPrompt || !blueprintId) {
+      logger.warn('claude.api.invalid_request', 'Invalid request body', {
+        hasSystemPrompt: !!systemPrompt,
+        hasUserPrompt: !!userPrompt,
+        hasBlueprintId: !!blueprintId,
+      });
+
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'Missing required fields: systemPrompt, userPrompt, and blueprintId are required',
+        },
+        { status: 400 }
+      );
+    }
+
+    logger.info('claude.api.request_received', 'Claude request received', {
+      blueprintId,
+      model: model || 'default',
+      systemPromptLength: systemPrompt.length,
+      userPromptLength: userPrompt.length,
+    });
+
+    // Get configuration and create client
+    const config = getClaudeConfig();
+    const client = new ClaudeClient();
+
+    // Make API call
+    const response = await client.generate({
+      model: model || config.primaryModel,
+      system: systemPrompt,
+      messages: [
+        {
+          role: 'user',
+          content: userPrompt,
+        },
+      ],
+    });
+
+    // Extract text from response
+    const text = ClaudeClient.extractText(response);
+
+    // Validate and normalize blueprint
+    const blueprint = validateAndNormalizeBlueprint(text);
+
+    const duration = Date.now() - startTime;
+
+    logger.info('claude.api.success', 'Claude blueprint generated', {
+      blueprintId,
+      model: response.model,
+      duration,
+      inputTokens: response.usage.input_tokens,
+      outputTokens: response.usage.output_tokens,
+    });
+
+    return NextResponse.json({
+      success: true,
+      blueprint,
+      usage: {
+        input_tokens: response.usage.input_tokens,
+        output_tokens: response.usage.output_tokens,
+      },
+      metadata: {
+        model: response.model,
+        duration,
+        timestamp: new Date().toISOString(),
+      },
+    });
+  } catch (error) {
+    const duration = Date.now() - startTime;
+
+    // Handle Claude API errors
+    if (error instanceof ClaudeApiError) {
+      logger.error('claude.api.claude_error', 'Claude API error', {
+        duration,
+        statusCode: error.statusCode,
+        errorType: error.errorType,
+        message: error.message,
+      });
+
+      return NextResponse.json(
+        {
+          success: false,
+          error: `Claude API error: ${error.message}`,
+        },
+        { status: error.statusCode || 500 }
+      );
+    }
+
+    // Handle validation errors
+    if (error instanceof Error && error.name === 'ValidationError') {
+      logger.error('claude.api.validation_error', 'Validation error', {
+        duration,
+        message: error.message,
+      });
+
+      return NextResponse.json(
+        {
+          success: false,
+          error: `Validation error: ${error.message}`,
+        },
+        { status: 400 }
+      );
+    }
+
+    // Handle unknown errors
+    logger.error('claude.api.unknown_error', 'Unknown error during Claude generation', {
+      duration,
+      error: (error as Error).message,
+    });
+
+    return NextResponse.json(
+      {
+        success: false,
+        error: 'An unexpected error occurred',
+      },
+      { status: 500 }
+    );
+  }
+}
+
+/**
+ * OPTIONS handler for CORS preflight
+ */
+export async function OPTIONS() {
+  return new NextResponse(null, {
+    status: 204,
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'POST, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type',
+    },
+  });
+}

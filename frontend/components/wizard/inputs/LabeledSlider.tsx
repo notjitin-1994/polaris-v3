@@ -38,31 +38,29 @@ export function LabeledSlider({
   required = false,
   disabled = false,
   className,
-}: LabeledSliderProps): JSX.Element {
+}: LabeledSliderProps): React.JSX.Element {
   const hasError = !!error;
   const percentage = ((value - min) / (max - min)) * 100;
 
   return (
     <div className={cn('space-y-4', className)}>
-      <label className="block text-[15px] font-medium text-foreground leading-tight">
+      <label className="text-foreground block text-[15px] leading-tight font-medium">
         {label}
         {required && (
-          <span className="ml-1.5 text-primary font-semibold" aria-label="required">
+          <span className="text-primary ml-1.5 font-semibold" aria-label="required">
             *
           </span>
         )}
       </label>
 
-      {helpText && <p className="text-[13px] text-text-secondary leading-snug">{helpText}</p>}
+      {helpText && <p className="text-text-secondary text-[13px] leading-snug">{helpText}</p>}
 
       <div className="space-y-3">
         {/* Value display */}
         <div className="flex items-center justify-center">
-          <div className="inline-flex items-baseline gap-2 rounded-xl bg-primary/10 border border-primary/20 px-5 py-2.5">
-            <span className="text-3xl font-semibold text-primary-accent">
-              {value}
-            </span>
-            {unit && <span className="text-[15px] font-medium text-text-secondary">{unit}</span>}
+          <div className="bg-primary/10 border-primary/20 inline-flex items-baseline gap-2 rounded-xl border px-5 py-2.5">
+            <span className="text-primary-accent text-3xl font-semibold">{value}</span>
+            {unit && <span className="text-text-secondary text-[15px] font-medium">{unit}</span>}
           </div>
         </div>
 
@@ -71,10 +69,10 @@ export function LabeledSlider({
           <div className="relative h-2.5 w-full">
             {/* Background track */}
             <div className="absolute inset-0 rounded-full bg-white/10" />
-            
+
             {/* Filled track */}
             <div
-              className="absolute h-full rounded-full bg-primary transition-all duration-200"
+              className="bg-primary absolute h-full rounded-full transition-all duration-200"
               style={{
                 width: `${percentage}%`,
                 boxShadow: '0 0 12px rgba(167, 218, 219, 0.4)',
@@ -92,13 +90,13 @@ export function LabeledSlider({
               disabled={disabled}
               className={cn(
                 'absolute inset-0 w-full cursor-pointer appearance-none bg-transparent',
-                '[&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-5 [&::-webkit-slider-thumb]:w-5',
-                '[&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-primary-accent',
+                '[&::-webkit-slider-thumb]:h-5 [&::-webkit-slider-thumb]:w-5 [&::-webkit-slider-thumb]:appearance-none',
+                '[&::-webkit-slider-thumb]:bg-primary-accent [&::-webkit-slider-thumb]:rounded-full',
                 '[&::-webkit-slider-thumb]:shadow-[0_0_0_3px_rgba(167,218,219,0.2),0_2px_8px_rgba(0,0,0,0.2)]',
                 '[&::-webkit-slider-thumb]:transition-all [&::-webkit-slider-thumb]:duration-200',
                 '[&::-webkit-slider-thumb]:hover:scale-110 [&::-webkit-slider-thumb]:active:scale-95',
                 '[&::-moz-range-thumb]:h-5 [&::-moz-range-thumb]:w-5 [&::-moz-range-thumb]:rounded-full',
-                '[&::-moz-range-thumb]:border-0 [&::-moz-range-thumb]:bg-primary-accent',
+                '[&::-moz-range-thumb]:bg-primary-accent [&::-moz-range-thumb]:border-0',
                 disabled && 'cursor-not-allowed opacity-50'
               )}
             />
@@ -112,7 +110,7 @@ export function LabeledSlider({
                   key={marker.value}
                   type="button"
                   onClick={() => !disabled && onChange(marker.value)}
-                  className="text-[11px] text-text-disabled hover:text-foreground transition-colors font-medium"
+                  className="text-text-disabled hover:text-foreground text-[11px] font-medium transition-colors"
                   disabled={disabled}
                 >
                   {marker.label}
@@ -125,7 +123,7 @@ export function LabeledSlider({
 
       {hasError && (
         <p
-          className="animate-fade-in flex items-center gap-1 text-[13px] text-error font-medium"
+          className="animate-fade-in text-error flex items-center gap-1 text-[13px] font-medium"
           role="alert"
           aria-live="polite"
         >

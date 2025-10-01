@@ -4,7 +4,7 @@ import React from 'react';
 import { useFormContext } from 'react-hook-form';
 import type { StaticQuestionsFormValues } from '@/components/wizard/static-questions/types';
 
-export function TargetAudienceStep(): JSX.Element {
+export function TargetAudienceStep(): React.JSX.Element {
   const {
     register,
     formState: { errors },

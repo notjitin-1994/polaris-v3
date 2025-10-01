@@ -112,7 +112,7 @@ const REINFORCEMENT_OPTIONS = [
   },
 ];
 
-export function DeliveryStrategyStep(): JSX.Element {
+export function DeliveryStrategyStep(): React.JSX.Element {
   const {
     register,
     formState: { errors },
@@ -125,7 +125,9 @@ export function DeliveryStrategyStep(): JSX.Element {
     register('deliveryStrategy.modality', { required: 'Delivery modality is required' });
     register('deliveryStrategy.duration');
     register('deliveryStrategy.sessionStructure');
-    register('deliveryStrategy.interactivityLevel', { required: 'Interactivity level is required' });
+    register('deliveryStrategy.interactivityLevel', {
+      required: 'Interactivity level is required',
+    });
     register('deliveryStrategy.practiceOpportunities');
     register('deliveryStrategy.socialLearning');
     register('deliveryStrategy.reinforcement', { required: 'Reinforcement strategy is required' });

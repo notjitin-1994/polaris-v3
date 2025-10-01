@@ -51,7 +51,7 @@ const formatOptions: Array<{
   },
 ];
 
-export function ExportButton({ data, elementId, className }: ExportButtonProps): JSX.Element {
+export function ExportButton({ data, elementId, className }: ExportButtonProps): React.JSX.Element {
   const [isOpen, setIsOpen] = useState(false);
   const [isExporting, setIsExporting] = useState<ExportFormat | null>(null);
   const [error, setError] = useState<string | null>(null);

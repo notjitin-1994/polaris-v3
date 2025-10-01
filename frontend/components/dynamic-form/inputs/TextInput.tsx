@@ -46,7 +46,7 @@ export const TextInput: React.FC<BaseInputProps> = ({
       />
 
       {question.maxLength && (
-        <p className="text-xs text-foreground/60 mt-1">
+        <p className="text-foreground/60 mt-1 text-xs">
           {typeof value === 'string' ? value.length : 0} / {question.maxLength} characters
         </p>
       )}

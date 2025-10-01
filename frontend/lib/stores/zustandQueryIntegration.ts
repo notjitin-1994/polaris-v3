@@ -17,7 +17,7 @@ export const useZustandQueryIntegration = () => {
       if (state.currentBlueprint) {
         queryClient.setQueryData(
           queryKeys.blueprints.detail(state.currentBlueprint.id),
-          state.currentBlueprint,
+          state.currentBlueprint
         );
       }
     });
@@ -42,7 +42,7 @@ export const useZustandQueryIntegration = () => {
     // Sync a blueprint from React Query to Zustand
     syncBlueprintFromQuery: (blueprintId: string) => {
       const cachedBlueprint = queryClient.getQueryData<BlueprintData>(
-        queryKeys.blueprints.detail(blueprintId),
+        queryKeys.blueprints.detail(blueprintId)
       );
 
       if (cachedBlueprint) {
@@ -53,7 +53,7 @@ export const useZustandQueryIntegration = () => {
     // Sync all blueprints from React Query to Zustand
     syncBlueprintsFromQuery: () => {
       const cachedBlueprints = queryClient.getQueryData<BlueprintData[]>(
-        queryKeys.blueprints.lists(),
+        queryKeys.blueprints.lists()
       );
 
       if (cachedBlueprints) {
@@ -77,7 +77,7 @@ export const useOptimisticBlueprintUpdate = () => {
   const performOptimisticUpdate = (
     blueprintId: string,
     updates: Partial<BlueprintData>,
-    rollbackData?: BlueprintData,
+    rollbackData?: BlueprintData
   ) => {
     // Store current state for potential rollback
     const currentBlueprint = blueprintStore.currentBlueprint;
@@ -91,7 +91,7 @@ export const useOptimisticBlueprintUpdate = () => {
       (old: BlueprintData | undefined) => {
         if (!old) return old;
         return { ...old, ...updates };
-      },
+      }
     );
 
     // Return rollback function
@@ -133,7 +133,7 @@ export const useBackgroundSync = () => {
           syncAll();
         }
       },
-      5 * 60 * 1000,
+      5 * 60 * 1000
     ); // Every 5 minutes
 
     return () => clearInterval(interval);
@@ -164,12 +164,12 @@ export const useQueryStateManagement = () => {
 
     // Check if any blueprint queries are loading
     const isLoading = queries.some(
-      (query) => query.queryKey.includes('blueprints') && query.state.status === 'pending',
+      (query) => query.queryKey.includes('blueprints') && query.state.status === 'pending'
     );
 
     // Check if any blueprint queries have errors
     const hasError = queries.some(
-      (query) => query.queryKey.includes('blueprints') && query.state.status === 'error',
+      (query) => query.queryKey.includes('blueprints') && query.state.status === 'error'
     );
 
     setLoading(isLoading);

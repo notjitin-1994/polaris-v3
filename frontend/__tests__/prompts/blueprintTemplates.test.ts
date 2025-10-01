@@ -6,7 +6,7 @@ describe('blueprintTemplates', () => {
   it('should generate a basic system prompt', () => {
     const systemPrompt = generateSystemPrompt();
     expect(systemPrompt).toContain(
-      'You are an AI assistant specialized in generating comprehensive learning blueprints.',
+      'You are an AI assistant specialized in generating comprehensive learning blueprints.'
     );
   });
 
@@ -33,7 +33,7 @@ describe('blueprintTemplates', () => {
     expect(userPrompt).toContain('Target Audience: Beginner developers');
     expect(userPrompt).toContain('- preferredStack: React and Node.js');
     expect(userPrompt).toContain(
-      'Ensure the output is a JSON object matching the BlueprintSchema, followed by its Markdown representation.',
+      'Ensure the output is a JSON object matching the BlueprintSchema, followed by its Markdown representation.'
     );
   });
 

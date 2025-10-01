@@ -1,0 +1,133 @@
+{
+	"meta": {
+		"generatedAt": "2025-10-01T09:39:07.886Z",
+		"tasksAnalyzed": 15,
+		"totalTasks": 15,
+		"analysisCount": 15,
+		"thresholdScore": 5,
+		"projectName": "Taskmaster",
+		"usedResearch": true
+	},
+	"complexityAnalysis": [
+		{
+			"taskId": 1,
+			"taskTitle": "Setup Project Repository",
+			"complexityScore": 2,
+			"recommendedSubtasks": 4,
+			"expansionPrompt": "Break down repository setup into: 1) Initialize Git repository and configure basic settings, 2) Create standardized folder structure for API/services/forms/logging, 3) Set up initial configuration files (package.json, requirements.txt, etc.), 4) Create README and basic project documentation templates",
+			"reasoning": "Low complexity task involving standard repository initialization. Minimal cognitive load with well-established patterns. Simple folder creation and git commands with no complex logic or dependencies."
+		},
+		{
+			"taskId": 2,
+			"taskTitle": "Implement Perplexity API Integration",
+			"complexityScore": 6,
+			"recommendedSubtasks": 8,
+			"expansionPrompt": "Decompose API integration into: 1) Set up secure environment variable management, 2) Create API client wrapper with authentication, 3) Implement request/response models and validation, 4) Add token counting and limit enforcement, 5) Implement temperature and model parameter configuration, 6) Add error handling and retry logic, 7) Create response parsing and formatting, 8) Add comprehensive logging for API calls",
+			"reasoning": "Moderate-high complexity due to external API integration, security considerations, token management, and error handling. Requires understanding of HTTP clients, authentication, and API rate limiting patterns."
+		},
+		{
+			"taskId": 3,
+			"taskTitle": "Develop Ollama Fallback Mechanism",
+			"complexityScore": 5,
+			"recommendedSubtasks": 6,
+			"expansionPrompt": "Structure fallback system into: 1) Create fallback trigger detection logic, 2) Implement Ollama client integration, 3) Add fallback decision engine with configurable thresholds, 4) Create unified response format between Perplexity and Ollama, 5) Implement fallback logging and metrics, 6) Add fallback testing and validation mechanisms",
+			"reasoning": "Moderate complexity involving conditional logic, multiple API integrations, and error handling patterns. Requires careful state management and consistent interface design between different AI services."
+		},
+		{
+			"taskId": 4,
+			"taskTitle": "Create Dynamic Input Type System",
+			"complexityScore": 7,
+			"recommendedSubtasks": 10,
+			"expansionPrompt": "Break down input system into: 1) Design input type registry architecture, 2) Implement known input type definitions and validators, 3) Create intelligent type mapping algorithms, 4) Build fallback rendering system for unknown types, 5) Add input validation and sanitization, 6) Implement dynamic form generation logic, 7) Create type-specific UI components, 8) Add input type configuration management, 9) Implement type extension mechanisms, 10) Add comprehensive input type testing framework",
+			"reasoning": "High complexity due to dynamic type system design, intelligent mapping logic, and extensible architecture. Requires sophisticated pattern matching, validation logic, and flexible UI rendering capabilities."
+		},
+		{
+			"taskId": 5,
+			"taskTitle": "Implement Data Persistence Logic",
+			"complexityScore": 5,
+			"recommendedSubtasks": 7,
+			"expansionPrompt": "Structure persistence into: 1) Design database schema for dynamic questions/answers, 2) Implement JSON schema validation logic, 3) Create data access layer with CRUD operations, 4) Add transaction management for data consistency, 5) Implement data migration and versioning, 6) Add data integrity constraints and validation, 7) Create backup and recovery mechanisms",
+			"reasoning": "Moderate complexity involving database operations, JSON validation, and data integrity. Requires understanding of SQL, schema design, and transaction management patterns."
+		},
+		{
+			"taskId": 6,
+			"taskTitle": "Develop Logging System",
+			"complexityScore": 6,
+			"recommendedSubtasks": 8,
+			"expansionPrompt": "Decompose logging system into: 1) Design structured logging architecture with metadata, 2) Implement log level management and configuration, 3) Create log formatting and serialization, 4) Build log storage and rotation mechanisms, 5) Develop log viewer UI with search and filtering, 6) Add log export functionality with multiple formats, 7) Implement log aggregation and analytics, 8) Add log security and sensitive data scrubbing",
+			"reasoning": "Moderate-high complexity due to structured logging design, UI components for log viewing, and data export functionality. Requires understanding of logging patterns, UI development, and data processing."
+		},
+		{
+			"taskId": 7,
+			"taskTitle": "Integrate with Wizard UI",
+			"complexityScore": 6,
+			"recommendedSubtasks": 8,
+			"expansionPrompt": "Structure UI integration into: 1) Analyze existing StepWizard architecture and integration points, 2) Design dynamic question injection mechanisms, 3) Implement loading states and progress indicators, 4) Create generation source badge components, 5) Add error handling and user feedback, 6) Implement state management for dynamic content, 7) Add responsive design for various screen sizes, 8) Create accessibility features for dynamic elements",
+			"reasoning": "Moderate-high complexity due to UI integration with existing systems, state management, and user experience considerations. Requires understanding of React/frontend frameworks and UX patterns."
+		},
+		{
+			"taskId": 8,
+			"taskTitle": "Implement API Endpoints",
+			"complexityScore": 5,
+			"recommendedSubtasks": 7,
+			"expansionPrompt": "Break down API development into: 1) Design RESTful API architecture and routing, 2) Implement request/response models and validation, 3) Add authentication and authorization middleware, 4) Create endpoint-specific business logic, 5) Implement error handling and status codes, 6) Add API documentation with OpenAPI/Swagger, 7) Create API testing and validation suite",
+			"reasoning": "Moderate complexity involving REST API design, request/response handling, and middleware integration. Standard web development patterns with some business logic complexity."
+		},
+		{
+			"taskId": 9,
+			"taskTitle": "Develop Unit Tests",
+			"complexityScore": 4,
+			"recommendedSubtasks": 6,
+			"expansionPrompt": "Structure unit testing into: 1) Set up testing framework and configuration, 2) Create test utilities and mocking infrastructure, 3) Write Perplexity service unit tests with API mocking, 4) Implement Ollama fallback logic tests, 5) Create input type registry and mapping tests, 6) Add test coverage reporting and CI integration",
+			"reasoning": "Moderate complexity due to mocking external services and testing complex logic. Standard testing patterns but requires understanding of mocking frameworks and test design."
+		},
+		{
+			"taskId": 10,
+			"taskTitle": "Conduct Integration Tests",
+			"complexityScore": 6,
+			"recommendedSubtasks": 8,
+			"expansionPrompt": "Decompose integration testing into: 1) Set up integration test environment and data, 2) Create end-to-end flow testing for Perplexity integration, 3) Implement fallback scenario testing, 4) Add database integration testing, 5) Create UI integration tests with Cypress/Playwright, 6) Implement API endpoint integration testing, 7) Add performance and load testing for critical paths, 8) Create integration test reporting and CI pipeline",
+			"reasoning": "Moderate-high complexity due to multiple system integration, test environment setup, and comprehensive flow testing. Requires understanding of testing tools and system architecture."
+		},
+		{
+			"taskId": 11,
+			"taskTitle": "Implement E2E Tests",
+			"complexityScore": 5,
+			"recommendedSubtasks": 6,
+			"expansionPrompt": "Structure E2E testing into: 1) Set up E2E testing framework and environment, 2) Create user journey test scenarios, 3) Implement static to dynamic question flow tests, 4) Add answer persistence and resume capability tests, 5) Create cross-browser and device testing, 6) Add E2E test reporting and CI integration",
+			"reasoning": "Moderate complexity involving user journey testing and browser automation. Standard E2E testing patterns with some complexity in multi-step user flows."
+		},
+		{
+			"taskId": 12,
+			"taskTitle": "Conduct Load Tests",
+			"complexityScore": 4,
+			"recommendedSubtasks": 5,
+			"expansionPrompt": "Break down load testing into: 1) Set up load testing tools and infrastructure, 2) Create concurrent question generation test scenarios, 3) Implement database performance testing under load, 4) Add API endpoint stress testing, 5) Create load test reporting and performance baseline establishment",
+			"reasoning": "Moderate complexity involving performance testing tools and scenario design. Standard load testing patterns with some complexity in distributed system testing."
+		},
+		{
+			"taskId": 13,
+			"taskTitle": "Implement Security Measures",
+			"complexityScore": 6,
+			"recommendedSubtasks": 8,
+			"expansionPrompt": "Structure security implementation into: 1) Set up secure environment variable management, 2) Implement API key rotation and security policies, 3) Add data encryption for sensitive information, 4) Create access control and authentication mechanisms, 5) Implement Row Level Security (RLS) policies, 6) Add sensitive data scrubbing from logs, 7) Create security audit logging, 8) Implement security testing and vulnerability scanning",
+			"reasoning": "Moderate-high complexity due to comprehensive security considerations, encryption, access controls, and compliance requirements. Requires understanding of security patterns and best practices."
+		},
+		{
+			"taskId": 14,
+			"taskTitle": "Document Project",
+			"complexityScore": 3,
+			"recommendedSubtasks": 5,
+			"expansionPrompt": "Structure documentation into: 1) Create API documentation with Swagger/OpenAPI, 2) Write system architecture and design documentation, 3) Create user guides and troubleshooting documentation, 4) Add developer setup and contribution guides, 5) Create deployment and operational documentation",
+			"reasoning": "Low-moderate complexity involving documentation creation and organization. Standard documentation patterns with some complexity in technical writing and tool integration."
+		},
+		{
+			"taskId": 15,
+			"taskTitle": "Plan Rollout and Monitoring",
+			"complexityScore": 5,
+			"recommendedSubtasks": 7,
+			"expansionPrompt": "Break down rollout planning into: 1) Design feature flag strategy and implementation, 2) Create rollout phases and user segmentation, 3) Set up monitoring and alerting infrastructure, 4) Implement metrics collection and dashboards, 5) Create user feedback collection mechanisms, 6) Add rollback procedures and contingency planning, 7) Create post-launch optimization and iteration planning",
+			"reasoning": "Moderate complexity involving deployment strategy, monitoring setup, and operational considerations. Requires understanding of DevOps practices and production system management."
+		}
+	]
+}

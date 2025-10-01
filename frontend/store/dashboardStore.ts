@@ -120,6 +120,6 @@ export const useDashboardStore = create<DashboardState>()(
         currentView: state.currentView,
         cachedData: state.cachedData,
       }),
-    },
-  ),
+    }
+  )
 );

@@ -35,25 +35,25 @@ export const SectionNavigator: React.FC<SectionNavigatorProps> = ({
                 key={section.id}
                 onClick={() => onSectionChange(section.id)}
                 className={cn(
-                  'w-full text-left px-4 py-3 rounded-lg border transition-colors',
+                  'w-full rounded-lg border px-4 py-3 text-left transition-colors',
                   isCurrent
                     ? 'border-blue-500 bg-blue-50 text-blue-900 dark:bg-blue-900/20 dark:text-blue-100'
                     : 'border-gray-200 bg-white text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700',
                   isCompleted &&
                     !isCurrent &&
-                    'border-green-200 bg-green-50 text-green-900 dark:border-green-800 dark:bg-green-900/20 dark:text-green-100',
+                    'border-green-200 bg-green-50 text-green-900 dark:border-green-800 dark:bg-green-900/20 dark:text-green-100'
                 )}
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-3">
                     <div
                       className={cn(
-                        'w-6 h-6 rounded-full flex items-center justify-center text-sm font-medium',
+                        'flex h-6 w-6 items-center justify-center rounded-full text-sm font-medium',
                         isCompleted
                           ? 'bg-green-500 text-white'
                           : isCurrent
                             ? 'bg-blue-500 text-white'
-                            : 'bg-gray-200 text-gray-600 dark:bg-gray-600 dark:text-gray-300',
+                            : 'bg-gray-200 text-gray-600 dark:bg-gray-600 dark:text-gray-300'
                       )}
                     >
                       {isCompleted ? '✓' : index + 1}
@@ -69,7 +69,7 @@ export const SectionNavigator: React.FC<SectionNavigatorProps> = ({
                   </div>
                   {isCompleted && (
                     <div className="text-green-500">
-                      <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                      <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
                         <path
                           fillRule="evenodd"
                           d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
@@ -106,31 +106,31 @@ export const SectionNavigator: React.FC<SectionNavigatorProps> = ({
               key={section.id}
               value={section.id}
               className={cn(
-                'border rounded-lg overflow-hidden',
+                'overflow-hidden rounded-lg border',
                 isCurrent
                   ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
                   : 'border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800',
                 isCompleted &&
                   !isCurrent &&
-                  'border-green-200 bg-green-50 dark:border-green-800 dark:bg-green-900/20',
+                  'border-green-200 bg-green-50 dark:border-green-800 dark:bg-green-900/20'
               )}
             >
               <Accordion.Trigger
                 className={cn(
-                  'w-full px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-inset',
-                  isCurrent && 'bg-blue-100 dark:bg-blue-900/30',
+                  'w-full px-4 py-3 text-left hover:bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:outline-none focus:ring-inset dark:hover:bg-gray-700',
+                  isCurrent && 'bg-blue-100 dark:bg-blue-900/30'
                 )}
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-3">
                     <div
                       className={cn(
-                        'w-6 h-6 rounded-full flex items-center justify-center text-sm font-medium',
+                        'flex h-6 w-6 items-center justify-center rounded-full text-sm font-medium',
                         isCompleted
                           ? 'bg-green-500 text-white'
                           : isCurrent
                             ? 'bg-blue-500 text-white'
-                            : 'bg-gray-200 text-gray-600 dark:bg-gray-600 dark:text-gray-300',
+                            : 'bg-gray-200 text-gray-600 dark:bg-gray-600 dark:text-gray-300'
                       )}
                     >
                       {isCompleted ? '✓' : index + 1}
@@ -147,7 +147,7 @@ export const SectionNavigator: React.FC<SectionNavigatorProps> = ({
                   <div className="flex items-center space-x-2">
                     {isCompleted && (
                       <div className="text-green-500">
-                        <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                        <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
                           <path
                             fillRule="evenodd"
                             d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
@@ -158,8 +158,8 @@ export const SectionNavigator: React.FC<SectionNavigatorProps> = ({
                     )}
                     <svg
                       className={cn(
-                        'w-5 h-5 text-gray-400 transition-transform',
-                        isCurrent && 'rotate-180',
+                        'h-5 w-5 text-gray-400 transition-transform',
+                        isCurrent && 'rotate-180'
                       )}
                       fill="none"
                       stroke="currentColor"
@@ -177,7 +177,7 @@ export const SectionNavigator: React.FC<SectionNavigatorProps> = ({
               </Accordion.Trigger>
 
               <Accordion.Content className="px-4 pb-3">
-                <div className="pt-2 border-t border-gray-200 dark:border-gray-600">
+                <div className="border-t border-gray-200 pt-2 dark:border-gray-600">
                   <p className="text-sm text-gray-600 dark:text-gray-400">
                     {section.questions.length} question{section.questions.length !== 1 ? 's' : ''}
                   </p>

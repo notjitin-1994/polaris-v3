@@ -64,9 +64,16 @@ export class BlueprintFallbackService {
           questions: [
             {
               id: 'Q1',
-              question_text: 'What are the top 3 outcomes you expect this learning initiative to achieve?',
+              question_text:
+                'What are the top 3 outcomes you expect this learning initiative to achieve?',
               input_type: 'multi_select',
-              options: ['Skill Improvement', 'Compliance', 'Leadership Development', 'Productivity Gains', 'Other'],
+              options: [
+                'Skill Improvement',
+                'Compliance',
+                'Leadership Development',
+                'Productivity Gains',
+                'Other',
+              ],
               validation: { required: true, data_type: 'string' },
             },
             {
@@ -110,13 +117,20 @@ export class BlueprintFallbackService {
         },
         {
           title: 'Learner Profile & Audience Context',
-          description: 'Understand learner strengths, experience, motivation, and learning preferences.',
+          description:
+            'Understand learner strengths, experience, motivation, and learning preferences.',
           questions: [
             {
               id: 'Q8',
               question_text: 'What is the primary role of the target learners?',
               input_type: 'single_select',
-              options: ['Individual Contributors', 'Managers', 'Executives', 'Students', 'Mixed Roles'],
+              options: [
+                'Individual Contributors',
+                'Managers',
+                'Executives',
+                'Students',
+                'Mixed Roles',
+              ],
               validation: { required: true, data_type: 'string' },
             },
             {
@@ -175,7 +189,13 @@ export class BlueprintFallbackService {
               id: 'Q16',
               question_text: 'What instructional design resources are available?',
               input_type: 'multi_select',
-              options: ['Instructional Designer', 'Subject Matter Expert', 'Graphic Designer', 'Video Producer', 'External Vendor'],
+              options: [
+                'Instructional Designer',
+                'Subject Matter Expert',
+                'Graphic Designer',
+                'Video Producer',
+                'External Vendor',
+              ],
               validation: { required: true, data_type: 'string' },
             },
             {
@@ -200,7 +220,13 @@ export class BlueprintFallbackService {
               id: 'Q20',
               question_text: 'What support staff will be available during the learning initiative?',
               input_type: 'multi_select',
-              options: ['Facilitator', 'Technical Support', 'Administrative Support', 'Peer Mentors', 'External Consultants'],
+              options: [
+                'Facilitator',
+                'Technical Support',
+                'Administrative Support',
+                'Peer Mentors',
+                'External Consultants',
+              ],
               validation: { required: true, data_type: 'string' },
             },
             {
@@ -231,14 +257,26 @@ export class BlueprintFallbackService {
               id: 'Q24',
               question_text: 'What are the main delivery constraints?',
               input_type: 'multi_select',
-              options: ['Time Constraints', 'Budget Limitations', 'Technology Limitations', 'Geographic Distribution', 'Regulatory Requirements'],
+              options: [
+                'Time Constraints',
+                'Budget Limitations',
+                'Technology Limitations',
+                'Geographic Distribution',
+                'Regulatory Requirements',
+              ],
               validation: { required: true, data_type: 'string' },
             },
             {
               id: 'Q25',
               question_text: 'What is the preferred delivery method?',
               input_type: 'single_select',
-              options: ['In-Person', 'Online Synchronous', 'Online Asynchronous', 'Blended', 'Self-Paced'],
+              options: [
+                'In-Person',
+                'Online Synchronous',
+                'Online Asynchronous',
+                'Blended',
+                'Self-Paced',
+              ],
               validation: { required: true, data_type: 'string' },
             },
             {
@@ -270,7 +308,13 @@ export class BlueprintFallbackService {
               id: 'Q29',
               question_text: 'How will you measure the immediate impact of this learning?',
               input_type: 'multi_select',
-              options: ['Knowledge Tests', 'Skill Assessments', 'Performance Reviews', 'Feedback Surveys', 'Observations'],
+              options: [
+                'Knowledge Tests',
+                'Skill Assessments',
+                'Performance Reviews',
+                'Feedback Surveys',
+                'Observations',
+              ],
               validation: { required: true, data_type: 'string' },
             },
             {
@@ -289,7 +333,13 @@ export class BlueprintFallbackService {
               id: 'Q32',
               question_text: 'What feedback mechanisms will be in place?',
               input_type: 'multi_select',
-              options: ['Regular Surveys', 'Focus Groups', 'One-on-One Interviews', 'Peer Reviews', 'Manager Feedback'],
+              options: [
+                'Regular Surveys',
+                'Focus Groups',
+                'One-on-One Interviews',
+                'Peer Reviews',
+                'Manager Feedback',
+              ],
               validation: { required: true, data_type: 'string' },
             },
             {

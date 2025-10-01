@@ -6,7 +6,7 @@ import ProtectedRoute from '@/components/auth/ProtectedRoute';
 import { StandardHeader } from '@/components/layout/StandardHeader';
 import { useAuth } from '@/contexts/AuthContext';
 
-function StaticWizardContent(): JSX.Element {
+function StaticWizardContent(): React.JSX.Element {
   const { user } = useAuth();
 
   return (
@@ -30,7 +30,7 @@ function StaticWizardContent(): JSX.Element {
   );
 }
 
-export default function StaticWizardPage(): JSX.Element {
+export default function StaticWizardPage(): React.JSX.Element {
   return (
     <ProtectedRoute>
       <StaticWizardContent />

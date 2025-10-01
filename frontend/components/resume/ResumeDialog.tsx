@@ -31,24 +31,24 @@ export function ResumeDialog({ isOpen, onClose, onResume, onStartFresh }: Resume
   const promptData = resumeUIHelpers.getResumePromptData(resumeData);
 
   return (
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50">
-      <div className="glass-strong rounded-2xl max-w-2xl w-full mx-4 max-h-modal overflow-hidden">
-        <div className="p-6 border-b border-white/10">
-          <h2 className="text-2xl font-bold text-foreground">Resume Your Work</h2>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+      <div className="glass-strong max-h-modal mx-4 w-full max-w-2xl overflow-hidden rounded-2xl">
+        <div className="border-b border-white/10 p-6">
+          <h2 className="text-foreground text-2xl font-bold">Resume Your Work</h2>
           <p className="text-foreground/70 mt-2">
             You have {promptData.count} incomplete blueprint{promptData.count !== 1 ? 's' : ''} that
             you can resume.
           </p>
         </div>
 
-        <div className="p-6 overflow-y-auto max-h-96">
+        <div className="max-h-96 overflow-y-auto p-6">
           {isLoading ? (
             <div className="flex items-center justify-center py-8">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-              <span className="ml-2 text-foreground/60">Loading...</span>
+              <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-blue-600"></div>
+              <span className="text-foreground/60 ml-2">Loading...</span>
             </div>
           ) : promptData.items.length === 0 ? (
-            <div className="text-center py-8">
+            <div className="py-8 text-center">
               <p className="text-foreground/50">No incomplete blueprints found.</p>
             </div>
           ) : (
@@ -65,10 +65,10 @@ export function ResumeDialog({ isOpen, onClose, onResume, onStartFresh }: Resume
           )}
         </div>
 
-        <div className="p-6 border-t border-white/10 flex justify-end space-x-3">
+        <div className="flex justify-end space-x-3 border-t border-white/10 p-6">
           <button
             onClick={onClose}
-            className="px-6 py-2.5 rounded-lg text-foreground hover:glass focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 disabled:opacity-50 transition-all duration-200"
+            className="text-foreground hover:glass focus-visible:ring-primary/50 rounded-lg px-6 py-2.5 transition-all duration-200 focus-visible:ring-2 focus-visible:outline-none disabled:opacity-50"
           >
             Cancel
           </button>
@@ -95,20 +95,20 @@ function ResumeItem({ item, onResume, onStartFresh }: ResumeItemProps) {
   const progressDescription = resumeUIHelpers.getProgressDescription(item.progress);
 
   return (
-    <div className="glass rounded-2xl p-4 transition-all duration-300 hover:glass-strong hover:shadow-xl">
+    <div className="glass hover:glass-strong rounded-2xl p-4 transition-all duration-300 hover:shadow-xl">
       <div className="flex items-start justify-between">
         <div className="flex-1">
-          <h3 className="font-semibold text-foreground">Blueprint {item.blueprintId}</h3>
-          <p className="text-sm text-foreground/70 mt-1">
+          <h3 className="text-foreground font-semibold">Blueprint {item.blueprintId}</h3>
+          <p className="text-foreground/70 mt-1 text-sm">
             {progressDescription} • Last saved {item.timeAgo}
           </p>
 
           <div className="mt-3">
-            <div className="flex items-center justify-between text-sm text-foreground/60 mb-1">
+            <div className="text-foreground/60 mb-1 flex items-center justify-between text-sm">
               <span>Progress</span>
               <span>{item.progress}%</span>
             </div>
-            <div className="w-full bg-white/10 rounded-full h-2">
+            <div className="h-2 w-full rounded-full bg-white/10">
               <div
                 className={`h-2 rounded-full bg-${progressColor}-500 transition-all duration-300`}
                 style={{ width: `${item.progress}%` }}
@@ -121,14 +121,14 @@ function ResumeItem({ item, onResume, onStartFresh }: ResumeItemProps) {
           {item.canResume && (
             <button
               onClick={onResume}
-              className="px-4 py-1.5 bg-secondary text-white text-sm rounded-lg hover:bg-secondary-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary/50 transition-all duration-200"
+              className="bg-secondary hover:bg-secondary-dark focus-visible:ring-secondary/50 rounded-lg px-4 py-1.5 text-sm text-white transition-all duration-200 focus-visible:ring-2 focus-visible:outline-none"
             >
               Resume
             </button>
           )}
           <button
             onClick={onStartFresh}
-            className="px-4 py-1.5 rounded-lg text-foreground hover:glass focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 transition-all duration-200"
+            className="text-foreground hover:glass focus-visible:ring-primary/50 rounded-lg px-4 py-1.5 transition-all duration-200 focus-visible:ring-2 focus-visible:outline-none"
           >
             Start Fresh
           </button>

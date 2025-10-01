@@ -120,7 +120,7 @@ export function useStoreComposition() {
             message: `Are you sure you want to ${action.toLowerCase()} "${blueprintTitle}"?`,
             blueprintId,
           },
-          onConfirm,
+          onConfirm
         );
       },
     },
@@ -148,7 +148,7 @@ export function useStoreComposition() {
         if (!user) return false;
 
         return blueprints.some(
-          (bp) => bp.user_id === user.id && bp.status !== 'completed' && bp.status !== 'archived',
+          (bp) => bp.user_id === user.id && bp.status !== 'completed' && bp.status !== 'archived'
         );
       },
 

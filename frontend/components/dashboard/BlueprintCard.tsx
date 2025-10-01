@@ -35,7 +35,7 @@ export function BlueprintCard({
   onResume,
   onDelete,
   questionnaireComplete,
-}: BlueprintCardProps): JSX.Element {
+}: BlueprintCardProps): React.JSX.Element {
   const router = useRouter();
   const [isHovered, setIsHovered] = useState(false);
 
@@ -267,7 +267,7 @@ export function BlueprintCard({
 
             <div className="relative h-1.5 overflow-hidden rounded-full bg-white/5">
               <motion.div
-                className="absolute inset-y-0 left-0 rounded-full bg-primary"
+                className="bg-primary absolute inset-y-0 left-0 rounded-full"
                 initial={{ width: 0 }}
                 animate={{ width: `${completionPercentage}%` }}
                 transition={{
@@ -360,14 +360,14 @@ export function BlueprintCard({
                 className={cn(
                   'flex items-center justify-center',
                   'h-10 w-10 rounded-lg',
-                  'bg-primary hover:bg-primary-600',
+                  'bg-secondary hover:bg-secondary-dark',
                   'transition-all duration-200',
-                  'shadow-primary/20 hover:shadow-primary/30 shadow-lg'
+                  'shadow-secondary/20 hover:shadow-secondary/30 shadow-lg'
                 )}
                 title="View Blueprint"
                 aria-label="View Blueprint"
               >
-                <Eye className="h-4 w-4 text-[#0a0a0a] hover:text-[#0a0a0a]" />
+                <Eye className="h-4 w-4 text-indigo-200" />
               </Link>
             )}
 

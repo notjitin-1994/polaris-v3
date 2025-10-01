@@ -24,7 +24,7 @@ export function RenameDialog({
   description = 'Enter a new name for your blueprint',
   placeholder = 'Blueprint name',
   maxLength = 100,
-}: RenameDialogProps): JSX.Element | null {
+}: RenameDialogProps): React.JSX.Element | null {
   const [newName, setNewName] = useState(currentName);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);

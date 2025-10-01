@@ -18,26 +18,29 @@ export function useAutoSave(userId: string | null) {
       console.log('[AutoSave] No userId, skipping save');
       return;
     }
-    
+
     // Check if we have any data to save
     if (!latestValues.current || Object.keys(latestValues.current).length === 0) {
       console.log('[AutoSave] No data to save yet');
       return;
     }
-    
+
     setSaveState('saving');
     console.log('[AutoSave] Starting save for userId:', userId);
     console.log('[AutoSave] Current values keys:', Object.keys(latestValues.current));
-    
+
     try {
       // Verify user is authenticated with Supabase
-      const { data: { user: supabaseUser }, error: authError } = await supabase.auth.getUser();
+      const {
+        data: { user: supabaseUser },
+        error: authError,
+      } = await supabase.auth.getUser();
       if (authError || !supabaseUser) {
         console.error('[AutoSave] User not authenticated in Supabase:', authError);
         throw new Error('User not authenticated');
       }
       console.log('[AutoSave] Supabase user confirmed:', supabaseUser.id);
-      
+
       // Always read the latest store state to avoid stale closures
       const { blueprintId: currentBlueprintId, setBlueprintId } = useWizardStore.getState();
       let workingBlueprintId = currentBlueprintId;
@@ -52,12 +55,12 @@ export function useAutoSave(userId: string | null) {
           .eq('status', 'draft')
           .order('created_at', { ascending: false })
           .limit(1);
-        
+
         if (findError) {
           console.error('[AutoSave] Error finding existing draft:', findError);
           throw findError;
         }
-        
+
         const existingDraft = existingDraftRows?.[0] ?? null;
         if (existingDraft) {
           workingBlueprintId = existingDraft.id as string;
@@ -71,7 +74,7 @@ export function useAutoSave(userId: string | null) {
         ...latestValues.current,
         version: 2,
       };
-      
+
       console.log('[AutoSave] Data to save:', JSON.stringify(dataToSave, null, 2));
 
       if (!workingBlueprintId) {
@@ -83,19 +86,19 @@ export function useAutoSave(userId: string | null) {
           questionnaire_version: 2,
           static_answers_keys: Object.keys(dataToSave),
         });
-        
+
         const { data, error } = await supabase
           .from('blueprint_generator')
-          .insert({ 
-            user_id: userId, 
-            status: 'draft', 
+          .insert({
+            user_id: userId,
+            status: 'draft',
             static_answers: dataToSave,
             questionnaire_version: 2,
             completed_steps: [],
           })
           .select()
           .single();
-        
+
         if (error) {
           console.error('[AutoSave] Error creating new draft:', {
             error,
@@ -106,12 +109,12 @@ export function useAutoSave(userId: string | null) {
           });
           throw error;
         }
-        
+
         if (!data) {
           console.error('[AutoSave] No data returned from insert');
           throw new Error('No data returned from insert');
         }
-        
+
         workingBlueprintId = data.id as string;
         setBlueprintId(workingBlueprintId);
         console.log('[AutoSave] Created new draft with ID:', workingBlueprintId);
@@ -128,43 +131,41 @@ export function useAutoSave(userId: string | null) {
           .select('id, user_id, status')
           .eq('id', workingBlueprintId)
           .single();
-        
+
         if (checkError || !existingBlueprint) {
-          console.error('[AutoSave] Blueprint does not exist:', {
+          console.warn('[AutoSave] Stale blueprint ID detected - auto-recovering:', {
             blueprintId: workingBlueprintId,
-            error: checkError,
+            reason: checkError?.code || 'Blueprint not found',
           });
           // Blueprint doesn't exist, clear the stale ID and create new one
           setBlueprintId('');
-          console.log('[AutoSave] Cleared stale blueprint ID, will create new on next save');
+          console.log('[AutoSave] ✓ Cleared stale ID, creating new blueprint...');
           // Trigger immediate retry by calling save again
           setTimeout(() => void save(), 100);
           return;
         }
-        
+
         if (existingBlueprint.user_id !== userId) {
-          console.error('[AutoSave] Blueprint belongs to different user:', {
+          console.warn('[AutoSave] Blueprint ownership mismatch - auto-recovering:', {
             blueprintId: workingBlueprintId,
-            blueprintUserId: existingBlueprint.user_id,
-            currentUserId: userId,
           });
           // Clear the wrong ID and create a new blueprint
           setBlueprintId('');
-          console.log('[AutoSave] Cleared mismatched blueprint ID, will create new on next save');
+          console.log('[AutoSave] ✓ Creating new blueprint for current user...');
           setTimeout(() => void save(), 100);
           return;
         }
-        
+
         // Update the existing draft row
         console.log('[AutoSave] Updating existing draft:', workingBlueprintId);
         console.log('[AutoSave] Update payload:', {
           questionnaire_version: 2,
           static_answers_keys: Object.keys(dataToSave),
         });
-        
+
         const { data, error } = await supabase
           .from('blueprint_generator')
-          .update({ 
+          .update({
             static_answers: dataToSave,
             questionnaire_version: 2,
             updated_at: new Date().toISOString(),
@@ -172,7 +173,7 @@ export function useAutoSave(userId: string | null) {
           .eq('id', workingBlueprintId)
           .eq('user_id', userId)
           .select();
-        
+
         if (error) {
           console.error('[AutoSave] Error updating draft:', {
             error,
@@ -185,7 +186,7 @@ export function useAutoSave(userId: string | null) {
           });
           throw error;
         }
-        
+
         if (!data || data.length === 0) {
           console.error('[AutoSave] Update matched 0 rows - blueprint may have been deleted');
           // Clear the stale ID and retry
@@ -193,7 +194,7 @@ export function useAutoSave(userId: string | null) {
           setTimeout(() => void save(), 100);
           return;
         }
-        
+
         const updatedBlueprint = data[0];
         console.log('[AutoSave] Successfully updated draft');
         console.log('[AutoSave] Update response:', {
@@ -212,7 +213,7 @@ export function useAutoSave(userId: string | null) {
         .eq('id', workingBlueprintId)
         .eq('user_id', userId)
         .maybeSingle();
-      
+
       if (verifyError) {
         console.warn('[AutoSave] Could not verify save (non-fatal):', verifyError.message);
       } else if (!verifyData) {
@@ -224,7 +225,10 @@ export function useAutoSave(userId: string | null) {
           questionnaireVersion: verifyData.questionnaire_version,
           updatedAt: verifyData.updated_at,
         });
-        console.log('[AutoSave] ✓ Full static_answers:', JSON.stringify(verifyData.static_answers, null, 2));
+        console.log(
+          '[AutoSave] ✓ Full static_answers:',
+          JSON.stringify(verifyData.static_answers, null, 2)
+        );
       }
 
       setSaveState('saved');

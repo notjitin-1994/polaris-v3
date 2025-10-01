@@ -50,7 +50,7 @@ describeMaybe('db/userProfiles (integration)', () => {
   it('upserts and fetches user profile', async () => {
     const saved = await upsertUserProfile(
       { user_id: testUserId, full_name: 'Jane Doe' },
-      serviceClient,
+      serviceClient
     );
     expect(saved.user_id).toBe(testUserId);
     expect(saved.full_name).toBe('Jane Doe');

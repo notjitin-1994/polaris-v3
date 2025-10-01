@@ -41,7 +41,7 @@ const StepComponents: Record<number, React.FC> = {
   7: EvaluationStep,
 };
 
-export function StepWizard(): JSX.Element {
+export function StepWizard(): React.JSX.Element {
   const { user } = useSession();
   const searchParams = useSearchParams();
   const { currentStepIndex, setStep, values, setValues, saveState, blueprintId, setBlueprintId } =
@@ -70,20 +70,23 @@ export function StepWizard(): JSX.Element {
       if (!user?.id) return;
 
       setIsLoadingExisting(true);
-      
+
       try {
         const { BlueprintService } = await import('@/lib/db/blueprints');
         const supabase = getSupabaseBrowserClient();
         const blueprintService = new BlueprintService(supabase);
 
         const forcedId = searchParams.get('bid');
-        
-        console.log('[StepWizard] Loading blueprint:', { forcedId, currentBlueprintId: blueprintId });
+
+        console.log('[StepWizard] Loading blueprint:', {
+          forcedId,
+          currentBlueprintId: blueprintId,
+        });
 
         // Priority 1: Load the blueprint specified by ?bid parameter
         if (forcedId) {
           const bp = await blueprintService.getBlueprint(forcedId);
-          
+
           if (bp && bp.user_id === user.id) {
             console.log('[StepWizard] Loaded blueprint from ?bid:', {
               id: bp.id,
@@ -99,9 +102,10 @@ export function StepWizard(): JSX.Element {
             }
 
             // Check if static_answers has actual data or is empty
-            const hasData = bp.static_answers && 
-                           typeof bp.static_answers === 'object' && 
-                           Object.keys(bp.static_answers).length > 0;
+            const hasData =
+              bp.static_answers &&
+              typeof bp.static_answers === 'object' &&
+              Object.keys(bp.static_answers).length > 0;
 
             if (hasData) {
               // Load existing data into form
@@ -115,7 +119,7 @@ export function StepWizard(): JSX.Element {
               setValues(defaultValues);
               methods.reset(defaultValues);
             }
-            
+
             setIsLoadingExisting(false);
             return;
           } else {
@@ -135,12 +139,14 @@ export function StepWizard(): JSX.Element {
             console.log('[StepWizard] Found existing draft:', draftBlueprint.id);
             setBlueprintId(draftBlueprint.id);
 
-            const hasData = draftBlueprint.static_answers &&
-                           typeof draftBlueprint.static_answers === 'object' &&
-                           Object.keys(draftBlueprint.static_answers).length > 0;
+            const hasData =
+              draftBlueprint.static_answers &&
+              typeof draftBlueprint.static_answers === 'object' &&
+              Object.keys(draftBlueprint.static_answers).length > 0;
 
             if (hasData) {
-              const existingAnswers = draftBlueprint.static_answers as Partial<StaticQuestionsFormValues>;
+              const existingAnswers =
+                draftBlueprint.static_answers as Partial<StaticQuestionsFormValues>;
               console.log('[StepWizard] Loading draft data');
               setValues(existingAnswers);
               methods.reset(existingAnswers);
@@ -204,13 +210,17 @@ export function StepWizard(): JSX.Element {
     // For V2, we need to validate based on step index, not field names
     // Step-specific validation rules
     let isValid = false;
-    
+
     switch (currentStepIndex) {
       case 0: // Role
         isValid = await methods.trigger('role');
         break;
       case 1: // Organization
-        isValid = await methods.trigger(['organization.name', 'organization.industry', 'organization.size'] as any);
+        isValid = await methods.trigger([
+          'organization.name',
+          'organization.industry',
+          'organization.size',
+        ] as any);
         break;
       case 2: // Learner Profile
         isValid = await methods.trigger([
@@ -276,7 +286,7 @@ export function StepWizard(): JSX.Element {
       console.log('Validation failed:', methods.formState.errors);
       return;
     }
-    
+
     setStep(Math.min(currentStepIndex + 1, wizardSteps.length - 1));
   };
 
@@ -344,7 +354,7 @@ export function StepWizard(): JSX.Element {
       }
 
       console.log('[StepWizard] Final save successful, redirecting to loading screen');
-      
+
       // Redirect to loading screen which will trigger dynamic question generation
       window.location.href = `/loading/${blueprintId}`;
     } catch (error) {

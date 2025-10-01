@@ -414,192 +414,195 @@ export const DynamicFormRenderer = React.forwardRef<DynamicFormRef, DynamicFormR
         {/* Form Content */}
         <div className="w-full">
           <DynamicFormCard showLogo={false}>
-              <FormProvider {...methods}>
-                <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-6">
-                  {/* Progress indicator */}
-                  <DynamicFormProgress
-                    currentSection={currentSectionIndex}
-                    totalSections={formSchema.sections.length}
-                    sectionTitle={currentSectionData?.title}
-                    sectionDescription={currentSectionData?.description}
-                  />
+            <FormProvider {...methods}>
+              <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-6">
+                {/* Progress indicator */}
+                <DynamicFormProgress
+                  currentSection={currentSectionIndex}
+                  totalSections={formSchema.sections.length}
+                  sectionTitle={currentSectionData?.title}
+                  sectionDescription={currentSectionData?.description}
+                />
 
-                  {/* Form sections */}
-                  {formSchema.sections && Array.isArray(formSchema.sections) ? (
-                    formSchema.sections
-                      .map((section, sectionIndex) => {
-                        // Skip undefined sections
-                        if (!section || !section.id) {
-                          console.warn('Skipping undefined section at index:', sectionIndex);
-                          return null;
-                        }
+                {/* Form sections */}
+                {formSchema.sections && Array.isArray(formSchema.sections) ? (
+                  formSchema.sections
+                    .map((section, sectionIndex) => {
+                      // Skip undefined sections
+                      if (!section || !section.id) {
+                        console.warn('Skipping undefined section at index:', sectionIndex);
+                        return null;
+                      }
 
-                        const isHidden = currentSection !== section.id;
-                        const className = cn('space-y-6', isHidden && 'hidden');
+                      const isHidden = currentSection !== section.id;
+                      const className = cn('space-y-6', isHidden && 'hidden');
 
-                        // Debug: Log section visibility
-                        console.log(
-                          `Section ${section.id}: isHidden=${isHidden}, className=${className}`
-                        );
+                      // Debug: Log section visibility
+                      console.log(
+                        `Section ${section.id}: isHidden=${isHidden}, className=${className}`
+                      );
 
-                        return (
-                          <div
-                            key={`section-${sectionIndex}-${section.id}`}
-                            className={className}
-                            style={{ display: isHidden ? 'none' : 'block' }}
-                          >
-                            <div className="animate-fade-in-up space-y-6">
-                              {section.questions && Array.isArray(section.questions) ? (
-                                section.questions
-                                  .map((question, questionIndex) => {
-                                    // Skip undefined questions
-                                    if (!question || !question.id) {
-                                      console.warn(
-                                        'Skipping undefined question at index:',
-                                        questionIndex
-                                      );
-                                      return null;
-                                    }
-
-                                    return (
-                                      <div
-                                        key={`question-${sectionIndex}-${questionIndex}-${question.id}`}
-                                        className="space-y-2"
-                                      >
-                                        {/* Render actual input components based on question type (components include their own label/help) */}
-                                        <Controller
-                                          name={question.id}
-                                          control={methods.control}
-                                          render={({ field, fieldState }) => {
-                                            const InputComponent = getInputComponent(question.type);
-                                            return (
-                                              <InputComponent
-                                                key={`input-${sectionIndex}-${questionIndex}-${question.id}`}
-                                                question={question}
-                                                value={field.value}
-                                                onChange={async (value) => {
-                                                  field.onChange(value);
-                                                  await trigger(question.id);
-                                                  // Real-time persist: delegate to onSave if provided
-                                                  try {
-                                                    if (onSave) {
-                                                      await onSave({
-                                                        ...methods.getValues(),
-                                                        [question.id]: value,
-                                                      });
-                                                    }
-                                                  } catch (e) {
-                                                    console.error('Realtime save failed:', e);
-                                                  }
-                                                }}
-                                                onBlur={() => {
-                                                  field.onBlur();
-                                                  trigger(question.id);
-                                                }}
-                                                error={fieldState.error?.message}
-                                                disabled={disabled}
-                                              />
-                                            );
-                                          }}
-                                        />
-                                      </div>
+                      return (
+                        <div
+                          key={`section-${sectionIndex}-${section.id}`}
+                          className={className}
+                          style={{ display: isHidden ? 'none' : 'block' }}
+                        >
+                          <div className="animate-fade-in-up space-y-6">
+                            {section.questions && Array.isArray(section.questions) ? (
+                              section.questions
+                                .map((question, questionIndex) => {
+                                  // Skip undefined questions
+                                  if (!question || !question.id) {
+                                    console.warn(
+                                      'Skipping undefined question at index:',
+                                      questionIndex
                                     );
-                                  })
-                                  .filter(Boolean) // Remove null entries
-                              ) : (
-                                <p className="text-gray-500 dark:text-gray-400">
-                                  No questions available in this section.
-                                </p>
-                              )}
-                            </div>
+                                    return null;
+                                  }
+
+                                  return (
+                                    <div
+                                      key={`question-${sectionIndex}-${questionIndex}-${question.id}`}
+                                      className="space-y-2"
+                                    >
+                                      {/* Render actual input components based on question type (components include their own label/help) */}
+                                      <Controller
+                                        name={question.id}
+                                        control={methods.control}
+                                        render={({ field, fieldState }) => {
+                                          const InputComponent = getInputComponent(question.type);
+                                          return (
+                                            <InputComponent
+                                              key={`input-${sectionIndex}-${questionIndex}-${question.id}`}
+                                              question={question}
+                                              value={field.value}
+                                              onChange={async (value) => {
+                                                field.onChange(value);
+                                                await trigger(question.id);
+                                                // Real-time persist: delegate to onSave if provided
+                                                try {
+                                                  if (onSave) {
+                                                    await onSave({
+                                                      ...methods.getValues(),
+                                                      [question.id]: value,
+                                                    });
+                                                  }
+                                                } catch (e) {
+                                                  console.error('Realtime save failed:', e);
+                                                }
+                                              }}
+                                              onBlur={() => {
+                                                field.onBlur();
+                                                trigger(question.id);
+                                              }}
+                                              error={fieldState.error?.message}
+                                              disabled={disabled}
+                                            />
+                                          );
+                                        }}
+                                      />
+                                    </div>
+                                  );
+                                })
+                                .filter(Boolean) // Remove null entries
+                            ) : (
+                              <p className="text-gray-500 dark:text-gray-400">
+                                No questions available in this section.
+                              </p>
+                            )}
                           </div>
-                        );
-                      })
-                      .filter(Boolean) // Remove null entries
-                  ) : (
-                    <div className="py-8 text-center">
-                      <p className="text-gray-500 dark:text-gray-400">
-                        No sections available. Please try refreshing the page.
-                      </p>
+                        </div>
+                      );
+                    })
+                    .filter(Boolean) // Remove null entries
+                ) : (
+                  <div className="py-8 text-center">
+                    <p className="text-gray-500 dark:text-gray-400">
+                      No sections available. Please try refreshing the page.
+                    </p>
+                  </div>
+                )}
+
+                {/* Action buttons */}
+                <div
+                  className="flex items-center justify-between pt-6"
+                  style={{
+                    borderTop: '1px solid rgba(255, 255, 255, 0.1)',
+                  }}
+                >
+                  <div className="flex space-x-2">
+                    {!isFirstSection && (
+                      <DynamicFormButton
+                        type="button"
+                        onClick={previousSection}
+                        variant="ghost"
+                        disabled={disabled}
+                      >
+                        Previous
+                      </DynamicFormButton>
+                    )}
+                  </div>
+
+                  <div className="flex space-x-2">
+                    {isLastSection ? (
+                      <DynamicFormButton
+                        type="submit"
+                        disabled={disabled || isSubmitting}
+                        loading={isSubmitting}
+                        variant="primary"
+                      >
+                        {formSchema.settings?.submitButtonText || 'Submit'}
+                      </DynamicFormButton>
+                    ) : (
+                      <DynamicFormButton
+                        type="button"
+                        onClick={nextSection}
+                        variant="primary"
+                        disabled={disabled}
+                      >
+                        Next
+                      </DynamicFormButton>
+                    )}
+                  </div>
+                </div>
+
+                {/* Save Status */}
+                <div className="flex items-center justify-start py-2">
+                  {isSaving && (
+                    <div
+                      className="animate-fade-in flex items-center gap-2"
+                      style={{ color: '#d0edf0' }}
+                    >
+                      <div
+                        className="h-3 w-3 animate-spin rounded-full border-2"
+                        style={{
+                          borderColor: 'rgba(167, 218, 219, 0.3)',
+                          borderTopColor: '#a7dadb',
+                        }}
+                      />
+                      <span className="text-xs font-medium">Saving...</span>
                     </div>
                   )}
-
-                  {/* Action buttons */}
-                  <div
-                    className="flex items-center justify-between pt-6"
-                    style={{
-                      borderTop: '1px solid rgba(255, 255, 255, 0.1)',
-                    }}
-                  >
-                    <div className="flex space-x-2">
-                      {!isFirstSection && (
-                        <DynamicFormButton
-                          type="button"
-                          onClick={previousSection}
-                          variant="ghost"
-                          disabled={disabled}
-                        >
-                          Previous
-                        </DynamicFormButton>
-                      )}
-                    </div>
-
-                    <div className="flex space-x-2">
-                      {isLastSection ? (
-                        <DynamicFormButton
-                          type="submit"
-                          disabled={disabled || isSubmitting}
-                          loading={isSubmitting}
-                          variant="primary"
-                        >
-                          {formSchema.settings?.submitButtonText || 'Submit'}
-                        </DynamicFormButton>
-                      ) : (
-                        <DynamicFormButton
-                          type="button"
-                          onClick={nextSection}
-                          variant="primary"
-                          disabled={disabled}
-                        >
-                          Next
-                        </DynamicFormButton>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Save Status */}
-                  <div className="flex items-center justify-start py-2">
-                    {isSaving && (
-                      <div className="animate-fade-in flex items-center gap-2" style={{ color: '#d0edf0' }}>
-                        <div
-                          className="h-3 w-3 animate-spin rounded-full border-2"
-                          style={{
-                            borderColor: 'rgba(167, 218, 219, 0.3)',
-                            borderTopColor: '#a7dadb',
-                          }}
-                        />
-                        <span className="text-xs font-medium">Saving...</span>
+                  {!isSaving && lastSaved && (
+                    <div className="animate-fade-in flex items-center gap-2 text-green-400">
+                      <div className="flex h-3 w-3 items-center justify-center rounded-full bg-green-500">
+                        <svg className="h-2 w-2 text-white" fill="currentColor" viewBox="0 0 20 20">
+                          <path
+                            fillRule="evenodd"
+                            d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                            clipRule="evenodd"
+                          />
+                        </svg>
                       </div>
-                    )}
-                    {!isSaving && lastSaved && (
-                      <div className="animate-fade-in flex items-center gap-2 text-green-400">
-                        <div className="flex h-3 w-3 items-center justify-center rounded-full bg-green-500">
-                          <svg className="h-2 w-2 text-white" fill="currentColor" viewBox="0 0 20 20">
-                            <path
-                              fillRule="evenodd"
-                              d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                              clipRule="evenodd"
-                            />
-                          </svg>
-                        </div>
-                        <span className="text-xs font-medium">All changes saved</span>
-                      </div>
-                    )}
-                  </div>
-                </form>
-              </FormProvider>
-            </DynamicFormCard>
-          </div>
+                      <span className="text-xs font-medium">All changes saved</span>
+                    </div>
+                  )}
+                </div>
+              </form>
+            </FormProvider>
+          </DynamicFormCard>
+        </div>
       </FormErrorBoundary>
     );
   }

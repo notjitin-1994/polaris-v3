@@ -17,7 +17,7 @@ export class OptimisticUpdateManager {
     blueprint: BlueprintData,
     queryClient: any,
     blueprintStore: any,
-    uiStore: any,
+    uiStore: any
   ): () => void {
     // Store current state for rollback
     const currentState = {
@@ -91,7 +91,7 @@ export class OptimisticUpdateManager {
     updates: Partial<BlueprintData>,
     queryClient: any,
     blueprintStore: any,
-    uiStore: any,
+    uiStore: any
   ): () => void {
     // Store current state for rollback
     const currentBlueprint = blueprintStore.currentBlueprint;
@@ -106,7 +106,7 @@ export class OptimisticUpdateManager {
       (old: BlueprintData | undefined) => {
         if (!old) return old;
         return { ...old, ...updates, version: old.version + 1 };
-      },
+      }
     );
 
     // Show optimistic UI feedback
@@ -137,7 +137,7 @@ export class OptimisticUpdateManager {
     blueprintId: string,
     queryClient: any,
     blueprintStore: any,
-    uiStore: any,
+    uiStore: any
   ): () => void {
     // Store current state for rollback
     const currentBlueprints = blueprintStore.blueprints;
@@ -145,7 +145,7 @@ export class OptimisticUpdateManager {
 
     // Optimistically update Zustand store
     blueprintStore.setBlueprints(
-      currentBlueprints.filter((bp: BlueprintData) => bp.id !== blueprintId),
+      currentBlueprints.filter((bp: BlueprintData) => bp.id !== blueprintId)
     );
 
     // Optimistically update React Query cache
@@ -229,7 +229,7 @@ export const useOptimisticBlueprintSave = () => {
       blueprint,
       queryClient,
       blueprintStore,
-      uiStore,
+      uiStore
     );
   };
 
@@ -247,7 +247,7 @@ export const useOptimisticBlueprintUpdate = () => {
       updates,
       queryClient,
       blueprintStore,
-      uiStore,
+      uiStore
     );
   };
 
@@ -264,7 +264,7 @@ export const useOptimisticBlueprintDelete = () => {
       blueprintId,
       queryClient,
       blueprintStore,
-      uiStore,
+      uiStore
     );
   };
 
@@ -275,7 +275,7 @@ export const useOptimisticBlueprintDelete = () => {
 export const retryWithBackoff = async (
   fn: () => Promise<any>,
   maxRetries: number = 3,
-  baseDelay: number = 1000,
+  baseDelay: number = 1000
 ): Promise<any> => {
   let lastError: any;
 
@@ -302,7 +302,7 @@ export const retryWithBackoff = async (
 export const resolveOptimisticConflict = (
   localData: BlueprintData,
   remoteData: BlueprintData,
-  strategy: 'local' | 'remote' | 'merge' = 'merge',
+  strategy: 'local' | 'remote' | 'merge' = 'merge'
 ): BlueprintData => {
   switch (strategy) {
     case 'local':

@@ -74,7 +74,7 @@ export const useFormPersistence = ({
         setIsSaving(false);
       }
     },
-    [isSaving, storageKeyToUse, onSave, onError],
+    [isSaving, storageKeyToUse, onSave, onError]
   );
 
   // Load form data
@@ -197,7 +197,7 @@ export const useFormState = (formId: string, initialData: Record<string, any> = 
       lastSaved: new Date().toISOString(),
       version: '1.0.0',
     }),
-    [formId, currentSection, formData, completedSections],
+    [formId, currentSection, formData, completedSections]
   );
 
   return {

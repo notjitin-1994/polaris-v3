@@ -34,7 +34,15 @@ export interface LearningGapData {
   gapType: GapType;
   urgency: 1 | 2 | 3 | 4 | 5;
   impact: 1 | 2 | 3 | 4 | 5;
-  impactAreas: ('revenue' | 'productivity' | 'compliance' | 'customer' | 'safety' | 'quality' | 'retention')[];
+  impactAreas: (
+    | 'revenue'
+    | 'productivity'
+    | 'compliance'
+    | 'customer'
+    | 'safety'
+    | 'quality'
+    | 'retention'
+  )[];
   bloomsLevel: BloomsLevel;
   objectives: string; // Rich text
 }
@@ -134,24 +142,13 @@ export interface StaticQuestionsFormValuesV1 {
   constraints: string[];
 }
 
-export type StaticQuestionsFormValues = 
-  | StaticQuestionsFormValuesV1 
-  | StaticQuestionsFormValuesV2;
+export type StaticQuestionsFormValues = StaticQuestionsFormValuesV1 | StaticQuestionsFormValuesV2;
 
 // Type guards
 export function isV2Schema(data: unknown): data is StaticQuestionsFormValuesV2 {
-  return (
-    typeof data === 'object' &&
-    data !== null &&
-    'version' in data &&
-    data.version === 2
-  );
+  return typeof data === 'object' && data !== null && 'version' in data && data.version === 2;
 }
 
 export function isV1Schema(data: unknown): data is StaticQuestionsFormValuesV1 {
-  return (
-    typeof data === 'object' &&
-    data !== null &&
-    (!('version' in data) || data.version === 1)
-  );
+  return typeof data === 'object' && data !== null && (!('version' in data) || data.version === 1);
 }

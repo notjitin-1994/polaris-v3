@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion, useInView } from 'framer-motion';
+import type { Variants } from 'framer-motion';
 import {
   BarChart,
   Bar,
@@ -14,6 +15,7 @@ import {
   Tooltip,
   CartesianGrid,
 } from 'recharts';
+import type { PieLabelRenderProps } from 'recharts';
 import CountUp from 'react-countup';
 import {
   Clock,
@@ -37,7 +39,9 @@ export function BlueprintDashboard({ blueprint }: BlueprintDashboardProps): Reac
   const ref = React.useRef(null);
   const isInView = useInView(ref, { once: true, margin: '-100px' });
   const [mounted, setMounted] = useState(false);
-  const [selectedMetric, setSelectedMetric] = useState<'duration' | 'topics' | 'activities'>('duration');
+  const [selectedMetric, setSelectedMetric] = useState<'duration' | 'topics' | 'activities'>(
+    'duration'
+  );
 
   useEffect(() => {
     setMounted(true);
@@ -76,6 +80,8 @@ export function BlueprintDashboard({ blueprint }: BlueprintDashboardProps): Reac
     value: count,
   }));
 
+  const totalResources = resourceData.reduce((sum, d) => sum + d.value, 0);
+
   // Enhanced color palette
   const COLORS = {
     primary: ['#a7dadb', '#7bc5c7', '#d0edf0', '#5ba0a2'],
@@ -90,7 +96,7 @@ export function BlueprintDashboard({ blueprint }: BlueprintDashboardProps): Reac
   };
 
   // Animation variants
-  const containerVariants = {
+  const containerVariants: Variants = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
@@ -101,7 +107,7 @@ export function BlueprintDashboard({ blueprint }: BlueprintDashboardProps): Reac
     },
   };
 
-  const itemVariants = {
+  const itemVariants: Variants = {
     hidden: { opacity: 0, y: 20 },
     visible: {
       opacity: 1,
@@ -134,27 +140,33 @@ export function BlueprintDashboard({ blueprint }: BlueprintDashboardProps): Reac
     <motion.div
       variants={itemVariants}
       whileHover={{ scale: 1.02, y: -5 }}
-      className="group relative glass-card rounded-2xl border border-white/10 p-6 overflow-hidden transition-all duration-300 hover:border-primary-500/30 hover:shadow-2xl hover:shadow-primary-500/10"
+      className="group glass-card hover:border-primary-500/30 hover:shadow-primary-500/10 relative overflow-hidden rounded-2xl border border-white/10 p-6 transition-all duration-300 hover:shadow-2xl"
     >
       {/* Background gradient effect */}
-      <div className={`absolute inset-0 bg-gradient-to-br ${gradient} opacity-5 group-hover:opacity-10 transition-opacity`} />
-      
+      <div
+        className={`absolute inset-0 bg-gradient-to-br ${gradient} opacity-5 transition-opacity group-hover:opacity-10`}
+      />
+
       <div className="relative z-10">
         <div className="mb-4 flex items-start justify-between">
-          <div className={`p-3 rounded-xl bg-gradient-to-br ${gradient} bg-opacity-20 group-hover:scale-110 transition-transform`}>
-            <Icon className="h-6 w-6 text-white drop-shadow-glow" />
+          <div
+            className={`rounded-xl bg-gradient-to-br p-3 ${gradient} bg-opacity-20 transition-transform group-hover:scale-110`}
+          >
+            <Icon className="drop-shadow-glow h-6 w-6 text-white" />
           </div>
           {trend !== null && (
-            <div className={`flex items-center gap-1 rounded-full px-2 py-1 text-xs ${
-              trend > 0 ? 'bg-success/20 text-success' : 'bg-error/20 text-error'
-            }`}>
+            <div
+              className={`flex items-center gap-1 rounded-full px-2 py-1 text-xs ${
+                trend > 0 ? 'bg-success/20 text-success' : 'bg-error/20 text-error'
+              }`}
+            >
               <TrendingUp className={`h-3 w-3 ${trend < 0 ? 'rotate-180' : ''}`} />
               <span>{Math.abs(trend)}%</span>
             </div>
           )}
         </div>
         <div className="space-y-2">
-          <p className="text-sm font-medium text-text-secondary">{label}</p>
+          <p className="text-text-secondary text-sm font-medium">{label}</p>
           <div className="flex items-baseline gap-1">
             {mounted && isInView ? (
               <CountUp
@@ -168,7 +180,7 @@ export function BlueprintDashboard({ blueprint }: BlueprintDashboardProps): Reac
             ) : (
               <span className="text-4xl font-bold text-white">0</span>
             )}
-            {suffix && <span className="text-xl font-medium text-primary-400">{suffix}</span>}
+            {suffix && <span className="text-primary-400 text-xl font-medium">{suffix}</span>}
           </div>
         </div>
       </div>
@@ -182,8 +194,8 @@ export function BlueprintDashboard({ blueprint }: BlueprintDashboardProps): Reac
         <div className="glass rounded-lg border border-white/20 p-3 backdrop-blur-xl">
           <p className="text-sm font-semibold text-white">{label}</p>
           {payload.map((entry: any, index: number) => (
-            <p key={index} className="text-xs text-text-secondary">
-              {entry.name}: <span className="font-medium text-primary-400">{entry.value}</span>
+            <p key={index} className="text-text-secondary text-xs">
+              {entry.name}: <span className="text-primary-400 font-medium">{entry.value}</span>
             </p>
           ))}
         </div>
@@ -206,19 +218,20 @@ export function BlueprintDashboard({ blueprint }: BlueprintDashboardProps): Reac
           initial={{ scale: 0, rotate: -180 }}
           animate={{ scale: 1, rotate: 0 }}
           transition={{ delay: 0.3, type: 'spring' }}
-          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-gradient-to-r from-primary-500/20 to-secondary/20 border border-primary-500/30 backdrop-blur-xl mb-6"
+          className="from-primary-500/20 to-secondary/20 border-primary-500/30 mb-6 inline-flex items-center gap-2 rounded-full border bg-gradient-to-r px-5 py-2.5 backdrop-blur-xl"
         >
-          <Sparkles className="h-5 w-5 text-primary-400 animate-pulse" />
-          <span className="text-sm font-bold text-primary-300 uppercase tracking-wider">
+          <Sparkles className="text-primary-400 h-5 w-5 animate-pulse" />
+          <span className="text-primary-300 text-sm font-bold tracking-wider uppercase">
             Blueprint Analytics
           </span>
-          <Sparkles className="h-5 w-5 text-secondary animate-pulse" />
+          <Sparkles className="text-secondary h-5 w-5 animate-pulse" />
         </motion.div>
-        <h2 className="text-4xl font-bold text-white mb-3 bg-gradient-to-r from-white to-primary-300 bg-clip-text text-transparent">
+        <h2 className="to-primary-300 mb-3 bg-gradient-to-r from-white bg-clip-text text-4xl font-bold text-transparent text-white">
           Learning Journey Overview
         </h2>
-        <p className="text-text-secondary max-w-3xl mx-auto text-lg">
-          Comprehensive analysis of your personalized learning blueprint with real-time insights and progress tracking
+        <p className="text-text-secondary mx-auto max-w-3xl text-lg">
+          Comprehensive analysis of your personalized learning blueprint with real-time insights and
+          progress tracking
         </p>
       </motion.div>
 
@@ -266,14 +279,14 @@ export function BlueprintDashboard({ blueprint }: BlueprintDashboardProps): Reac
         className="glass-card rounded-3xl border border-white/10 p-8 backdrop-blur-xl"
       >
         <div className="mb-6">
-          <div className="flex items-center justify-between mb-4">
+          <div className="mb-4 flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="p-3 rounded-xl bg-gradient-to-br from-primary-500/20 to-primary-600/20">
-                <Activity className="h-6 w-6 text-primary-400" />
+              <div className="from-primary-500/20 to-primary-600/20 rounded-xl bg-gradient-to-br p-3">
+                <Activity className="text-primary-400 h-6 w-6" />
               </div>
               <div>
                 <h3 className="text-xl font-bold text-white">Module Analytics</h3>
-                <p className="text-sm text-text-secondary">Deep dive into module metrics</p>
+                <p className="text-text-secondary text-sm">Deep dive into module metrics</p>
               </div>
             </div>
             <div className="flex gap-2">
@@ -281,10 +294,10 @@ export function BlueprintDashboard({ blueprint }: BlueprintDashboardProps): Reac
                 <button
                   key={metric}
                   onClick={() => setSelectedMetric(metric)}
-                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                  className={`rounded-lg px-4 py-2 text-sm font-medium transition-all ${
                     selectedMetric === metric
-                      ? 'bg-gradient-to-r from-primary-500/30 to-primary-600/30 text-white border border-primary-500/50'
-                      : 'bg-white/5 text-text-secondary hover:bg-white/10 hover:text-white'
+                      ? 'from-primary-500/30 to-primary-600/30 border-primary-500/50 border bg-gradient-to-r text-white'
+                      : 'text-text-secondary bg-white/5 hover:bg-white/10 hover:text-white'
                   }`}
                 >
                   {metric.charAt(0).toUpperCase() + metric.slice(1)}
@@ -333,19 +346,26 @@ export function BlueprintDashboard({ blueprint }: BlueprintDashboardProps): Reac
             className="glass-card rounded-3xl border border-white/10 p-8"
           >
             <div className="mb-6 flex items-center gap-3">
-              <div className="p-3 rounded-xl bg-gradient-to-br from-success/20 to-success/30">
-                <Users className="h-6 w-6 text-success" />
+              <div className="from-success/20 to-success/30 rounded-xl bg-gradient-to-br p-3">
+                <Users className="text-success h-6 w-6" />
               </div>
               <div>
                 <h3 className="text-xl font-bold text-white">Resource Distribution</h3>
-                <p className="text-sm text-text-secondary">Learning materials by type</p>
+                <p className="text-text-secondary text-sm">Learning materials by type</p>
               </div>
             </div>
             <ResponsiveContainer width="100%" height={300}>
               <PieChart>
                 <defs>
                   {COLORS.primary.map((color, index) => (
-                    <linearGradient key={index} id={`pieGradient${index}`} x1="0" y1="0" x2="0" y2="1">
+                    <linearGradient
+                      key={index}
+                      id={`pieGradient${index}`}
+                      x1="0"
+                      y1="0"
+                      x2="0"
+                      y2="1"
+                    >
                       <stop offset="0%" stopColor={color} stopOpacity={1} />
                       <stop offset="100%" stopColor={color} stopOpacity={0.6} />
                     </linearGradient>
@@ -356,7 +376,12 @@ export function BlueprintDashboard({ blueprint }: BlueprintDashboardProps): Reac
                   cx="50%"
                   cy="50%"
                   labelLine={false}
-                  label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                  label={(props: PieLabelRenderProps) => {
+                    const name = (props.name ?? '') as string;
+                    const value = typeof props.value === 'number' ? props.value : 0;
+                    const pct = totalResources > 0 ? Math.round((value / totalResources) * 100) : 0;
+                    return `${name}: ${pct}%`;
+                  }}
                   outerRadius={100}
                   fill="#8884d8"
                   dataKey="value"
@@ -364,7 +389,10 @@ export function BlueprintDashboard({ blueprint }: BlueprintDashboardProps): Reac
                   animationBegin={400}
                 >
                   {resourceData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={`url(#pieGradient${index % COLORS.primary.length})`} />
+                    <Cell
+                      key={`cell-${index}`}
+                      fill={`url(#pieGradient${index % COLORS.primary.length})`}
+                    />
                   ))}
                 </Pie>
                 <Tooltip content={<CustomTooltip />} />
@@ -381,30 +409,30 @@ export function BlueprintDashboard({ blueprint }: BlueprintDashboardProps): Reac
           className="glass-card rounded-3xl border border-white/10 p-8"
         >
           <div className="mb-6 flex items-center gap-3">
-            <div className="p-3 rounded-xl bg-gradient-to-br from-primary-500/20 to-primary-600/20">
-              <Target className="h-6 w-6 text-primary-400" />
+            <div className="from-primary-500/20 to-primary-600/20 rounded-xl bg-gradient-to-br p-3">
+              <Target className="text-primary-400 h-6 w-6" />
             </div>
             <div>
               <h3 className="text-xl font-bold text-white">Learning Objectives</h3>
-              <p className="text-sm text-text-secondary">
+              <p className="text-text-secondary text-sm">
                 {learningObjectives.length} key objectives to master
               </p>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             {learningObjectives.slice(0, 8).map((objective, index) => (
               <motion.div
                 key={index}
                 initial={{ opacity: 0, x: -20 }}
                 animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: -20 }}
                 transition={{ delay: 0.8 + index * 0.05, duration: 0.4 }}
-                className="group flex items-start gap-3 rounded-xl bg-gradient-to-r from-white/5 to-white/10 p-4 transition-all duration-300 hover:from-primary-500/10 hover:to-primary-600/10 hover:border-primary-500/30 border border-white/10"
+                className="group hover:from-primary-500/10 hover:to-primary-600/10 hover:border-primary-500/30 flex items-start gap-3 rounded-xl border border-white/10 bg-gradient-to-r from-white/5 to-white/10 p-4 transition-all duration-300"
               >
                 <div className="mt-0.5 flex-shrink-0">
-                  <CheckCircle2 className="h-5 w-5 text-primary-400 group-hover:text-primary-300 transition-colors" />
+                  <CheckCircle2 className="text-primary-400 group-hover:text-primary-300 h-5 w-5 transition-colors" />
                 </div>
-                <p className="text-sm text-text-secondary group-hover:text-text-primary transition-colors">
+                <p className="text-text-secondary group-hover:text-text-primary text-sm transition-colors">
                   {objective}
                 </p>
               </motion.div>
@@ -418,7 +446,7 @@ export function BlueprintDashboard({ blueprint }: BlueprintDashboardProps): Reac
               transition={{ delay: 1.4 }}
               className="mt-6 text-center"
             >
-              <button className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-primary-500/20 to-primary-600/20 border border-primary-500/30 text-sm font-medium text-primary-300 hover:from-primary-500/30 hover:to-primary-600/30 transition-all">
+              <button className="from-primary-500/20 to-primary-600/20 border-primary-500/30 text-primary-300 hover:from-primary-500/30 hover:to-primary-600/30 inline-flex items-center gap-2 rounded-xl border bg-gradient-to-r px-6 py-3 text-sm font-medium transition-all">
                 <span>View all {learningObjectives.length} objectives</span>
                 <ChevronRight className="h-4 w-4" />
               </button>
