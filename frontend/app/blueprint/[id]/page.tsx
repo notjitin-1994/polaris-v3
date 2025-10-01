@@ -148,22 +148,22 @@ export default function BlueprintPage({ params }: PageProps): React.JSX.Element 
 
   const handleShareBlueprint = async () => {
     if (!blueprintId || isGeneratingShare) return;
-    
+
     setIsGeneratingShare(true);
-    
+
     try {
       const response = await fetch('/api/blueprints/share/generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ blueprintId }),
       });
-      
+
       if (!response.ok) {
         throw new Error('Failed to generate share link');
       }
-      
+
       const result = await response.json();
-      
+
       if (result.success && result.shareUrl) {
         // Copy to clipboard
         await navigator.clipboard.writeText(result.shareUrl);
@@ -325,7 +325,7 @@ export default function BlueprintPage({ params }: PageProps): React.JSX.Element 
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
         type="button"
-        className="pressable inline-flex h-8 w-8 items-center justify-center rounded-lg border border-white/10 bg-white/5 text-white/70 transition-all hover:bg-white/10 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
+        className="pressable inline-flex h-8 w-8 items-center justify-center rounded-lg border border-white/10 bg-white/5 text-white/70 transition-all hover:bg-white/10 hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
         onClick={handleShareBlueprint}
         disabled={isGeneratingShare}
         title="Copy share link to clipboard"

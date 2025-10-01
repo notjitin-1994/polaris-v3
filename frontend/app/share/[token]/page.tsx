@@ -320,7 +320,10 @@ export default function SharedBlueprintPage({ params }: PageProps): React.JSX.El
       <footer className="relative z-10 border-t border-white/10 py-6 text-center">
         <p className="text-text-secondary text-xs">
           Powered by{' '}
-          <Link href="/" className="text-primary hover:text-primary/80 font-medium transition-colors">
+          <Link
+            href="/"
+            className="text-primary hover:text-primary/80 font-medium transition-colors"
+          >
             SmartSlate
           </Link>{' '}
           - AI-Powered Learning Blueprint Generator

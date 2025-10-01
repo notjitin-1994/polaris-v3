@@ -167,7 +167,7 @@ export async function POST(req: NextRequest): Promise<NextResponse<GenerateBluep
     // Build context for generation
     const staticAnswers = blueprint.static_answers as Record<string, unknown>;
     const dynamicAnswers = blueprint.dynamic_answers as Record<string, unknown>;
-    
+
     const getNestedValue = (obj: Record<string, unknown>, path: string[]): string => {
       let current: unknown = obj;
       for (const key of path) {
@@ -179,7 +179,7 @@ export async function POST(req: NextRequest): Promise<NextResponse<GenerateBluep
       }
       return typeof current === 'string' ? current : '';
     };
-    
+
     const context = {
       blueprintId,
       userId,
