@@ -41,9 +41,6 @@ export default function BlueprintPage({ params }: PageProps): React.JSX.Element 
   const [error, setError] = useState(false);
   const [renamingBlueprint, setRenamingBlueprint] = useState(false);
   const [isEditingMarkdown, setIsEditingMarkdown] = useState(false);
-  const [showShareMenu, setShowShareMenu] = useState(false);
-  const [showShareDialog, setShowShareDialog] = useState(false);
-  const [shareUrl, setShareUrl] = useState('');
   const [isGeneratingShare, setIsGeneratingShare] = useState(false);
   const viewMode = 'presentation'; // Always use presentation mode
   const [showSuccessToast, setShowSuccessToast] = useState(false);
@@ -153,11 +150,37 @@ export default function BlueprintPage({ params }: PageProps): React.JSX.Element 
     setIsEditingMarkdown(true);
   };
 
-  const handleCopyLink = () => {
-    const url = `${window.location.origin}/blueprint/${blueprintId}`;
-    navigator.clipboard.writeText(url);
-    showToast('Link copied to clipboard');
-    setShowShareMenu(false);
+  const handleShareBlueprint = async () => {
+    if (!blueprintId || isGeneratingShare) return;
+    
+    setIsGeneratingShare(true);
+    
+    try {
+      const response = await fetch('/api/blueprints/share/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ blueprintId }),
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to generate share link');
+      }
+      
+      const result = await response.json();
+      
+      if (result.success && result.shareUrl) {
+        // Copy to clipboard
+        await navigator.clipboard.writeText(result.shareUrl);
+        showToast('Share link copied to clipboard');
+      } else {
+        showToast('Failed to generate share link');
+      }
+    } catch (error) {
+      console.error('Error generating share link:', error);
+      showToast('Failed to generate share link');
+    } finally {
+      setIsGeneratingShare(false);
+    }
   };
 
   const showToast = (message: string) => {
@@ -346,52 +369,23 @@ export default function BlueprintPage({ params }: PageProps): React.JSX.Element 
         <Edit3 className="h-3.5 w-3.5" aria-hidden="true" />
       </motion.button>
 
-      {/* Share Menu */}
-      <div className="relative">
-        <motion.button
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          type="button"
-          className="pressable inline-flex h-8 w-8 items-center justify-center rounded-lg border border-white/10 bg-white/5 text-white/70 transition-all hover:bg-white/10 hover:text-white"
-          onClick={() => setShowShareMenu(!showShareMenu)}
-          title="Share blueprint"
-          aria-label="Share blueprint"
-        >
+      {/* Share Button */}
+      <motion.button
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
+        type="button"
+        className="pressable inline-flex h-8 w-8 items-center justify-center rounded-lg border border-white/10 bg-white/5 text-white/70 transition-all hover:bg-white/10 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
+        onClick={handleShareBlueprint}
+        disabled={isGeneratingShare}
+        title="Copy share link to clipboard"
+        aria-label="Copy share link to clipboard"
+      >
+        {isGeneratingShare ? (
+          <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden="true" />
+        ) : (
           <Share2 className="h-3.5 w-3.5" aria-hidden="true" />
-        </motion.button>
-
-        <AnimatePresence>
-          {showShareMenu && (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: -10 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: -10 }}
-              className="glass-card absolute top-full right-0 z-50 mt-2 w-56"
-            >
-              <button
-                className="text-text-secondary flex w-full items-center gap-3 px-4 py-3 text-sm transition-colors hover:bg-white/5 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
-                onClick={handleGenerateShareLink}
-                disabled={isGeneratingShare}
-              >
-                {isGeneratingShare ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                ) : (
-                  <Share2 className="h-4 w-4" />
-                )}
-                Create Public Link
-              </button>
-              <div className="border-t border-white/10" />
-              <button
-                className="text-text-secondary flex w-full items-center gap-3 px-4 py-3 text-sm transition-colors hover:bg-white/5 hover:text-white"
-                onClick={handleCopyLink}
-              >
-                <Copy className="h-4 w-4" />
-                Copy Private Link
-              </button>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
+        )}
+      </motion.button>
 
       {/* Export Button - Direct PDF Export */}
       <motion.button

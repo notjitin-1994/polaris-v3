@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getSupabaseRouteHandlerClient } from '@/lib/supabase/server';
+import { getSupabaseServerClient } from '@/lib/supabase/server';
 
 /**
  * POST /api/blueprints/share/generate
@@ -21,7 +21,7 @@ import { getSupabaseRouteHandlerClient } from '@/lib/supabase/server';
  */
 export async function POST(req: NextRequest) {
   try {
-    const supabase = await getSupabaseRouteHandlerClient();
+    const supabase = await getSupabaseServerClient();
 
     // Check authentication
     const {
