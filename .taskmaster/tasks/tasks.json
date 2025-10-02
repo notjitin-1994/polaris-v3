@@ -2,129 +2,684 @@
   "master": {
     "tasks": [
       {
-        "id": 11,
-        "title": "Setup Project Foundation and Dependencies",
-        "description": "Initialize the project with required build tools, package manager configuration, and install core dependencies including Tailwind CSS, PostCSS, and autoprefixer",
-        "details": "1. Initialize npm/yarn project\n2. Install dependencies:\n```bash\nnpm install -D tailwindcss postcss autoprefixer\nnpm install -D @tailwindcss/forms @tailwindcss/typography\n```\n3. Create project structure:\n```\n/src\n  /styles\n    - index.css\n    - components.css\n  /assets\n/public\n  /images\n    /logos\n```\n4. Initialize Tailwind:\n```bash\nnpx tailwindcss init -p\n```",
-        "testStrategy": "Verify all dependencies are installed correctly by checking package.json, ensure Tailwind CLI works, and confirm PostCSS config is generated",
+        "id": 21,
+        "title": "Create Repository Backup and Branching Strategy",
+        "description": "Establish comprehensive safety nets before making any destructive changes to the codebase",
+        "details": "```bash\n# Create full repository backup\ngit clone --mirror https://github.com/smartslate/polaris.git smartslate-polaris-backup-$(date +%Y%m%d)\ntar -czf smartslate-polaris-backup-$(date +%Y%m%d).tar.gz smartslate-polaris-backup-$(date +%Y%m%d)/\n\n# Tag current state\ngit tag -a v3-pre-cleanup -m \"Pre-cleanup snapshot for rollback\"\ngit push origin v3-pre-cleanup\n\n# Create cleanup branch\ngit checkout -b cleanup/consolidation\ngit push -u origin cleanup/consolidation\n\n# Document rollback procedure\necho '# Rollback Procedure\n\n## Emergency Rollback\n```bash\ngit fetch origin\ngit reset --hard v3-pre-cleanup\ngit push --force origin main\n```\n\n## Verify Rollback\n- Check build: npm run build\n- Test deployment: vercel --prod\n- Verify features: npm run test\n' > ROLLBACK.md\n```",
+        "testStrategy": "Verify backup integrity by cloning from backup location and comparing file counts. Test rollback procedure on a test branch. Ensure all team members can access backup location and understand rollback commands.",
         "priority": "high",
         "dependencies": [],
-        "status": "pendin ",
-        "subtasks": []
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Create and Verify Repository Backup",
+            "description": "Perform a full backup of the repository using git clone --mirror, compress the backup, and verify its integrity by restoring from the backup and comparing repository contents.",
+            "dependencies": [],
+            "details": "Follow the 3-2-1 backup rule: maintain at least three copies, use both local and remote/offsite storage, and automate verification steps such as file integrity checks and test restores. Document the backup process and verification results.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 2,
+            "title": "Tag Current Repository State for Snapshot",
+            "description": "Create a Git tag to snapshot the current state of the repository before any destructive changes, and push the tag to the remote origin.",
+            "dependencies": [
+              "21.1"
+            ],
+            "details": "Use an annotated tag (e.g., v3-pre-cleanup) with a descriptive message. Ensure the tag is pushed to all relevant remotes for rollback purposes.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 3,
+            "title": "Create Cleanup Branch and Set Permissions",
+            "description": "Create a dedicated branch for cleanup/consolidation work and configure branch permissions to restrict destructive changes to authorized users.",
+            "dependencies": [
+              "21.2"
+            ],
+            "details": "Create the branch from the tagged snapshot, push it to the remote, and update repository settings to enforce branch protection rules as needed.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 4,
+            "title": "Document and Test Rollback Procedures",
+            "description": "Write clear rollback instructions, including commands for emergency restoration, and test the rollback process on a test branch to ensure reliability.",
+            "dependencies": [
+              "21.3"
+            ],
+            "details": "Include steps for verifying rollback success (build, deploy, test). Store the documentation in ROLLBACK.md and ensure it is accessible to the team.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 5,
+            "title": "Communicate Strategy and Grant Team Access",
+            "description": "Share the backup, branching, and rollback strategy with the team, ensure all members have access to backups and documentation, and confirm understanding.",
+            "dependencies": [
+              "21.4"
+            ],
+            "details": "Hold a team meeting or send detailed written communication. Verify that all relevant team members can access the backup location and understand the procedures.",
+            "status": "pending",
+            "testStrategy": ""
+          }
+        ]
       },
       {
-        "id": 12,
-        "title": "Configure Tailwind Theme Extensions",
-        "description": "Set up the complete Tailwind configuration file with exact color tokens, font families, keyframes, and animations as specified in the PRD",
-        "details": "Create tailwind.config.js with exact configuration:\n```js\n/** @type {import('tailwindcss').Config} */\nexport default {\n  content: [\n    './index.html',\n    './src/**/*.{js,ts,jsx,tsx}',\n  ],\n  theme: {\n    extend: {\n      colors: {\n        primary: { 400: '#d0edf0', 500: '#a7dadb', 600: '#7bc5c7' },\n        secondary: { 400: '#7C69F5', 500: '#4F46E5', 600: '#3730A3' },\n        brand: { accent: '#a7dadb' },\n        success: { 500: '#22c55e', 600: '#16a34a' },\n        warning: { 500: '#f59e0b', 600: '#d97706' },\n        danger: { 500: '#ef4444', 600: '#dc2626' },\n      },\n      fontFamily: {\n        sans: ['Lato', 'ui-sans-serif', 'system-ui', 'sans-serif'],\n        heading: ['Quicksand', 'ui-sans-serif', 'system-ui', 'sans-serif'],\n      },\n      keyframes: {\n        fadeIn: { '0%': { opacity: '0', transform: 'translateY(4px)' }, '100%': { opacity: '1', transform: 'translateY(0)' } },\n        fadeInUp: { '0%': { opacity: '0', transform: 'translateY(12px)' }, '100%': { opacity: '1', transform: 'translateY(0)' } },\n        scaleIn: { '0%': { opacity: '0', transform: 'scale(0.98)' }, '100%': { opacity: '1', transform: 'scale(1)' } },\n        slideIn: { '0%': { opacity: '0', transform: 'translateX(-8px)' }, '100%': { opacity: '1', transform: 'translateX(0)' } },\n        slideInRight: { '0%': { opacity: '0', transform: 'translateX(100%)' }, '100%': { opacity: '1', transform: 'translateX(0)' } },\n        shimmer: { '0%': { backgroundPosition: '-200% 0' }, '100%': { backgroundPosition: '200% 0' } },\n        pulseSubtle: { '0%, 100%': { opacity: '1' }, '50%': { opacity: '0.5' } },\n      },\n      animation: {\n        'fade-in': 'fadeIn 200ms ease-out',\n        'fade-in-up': 'fadeInUp 300ms ease-out',\n        'scale-in': 'scaleIn 220ms cubic-bezier(0.22,1,0.36,1)',\n        'slide-in': 'slideIn 240ms ease-out',\n        'slide-in-right': 'slideInRight 280ms cubic-bezier(0.22,1,0.36,1)',\n        shimmer: 'shimmer 1.8s linear infinite',\n        'pulse-subtle': 'pulseSubtle 2s ease-in-out infinite',\n      },\n    },\n  },\n  plugins: [],\n};\n```",
-        "testStrategy": "Run Tailwind build process to ensure configuration is valid, create test HTML with color classes to verify tokens are available, check IntelliSense autocomplete for custom classes",
+        "id": 22,
+        "title": "Remove Exposed Credentials and Clean Git History",
+        "description": "Immediately remove all exposed SSH keys and credentials from repository and Git history",
+        "details": "```bash\n# Remove ssh_keys directory\ngit rm -rf ssh_keys/\ngit commit -m \"security: remove exposed SSH keys\"\n\n# Install BFG Repo-Cleaner\nwget https://repo1.maven.org/maven2/com/madgag/bfg/1.14.0/bfg-1.14.0.jar\n\n# Clean Git history\njava -jar bfg-1.14.0.jar --delete-folders ssh_keys --no-blob-protection\ngit reflog expire --expire=now --all && git gc --prune=now --aggressive\n\n# Force push to all branches\ngit push origin --force --all\ngit push origin --force --tags\n\n# Scan for other secrets\npip install truffleHog3\ntrufflehog3 --regex --entropy=False --max_depth=100000 .\n\n# Remove any found secrets using similar process\n```\n\n// Rotate all exposed credentials immediately\n// Update all SSH keys on servers\n// Invalidate old keys in authorized_keys files",
+        "testStrategy": "Run truffleHog scan after cleanup to verify no secrets remain. Clone fresh repository and search for patterns: 'ssh_keys', 'BEGIN RSA', 'password=', 'api_key='. Verify Git history no longer contains sensitive data using git log -p | grep -i 'ssh_keys'.",
         "priority": "high",
         "dependencies": [
-          11
+          21
         ],
         "status": "pending",
-        "subtasks": []
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Identify All Exposed Credentials and Sensitive Files",
+            "description": "Systematically search the repository and its history for all exposed SSH keys, credentials, and sensitive files using automated tools and manual review.",
+            "dependencies": [],
+            "details": "Use tools like truffleHog, git log, and grep to detect secrets. Document all findings, including file paths and commit hashes where secrets appear.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 2,
+            "title": "Remove Secrets from Working Directory",
+            "description": "Delete all identified sensitive files and credentials from the current working directory and commit the changes.",
+            "dependencies": [
+              "22.1"
+            ],
+            "details": "Remove directories such as 'ssh_keys/' and any other files containing secrets. Commit with a clear message indicating security-related removal.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 3,
+            "title": "Clean Git History Using BFG Repo-Cleaner",
+            "description": "Rewrite Git history to remove all traces of exposed credentials and sensitive files using BFG Repo-Cleaner or equivalent tools.",
+            "dependencies": [
+              "22.2"
+            ],
+            "details": "Run BFG Repo-Cleaner with appropriate flags to delete folders and files containing secrets. Follow up with 'git reflog expire' and 'git gc' to fully purge sensitive data.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 4,
+            "title": "Force Push Cleaned History and Synchronize Repository",
+            "description": "Force push the rewritten history to all remote branches and tags, ensuring all collaborators and CI systems are updated.",
+            "dependencies": [
+              "22.3"
+            ],
+            "details": "Use 'git push --force --all' and 'git push --force --tags' to update the remote repository. Notify all collaborators to re-clone or reset their local repositories.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 5,
+            "title": "Scan for Residual Secrets in Repository and History",
+            "description": "Perform a comprehensive scan of the repository and its history to ensure no secrets remain after cleaning.",
+            "dependencies": [
+              "22.4"
+            ],
+            "details": "Run truffleHog and similar tools on the cleaned repository. Manually inspect for patterns like 'BEGIN RSA', 'password=', and 'api_key='. Document and address any findings.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 6,
+            "title": "Rotate All Exposed Credentials and Update Server Access",
+            "description": "Immediately rotate all exposed SSH keys and credentials, update authorized_keys on servers, and invalidate old keys.",
+            "dependencies": [
+              "22.5"
+            ],
+            "details": "Generate new SSH keys and credentials. Update all relevant systems and services. Remove old keys from authorized_keys and revoke any compromised tokens.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 7,
+            "title": "Verify Cleanup and Access Control",
+            "description": "Validate that all secrets have been removed, Git history is clean, and only authorized users have access to the repository.",
+            "dependencies": [
+              "22.6"
+            ],
+            "details": "Clone the repository afresh, scan for secrets, and review access permissions. Confirm that no sensitive data remains and that access control policies are enforced.",
+            "status": "pending",
+            "testStrategy": ""
+          }
+        ]
       },
       {
-        "id": 13,
-        "title": "Implement CSS Custom Properties and Theme System",
-        "description": "Create the CSS variable system for dark and light themes with exact color values, including theme switching mechanism",
-        "details": "In src/styles/index.css, implement:\n```css\n@tailwind base;\n@tailwind components;\n@tailwind utilities;\n\n:root {\n  /* Dark theme (default) */\n  --bg: 2 12 27;\n  --card: 13 27 42;\n  --text: 224 224 224;\n  --text-muted: 176 197 198;\n  --text-disabled: 122 138 139;\n  --primary: 167 218 219;\n  --primary-light: 208 237 240;\n  --primary-dark: 123 197 199;\n  --secondary: 79 70 229;\n  --secondary-light: 124 105 245;\n  --secondary-dark: 55 48 163;\n  --success: 34 197 94;\n  --warning: 245 158 11;\n  --danger: 239 68 68;\n  accent-color: rgb(var(--primary));\n}\n\n[data-theme='light'] {\n  --bg: 255 255 255;\n  --card: 248 250 252;\n  --text: 30 41 59;\n  --text-muted: 71 85 105;\n  --text-disabled: 148 163 184;\n  --primary: 167 218 219;\n  --primary-light: 208 237 240;\n  --primary-dark: 123 197 199;\n  --secondary: 79 70 229;\n  --secondary-light: 124 105 245;\n  --secondary-dark: 55 48 163;\n  --success: 21 128 61;\n  --warning: 180 83 9;\n  --danger: 185 28 28;\n  accent-color: rgb(var(--primary));\n}\n\n::selection { background-color: rgb(var(--primary) / 0.8); color: rgb(var(--bg)); }\n::-moz-selection { background-color: rgb(var(--primary) / 0.8); color: rgb(var(--bg)); }\n\n[data-theme='light'] ::selection { background-color: rgb(var(--primary) / 0.3); color: rgb(30 41 59); }\n[data-theme='light'] ::-moz-selection { background-color: rgb(var(--primary) / 0.3); color: rgb(30 41 59); }\n```",
-        "testStrategy": "Toggle data-theme attribute on HTML element and verify color changes, use browser DevTools to inspect computed CSS variable values, test selection highlighting in both themes",
+        "id": 23,
+        "title": "Implement Secrets Management System",
+        "description": "Set up proper environment variable management and prevent future credential exposure",
+        "details": "```typescript\n// Create .env.example template\nconst envTemplate = `\n# Application\nNODE_ENV=development\nNEXT_PUBLIC_APP_URL=http://localhost:3000\n\n# AI APIs\nCLAUDE_API_KEY=sk-ant-xxxxxxxxxxxxxxxxxxxx\nPERPLEXITY_API_KEY=pplx-xxxxxxxxxxxxxxxxxxxx\n\n# Database\nDATABASE_URL=postgresql://user:password@localhost:5432/smartslate\nREDIS_URL=redis://localhost:6379\n\n# Authentication\nNEXTAUTH_URL=http://localhost:3000\nNEXTAUTH_SECRET=generate_with_openssl_rand_base64_32\n`;\n\n// Update .gitignore\nconst gitignoreAdditions = `\n# Secrets\n.env\n.env.local\n.env.*.local\n*.pem\n*.key\n*.crt\nssh_keys/\nsecrets/\ncredentials/\n\n# API Keys\n*_api_key*\n*_secret*\n*_token*\n`;\n\n// Install and configure git-secrets\n```bash\nbrew install git-secrets\ngit secrets --install\ngit secrets --register-aws\ngit secrets --add 'sk-ant-[a-zA-Z0-9]{32,}'\ngit secrets --add 'pplx-[a-zA-Z0-9]{32,}'\ngit secrets --add 'password\\s*=\\s*[\"\\'][^\"\\']+[\"\\']'\n```\n\n// Configure Vercel environment variables via dashboard",
+        "testStrategy": "Test pre-commit hooks by attempting to commit a file containing 'sk-ant-test123'. Verify .env.local is properly gitignored. Confirm all environment variables load correctly in development and production environments.",
         "priority": "high",
         "dependencies": [
-          12
+          22
         ],
         "status": "pending",
-        "subtasks": []
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Create .env.example Template",
+            "description": "Design and implement a standardized .env.example file that lists all required environment variables without exposing sensitive values.",
+            "dependencies": [],
+            "details": "Ensure the template covers all application, API, database, and authentication variables. Use placeholder values and document expected formats for each variable.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 2,
+            "title": "Update .gitignore for Secrets",
+            "description": "Modify the .gitignore file to exclude all environment files and sensitive credential patterns from version control.",
+            "dependencies": [
+              "23.1"
+            ],
+            "details": "Add rules for .env, .env.local, .env.*.local, and common secret file extensions. Include patterns for API keys, tokens, and credential directories.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 3,
+            "title": "Install and Configure git-secrets",
+            "description": "Set up git-secrets tooling to automatically scan for and block commits containing sensitive credentials.",
+            "dependencies": [
+              "23.2"
+            ],
+            "details": "Install git-secrets, register AWS and custom patterns for API keys and passwords, and verify pre-commit hooks are active for all contributors.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 4,
+            "title": "Integrate Secrets Management with CI/CD",
+            "description": "Configure CI/CD pipelines and deployment platforms to securely inject environment variables and secrets without exposing them in logs or code.",
+            "dependencies": [
+              "23.3"
+            ],
+            "details": "Set up environment variable management in Vercel dashboard and ensure secrets are referenced securely in build and deployment workflows.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 5,
+            "title": "Develop Onboarding and Documentation for Developers",
+            "description": "Create comprehensive documentation and onboarding materials to guide developers in proper secrets management practices.",
+            "dependencies": [
+              "23.4"
+            ],
+            "details": "Document usage of .env files, git-secrets, CI/CD integration, and procedures for updating or rotating secrets. Include troubleshooting and escalation steps.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 6,
+            "title": "Validate and Enforce Secrets Management Policies",
+            "description": "Implement validation checks and enforcement mechanisms to ensure ongoing compliance with secrets management policies.",
+            "dependencies": [
+              "23.5"
+            ],
+            "details": "Test pre-commit hooks, verify .env files are ignored, audit environment variable loading in all environments, and periodically review access controls and logs.",
+            "status": "pending",
+            "testStrategy": ""
+          }
+        ]
       },
       {
-        "id": 14,
-        "title": "Setup Google Fonts Integration",
-        "description": "Integrate Google Fonts for Lato and Quicksand with exact weights specified, ensuring proper preconnect for performance",
-        "details": "1. Add to HTML head (index.html or equivalent):\n```html\n<link rel=\"preconnect\" href=\"https://fonts.googleapis.com\">\n<link rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crossorigin>\n<link href=\"https://fonts.googleapis.com/css2?family=Lato:wght@400;500;700&family=Quicksand:wght@700&display=swap\" rel=\"stylesheet\">\n```\n2. Verify fonts are loaded by checking Network tab\n3. Create fallback font stack in case of loading failure\n4. Consider adding font-display: swap for better performance:\n```css\n@font-face {\n  font-family: 'Lato';\n  font-display: swap;\n}\n```",
-        "testStrategy": "Check Network tab for successful font loading, verify font-family computed styles on body and heading elements, test offline behavior with fallback fonts",
-        "priority": "medium",
-        "dependencies": [
-          13
-        ],
-        "status": "pending",
-        "subtasks": []
-      },
-      {
-        "id": 15,
-        "title": "Implement Base Layer Styles",
-        "description": "Apply base styles for body, headings, and global resets including antialiasing and reduced motion preferences",
-        "details": "Add to base layer in index.css:\n```css\n@layer base {\n  html, body, #root { height: 100%; }\n  \n  body { \n    @apply bg-[rgb(var(--bg))] text-[rgb(var(--text))] antialiased font-sans; \n  }\n  \n  h1, h2, h3, h4, h5, h6 { \n    @apply font-heading font-bold; \n  }\n  \n  @media (prefers-reduced-motion: reduce) {\n    *, *::before, *::after { \n      animation: none !important; \n      transition: none !important; \n      scroll-behavior: auto !important; \n    }\n  }\n}\n```\nEnsure proper CSS cascade and specificity",
-        "testStrategy": "Inspect body element for correct background and text colors, verify heading elements use Quicksand font, test with prefers-reduced-motion enabled to ensure animations are disabled",
-        "priority": "medium",
-        "dependencies": [
-          14
-        ],
-        "status": "pending",
-        "subtasks": []
-      },
-      {
-        "id": 16,
-        "title": "Create Core Component Classes",
-        "description": "Implement essential component classes including cards, glass effects, inputs, and buttons with exact styling specifications",
-        "details": "Add to components layer:\n```css\n@layer components {\n  .card { \n    @apply bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 shadow-2xl; \n  }\n  \n  .glass-card {\n    position: relative;\n    border-radius: 1rem;\n    background:\n      linear-gradient(rgba(13,27,42,0.55), rgba(13,27,42,0.55)) padding-box,\n      linear-gradient(135deg, rgba(255,255,255,0.22), rgba(255,255,255,0.06)) border-box;\n    border: 1px solid transparent;\n    box-shadow: 0 8px 40px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.06);\n    -webkit-backdrop-filter: blur(18px);\n    backdrop-filter: blur(18px);\n  }\n  \n  .input { \n    @apply w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white placeholder-white/40 outline-none ring-0 focus:ring-[1.2px] focus:ring-primary-400 focus:border-primary-400 transition; \n  }\n  \n  .btn-primary { \n    @apply inline-flex items-center justify-center rounded-xl bg-secondary-500 px-4 py-3 text-sm font-medium text-white hover:bg-secondary-600 active:bg-secondary-600 disabled:opacity-50 disabled:cursor-not-allowed transition; \n  }\n  \n  .btn-ghost { \n    @apply inline-flex items-center justify-center rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 transition; \n  }\n  \n  .tab { \n    @apply relative flex-1 text-center py-2 text-sm font-medium text-primary-500 transition; \n  }\n  .tab-active { \n    @apply text-primary-500; \n  }\n}\n```",
-        "testStrategy": "Create sample components using each class, verify glass effect renders with backdrop-filter support, test input focus states and button hover/active/disabled states",
+        "id": 24,
+        "title": "Conduct Comprehensive Dependency Audit",
+        "description": "Map all dependencies between applications to ensure safe removal of unused apps",
+        "details": "```typescript\n// Create dependency scanner script\nimport * as fs from 'fs';\nimport * as path from 'path';\nimport { glob } from 'glob';\n\ninterface DependencyMap {\n  file: string;\n  imports: string[];\n  exports: string[];\n}\n\nasync function scanDependencies() {\n  const apps = ['frontend', 'smartslate-app', 'frontend/smartslate-polaris'];\n  const dependencyMap: Record<string, DependencyMap[]> = {};\n  \n  for (const app of apps) {\n    const files = await glob(`${app}/**/*.{ts,tsx,js,jsx}`);\n    dependencyMap[app] = [];\n    \n    for (const file of files) {\n      const content = fs.readFileSync(file, 'utf-8');\n      const imports = content.match(/import .* from ['\"](.*?)['\"];/g) || [];\n      const exports = content.match(/export .* from ['\"](.*?)['\"];/g) || [];\n      \n      dependencyMap[app].push({\n        file,\n        imports: imports.map(i => i.match(/from ['\"](.*?)['\"]/)![1]),\n        exports: exports.map(e => e.match(/from ['\"](.*?)['\"]/)![1])\n      });\n    }\n  }\n  \n  // Analyze cross-app dependencies\n  const crossAppDeps = findCrossAppDependencies(dependencyMap);\n  \n  // Generate report\n  generateDependencyReport(dependencyMap, crossAppDeps);\n}\n\n// Create visual dependency graph using Mermaid\nconst mermaidGraph = `\ngraph TD\n    A[frontend/] -->|550+ files| B[Production App]\n    C[smartslate-app/] -->|76 files| D[Unused]\n    E[frontend/smartslate-polaris/] -->|133 files| F[Duplicate]\n    \n    B --> G{Dependencies}\n    D --> H{No Production Imports}\n    F --> I{No Cross-References}\n`;\n```",
+        "testStrategy": "Verify zero imports from production frontend to apps marked for removal. Run build after simulating app removal (rename directories temporarily). Check for any broken imports or missing dependencies.",
         "priority": "high",
         "dependencies": [
-          15
+          21
         ],
         "status": "pending",
-        "subtasks": []
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Implement Dependency Scanner Script",
+            "description": "Develop and refine a script to scan all application files and extract import/export relationships, generating a raw dependency map for each app.",
+            "dependencies": [],
+            "details": "Use TypeScript and Node.js to traverse codebases (frontend, smartslate-app, frontend/smartslate-polaris), parsing all relevant files for import/export statements. Store results in a structured format for further analysis.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 2,
+            "title": "Analyze Cross-App Dependencies",
+            "description": "Identify and map all dependencies between applications, focusing on cross-references and shared modules to determine critical links.",
+            "dependencies": [
+              "24.1"
+            ],
+            "details": "Process the raw dependency map to detect imports/exports that cross application boundaries. Highlight any dependencies from production apps to those marked for removal.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 3,
+            "title": "Generate Comprehensive Dependency Report",
+            "description": "Produce a detailed report summarizing all dependencies, cross-app links, and potential risks associated with app removal.",
+            "dependencies": [
+              "24.2"
+            ],
+            "details": "Format findings into a readable document and visual graph (e.g., Mermaid), clearly indicating unused, duplicate, and critical paths. Include recommendations for safe removal.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 4,
+            "title": "Manually Verify Critical Dependency Paths",
+            "description": "Review and validate critical dependency paths identified by the automated analysis to ensure accuracy and completeness.",
+            "dependencies": [
+              "24.3"
+            ],
+            "details": "Perform manual inspection of flagged files and modules, confirming that no essential production imports exist in apps slated for removal. Document any discrepancies or edge cases.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 5,
+            "title": "Simulate Application Removal",
+            "description": "Temporarily remove or rename unused application directories to simulate their deletion and observe the impact on the codebase.",
+            "dependencies": [
+              "24.4"
+            ],
+            "details": "Rename or move directories (e.g., smartslate-app) and attempt to build the project. Monitor for broken imports, missing dependencies, or build failures.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 6,
+            "title": "Validate Build and Test Suite Post-Removal",
+            "description": "Run full build and test suites after simulated removal to ensure no functionality is broken and all dependencies are resolved.",
+            "dependencies": [
+              "24.5"
+            ],
+            "details": "Execute all automated tests and verify build completion. Check for errors, missing modules, and confirm that the development server starts correctly.",
+            "status": "pending",
+            "testStrategy": ""
+          }
+        ]
       },
       {
-        "id": 17,
-        "title": "Implement Micro-interactions and Animation Classes",
-        "description": "Create all micro-interaction classes including pressable, elevate, page transitions, skeleton loading, and interactive spotlight effects",
-        "details": "Continue in components layer:\n```css\n.pressable { \n  transition: transform 220ms cubic-bezier(0.22,1,0.36,1), filter 220ms ease, background-color 180ms ease; \n  will-change: transform; \n  transform: translateZ(0); \n}\n.pressable:hover { transform: translateY(-2px); }\n.pressable:active { transform: translateY(0) scale(0.98); }\n\n.elevate { \n  box-shadow: 0 6px 24px rgba(0,0,0,0.18), 0 2px 8px rgba(0,0,0,0.12); \n  transition: box-shadow 220ms ease; \n}\n.elevate:hover { \n  box-shadow: 0 10px 30px rgba(0,0,0,0.22), 0 6px 16px rgba(0,0,0,0.16); \n}\n\n.page-enter { animation: fadeInUp 300ms ease-out; }\n.page-leave { animation: fadeOut 220ms ease-in forwards; }\n\n.skeleton { \n  background: linear-gradient(90deg, rgba(255,255,255,0.04) 25%, rgba(255,255,255,0.12) 37%, rgba(255,255,255,0.04) 63%); \n  background-size: 400% 100%; \n  animation: shimmer 1.8s linear infinite; \n}\n\n.animate-delay-75 { animation-delay: 75ms; }\n.animate-delay-150 { animation-delay: 150ms; }\n.animate-delay-300 { animation-delay: 300ms; }\n.animate-delay-500 { animation-delay: 500ms; }\n\n.interactive-spotlight { \n  position: absolute; \n  inset: -1px; \n  pointer-events: none; \n  background: radial-gradient(240px 240px at var(--x, 50%) var(--y, 50%), rgba(255,255,255,0.08), rgba(255,255,255,0.02) 40%, transparent 70%); \n  opacity: 0; \n  transition: opacity 200ms ease; \n}\n.group:hover > .interactive-spotlight { opacity: 1; }\n```",
-        "testStrategy": "Test each interaction class with mouse events, verify animation timings match specifications, ensure spotlight effect follows cursor position via CSS variables",
+        "id": 25,
+        "title": "Remove smartslate-app Directory",
+        "description": "Archive and remove the unused Vite-based smartslate-app after confirming no production dependencies",
+        "details": "```bash\n# Create archive branch\ngit checkout -b archive/smartslate-app\nmkdir -p .archive\ngit mv smartslate-app/ .archive/smartslate-app-removed-$(date +%Y%m%d)/\ngit commit -m \"chore: archive unused smartslate-app application\n\n- Application not deployed or used in production\n- Zero imports from production frontend\n- Archived to archive/smartslate-app branch for reference\n- Reduces codebase by 76 files\"\ngit push origin archive/smartslate-app\n\n# Switch back and remove from main cleanup branch\ngit checkout cleanup/consolidation\ngit rm -rf smartslate-app/\ngit commit -m \"chore: remove unused smartslate-app application\n\n- Verified no production dependencies\n- Archived in archive/smartslate-app branch\n- Simplifies codebase structure\"\n\n# Verify build still works\nnpm run build\nnpm run test\nnpm run dev\n```",
+        "testStrategy": "Run full test suite after removal. Verify build completes without errors. Check that development server starts correctly. Deploy to staging environment and run smoke tests on all routes.",
         "priority": "medium",
         "dependencies": [
-          16
+          24
         ],
         "status": "pending",
-        "subtasks": []
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Archive smartslate-app Directory",
+            "description": "Move the unused smartslate-app directory into an archive location and create a dedicated archive branch for future reference.",
+            "dependencies": [],
+            "details": "Create a new branch named archive/smartslate-app. Move smartslate-app/ to .archive/smartslate-app-removed-<date>/. Commit and push the changes to the archive branch.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 2,
+            "title": "Branch Management and Documentation",
+            "description": "Document the archiving process and ensure proper branch management for traceability and future audits.",
+            "dependencies": [
+              "25.1"
+            ],
+            "details": "Write clear commit messages explaining the archiving rationale. Ensure the archive branch is pushed to remote and referenced in documentation or internal notes.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 3,
+            "title": "Remove smartslate-app from Main Branch",
+            "description": "Delete the smartslate-app directory from the main cleanup branch after confirming it is unused and has no production dependencies.",
+            "dependencies": [
+              "25.2"
+            ],
+            "details": "Switch to the cleanup/consolidation branch. Remove smartslate-app/ using git rm -rf. Commit the removal with a message referencing the archive branch and dependency verification.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 4,
+            "title": "Post-Removal Build and Test Verification",
+            "description": "Verify that the codebase builds and tests successfully after the removal to ensure no regressions or broken dependencies.",
+            "dependencies": [
+              "25.3"
+            ],
+            "details": "Run npm run build, npm run test, and npm run dev. Confirm that all commands complete without errors and the development server starts correctly.",
+            "status": "pending",
+            "testStrategy": ""
+          }
+        ]
       },
       {
-        "id": 18,
-        "title": "Implement Advanced Visual Effects and Patterns",
-        "description": "Create swirl pattern, logo glow, profile card animations, and other advanced visual effects including staggered animations",
-        "details": "Add remaining component classes:\n```css\n.swirl-item { \n  transition: transform 420ms cubic-bezier(0.22,1,0.36,1), filter 420ms ease; \n  transform: var(--t); \n  filter: saturate(1) drop-shadow(0 0 10px rgba(var(--primary), 0.12)) drop-shadow(0 0 26px rgba(var(--primary), 0.08)); \n  will-change: transform; \n  pointer-events: none; \n}\n\n.logo-glow { \n  filter: drop-shadow(0 0 0 rgba(var(--primary), 0)); \n  transition: filter 360ms ease; \n}\n.logo-glow:hover { \n  filter: drop-shadow(0 0 14px rgba(var(--primary), 0.45)); \n}\n\n.swirl-pattern { \n  position: absolute; \n  inset: 0; \n  background-image: url('/images/logos/logo-swirl.png'); \n  background-repeat: repeat; \n  background-size: 64px 64px; \n  opacity: 0.07; \n  pointer-events: none; \n}\n\n.profile-card-hover { \n  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1); \n}\n.profile-card-hover:hover { \n  transform: translateY(-4px); \n  box-shadow: 0 32px 64px rgba(0, 0, 0, 0.4); \n}\n\n.avatar-glow { animation: avatarGlow 3s ease-in-out infinite alternate; }\n.status-pulse { animation: statusPulse 2s ease-in-out infinite; }\n.float-button { animation: floatButton 3s ease-in-out infinite; }\n\n.stagger-in { \n  opacity: 0; \n  transform: translateY(20px); \n  animation: staggerIn 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards; \n}\n.stagger-in:nth-child(1) { animation-delay: 0.1s; }\n.stagger-in:nth-child(2) { animation-delay: 0.2s; }\n.stagger-in:nth-child(3) { animation-delay: 0.3s; }\n.stagger-in:nth-child(4) { animation-delay: 0.4s; }\n.stagger-in:nth-child(5) { animation-delay: 0.5s; }\n.stagger-in:nth-child(6) { animation-delay: 0.6s; }\n\n.copy-success { animation: copySuccess 0.6s ease-out; }\n\n.gradient-text-animated {\n  background: linear-gradient(-45deg, #ffffff, #a7dadb, #7bc5c7, #4F46E5);\n  background-size: 400% 400%;\n  background-clip: text;\n  -webkit-background-clip: text;\n  -webkit-text-fill-color: transparent;\n  animation: gradientShift 4s ease-in-out infinite;\n}\n```",
-        "testStrategy": "Verify swirl pattern loads correctly from asset path, test staggered animations with multiple elements, ensure gradient text animation is smooth across browsers",
+        "id": 26,
+        "title": "Extract and Remove Nested frontend/smartslate-polaris",
+        "description": "Migrate any unique components from nested Vite app and remove duplicate application",
+        "details": "```typescript\n// Component migration script\nimport * as fs from 'fs-extra';\nimport * as path from 'path';\n\ninterface ComponentMigration {\n  source: string;\n  destination: string;\n  updateImports: string[];\n}\n\nasync function migrateUniqueComponents() {\n  const componentsToMigrate: ComponentMigration[] = [];\n  \n  // Scan for unique components\n  const nestedComponents = await fs.readdir('frontend/smartslate-polaris/src/components');\n  const mainComponents = await fs.readdir('frontend/components');\n  \n  for (const component of nestedComponents) {\n    if (!mainComponents.includes(component)) {\n      componentsToMigrate.push({\n        source: `frontend/smartslate-polaris/src/components/${component}`,\n        destination: `frontend/src/components/features/${component}`,\n        updateImports: [] // Will be populated by import scanner\n      });\n    }\n  }\n  \n  // Migrate components\n  for (const migration of componentsToMigrate) {\n    await fs.copy(migration.source, migration.destination);\n    console.log(`Migrated: ${migration.source} -> ${migration.destination}`);\n  }\n  \n  // Update imports\n  await updateImportPaths(componentsToMigrate);\n}\n\n// Remove nested application\n```bash\ngit rm -rf frontend/smartslate-polaris/\ngit commit -m \"chore: remove nested duplicate application\n\n- Migrated X unique components to main frontend\n- Updated all import paths\n- Reduces confusion and maintenance burden\n- Saves 133 files\"\n```",
+        "testStrategy": "Test each migrated component individually. Verify all imports resolve correctly. Run component tests if they exist. Check that no TypeScript errors are introduced. Validate UI components render correctly.",
         "priority": "medium",
         "dependencies": [
-          17
+          25
         ],
         "status": "pending",
-        "subtasks": []
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Identify Unique Components in Nested App",
+            "description": "Scan the 'frontend/smartslate-polaris/src/components' directory and compare with 'frontend/components' to determine which components are unique to the nested app.",
+            "dependencies": [],
+            "details": "Use a script or manual comparison to list all components present in the nested app but not in the main frontend. Document the list of unique components for migration.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 2,
+            "title": "Migrate Unique Components and Update Import Paths",
+            "description": "Copy identified unique components to the main frontend and update all relevant import paths throughout the codebase.",
+            "dependencies": [
+              "26.1"
+            ],
+            "details": "Move each unique component to 'frontend/src/components/features/'. Update all import statements in the codebase to reference the new locations. Ensure TypeScript compatibility and resolve any import errors.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 3,
+            "title": "Remove Nested frontend/smartslate-polaris Application",
+            "description": "Delete the entire 'frontend/smartslate-polaris' directory from the repository after confirming all unique components have been migrated.",
+            "dependencies": [
+              "26.2"
+            ],
+            "details": "Use version control commands to remove the nested app and commit the changes with a clear message. Ensure no remaining dependencies on the removed directory.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 4,
+            "title": "Test Migrated Components and Application",
+            "description": "Verify that all migrated components function correctly and that the main frontend builds and runs without errors.",
+            "dependencies": [
+              "26.2",
+              "26.3"
+            ],
+            "details": "Run existing component and integration tests. Manually test UI rendering and check for TypeScript errors. Confirm that all import paths resolve and no functionality is lost.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 5,
+            "title": "Document Migration and Removal Process",
+            "description": "Create documentation outlining the migration steps, list of migrated components, and any changes made to the codebase.",
+            "dependencies": [
+              "26.4"
+            ],
+            "details": "Update project documentation to reflect the removal of the nested app, the migration of unique components, and any necessary developer notes for future maintenance.",
+            "status": "pending",
+            "testStrategy": ""
+          }
+        ]
       },
       {
-        "id": 19,
-        "title": "Define Keyframe Animations",
-        "description": "Implement all keyframe definitions for animations including fadeInUp, avatarGlow, statusPulse, and other custom animations",
-        "details": "Add to utilities layer:\n```css\n@layer utilities {\n  @keyframes fadeInUp { \n    from { opacity: 0; transform: translateY(30px); } \n    to { opacity: 1; transform: translateY(0); } \n  }\n  \n  @keyframes fadeOut { \n    from { opacity: 1; transform: translateY(0); } \n    to { opacity: 0; transform: translateY(12px); } \n  }\n  \n  @keyframes avatarGlow {\n    0% { box-shadow: 0 0 20px rgba(167, 218, 219, 0.3); }\n    100% { box-shadow: 0 0 40px rgba(167, 218, 219, 0.6), 0 0 80px rgba(79, 70, 229, 0.2); }\n  }\n  \n  @keyframes statusPulse {\n    0%, 100% { transform: scale(1); box-shadow: 0 0 8px rgba(34, 197, 94, 0.4); }\n    50% { transform: scale(1.1); box-shadow: 0 0 16px rgba(34, 197, 94, 0.8); }\n  }\n  \n  @keyframes floatButton { \n    0%, 100% { transform: translateY(0) translateX(-50%); } \n    50% { transform: translateY(-6px) translateX(-50%); } \n  }\n  \n  @keyframes staggerIn { \n    to { opacity: 1; transform: translateY(0); } \n  }\n  \n  @keyframes copySuccess {\n    0% { transform: scale(1); color: rgba(255, 255, 255, 0.5); }\n    50% { transform: scale(1.2); color: rgba(34, 197, 94, 1); }\n    100% { transform: scale(1); color: rgba(255, 255, 255, 0.5); }\n  }\n  \n  @keyframes gradientShift { \n    0% { background-position: 0% 50%; } \n    50% { background-position: 100% 50%; } \n    100% { background-position: 0% 50%; } \n  }\n  \n  @keyframes shimmer { \n    0% { background-position: 200% 0; } \n    100% { background-position: -200% 0; } \n  }\n}\n```",
-        "testStrategy": "Test each animation individually by applying to test elements, verify timing and easing curves match specifications, ensure animations loop correctly where specified",
+        "id": 27,
+        "title": "Organize Documentation into Hierarchical Structure",
+        "description": "Create organized documentation system from 78+ scattered markdown files",
+        "details": "```bash\n# Create documentation structure\nmkdir -p docs/{prds,implementation-notes,architecture,guides,archived}\nmkdir -p docs/implementation-notes/{feature-implementations,bug-fixes,refactoring}\n\n# Create categorization script\n```typescript\nimport * as fs from 'fs';\nimport * as path from 'path';\n\ninterface DocMetadata {\n  title: string;\n  type: 'prd' | 'implementation' | 'architecture' | 'guide' | 'archived';\n  status: 'active' | 'draft' | 'superseded' | 'archived';\n  created: Date;\n  lastUpdated: Date;\n  author: string;\n}\n\nfunction categorizeDocument(filename: string, content: string): DocMetadata['type'] {\n  const lowerName = filename.toLowerCase();\n  const lowerContent = content.toLowerCase();\n  \n  if (lowerName.includes('prd') || lowerContent.includes('product requirements')) {\n    return 'prd';\n  } else if (lowerName.includes('implementation') || lowerName.includes('bugfix')) {\n    return 'implementation';\n  } else if (lowerName.includes('architecture') || lowerContent.includes('system design')) {\n    return 'architecture';\n  } else if (lowerName.includes('guide') || lowerName.includes('setup')) {\n    return 'guide';\n  } else {\n    return 'archived';\n  }\n}\n\n// Move files based on categorization\nconst markdownFiles = fs.readdirSync('.').filter(f => f.endsWith('.md'));\n\nfor (const file of markdownFiles) {\n  const content = fs.readFileSync(file, 'utf-8');\n  const category = categorizeDocument(file, content);\n  const destination = `docs/${category}s/${file}`;\n  \n  // Add metadata header\n  const metadata = `---\\ntitle: ${file.replace('.md', '')}\\ntype: ${category}\\nstatus: active\\nlastUpdated: ${new Date().toISOString()}\\n---\\n\\n`;\n  \n  fs.writeFileSync(destination, metadata + content);\n  fs.unlinkSync(file);\n}\n```",
+        "testStrategy": "Verify all markdown files moved from root directory. Check that categorization is logical by reviewing a sample from each category. Ensure all internal links still work. Test documentation search/navigation.",
         "priority": "medium",
         "dependencies": [
-          18
+          26
         ],
         "status": "pending",
-        "subtasks": []
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Create Hierarchical Directory Structure",
+            "description": "Set up the target directory layout for documentation, including main categories and subcategories as specified.",
+            "dependencies": [],
+            "details": "Use shell commands to create directories such as docs/prds, docs/implementation-notes (with feature-implementations, bug-fixes, refactoring), docs/architecture, docs/guides, and docs/archived.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 2,
+            "title": "Develop Categorization Script",
+            "description": "Implement a script to analyze and categorize each markdown file based on filename and content.",
+            "dependencies": [
+              "27.1"
+            ],
+            "details": "Write a TypeScript (or equivalent) script that reads each markdown file, determines its category (prd, implementation, architecture, guide, archived), and prepares it for migration.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 3,
+            "title": "Insert Metadata Headers",
+            "description": "Add standardized metadata headers to each markdown file before moving.",
+            "dependencies": [
+              "27.2"
+            ],
+            "details": "For each file, prepend a metadata block (YAML or similar) containing title, type, status, lastUpdated, and other relevant fields to support search and organization.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 4,
+            "title": "Migrate Files and Update Internal Links",
+            "description": "Move categorized files into the appropriate directories and update all internal links to reflect the new structure.",
+            "dependencies": [
+              "27.3"
+            ],
+            "details": "Relocate files based on their category, remove originals, and systematically update internal markdown links to ensure navigation remains functional.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 5,
+            "title": "Validate Documentation Search and Navigation",
+            "description": "Test the reorganized documentation system for searchability and navigational integrity.",
+            "dependencies": [
+              "27.4"
+            ],
+            "details": "Verify that all files are accessible, metadata is correctly indexed, internal links work, and documentation search/navigation features operate as expected.",
+            "status": "pending",
+            "testStrategy": ""
+          }
+        ]
       },
       {
-        "id": 20,
-        "title": "Setup Assets and Validate Complete Implementation",
-        "description": "Add required assets, perform comprehensive testing of all styles, and ensure pixel-perfect match with original SmartSlate app",
-        "details": "1. Add logo-swirl.png to /public/images/logos/\n2. Create test page with all component examples:\n```html\n<!-- Test all components -->\n<div class=\"card\">Card Component</div>\n<div class=\"glass-card\">Glass Card</div>\n<input class=\"input\" placeholder=\"Test input\">\n<button class=\"btn-primary\">Primary Button</button>\n<button class=\"btn-ghost\">Ghost Button</button>\n<div class=\"skeleton\">Loading...</div>\n<div class=\"stagger-in\">Stagger Item 1</div>\n<div class=\"stagger-in\">Stagger Item 2</div>\n<h1 class=\"gradient-text-animated\">Gradient Text</h1>\n```\n3. Test theme switching:\n```js\n// Theme toggle function\nfunction toggleTheme() {\n  const html = document.documentElement;\n  const currentTheme = html.getAttribute('data-theme');\n  html.setAttribute('data-theme', currentTheme === 'light' ? '' : 'light');\n}\n```\n4. Validate:\n- All colors match hex values\n- Fonts load correctly\n- Animations perform as specified\n- Glass effects work with backdrop-filter\n- Theme switching is smooth\n- Accessibility contrast ratios meet WCAG AA",
-        "testStrategy": "Visual regression testing against original SmartSlate app, automated contrast ratio testing, cross-browser compatibility check (Chrome, Firefox, Safari), performance audit for animation smoothness",
+        "id": 28,
+        "title": "Standardize Frontend Code Structure",
+        "description": "Reorganize internal structure of consolidated frontend application following best practices",
+        "details": "```bash\n# Create standardized structure\nmkdir -p frontend/src/{app,components,lib,types,styles,config}\nmkdir -p frontend/src/components/{ui,features,layouts}\nmkdir -p frontend/src/lib/{api,hooks,utils,constants}\nmkdir -p frontend/src/components/features/{blueprint,questionnaire,auth}\nmkdir -p frontend/tests/{unit,integration,e2e,utils}\n\n# Move components to new structure\n```typescript\nimport * as fs from 'fs-extra';\nimport * as path from 'path';\n\ninterface ComponentMove {\n  from: string;\n  to: string;\n  type: 'ui' | 'feature' | 'layout';\n}\n\nconst componentMoves: ComponentMove[] = [\n  // UI primitives from shadcn\n  { from: 'components/ui/button.tsx', to: 'src/components/ui/button.tsx', type: 'ui' },\n  { from: 'components/ui/card.tsx', to: 'src/components/ui/card.tsx', type: 'ui' },\n  { from: 'components/ui/input.tsx', to: 'src/components/ui/input.tsx', type: 'ui' },\n  \n  // Feature components\n  { from: 'components/BlueprintGenerator.tsx', to: 'src/components/features/blueprint/BlueprintGenerator.tsx', type: 'feature' },\n  { from: 'components/QuestionnaireForm.tsx', to: 'src/components/features/questionnaire/QuestionnaireForm.tsx', type: 'feature' },\n  \n  // Layouts\n  { from: 'components/Layout.tsx', to: 'src/components/layouts/MainLayout.tsx', type: 'layout' },\n];\n\n// Update imports after moving\nasync function updateImports(moves: ComponentMove[]) {\n  const files = await fs.readdir('frontend', { recursive: true });\n  \n  for (const file of files) {\n    if (file.endsWith('.tsx') || file.endsWith('.ts')) {\n      let content = await fs.readFile(file, 'utf-8');\n      \n      for (const move of moves) {\n        const oldImport = move.from.replace('.tsx', '');\n        const newImport = move.to.replace('.tsx', '');\n        content = content.replace(\n          new RegExp(`from ['\"]\\.?/?${oldImport}['\"]`, 'g'),\n          `from '${newImport}'`\n        );\n      }\n      \n      await fs.writeFile(file, content);\n    }\n  }\n}\n```",
+        "testStrategy": "Run TypeScript compiler to check for import errors. Execute full test suite to ensure no functionality broken. Verify each major feature (blueprint, questionnaire, auth) works correctly. Check that build size hasn't increased.",
+        "priority": "low",
+        "dependencies": [
+          27
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Plan and Document Directory Structure",
+            "description": "Define and document the new standardized directory structure for the frontend application, ensuring alignment with modern best practices and team conventions.",
+            "dependencies": [],
+            "details": "Review current codebase and industry standards. Create a detailed plan for src/{app,components,lib,types,styles,config}, components/{ui,features,layouts}, lib/{api,hooks,utils,constants}, and tests/{unit,integration,e2e,utils}. Document the rationale and expected benefits of the new structure.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 2,
+            "title": "Move Components to New Structure",
+            "description": "Relocate all components, utilities, and assets to their new locations according to the planned directory structure.",
+            "dependencies": [
+              "28.1"
+            ],
+            "details": "Execute file moves for UI primitives, feature components, and layouts. Ensure all assets (styles, images, etc.) are also moved. Use scripts to automate bulk moves where possible, but verify each move manually to prevent data loss.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 3,
+            "title": "Update Import Paths",
+            "description": "Update all import statements across the codebase to reflect the new file locations.",
+            "dependencies": [
+              "28.2"
+            ],
+            "details": "Run a script to search and replace outdated import paths with the new ones. Manually review critical files to catch any edge cases or dynamic imports. Ensure TypeScript and ESLint do not report unresolved imports.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 4,
+            "title": "Refactor for Best Practices",
+            "description": "Review and refactor the code to adhere to current best practices in component organization, state management, and performance.",
+            "dependencies": [
+              "28.3"
+            ],
+            "details": "Audit component organization (feature-based vs. type-based), state management patterns, and hooks usage. Apply consistent naming, enforce TypeScript types, and remove deprecated patterns. Ensure accessibility and performance optimizations are in place.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 5,
+            "title": "Run Compiler and Test Suite",
+            "description": "Validate that the codebase compiles without errors and all tests pass after restructuring.",
+            "dependencies": [
+              "28.4"
+            ],
+            "details": "Execute the TypeScript compiler to catch import and type errors. Run the full test suite (unit, integration, e2e) to ensure no functionality is broken. Verify that build size has not increased unexpectedly.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 6,
+            "title": "Document New Structure and Update Guides",
+            "description": "Create or update documentation to reflect the new code structure and provide guidance for future development.",
+            "dependencies": [
+              "28.5"
+            ],
+            "details": "Write clear documentation explaining the new directory layout, conventions, and rationale. Update READMEs, contribution guidelines, and onboarding materials. Ensure the team is informed of changes and best practices.",
+            "status": "pending",
+            "testStrategy": ""
+          }
+        ]
+      },
+      {
+        "id": 29,
+        "title": "Implement Comprehensive Quality Assurance",
+        "description": "Execute thorough testing of all changes to ensure nothing broke during cleanup",
+        "details": "```typescript\n// Automated test execution\n```bash\n# Run all test suites\nnpm run test:unit\nnpm run test:integration\nnpm run test:e2e\n\n# Generate coverage report\nnpm run test:coverage\n\n# Verify coverage hasn't decreased\nif [ $(cat coverage/coverage-summary.json | jq '.total.lines.pct') -lt 80 ]; then\n  echo \"Coverage below 80%, investigate missing tests\"\n  exit 1\nfi\n```\n\n// Manual feature verification checklist\nconst featureChecklist = [\n  {\n    feature: 'User Authentication',\n    tests: [\n      'Sign up with new email',\n      'Log in with existing account',\n      'Reset password flow',\n      'Session persistence',\n      'Logout functionality'\n    ]\n  },\n  {\n    feature: 'Blueprint Generation',\n    tests: [\n      'Create new blueprint',\n      'View blueprint details',\n      'Edit existing blueprint',\n      'Delete blueprint',\n      'Claude API integration'\n    ]\n  },\n  {\n    feature: 'Questionnaire System',\n    tests: [\n      'Generate questionnaire',\n      'Answer all question types',\n      'Submit responses',\n      'View results',\n      'Perplexity API integration'\n    ]\n  }\n];\n\n// Performance verification\n```bash\n# Build and analyze bundle\nnpm run build\nnpm run analyze\n\n# Compare with pre-cleanup metrics\necho \"Pre-cleanup bundle: 2.3MB\"\necho \"Post-cleanup bundle: $(du -sh .next/static/chunks/*.js | awk '{sum+=$1} END {print sum}')\"\n\n# Run Lighthouse CI\nnpx lighthouse https://staging.smartslate.com --output=json --output-path=./lighthouse-report.json\n```",
+        "testStrategy": "Document all test results in a QA report. Create screenshots of each tested feature. Record any issues found and their resolutions. Get sign-off from QA team and stakeholders before proceeding to production.",
         "priority": "high",
         "dependencies": [
-          19
+          28
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Automated Test Suite Execution",
+            "description": "Run all automated unit, integration, and end-to-end test suites to verify system stability after cleanup.",
+            "dependencies": [],
+            "details": "Execute commands: npm run test:unit, npm run test:integration, npm run test:e2e. Ensure all tests pass without errors.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 2,
+            "title": "Coverage Analysis and Enforcement",
+            "description": "Generate and review test coverage reports to ensure coverage meets or exceeds the required threshold.",
+            "dependencies": [
+              "29.1"
+            ],
+            "details": "Run npm run test:coverage. Parse coverage/coverage-summary.json and verify that total lines coverage is at least 80%. Investigate and address any coverage drop.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 3,
+            "title": "Manual Feature Verification",
+            "description": "Systematically verify all critical features using the manual checklist to ensure functional correctness.",
+            "dependencies": [
+              "29.1"
+            ],
+            "details": "Follow the featureChecklist for User Authentication, Blueprint Generation, and Questionnaire System. Document results and capture screenshots for each tested feature.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 4,
+            "title": "Performance and Bundle Analysis",
+            "description": "Assess application performance and bundle size to confirm no regressions occurred during cleanup.",
+            "dependencies": [
+              "29.1"
+            ],
+            "details": "Run npm run build and npm run analyze. Compare post-cleanup bundle size to pre-cleanup metrics. Execute Lighthouse CI and review the generated report.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 5,
+            "title": "Documentation of QA Results",
+            "description": "Compile and organize all test results, coverage data, performance metrics, and manual verification evidence into a comprehensive QA report.",
+            "dependencies": [
+              "29.2",
+              "29.3",
+              "29.4"
+            ],
+            "details": "Create a QA report including automated test logs, coverage summary, performance analysis, manual test screenshots, and notes on any issues found.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 6,
+            "title": "Issue Tracking and Resolution",
+            "description": "Log all defects and anomalies discovered during testing, assign them for resolution, and verify fixes.",
+            "dependencies": [
+              "29.5"
+            ],
+            "details": "Use an issue tracker to record all problems. Assign issues to relevant team members, track progress, and retest resolved items before closure.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 7,
+            "title": "Stakeholder Sign-off",
+            "description": "Present the QA report and resolved issues to stakeholders for final review and approval before production deployment.",
+            "dependencies": [
+              "29.6"
+            ],
+            "details": "Schedule a sign-off meeting with QA team and stakeholders. Review all documentation, confirm acceptance criteria are met, and obtain formal approval.",
+            "status": "pending",
+            "testStrategy": ""
+          }
+        ]
+      },
+      {
+        "id": 30,
+        "title": "Deploy to Production with Monitoring",
+        "description": "Execute production deployment of cleaned codebase with comprehensive monitoring",
+        "details": "```bash\n# Pre-deployment checklist\necho \"[ ] All tests passing\"\necho \"[ ] Staging environment validated\"\necho \"[ ] Team notified of deployment window\"\necho \"[ ] Rollback procedure documented\"\necho \"[ ] Monitoring alerts configured\"\n\n# Create release\ngit checkout main\ngit merge cleanup/consolidation\ngit tag -a v3-cleanup-complete -m \"Codebase cleanup complete\n\n- Removed 209 files (27% reduction)\n- Consolidated to single frontend application\n- Organized 78+ documentation files\n- Secured all credentials\n- Standardized code structure\"\n\ngit push origin main --tags\n\n# Vercel will auto-deploy on push to main\n# Monitor deployment\n```typescript\n// Post-deployment monitoring script\nimport axios from 'axios';\n\nconst healthChecks = [\n  { url: 'https://smartslate.com/api/health', expected: 200 },\n  { url: 'https://smartslate.com/', expected: 200 },\n  { url: 'https://smartslate.com/login', expected: 200 },\n  { url: 'https://smartslate.com/dashboard', expected: 302 }, // Redirect if not logged in\n];\n\nasync function monitorDeployment() {\n  const results = [];\n  \n  for (const check of healthChecks) {\n    try {\n      const response = await axios.get(check.url, { \n        validateStatus: () => true,\n        timeout: 5000 \n      });\n      \n      results.push({\n        url: check.url,\n        status: response.status,\n        success: response.status === check.expected,\n        responseTime: response.headers['x-response-time']\n      });\n    } catch (error) {\n      results.push({\n        url: check.url,\n        status: 'error',\n        success: false,\n        error: error.message\n      });\n    }\n  }\n  \n  // Alert if any checks fail\n  const failures = results.filter(r => !r.success);\n  if (failures.length > 0) {\n    console.error('Health check failures:', failures);\n    // Trigger rollback if critical\n  }\n  \n  return results;\n}\n\n// Run checks every 5 minutes for first hour\nsetInterval(monitorDeployment, 5 * 60 * 1000);\n```",
+        "testStrategy": "Monitor error rates, response times, and user sessions for 24 hours post-deployment. Set up alerts for any anomalies. Have on-call engineer ready for immediate response. Document any issues and resolutions in post-mortem.",
+        "priority": "high",
+        "dependencies": [
+          29
         ],
         "status": "pending",
         "subtasks": []
@@ -132,7 +687,7 @@
     ],
     "metadata": {
       "created": "2025-09-27T10:54:14.464Z",
-      "updated": "2025-09-28T13:14:42.423Z",
+      "updated": "2025-10-02T11:20:30.503Z",
       "description": "Tasks for master context"
     }
   },

@@ -6,7 +6,6 @@ import {
   Share2,
   ArrowLeft,
   Edit3,
-  Copy,
   ExternalLink,
   CheckCircle,
   Loader2,
@@ -42,7 +41,7 @@ export default function BlueprintPage({ params }: PageProps): React.JSX.Element 
   const [renamingBlueprint, setRenamingBlueprint] = useState(false);
   const [isEditingMarkdown, setIsEditingMarkdown] = useState(false);
   const [isGeneratingShare, setIsGeneratingShare] = useState(false);
-  const viewMode: 'presentation' = 'presentation'; // Always use presentation mode
+  const viewMode = 'presentation' as const; // Always use presentation mode
   const [showSuccessToast, setShowSuccessToast] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
   const [isExporting, setIsExporting] = useState(false);
@@ -245,7 +244,7 @@ export default function BlueprintPage({ params }: PageProps): React.JSX.Element 
               : 'The blueprint you are looking for does not exist or you do not have access to it.'}
           </p>
           <Link
-            className="inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-6 py-3 font-medium text-white transition-all hover:bg-indigo-700 hover:shadow-lg"
+            className="bg-primary text-primary-foreground hover:bg-primary/90 inline-flex items-center gap-2 rounded-xl px-6 py-3 font-medium transition-all hover:shadow-lg"
             href="/"
           >
             <ArrowLeft className="h-4 w-4" />
@@ -268,7 +267,10 @@ export default function BlueprintPage({ params }: PageProps): React.JSX.Element 
 
       // Remove internal generation metadata if present
       if (blueprintData && typeof blueprintData === 'object') {
-        const { _generation_metadata, ...cleanBlueprint } = blueprintData as any;
+        const { _generation_metadata, ...cleanBlueprint } = blueprintData as Record<
+          string,
+          unknown
+        >;
         blueprintData = cleanBlueprint;
       }
     } catch (e) {
@@ -381,9 +383,7 @@ export default function BlueprintPage({ params }: PageProps): React.JSX.Element 
         animate={{ opacity: 1 }}
         transition={{ delay: 0.2 }}
         className={`relative z-10 ${
-          viewMode === 'presentation'
-            ? 'mx-auto max-w-7xl'
-            : 'mx-auto max-w-6xl'
+          (viewMode === 'presentation' ? 'mx-auto max-w-7xl' : 'mx-auto max-w-6xl') as const
         } px-4 py-8 sm:px-6 sm:py-12 lg:px-8`}
       >
         {/* Main Content Card */}

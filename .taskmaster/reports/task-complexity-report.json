@@ -1,6 +1,6 @@
 {
 	"meta": {
-		"generatedAt": "2025-09-27T15:12:19.803Z",
+		"generatedAt": "2025-10-02T11:21:04.403Z",
 		"tasksAnalyzed": 10,
 		"totalTasks": 10,
 		"analysisCount": 10,
@@ -10,84 +10,84 @@
 	},
 	"complexityAnalysis": [
 		{
-			"taskId": 1,
-			"taskTitle": "Initialize Next.js Project with Supabase and Core Dependencies",
+			"taskId": 21,
+			"taskTitle": "Create Repository Backup and Branching Strategy",
+			"complexityScore": 5,
+			"recommendedSubtasks": 5,
+			"expansionPrompt": "Break down the repository backup and branching strategy into subtasks covering: (1) backup creation and verification, (2) tagging and snapshotting, (3) branch creation and permissions, (4) rollback documentation and testing, (5) team communication and access setup.",
+			"reasoning": "This task involves standard DevOps practices but requires careful sequencing and documentation to ensure safety and team alignment. Each step is well-defined but must be executed precisely to avoid data loss or confusion. Complexity is moderate due to the need for verification and rollback planning."
+		},
+		{
+			"taskId": 22,
+			"taskTitle": "Remove Exposed Credentials and Clean Git History",
+			"complexityScore": 8,
+			"recommendedSubtasks": 7,
+			"expansionPrompt": "Expand into subtasks for: (1) identifying all exposed credentials, (2) removing secrets from working directory, (3) cleaning Git history with BFG, (4) force pushing and repository synchronization, (5) scanning for residual secrets, (6) rotating credentials and updating servers, (7) verifying cleanup and access control.",
+			"reasoning": "Credential removal and history cleaning is a high-risk, multi-step process requiring expertise in Git internals, security tooling, and credential rotation. Mistakes can lead to persistent exposure or service outages. Industry standards demand thorough scanning, history rewriting, and credential rotation, making this task highly complex."
+		},
+		{
+			"taskId": 23,
+			"taskTitle": "Implement Secrets Management System",
+			"complexityScore": 7,
+			"recommendedSubtasks": 6,
+			"expansionPrompt": "Decompose into: (1) .env template creation, (2) .gitignore updates, (3) git-secrets installation and configuration, (4) CI/CD secrets integration, (5) developer onboarding and documentation, (6) validation and enforcement of secrets management.",
+			"reasoning": "Implementing secrets management involves multiple layers: tooling, repository configuration, developer workflows, and CI/CD integration. Ensuring future-proofing and compliance with best practices (e.g., git-secrets, .env handling) adds complexity, especially in distributed teams."
+		},
+		{
+			"taskId": 24,
+			"taskTitle": "Conduct Comprehensive Dependency Audit",
+			"complexityScore": 7,
+			"recommendedSubtasks": 6,
+			"expansionPrompt": "Expand into: (1) dependency scanner implementation, (2) cross-app dependency analysis, (3) report generation, (4) manual verification of critical paths, (5) simulation of app removal, (6) build and test validation post-removal.",
+			"reasoning": "Mapping dependencies across multiple applications requires both automated and manual analysis, especially to ensure safe removal of unused apps. The need for custom scripts, cross-referencing, and validation against production usage increases complexity."
+		},
+		{
+			"taskId": 25,
+			"taskTitle": "Remove smartslate-app Directory",
+			"complexityScore": 4,
+			"recommendedSubtasks": 4,
+			"expansionPrompt": "Break down into: (1) archiving unused app, (2) branch management and documentation, (3) removal from main branch, (4) post-removal build and test verification.",
+			"reasoning": "Once dependencies are confirmed, archiving and removing an unused directory is straightforward but requires careful branch management and post-removal validation to avoid regressions. Complexity is moderate due to the need for verification."
+		},
+		{
+			"taskId": 26,
+			"taskTitle": "Extract and Remove Nested frontend/smartslate-polaris",
 			"complexityScore": 6,
-			"recommendedSubtasks": 8,
-			"expansionPrompt": "Break down the initialization process into subtasks: (1) Create Next.js project with TypeScript and App Router, (2) Install and configure Supabase client, (3) Set up environment variables and .env.example, (4) Install and configure core libraries (Zustand, React Hook Form, Zod, Tailwind CSS, Recharts, Framer Motion, jsPDF, html2pdf.js, Sentry), (5) Configure TypeScript, Prettier, and ESLint, (6) Scaffold app directory structure for Server/Client Components, (7) Ensure Node.js 18+ compatibility, (8) Implement and verify a health check endpoint.",
-			"reasoning": "This task is moderately complex due to the breadth of dependencies, environment setup, and the need for correct configuration of both frontend and backend tooling. Each step is well-documented in industry guides, but the number of integrations and the need for a robust, production-ready baseline increases the number of logical subtasks."
+			"recommendedSubtasks": 5,
+			"expansionPrompt": "Decompose into: (1) identification of unique components, (2) migration and import path updates, (3) removal of nested app, (4) testing migrated components, (5) documentation of changes.",
+			"reasoning": "Component migration and duplicate app removal require careful analysis to avoid loss of unique functionality and ensure all references are updated. Testing and documentation are essential to maintain stability, making this moderately complex."
 		},
 		{
-			"taskId": 2,
-			"taskTitle": "Implement Supabase Auth, User Profiles, and RLS Policies",
-			"complexityScore": 8,
-			"recommendedSubtasks": 9,
-			"expansionPrompt": "Expand into: (1) Configure Supabase Auth in Next.js, (2) Implement protected API routes and middleware, (3) Set up user_profiles and blueprint_generator tables, (4) Write RLS policies and test, (5) Add indexes and triggers, (6) Implement user profile creation on first login, (7) Integrate server-side session checks, (8) Integrate client-side session refresh, (9) Test all authentication and RLS flows.",
-			"reasoning": "This task is complex due to the need for secure authentication, correct RLS enforcement, and robust session management. It requires both backend (SQL, policies, triggers) and frontend (auth flows, middleware) expertise, with multiple integration points and security considerations."
+			"taskId": 27,
+			"taskTitle": "Organize Documentation into Hierarchical Structure",
+			"complexityScore": 5,
+			"recommendedSubtasks": 5,
+			"expansionPrompt": "Expand into: (1) directory structure creation, (2) categorization script development, (3) metadata header insertion, (4) file migration and link updates, (5) validation of documentation search/navigation.",
+			"reasoning": "Documentation reorganization is a well-scoped task but involves scripting, metadata management, and validation of internal links and searchability. Complexity is moderate due to the volume and need for accuracy."
 		},
 		{
-			"taskId": 3,
-			"taskTitle": "Develop Static Questions Wizard with Autosave and Validation",
-			"complexityScore": 7,
-			"recommendedSubtasks": 7,
-			"expansionPrompt": "Decompose into: (1) Design multi-step wizard UI, (2) Implement React Hook Form with Zod validation per step, (3) Add autosave logic with debounce, (4) Persist answers to Supabase, (5) Manage blueprintId creation/reuse, (6) Ensure accessibility and responsive design, (7) Write unit and E2E tests for validation and autosave.",
-			"reasoning": "Building a robust, accessible multi-step form with autosave and strict validation is moderately complex, especially with the need for real-time persistence and error handling. Industry best practices recommend clear separation of concerns and comprehensive testing."
-		},
-		{
-			"taskId": 4,
-			"taskTitle": "Implement Dynamic Questions Generation API with LLM Integration",
-			"complexityScore": 9,
-			"recommendedSubtasks": 10,
-			"expansionPrompt": "Expand into: (1) Design API endpoints, (2) Implement MemoryCache with TTL and de-duplication, (3) Integrate SimpleQueue for concurrency, (4) Call Ollama LLM with system prompt, (5) Validate and repair LLM output with Zod, (6) Implement retry and timeout logic, (7) Add fallback to default questions, (8) Enforce rate limits, (9) Persist results to Supabase, (10) Implement session and ownership checks.",
-			"reasoning": "This task is highly complex due to LLM integration, caching, concurrency, schema validation, error handling, and security. Each component (API, LLM, caching, rate limiting) has its own best practices and potential pitfalls, requiring careful orchestration and robust testing."
-		},
-		{
-			"taskId": 5,
-			"taskTitle": "Build Dynamic Questions Wizard with Sectioned UI and Autosave",
-			"complexityScore": 8,
-			"recommendedSubtasks": 8,
-			"expansionPrompt": "Break down into: (1) Render dynamic form sections by question type, (2) Implement autosave with throttling, (3) Persist answers to Supabase, (4) Show 'Saved' indicator, (5) Track and display progress, (6) Persist and restore wizard state with Zustand/localStorage, (7) Ensure accessibility and responsive design, (8) Write unit and E2E tests for autosave and resume.",
-			"reasoning": "Rendering dynamic forms with autosave, progress tracking, and robust state management is complex, especially with accessibility and resume support. Best practices require modular, testable components and resilient state handling."
-		},
-		{
-			"taskId": 6,
-			"taskTitle": "Implement Blueprint Generation API with SSE Streaming and Validation",
-			"complexityScore": 9,
-			"recommendedSubtasks": 10,
-			"expansionPrompt": "Expand into: (1) Design SSE endpoint, (2) Aggregate static and dynamic answers, (3) Structure LLM prompt and call Ollama, (4) Stream and parse incremental JSON/Markdown, (5) Validate and repair streamed data with Zod, (6) Handle completed status and warnings, (7) Persist blueprint artifacts and status, (8) Implement heartbeat comments, (9) Enforce session, ownership, and rate limits, (10) Support LLM fallback strategy.",
-			"reasoning": "This task is highly complex due to real-time streaming, incremental parsing/validation, LLM integration, error handling, and strict session/rate limit enforcement. Each aspect requires careful design and robust testing to meet production standards."
-		},
-		{
-			"taskId": 7,
-			"taskTitle": "Develop Dashboard and Blueprint Display with KPIs and Version History",
-			"complexityScore": 7,
-			"recommendedSubtasks": 7,
-			"expansionPrompt": "Decompose into: (1) Implement API to fetch blueprint/version data, (2) Render dashboard UI with KPIs using Recharts, (3) Display blueprint in Markdown and JSON, (4) List and compare version history, (5) Add transitions with Framer Motion, (6) Optimize for performance and responsiveness, (7) Write unit and E2E tests for dashboard features.",
-			"reasoning": "While the dashboard involves multiple data visualizations and versioning logic, these are well-supported by modern libraries. The main complexity lies in efficient data handling, UI responsiveness, and version diffing."
-		},
-		{
-			"taskId": 8,
-			"taskTitle": "Implement Export Functionality (PDF, Markdown, JSON)",
+			"taskId": 28,
+			"taskTitle": "Standardize Frontend Code Structure",
 			"complexityScore": 6,
 			"recommendedSubtasks": 6,
-			"expansionPrompt": "Break down into: (1) Render Markdown to print-optimized HTML, (2) Generate PDF using jsPDF/html2pdf.js, (3) Enable direct downloads for Markdown and JSON, (4) Ensure correct filenames and metadata, (5) Handle large blueprint exports efficiently, (6) Ensure accessibility of export controls and test across browsers.",
-			"reasoning": "Exporting data in multiple formats is moderately complex, with most challenges around PDF rendering, large file handling, and cross-browser compatibility. Established libraries and patterns reduce risk, but thorough testing is required."
+			"expansionPrompt": "Break down into: (1) directory structure planning, (2) moving components, (3) updating import paths, (4) refactoring for best practices, (5) running compiler and tests, (6) documentation of new structure.",
+			"reasoning": "Standardizing code structure involves significant file operations, refactoring, and validation to ensure no regressions. Adhering to best practices and updating all references increases complexity, especially in larger codebases."
 		},
 		{
-			"taskId": 9,
-			"taskTitle": "Integrate State Management, Resume, and Versioning Logic",
-			"complexityScore": 7,
-			"recommendedSubtasks": 7,
-			"expansionPrompt": "Expand into: (1) Set up Zustand stores with persistence, (2) Store and restore wizard/UI state, (3) Namespace state by user+blueprintId, (4) Reconcile client and server state on load, (5) Handle versioning and conflict resolution, (6) Implement state recovery after crash/refresh, (7) Write unit and E2E tests for state logic.",
-			"reasoning": "Global state management with persistence and reconciliation is moderately complex, especially with versioning and recovery logic. Best practices emphasize robust conflict handling and seamless user experience."
-		},
-		{
-			"taskId": 10,
-			"taskTitle": "Production-Ready Testing, Security, Observability, and Accessibility",
+			"taskId": 29,
+			"taskTitle": "Implement Comprehensive Quality Assurance",
 			"complexityScore": 8,
-			"recommendedSubtasks": 9,
-			"expansionPrompt": "Decompose into: (1) Write E2E tests for all flows, (2) Implement load testing, (3) Validate security (CSP, headers, CSRF/CORS, RLS, rate limits), (4) Integrate Sentry for monitoring, (5) Ensure WCAG 2.1 AA accessibility, (6) Polish UX and finalize documentation, (7) Prepare deployment scripts, (8) Review logs for PII compliance, (9) Conduct final QA signoff.",
-			"reasoning": "Finalizing a production system requires comprehensive testing, security hardening, observability, and accessibility. Each area is critical for launch readiness and involves multiple best-practice-driven subtasks."
+			"recommendedSubtasks": 7,
+			"expansionPrompt": "Expand into: (1) automated test suite execution, (2) coverage analysis, (3) manual feature verification, (4) performance and bundle analysis, (5) documentation of results, (6) issue tracking and resolution, (7) stakeholder sign-off.",
+			"reasoning": "Comprehensive QA requires coordination of automated and manual testing, coverage enforcement, performance checks, and stakeholder communication. High complexity arises from the breadth of verification and the need for thorough documentation and sign-off."
+		},
+		{
+			"taskId": 30,
+			"taskTitle": "Deploy to Production with Monitoring",
+			"complexityScore": 7,
+			"recommendedSubtasks": 6,
+			"expansionPrompt": "Decompose into: (1) pre-deployment checklist validation, (2) release creation and tagging, (3) deployment execution, (4) monitoring setup and health checks, (5) alerting and incident response, (6) post-mortem documentation.",
+			"reasoning": "Production deployment with monitoring involves multiple coordinated steps, including validation, release management, monitoring configuration, and incident response planning. Complexity is high due to the critical nature and need for robust monitoring and rollback procedures."
 		}
 	]
 }

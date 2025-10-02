@@ -1,0 +1,290 @@
+# Product Requirements Document (PRD): SmartSlate Polaris Codebase Cleanup and Reorganization
+
+## Executive Summary
+
+This PRD outlines a comprehensive cleanup and reorganization of the SmartSlate Polaris v3 codebase to eliminate duplication, improve maintainability, and establish a clean, professional folder structure. The current codebase suffers from multiple applications doing similar things, disorganized documentation, security issues, and unclear separation of concerns.
+
+**Key Issues Identified:**
+- 78+ markdown files scattered in root directory
+- Multiple applications: `frontend/` (Next.js), `smartslate-app/` (Vite), `frontend/smartslate-polaris/` (nested Vite)
+- SSH keys exposed in root directory (security risk)
+- Mixed file organization with tests, docs, and source code not clearly separated
+- Unclear which application is the primary/production version
+
+**Goal:** Transform a cluttered, multi-application repository into a single, well-organized, production-ready Next.js application with proper documentation structure and security best practices.
+
+## Current State Analysis
+
+### Application Architecture Issues
+
+1. **Multiple Competing Applications:**
+   - `frontend/` - Next.js 15 + React 19 application (550+ files) - Currently deployed to Vercel
+   - `smartslate-app/` - Vite + React 19 application (76 files) - Not deployed, appears unused
+   - `frontend/smartslate-polaris/` - Nested Vite application within frontend (133 files) - Duplicate functionality
+
+2. **Deployment Confusion:**
+   - `vercel.json` routes all traffic to `frontend/` directory
+   - `smartslate-app/` has its own `vercel.json` but isn't used in deployment
+   - Root `package.json` is minimal and doesn't represent the main application
+
+### File Organization Problems
+
+1. **Documentation Chaos:**
+   - 78 markdown files in root directory
+   - Implementation notes, changelogs, and feature docs mixed together
+   - No clear documentation hierarchy or archival system
+
+2. **Security Issues:**
+   - `sshkey` and `sshkey.pub` files in root directory
+   - Potential exposure of sensitive credentials
+
+3. **Structural Issues:**
+   - Tests mixed throughout source code
+   - Unclear separation between development and production assets
+   - Inconsistent naming conventions
+
+## Proposed Solution
+
+### Phase 1: Application Consolidation (Week 1)
+
+**Determine Primary Application:** `frontend/` (Next.js) is the production application based on Vercel deployment configuration.
+
+**Actions:**
+1. **Remove Duplicate Applications:**
+   - Delete `smartslate-app/` directory entirely (unused in deployment)
+   - Remove nested `frontend/smartslate-polaris/` directory (duplicate functionality)
+   - Clean up any references to removed applications
+
+2. **Consolidate Root Files:**
+   - Move SSH keys to secure location or remove if unnecessary
+   - Consolidate root-level configuration files
+
+### Phase 2: Documentation Organization (Week 2)
+
+**Current State:** 78+ markdown files in root directory need categorization and archival.
+
+**New Documentation Structure:**
+```
+docs/
+├── prds/                           # Product Requirements Documents
+│   ├── codebase_cleanup_reorganization_prd.txt
+│   ├── backend_production_readiness_prd.txt
+│   ├── claude_blueprint_generation_prd.txt
+│   ├── learning_blueprint_generator_prd.txt
+│   └── perplexity_dynamic_questionnaire_prd.txt
+├── implementation-notes/           # Archived implementation details
+│   ├── feature-implementations/    # Feature-specific changes
+│   │   ├── blueprint-cards/
+│   │   ├── dynamic-questionnaire/
+│   │   ├── export-functionality/
+│   │   └── glassmorphic-design/
+│   ├── bug-fixes/                  # Bug fix documentation
+│   │   ├── ipad-performance/
+│   │   ├── color-compliance/
+│   │   └── export-issues/
+│   └── refactoring/                # Major refactoring notes
+├── archived/                       # Historical documentation
+│   ├── v1-v2-migration-notes.txt
+│   └── legacy-implementation-details/
+└── guides/                         # User-facing documentation
+    ├── development-setup.md
+    ├── deployment-guide.md
+    └── api-documentation.md
+```
+
+**Categorization Strategy:**
+1. **PRDs:** Move existing PRD files to `docs/prds/`
+2. **Implementation Notes:** Archive feature-specific implementation details by category
+3. **Bug Fixes:** Document fixes and solutions for future reference
+4. **Refactoring:** Document major architectural changes
+5. **Guides:** Create user-facing documentation
+
+### Phase 3: Code Organization Improvements (Week 3)
+
+**Enhanced Structure:**
+```
+frontend/
+├── src/                          # Main source code (if migrating from app/)
+│   ├── app/                      # Next.js app router
+│   ├── components/               # Reusable UI components
+│   ├── lib/                      # Utilities and services
+│   ├── types/                    # TypeScript definitions
+│   └── styles/                   # Global styles
+├── tests/                        # All test files consolidated
+│   ├── unit/                     # Unit tests
+│   ├── integration/              # Integration tests
+│   ├── e2e/                      # End-to-end tests
+│   └── utils/                    # Test utilities
+├── docs/                         # Component and API docs
+├── scripts/                      # Build and development scripts
+├── public/                       # Static assets
+└── infrastructure/               # DevOps and deployment config
+    ├── vercel.json
+    ├── Dockerfile
+    └── docker-compose.yml
+```
+
+**Additional Improvements:**
+1. **Environment Configuration:** Centralize all environment variables
+2. **Build Optimization:** Consolidate build scripts and configurations
+3. **Testing Strategy:** Unified testing approach across the application
+4. **Documentation:** Generate component and API documentation
+
+## Implementation Plan
+
+### Week 1: Application Consolidation
+
+**Tasks:**
+1. **Backup and Analysis (Day 1-2)**
+   - Create full repository backup
+   - Analyze dependencies and imports in all applications
+   - Identify shared code and potential consolidation opportunities
+
+2. **Application Removal (Day 3-4)**
+   - Safely remove `smartslate-app/` directory
+   - Remove nested `frontend/smartslate-polaris/` application
+   - Update any references to removed applications
+
+3. **Security Cleanup (Day 5)**
+   - Move SSH keys to secure location or remove
+   - Audit for other exposed credentials
+   - Update `.gitignore` if needed
+
+### Week 2: Documentation Organization
+
+**Tasks:**
+1. **Documentation Audit (Day 1-2)**
+   - Catalog all 78+ markdown files by content type
+   - Identify PRDs, implementation notes, bug fixes, and guides
+   - Create categorization spreadsheet
+
+2. **Create New Structure (Day 3-4)**
+   - Create new directory structure under `docs/`
+   - Move PRD files to `docs/prds/`
+   - Create feature-specific subdirectories
+
+3. **Content Migration (Day 5)**
+   - Move files to appropriate categories
+   - Create index files for each category
+   - Update any internal links or references
+
+### Week 3: Code Organization
+
+**Tasks:**
+1. **Source Code Restructure (Day 1-3)**
+   - Consolidate tests into dedicated `tests/` directory
+   - Organize components by feature/domain
+   - Create clear separation between development and production code
+
+2. **Configuration Consolidation (Day 4)**
+   - Centralize environment configuration
+   - Consolidate build scripts
+   - Update deployment configuration
+
+3. **Documentation Generation (Day 5)**
+   - Set up automated documentation generation
+   - Create README files for major directories
+   - Document the new structure
+
+## Migration Strategy
+
+### Risk Mitigation
+
+1. **Gradual Migration:**
+   - Phase-based approach minimizes risk
+   - Each phase can be rolled back independently
+   - Maintain full functionality throughout process
+
+2. **Backup Strategy:**
+   - Full repository backup before starting
+   - Incremental backups at end of each phase
+   - Test deployments after each major change
+
+3. **Team Coordination:**
+   - Clear communication of changes
+   - Update development workflows
+   - Train team on new structure
+
+### Rollback Plan
+
+If issues arise during any phase:
+1. **Phase 1:** Restore from backup, redeploy current version
+2. **Phase 2:** Can be rolled back independently of code changes
+3. **Phase 3:** Test thoroughly before deployment
+
+## Success Metrics
+
+### Quantitative Metrics
+
+1. **File Reduction:**
+   - Reduce root directory files by 80% (78+ markdown files organized)
+   - Eliminate duplicate applications (2 applications removed)
+   - Consolidate configuration files
+
+2. **Security Improvements:**
+   - Remove exposed SSH keys and credentials
+   - Implement proper secret management
+   - Update security scanning
+
+3. **Code Quality:**
+   - Clear test separation and organization
+   - Consistent code structure across application
+   - Improved build times and developer experience
+
+### Qualitative Metrics
+
+1. **Developer Experience:**
+   - Clear folder structure and navigation
+   - Faster onboarding for new developers
+   - Reduced confusion about which code to modify
+
+2. **Maintainability:**
+   - Easier to find and modify specific features
+   - Clear separation of concerns
+   - Better testing and deployment processes
+
+3. **Documentation:**
+   - Easy to find relevant documentation
+   - Clear documentation hierarchy
+   - Up-to-date and well-organized guides
+
+## Timeline and Resources
+
+### Estimated Timeline: 3 Weeks
+
+- **Week 1:** Application consolidation and security cleanup
+- **Week 2:** Documentation organization and archival
+- **Week 3:** Code restructuring and optimization
+
+### Required Resources
+
+1. **Team:**
+   - 1 Full-time developer for cleanup tasks
+   - 1 Part-time developer for testing and validation
+
+2. **Tools:**
+   - Git for version control and backup
+   - Text editor/IDE for file organization
+   - Documentation tools for generating guides
+
+3. **Infrastructure:**
+   - Backup storage for repository snapshots
+   - Testing environment for validation
+   - CI/CD pipeline for automated testing
+
+## Future Considerations
+
+### Post-Cleanup Improvements
+
+1. **Automated Documentation:** Set up tools to generate docs from code
+2. **Code Quality Gates:** Implement linting and formatting standards
+3. **Monitoring:** Add performance and error monitoring
+4. **Security Scanning:** Regular security audits and dependency updates
+
+### Maintenance Strategy
+
+1. **Regular Cleanup:** Quarterly review of documentation and code organization
+2. **Documentation Standards:** Establish guidelines for new documentation
+3. **Code Reviews:** Include organization checks in code review process
+
+This PRD provides a comprehensive roadmap for transforming the SmartSlate Polaris codebase from its current cluttered state into a well-organized, maintainable, and professional application structure.
