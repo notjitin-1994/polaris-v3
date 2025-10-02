@@ -7,7 +7,7 @@ import { Header } from './Header';
 import { Brand } from './Brand';
 import { NavSection, type NavItem } from './NavSection';
 import { UserAvatar } from './UserAvatar';
-import { SidebarToggleIcon } from './icons';
+import { IconSidebarToggle } from './icons';
 import { useAuth } from '@/contexts/AuthContext';
 
 interface AppLayoutProps {
@@ -43,7 +43,7 @@ export const AppLayout = memo(function AppLayout({
     >
       <div className="flex h-full">
         {/* Desktop Sidebar */}
-        <Sidebar />
+        <Sidebar user={null} onSignOut={async () => {}} />
 
         {/* Main Content Area */}
         <main className="h-full min-w-0 flex-1 overflow-y-auto">

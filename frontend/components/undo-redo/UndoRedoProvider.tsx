@@ -21,7 +21,7 @@ export function UndoRedoProvider({ children }: UndoRedoProviderProps) {
 
   // Set up action history tracking
   useEffect(() => {
-    const unsubscribe = blueprintStore.subscribe((state) => {
+    const unsubscribe = (blueprintStore as any).subscribe?.((state: any) => {
       // Track blueprint changes
       if (state.currentBlueprint) {
         actionHistory.addAction('blueprint_update', state.currentBlueprint, 'Blueprint updated');
@@ -33,7 +33,7 @@ export function UndoRedoProvider({ children }: UndoRedoProviderProps) {
 
   // Set up UI state tracking
   useEffect(() => {
-    const unsubscribe = uiStore.subscribe((state) => {
+    const unsubscribe = (uiStore as any).subscribe?.((state: any) => {
       // Track UI changes
       actionHistory.addAction('ui_update', state, 'UI state updated');
     });

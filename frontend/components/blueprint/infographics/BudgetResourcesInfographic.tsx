@@ -122,7 +122,7 @@ export function BudgetResourcesInfographic({
                   cx="50%"
                   cy="50%"
                   labelLine={false}
-                  label={(props) => {
+                  label={(props: any) => {
                     const percentage = ((props.value / (budget?.total || 1)) * 100).toFixed(0);
                     return `${percentage}%`;
                   }}

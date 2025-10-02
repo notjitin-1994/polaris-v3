@@ -33,10 +33,7 @@ export class BlueprintErrorBoundary extends Component<Props, State> {
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo): void {
-    logger.error('blueprint.render.error', {
-      error: error.message,
-      componentStack: errorInfo.componentStack,
-    });
+    logger.error('Blueprint render error', 'An error occurred while rendering blueprint');
 
     this.props.onError?.(error, errorInfo);
   }

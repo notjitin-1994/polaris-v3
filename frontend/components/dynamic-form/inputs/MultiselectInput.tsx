@@ -66,6 +66,8 @@ export const MultiselectInput: React.FC<BaseInputProps> = ({
       disabled={disabled}
       className={className}
       inputId={inputId}
+      value={value}
+      onChange={onChange}
     >
       <div className="relative">
         {/* Selected values display */}

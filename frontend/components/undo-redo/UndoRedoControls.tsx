@@ -27,15 +27,18 @@ export function UndoRedoControls({ className = '' }: UndoRedoControlsProps) {
     const updateState = () => {
       setCanUndo(actionHistory.canUndo());
       setCanRedo(actionHistory.canRedo());
-      setHistoryInfo(actionHistory.getHistoryInfo());
+      setHistoryInfo({
+        ...actionHistory.getHistoryInfo(),
+        currentAction: actionHistory.getHistoryInfo().currentAction || undefined,
+      });
     };
 
     // Update state initially
     updateState();
 
     // Update state when blueprint changes
-    const unsubscribeBlueprint = blueprintStore.subscribe(updateState);
-    const unsubscribeUI = uiStore.subscribe(updateState);
+    const unsubscribeBlueprint = (blueprintStore as any).subscribe?.(updateState);
+    const unsubscribeUI = (uiStore as any).subscribe?.(updateState);
 
     return () => {
       unsubscribeBlueprint();

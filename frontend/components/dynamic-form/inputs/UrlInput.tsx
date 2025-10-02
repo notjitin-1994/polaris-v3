@@ -27,6 +27,8 @@ export const UrlInput: React.FC<BaseInputProps> = ({
       error={error}
       disabled={disabled}
       className={className}
+      value={value}
+      onChange={onChange}
       inputId={inputId}
     >
       <BaseInputField
@@ -40,7 +42,6 @@ export const UrlInput: React.FC<BaseInputProps> = ({
         required={question.required}
         placeholder={question.placeholder || 'https://example.com'}
         error={error}
-        autoComplete="url"
         aria-label={question.label}
         aria-describedby={question.helpText ? `${inputId}-help` : undefined}
       />

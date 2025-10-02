@@ -24,12 +24,6 @@ export const ExportPreviewModal: React.FC<ExportPreviewModalProps> = ({
   const [activeTab, setActiveTab] = useState<ExportFormat>('pdf');
   const [previewContent, setPreviewContent] = useState<string>('');
 
-  useEffect(() => {
-    if (isOpen && exportResults.has(activeTab)) {
-      generatePreview(activeTab);
-    }
-  }, [isOpen, activeTab, exportResults, generatePreview]);
-
   const generatePreview = useCallback(
     async (format: ExportFormat) => {
       const result = exportResults.get(format);
@@ -61,22 +55,31 @@ export const ExportPreviewModal: React.FC<ExportPreviewModalProps> = ({
     [exportResults]
   );
 
-  const formatIcons = {
+  useEffect(() => {
+    if (isOpen && exportResults.has(activeTab)) {
+      generatePreview(activeTab);
+    }
+  }, [isOpen, activeTab, exportResults, generatePreview]);
+
+  const formatIcons: Record<ExportFormat, React.ElementType> = {
     pdf: FileImage,
     markdown: FileText,
     json: Code,
+    docx: FileImage,
   };
 
-  const formatNames = {
+  const formatNames: Record<ExportFormat, string> = {
     pdf: 'PDF',
     markdown: 'Markdown',
     json: 'JSON',
+    docx: 'DOCX',
   };
 
-  const formatDescriptions = {
+  const formatDescriptions: Record<ExportFormat, string> = {
     pdf: 'Professional document with charts and styling',
     markdown: 'Plain text with formatting for documentation',
     json: 'Structured data for integration and processing',
+    docx: 'Word document with professional formatting',
   };
 
   if (!isOpen) return null;

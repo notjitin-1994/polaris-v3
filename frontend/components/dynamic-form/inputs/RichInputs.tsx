@@ -30,7 +30,7 @@ import {
   CheckboxCardGroup,
   type CheckboxCardOption,
 } from '@/components/wizard/inputs/CheckboxCardGroup';
-import { EnhancedScale, type EnhancedScaleOption } from '@/components/wizard/inputs/EnhancedScale';
+import { EnhancedScale } from '@/components/wizard/inputs/EnhancedScale';
 import { LabeledSlider } from '@/components/wizard/inputs/LabeledSlider';
 import { ToggleSwitch } from '@/components/wizard/inputs/ToggleSwitch';
 import { CurrencyInput } from '@/components/wizard/inputs/CurrencyInput';
@@ -89,8 +89,8 @@ export const RadioCardsInput: React.FC<BaseInputProps> = ({
   const options: RadioCardOption[] = (question.options || []).map((opt) => ({
     value: opt.value,
     label: opt.label,
-    description: opt.description,
     icon: opt.icon,
+    description: opt.description || '',
   }));
 
   return (
@@ -139,7 +139,6 @@ export const CheckboxPillsInput: React.FC<BaseInputProps> = ({
       helpText={question.helpText}
       required={question.required}
       disabled={disabled}
-      maxSelections={question.maxSelections}
       className={className}
     />
   );
@@ -162,8 +161,8 @@ export const CheckboxCardsInput: React.FC<BaseInputProps> = ({
   const options: CheckboxCardOption[] = (question.options || []).map((opt) => ({
     value: opt.value,
     label: opt.label,
-    description: opt.description,
     icon: opt.icon,
+    description: opt.description || '',
   }));
 
   return (
@@ -176,7 +175,6 @@ export const CheckboxCardsInput: React.FC<BaseInputProps> = ({
       helpText={question.helpText}
       required={question.required}
       disabled={disabled}
-      maxSelections={question.maxSelections}
       className={className}
     />
   );
@@ -211,7 +209,7 @@ export const EnhancedScaleInput: React.FC<BaseInputProps> = ({
     minLabel: 'Low',
     maxLabel: 'High',
   };
-  const options: EnhancedScaleOption[] = [];
+  const options: any[] = [];
 
   // Generate options from min to max
   for (let i = config.min; i <= config.max; i += config.step) {
@@ -235,7 +233,8 @@ export const EnhancedScaleInput: React.FC<BaseInputProps> = ({
       label={question.label}
       value={typeof value === 'number' ? value : config.min}
       onChange={onChange}
-      options={options}
+      min={config.min}
+      max={config.max}
       minLabel={config.minLabel}
       maxLabel={config.maxLabel}
       error={error}
@@ -277,7 +276,7 @@ export const LabeledSliderInput: React.FC<BaseInputProps> = ({
       max={config.max}
       step={config.step}
       unit={config.unit}
-      markers={config.markers}
+      markers={config.markers as any}
       error={error}
       helpText={question.helpText}
       required={question.required}
@@ -355,9 +354,6 @@ export const CurrencyInputComponent: React.FC<BaseInputProps> = ({
       label={question.label}
       value={typeof value === 'number' ? value : 0}
       onChange={onChange}
-      currencySymbol={question.currencySymbol || '$'}
-      min={question.min ?? 0}
-      max={question.max ?? 999999}
       error={error}
       helpText={question.helpText}
       required={question.required}

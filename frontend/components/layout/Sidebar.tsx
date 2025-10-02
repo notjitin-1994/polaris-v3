@@ -94,13 +94,13 @@ export function Sidebar({ user, onSignOut }: SidebarProps) {
 
   return (
     <aside
-      className={`hidden flex-col md:flex ${sidebarCollapsed ? 'md:w-20 lg:w-20' : 'md:w-72 lg:w-80'} bg-surface shadow-sm backdrop-blur-xl transition-all duration-300 ease-out`}
+      className={`hidden flex-col md:flex h-full min-h-0 ${sidebarCollapsed ? 'md:w-16 lg:w-16' : 'md:w-72 lg:w-80'} bg-surface shadow-sm backdrop-blur-xl transition-all duration-300 ease-out`}
       aria-label="Main navigation"
       role="navigation"
     >
       {/* Header with Brand & Toggle */}
       <div
-        className={` ${sidebarCollapsed ? 'px-3 py-4' : 'px-6 py-5'} flex items-center ${sidebarCollapsed ? 'justify-center' : 'justify-between'} bg-surface/80 sticky top-0 z-20 backdrop-blur-sm`}
+        className={` ${sidebarCollapsed ? 'px-2 py-3' : 'px-6 py-5'} flex items-center ${sidebarCollapsed ? 'justify-center' : 'justify-between'} bg-surface/80 sticky top-0 z-20 backdrop-blur-sm`}
       >
         {!sidebarCollapsed && (
           <div className="animate-in fade-in slide-in-from-left-2 duration-300">
@@ -111,7 +111,7 @@ export function Sidebar({ user, onSignOut }: SidebarProps) {
           type="button"
           onClick={() => setSidebarCollapsed((v) => !v)}
           aria-label={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-          className="group text-text-secondary hover:text-foreground hover:bg-foreground/5 active:bg-foreground/10 focus-visible:ring-secondary/50 relative flex h-9 w-9 items-center justify-center rounded-lg transition-all duration-200 focus-visible:ring-2 focus-visible:ring-offset-2"
+          className={`group text-text-secondary hover:text-foreground hover:bg-foreground/5 active:bg-foreground/10 focus-visible:ring-secondary/50 relative flex items-center justify-center rounded-lg transition-all duration-200 focus-visible:ring-2 focus-visible:ring-offset-2 ${sidebarCollapsed ? 'h-8 w-8' : 'h-9 w-9'}`}
           title={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
         >
           <IconSidebarToggle
@@ -123,7 +123,7 @@ export function Sidebar({ user, onSignOut }: SidebarProps) {
       {/* Navigation Content */}
       {!sidebarCollapsed && (
         // Expanded View: Full Navigation
-        <nav className="flex-1 space-y-6 overflow-y-auto px-4 py-4" aria-label="Primary navigation">
+        <nav className="flex-1 space-y-6 overflow-y-auto px-4 py-4 min-h-0" aria-label="Primary navigation">
           {/* Quick Access Section */}
           <div className="space-y-1.5">
             <h2 className="text-primary mb-2 px-3 text-[5px] font-bold tracking-wider uppercase">
@@ -184,11 +184,9 @@ export function Sidebar({ user, onSignOut }: SidebarProps) {
                   <span className="flex-1 truncate text-left">{name}</span>
                   <span
                     className={`inline-flex shrink-0 items-center rounded-full border px-2.5 py-0.5 text-[10px] font-semibold tracking-wide uppercase transition-all duration-200 ${
-                      badgeType === 'preview'
-                        ? 'border-secondary/30 bg-secondary/10 text-secondary'
-                        : badgeType === 'soon'
-                          ? 'border-primary/40 bg-primary/10 text-primary shadow-primary/20 shadow'
-                          : 'text-text-disabled border-neutral-300 bg-neutral-100 dark:border-neutral-700 dark:bg-neutral-800'
+                      badgeType === 'soon'
+                        ? 'border-primary/40 bg-primary/10 text-primary shadow-primary/20 shadow'
+                        : 'text-text-disabled border-neutral-300 bg-neutral-100 dark:border-neutral-700 dark:bg-neutral-800'
                     } `}
                   >
                     {badge}
@@ -201,20 +199,20 @@ export function Sidebar({ user, onSignOut }: SidebarProps) {
       )}
 
       {/* Footer Section */}
-      <div className="bg-surface/50 mt-auto w-full backdrop-blur-sm">
+      <div className="bg-surface/50 mt-auto w-full backdrop-blur-sm flex-shrink-0">
         {sidebarCollapsed ? (
-          // Collapsed Footer - Only Subscribe Button
-          <div className="flex flex-col items-center px-3 py-4">
+          // Collapsed Footer - Subscribe and Logout Buttons
+          <div className="flex flex-col items-center px-2 py-3 space-y-2">
             {/* Subscribe Button - Collapsed */}
             <button
               type="button"
               onClick={() => router.push('/pricing')}
               title="Subscribe to Polaris"
               aria-label="Subscribe to Polaris"
-              className="group hover:shadow-secondary/25 focus-visible:ring-secondary/50 bg-secondary hover:bg-secondary/90 relative flex h-11 w-11 items-center justify-center rounded-xl transition-all duration-200 focus-visible:ring-2 focus-visible:ring-offset-2 active:scale-95"
+              className="group hover:shadow-secondary/25 focus-visible:ring-secondary/50 bg-secondary hover:bg-secondary/90 relative flex h-8 w-8 items-center justify-center rounded-lg transition-all duration-200 focus-visible:ring-2 focus-visible:ring-offset-2 active:scale-95"
             >
               <svg
-                className="text-secondary-foreground h-5 w-5"
+                className="text-secondary-foreground h-4 w-4"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -222,6 +220,17 @@ export function Sidebar({ user, onSignOut }: SidebarProps) {
               >
                 <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
               </svg>
+            </button>
+
+            {/* Logout Button - Collapsed */}
+            <button
+              type="button"
+              onClick={onSignOut}
+              title="Sign out"
+              aria-label="Sign out"
+              className="group hover:shadow-red-500/25 focus-visible:ring-red-500/50 bg-red-600 hover:bg-red-700 relative flex h-8 w-8 items-center justify-center rounded-lg transition-all duration-200 focus-visible:ring-2 focus-visible:ring-offset-2 active:scale-95"
+            >
+              <IconLogout className="text-white h-4 w-4" />
             </button>
           </div>
         ) : (

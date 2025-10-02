@@ -247,3 +247,12 @@ export interface UseFormValidationReturn {
   validateForm: () => ValidationResult;
   clearErrors: (questionId?: string) => void;
 }
+
+// Re-export types from schema for convenience
+export type {
+  FormSchema,
+  Question,
+  Section,
+  ValidationResult,
+  InputType,
+} from './schema';

@@ -54,7 +54,7 @@ function DynamicWizardContent({ id }: { id: string }): React.JSX.Element {
         const raw = data.dynamic_questions_raw as Record<string, unknown>;
         if (raw.metadata && typeof raw.metadata === 'object') {
           const metadata = raw.metadata as Record<string, unknown>;
-          setGenerationSource((metadata.source as string) || null);
+          setGenerationSource((metadata.source as 'perplexity' | 'ollama' | null) || null);
           setFallbackUsed((metadata.fallbackUsed as boolean) || false);
 
           logger.info('dynamic_questions.wizard.loaded', 'Dynamic wizard loaded with metadata', {
@@ -270,7 +270,7 @@ function DynamicWizardContent({ id }: { id: string }): React.JSX.Element {
               title: 'Dynamic Questions',
               description: 'Generated questions based on your responses',
               sections: Array.isArray(blueprint.dynamic_questions)
-                ? blueprint.dynamic_questions.map((section: Record<string, unknown>) => ({
+                ? blueprint.dynamic_questions.map((section: any) => ({
                     ...section,
                     isCollapsible: section.isCollapsible ?? true,
                     isRequired: section.isRequired ?? true,

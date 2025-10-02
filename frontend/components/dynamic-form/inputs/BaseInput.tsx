@@ -117,7 +117,7 @@ export const BaseInputField: React.FC<BaseInputFieldProps> = ({
       id={id}
       name={name}
       type={type}
-      value={value || ''}
+      value={String(value || '')}
       onChange={(e) => onChange(e.target.value)}
       onBlur={onBlur}
       disabled={disabled}

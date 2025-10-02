@@ -41,6 +41,8 @@ export const SelectInput: React.FC<BaseInputProps> = ({
       disabled={disabled}
       className={className}
       inputId={inputId}
+      value={value}
+      onChange={onChange}
     >
       <select
         id={inputId}

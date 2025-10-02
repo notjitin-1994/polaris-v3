@@ -42,7 +42,7 @@ export default function BlueprintPage({ params }: PageProps): React.JSX.Element 
   const [renamingBlueprint, setRenamingBlueprint] = useState(false);
   const [isEditingMarkdown, setIsEditingMarkdown] = useState(false);
   const [isGeneratingShare, setIsGeneratingShare] = useState(false);
-  const viewMode = 'presentation'; // Always use presentation mode
+  const viewMode: 'presentation' = 'presentation'; // Always use presentation mode
   const [showSuccessToast, setShowSuccessToast] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
   const [isExporting, setIsExporting] = useState(false);
@@ -381,11 +381,9 @@ export default function BlueprintPage({ params }: PageProps): React.JSX.Element 
         animate={{ opacity: 1 }}
         transition={{ delay: 0.2 }}
         className={`relative z-10 ${
-          viewMode === 'focused'
-            ? 'mx-auto max-w-4xl'
-            : viewMode === 'presentation'
-              ? 'mx-auto max-w-7xl'
-              : 'mx-auto max-w-6xl'
+          viewMode === 'presentation'
+            ? 'mx-auto max-w-7xl'
+            : 'mx-auto max-w-6xl'
         } px-4 py-8 sm:px-6 sm:py-12 lg:px-8`}
       >
         {/* Main Content Card */}

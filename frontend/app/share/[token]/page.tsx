@@ -9,6 +9,7 @@ import { motion } from 'framer-motion';
 import { InteractiveBlueprintDashboard } from '@/components/blueprint/InteractiveBlueprintDashboard';
 import { BlueprintDashboard } from '@/components/blueprint/BlueprintDashboard';
 import { parseAndValidateBlueprintJSON } from '@/lib/ollama/blueprintValidation';
+import type { BlueprintJSON } from '@/components/blueprint/types';
 
 interface PageProps {
   params: Promise<{ token: string }>;
@@ -37,18 +38,18 @@ function isComprehensiveBlueprint(blueprint: unknown): boolean {
 }
 
 // Normalize blueprint data for consistent rendering
-function normalizeBlueprint(blueprint: unknown): unknown {
+function normalizeBlueprint(blueprint: unknown): BlueprintJSON | null {
   if (!blueprint) return null;
 
   // Handle nested blueprint_json field (legacy format)
   if (typeof blueprint === 'object' && blueprint !== null) {
     const bp = blueprint as Record<string, unknown>;
     if (bp.blueprint_json && typeof bp.blueprint_json === 'object') {
-      return bp.blueprint_json;
+      return bp.blueprint_json as BlueprintJSON;
     }
   }
 
-  return blueprint;
+  return blueprint as BlueprintJSON;
 }
 
 export default function SharedBlueprintPage({ params }: PageProps): React.JSX.Element {
@@ -310,10 +311,12 @@ export default function SharedBlueprintPage({ params }: PageProps): React.JSX.El
           {blueprintData ? (
             <>
               {isComprehensiveBlueprint(blueprintData) ? (
-                <InteractiveBlueprintDashboard
-                  blueprint={normalizeBlueprint(blueprintData)}
-                  isPublicView={true}
-                />
+                normalizeBlueprint(blueprintData) ? (
+                  <InteractiveBlueprintDashboard
+                    blueprint={normalizeBlueprint(blueprintData)!}
+                    isPublicView={true}
+                  />
+                ) : null
               ) : (
                 <BlueprintDashboard blueprint={blueprintData} isPublicView={true} />
               )}

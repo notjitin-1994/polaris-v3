@@ -258,7 +258,7 @@ export const ConflictResolutionDialog: React.FC<ConflictResolutionDialogProps> =
                           Custom Value
                         </label>
                         <textarea
-                          value={customValues[conflict.fieldId] || ''}
+                          value={(customValues[conflict.fieldId] as string) || ''}
                           onChange={(e) =>
                             handleCustomValueChange(conflict.fieldId, e.target.value)
                           }

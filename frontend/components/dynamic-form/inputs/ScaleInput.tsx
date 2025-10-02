@@ -62,6 +62,8 @@ export const ScaleInput: React.FC<BaseInputProps> = ({
       error={error}
       disabled={disabled}
       className={className}
+      value={value}
+      onChange={onChange}
       inputId={inputId}
     >
       <div className="space-y-4">

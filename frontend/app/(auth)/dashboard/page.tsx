@@ -1,6 +1,7 @@
 'use client';
 
 import ProtectedRoute from '@/components/auth/ProtectedRoute';
+import { Footer } from '@/components/layout/Footer';
 
 function DashboardContent() {
   return (
@@ -32,6 +33,7 @@ export default function DashboardPage() {
   return (
     <ProtectedRoute>
       <DashboardContent />
+      <Footer />
     </ProtectedRoute>
   );
 }

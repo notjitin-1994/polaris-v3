@@ -9,12 +9,7 @@ export * from './validation';
 
 // Re-export commonly used types for convenience
 export type {
-  FormSchema,
   FormState,
-  Question,
-  Section,
-  ValidationResult,
-  InputType,
   DynamicFormRendererProps,
   BaseInputProps,
   UseDynamicFormReturn,

@@ -103,7 +103,7 @@ const createZodSchema = (formSchema: FormSchema): z.ZodSchema => {
 
           case 'number':
             if (question.required) {
-              fieldSchema = z.number({ required_error: requiredMsg }).min(0, requiredMsg);
+              fieldSchema = z.number().min(0, requiredMsg);
             } else {
               fieldSchema = z.number().optional();
             }
@@ -147,7 +147,7 @@ const createZodSchema = (formSchema: FormSchema): z.ZodSchema => {
 
         return [question.id, fieldSchema] as const;
       })
-      .filter(Boolean); // Remove null entries
+      .filter((item): item is [string, any] => item !== null); // Remove null entries
   });
 
   return z.object(Object.fromEntries(questionSchemas));
@@ -222,7 +222,7 @@ export const DynamicFormRenderer = React.forwardRef<DynamicFormRef, DynamicFormR
 
     // Initialize React Hook Form
     const methods = useForm<FieldValues>({
-      resolver: zodResolver(zodSchema),
+      resolver: zodResolver(zodSchema as any) as any,
       defaultValues,
       mode: 'onChange',
     });
@@ -375,7 +375,7 @@ export const DynamicFormRenderer = React.forwardRef<DynamicFormRef, DynamicFormR
     React.useImperativeHandle(
       ref,
       () => ({
-        submit: handleFormSubmit,
+        submit: handleFormSubmit as any,
         save: handleManualSave,
         reset: () => {
           reset();

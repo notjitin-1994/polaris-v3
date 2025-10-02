@@ -116,8 +116,8 @@ export const ExportHistory: React.FC<ExportHistoryProps> = ({ className = '' }) 
 
       <div className="space-y-4">
         {history.map((entry) => {
-          const Icon = formatIcons[entry.format];
-          const colorClass = formatColors[entry.format];
+          const Icon = formatIcons[entry.format as keyof typeof formatIcons];
+          const colorClass = formatColors[entry.format as keyof typeof formatColors];
 
           return (
             <div

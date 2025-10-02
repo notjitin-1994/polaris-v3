@@ -42,6 +42,8 @@ export const TextareaInput: React.FC<BaseInputProps> = ({
       question={question}
       error={error}
       disabled={disabled}
+      value={value}
+      onChange={onChange}
       className={className}
       inputId={inputId}
     >

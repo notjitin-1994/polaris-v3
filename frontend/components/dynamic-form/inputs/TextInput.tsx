@@ -27,6 +27,8 @@ export const TextInput: React.FC<BaseInputProps> = ({
       error={error}
       disabled={disabled}
       className={className}
+      value={value}
+      onChange={onChange}
       inputId={inputId}
     >
       <BaseInputField

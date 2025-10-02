@@ -21,8 +21,9 @@ export const NumberInput: React.FC<BaseInputProps> = ({
 
   const inputId = `number-${question.id}`;
 
-  const handleChange = (newValue: string) => {
-    const numValue = newValue === '' ? null : parseFloat(newValue);
+  const handleChange = (newValue: unknown) => {
+    const strValue = String(newValue || '');
+    const numValue = strValue === '' ? null : parseFloat(strValue);
     onChange(numValue);
   };
 
@@ -32,22 +33,21 @@ export const NumberInput: React.FC<BaseInputProps> = ({
       error={error}
       disabled={disabled}
       className={className}
+      value={value}
+      onChange={onChange}
       inputId={inputId}
     >
       <BaseInputField
         id={inputId}
         name={question.id}
         type="number"
-        value={value || ''}
+        value={String(value || '')}
         onChange={handleChange}
         onBlur={onBlur}
         disabled={disabled}
         required={question.required}
         placeholder={question.placeholder}
         error={error}
-        min={question.min}
-        max={question.max}
-        step={question.step}
         aria-label={question.label}
         aria-describedby={question.helpText ? `${inputId}-help` : undefined}
       />

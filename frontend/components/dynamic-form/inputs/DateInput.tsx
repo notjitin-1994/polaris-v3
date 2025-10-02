@@ -28,19 +28,19 @@ export const DateInput: React.FC<BaseInputProps> = ({
       disabled={disabled}
       className={className}
       inputId={inputId}
+      value={value}
+      onChange={onChange}
     >
       <BaseInputField
         id={inputId}
         name={question.id}
         type="date"
-        value={value || ''}
+        value={String(value || '')}
         onChange={onChange}
         onBlur={onBlur}
         disabled={disabled}
         required={question.required}
         error={error}
-        min={question.minDate}
-        max={question.maxDate}
         aria-label={question.label}
         aria-describedby={question.helpText ? `${inputId}-help` : undefined}
       />
