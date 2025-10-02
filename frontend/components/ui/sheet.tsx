@@ -56,7 +56,7 @@ const SheetContent = React.forwardRef<
     </DialogPrimitive.Content>
   </SheetPortal>
 ))
-SheetContent.displayName = SheetContent.displayName
+SheetContent.displayName = "SheetContent"
 
 const SheetOverlay = React.forwardRef<
   React.ElementRef<typeof DialogPrimitive.Overlay>,
