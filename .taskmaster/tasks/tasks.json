@@ -95,7 +95,7 @@
               "22.1"
             ],
             "details": "Remove directories such as 'ssh_keys/' and any other files containing secrets. Commit with a clear message indicating security-related removal.",
-            "status": "in-progress",
+            "status": "done",
             "testStrategy": ""
           },
           {
@@ -106,7 +106,7 @@
               "22.2"
             ],
             "details": "Run BFG Repo-Cleaner with appropriate flags to delete folders and files containing secrets. Follow up with 'git reflog expire' and 'git gc' to fully purge sensitive data.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": ""
           },
           {
@@ -117,7 +117,7 @@
               "22.3"
             ],
             "details": "Use 'git push --force --all' and 'git push --force --tags' to update the remote repository. Notify all collaborators to re-clone or reset their local repositories.",
-            "status": "pending",
+            "status": "in-progress",
             "testStrategy": ""
           },
           {
@@ -752,7 +752,7 @@
     ],
     "metadata": {
       "created": "2025-09-27T10:54:14.464Z",
-      "updated": "2025-10-02T11:41:30.928Z",
+      "updated": "2025-10-02T11:43:05.964Z",
       "description": "Tasks for master context"
     }
   },
