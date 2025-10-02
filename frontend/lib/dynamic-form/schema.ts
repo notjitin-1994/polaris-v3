@@ -466,7 +466,7 @@ export const validateFormSchema = (
     if (error instanceof z.ZodError) {
       return {
         success: false,
-        error: error.errors.map((e) => `${e.path.join('.')}: ${e.message}`).join(', '),
+        error: error.issues.map((e) => `${e.path.join('.')}: ${e.message}`).join(', '),
       };
     }
     return { success: false, error: 'Unknown validation error' };

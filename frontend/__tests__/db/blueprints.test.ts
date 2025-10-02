@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
-import { blueprintService } from '@/lib/db/blueprints';
+import { BlueprintService } from '@/lib/db/blueprints';
 import { Blueprint } from '@/lib/ollama/schema';
 import { AggregatedAnswer } from '@/lib/services/answerAggregation';
 
@@ -20,6 +20,7 @@ function isServiceRoleKey(key: string): boolean {
 const describeMaybe = isServiceRoleKey(SUPABASE_SERVICE_ROLE_KEY) ? describe : describe.skip;
 
 let serviceClient: SupabaseClient;
+let blueprintService: BlueprintService;
 let testUserId: string;
 
 async function ensureTestUser(): Promise<string> {
@@ -40,6 +41,7 @@ describeMaybe('BlueprintService (integration)', () => {
       throw new Error('Missing SUPABASE envs (URL/service role key) for integration tests');
     }
     serviceClient = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+    blueprintService = new BlueprintService(serviceClient);
     testUserId = await ensureTestUser();
   });
 

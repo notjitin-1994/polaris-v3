@@ -1,6 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { AuthProvider } from '@/contexts/AuthContext';
-import SignupForm from '@/components/auth/SignupForm';
+import SignupFormContent from '@/components/auth/SignupFormContent';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 // Mock Next.js router
@@ -24,7 +24,7 @@ vi.mock('next/navigation', () => ({
   useSearchParams: () => new URLSearchParams(),
 }));
 
-describe('SignupForm', () => {
+describe('SignupFormContent', () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
@@ -32,7 +32,7 @@ describe('SignupForm', () => {
   it('requires matching passwords', async () => {
     render(
       <AuthProvider>
-        <SignupForm />
+        <SignupFormContent />
       </AuthProvider>
     );
     fireEvent.change(screen.getByLabelText(/email/i), { target: { value: 'a@b.com' } });

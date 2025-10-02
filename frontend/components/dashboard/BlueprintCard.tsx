@@ -135,7 +135,7 @@ export function BlueprintCard({
       <motion.div
         className={cn(
           'relative overflow-hidden rounded-2xl transition-all duration-300',
-          'glass-card border',
+          'glass-card h-80 border sm:h-80 lg:h-80', // Fixed height for consistent card sizing across breakpoints
           isHovered ? 'border-primary/30' : 'border-white/10'
         )}
         whileHover={{
@@ -156,90 +156,56 @@ export function BlueprintCard({
         <div className="interactive-spotlight" aria-hidden="true" />
 
         {/* Card Content */}
-        <div className="relative space-y-4 p-6">
+        <div className="relative flex h-full flex-col space-y-4 p-6">
           {/* Header Section */}
           <div className="flex items-start justify-between gap-4">
-            {/* Status Icon & Info */}
-            <div className="flex min-w-0 flex-1 items-start gap-3">
-              <motion.div
-                className={cn(
-                  'flex items-center justify-center rounded-xl p-2.5',
-                  'border transition-all duration-300',
-                  status.bgColor,
-                  status.borderColor,
-                  'relative overflow-hidden'
-                )}
-                whileHover={{ scale: 1.05 }}
-                animate={{
-                  boxShadow: isHovered ? `0 0 20px ${status.glowColor}` : '0 0 0px rgba(0,0,0,0)',
-                }}
-              >
-                <StatusIcon className={cn('h-5 w-5', status.color)} />
-
-                {/* Pulse animation for generating status */}
-                {blueprint.status === 'generating' && (
-                  <motion.div
-                    className={cn('absolute inset-0 rounded-xl', status.bgColor)}
-                    animate={{
-                      scale: [1, 1.2, 1],
-                      opacity: [0.5, 0, 0.5],
-                    }}
-                    transition={{
-                      duration: 2,
-                      repeat: Infinity,
-                      ease: 'easeInOut',
-                    }}
-                  />
-                )}
-              </motion.div>
-
-              <div className="min-w-0 flex-1">
-                {/* Status Badge & Version */}
-                <div className="mb-2 flex items-center gap-2">
-                  <motion.span
-                    className={cn(
-                      'inline-flex items-center gap-1.5 rounded-md px-2.5 py-1 text-xs font-semibold',
-                      status.bgColor,
-                      status.color,
-                      'border',
-                      status.borderColor
-                    )}
-                    whileHover={{ scale: 1.05 }}
-                  >
-                    {status.label}
-                  </motion.span>
-                  <span className="text-xs font-medium text-white/40">v{blueprint.version}</span>
-
-                  {blueprint.blueprint_markdown && (
-                    <motion.span
-                      className="text-success inline-flex items-center gap-1 text-xs font-medium"
-                      initial={{ opacity: 0, scale: 0.8 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      transition={{ delay: 0.2 }}
-                    >
-                      <TrendingUp className="h-3 w-3" />
-                      Generated
-                    </motion.span>
-                  )}
-                </div>
-
-                {/* Title */}
-                <h3
+            {/* Status Info */}
+            <div className="min-w-0 flex-1">
+              {/* Status Badge - Icon and Text Grouped */}
+              <div className="mb-2">
+                <motion.div
                   className={cn(
-                    'font-heading text-lg leading-tight font-bold transition-colors duration-200',
-                    'text-white/95 group-hover:text-white',
-                    'line-clamp-2'
+                    'inline-flex items-center gap-2 rounded-md px-3 py-2 text-sm font-semibold',
+                    status.bgColor,
+                    status.color,
+                    'border',
+                    status.borderColor
                   )}
-                  title={blueprint.title || `Blueprint #${blueprint.id.slice(0, 8)}`}
+                  whileHover={{ scale: 1.05 }}
                 >
-                  {blueprint.title || `Blueprint #${blueprint.id.slice(0, 8)}`}
-                </h3>
+                  <StatusIcon className="h-4 w-4" />
+                  <span>{status.label}</span>
+                </motion.div>
               </div>
+
+              {/* Title */}
+              <h3
+                className={cn(
+                  'font-heading text-lg leading-tight font-bold transition-colors duration-200',
+                  'text-white/95 group-hover:text-white',
+                  'line-clamp-2'
+                )}
+                title={blueprint.title || `Blueprint #${blueprint.id.slice(0, 8)}`}
+              >
+                {blueprint.title || `Blueprint #${blueprint.id.slice(0, 8)}`}
+              </h3>
             </div>
           </div>
 
           {/* Meta Information */}
-          <div className="flex items-center gap-4 text-xs text-white/50">
+          <div className="flex flex-wrap items-center gap-4 text-xs text-white/50">
+            {/* Version and Generated Info */}
+            <div className="flex items-center gap-3">
+              <span className="font-medium text-white/40">v{blueprint.version}</span>
+              {blueprint.blueprint_markdown && (
+                <div className="text-success flex items-center gap-1">
+                  <TrendingUp className="h-3 w-3" />
+                  <span className="font-medium">Generated</span>
+                </div>
+              )}
+            </div>
+
+            {/* Date Information */}
             <div className="flex items-center gap-1.5">
               <Calendar className="h-3.5 w-3.5" />
               <span>{formatDate(blueprint.created_at)}</span>
@@ -295,7 +261,7 @@ export function BlueprintCard({
           </div>
 
           {/* Action Buttons */}
-          <div className="flex items-center justify-end gap-2 pt-2">
+          <div className="mt-auto flex items-center justify-end gap-2">
             {/* Rename Button */}
             <motion.button
               type="button"
