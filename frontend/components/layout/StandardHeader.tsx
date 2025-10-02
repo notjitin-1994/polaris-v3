@@ -31,6 +31,11 @@ export interface StandardHeaderProps {
   backLabel?: string;
 
   /**
+   * Style variant for the back button
+   */
+  backButtonStyle?: 'default' | 'icon-only';
+
+  /**
    * Custom actions to show next to the title (e.g., rename button)
    */
   titleActions?: ReactNode;
@@ -81,6 +86,7 @@ export function StandardHeader({
   subtitle,
   backHref,
   backLabel = 'Back to Dashboard',
+  backButtonStyle = 'default',
   titleActions,
   rightActions,
   showDarkModeToggle = true,
@@ -95,6 +101,7 @@ export function StandardHeader({
   const user = userProp ?? auth?.user ?? null;
 
   const isCompact = size === 'compact';
+  const isIconOnly = backButtonStyle === 'icon-only';
 
   return (
     <header
@@ -116,15 +123,19 @@ export function StandardHeader({
             {backHref && (
               <Link
                 href={backHref}
-                className={`group text-text-secondary hover:text-foreground focus-visible:ring-primary/50 inline-flex items-center justify-center transition-all duration-200 focus-visible:rounded focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none active:scale-[0.98] ${isCompact ? 'h-8 w-8 shrink-0 rounded-lg border border-white/10 bg-white/5 hover:bg-white/10' : 'mb-4 gap-1.5'}`}
-                title={backLabel}
+                className={`group text-text-secondary hover:text-foreground focus-visible:ring-primary/50 inline-flex items-center justify-center transition-all duration-200 focus-visible:rounded focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none active:scale-[0.98] ${
+                  isCompact || isIconOnly
+                    ? 'h-9 w-9 shrink-0 rounded-md border border-white/10 bg-white/5 hover:bg-white/10'
+                    : 'mb-4 gap-1.5'
+                }`}
+                title={isIconOnly ? backLabel : undefined}
                 aria-label={backLabel}
               >
                 <ArrowLeft
-                  className={`transition-transform group-hover:-translate-x-0.5 ${isCompact ? 'h-3.5 w-3.5' : 'h-4 w-4'}`}
+                  className={`transition-transform group-hover:-translate-x-0.5 ${isCompact || isIconOnly ? 'h-3.5 w-3.5' : 'h-4 w-4'}`}
                   aria-hidden="true"
                 />
-                {!isCompact && <span className="text-sm font-medium">{backLabel}</span>}
+                {!isCompact && !isIconOnly && <span className="text-sm font-medium">{backLabel}</span>}
               </Link>
             )}
 

@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState, use, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
+import { motion } from 'framer-motion';
 import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import { getSupabaseBrowserClient } from '@/lib/supabase/client';
@@ -9,7 +10,6 @@ import ProtectedRoute from '@/components/auth/ProtectedRoute';
 import { AuthProvider, useAuth } from '@/contexts/AuthContext';
 import { DynamicFormRenderer } from '@/components/dynamic-form';
 import { DynamicQuestionsLoader } from '@/components/wizard/dynamic-questions';
-import { GenerationSourceBadge } from '@/components/wizard/GenerationSourceBadge';
 import { createBrowserBlueprintService } from '@/lib/db/blueprints.client';
 import { BlueprintRow } from '@/lib/db/blueprints';
 import { StandardHeader } from '@/components/layout/StandardHeader';
@@ -27,8 +27,6 @@ function DynamicWizardContent({ id }: { id: string }): React.JSX.Element {
   const [blueprint, setBlueprint] = useState<BlueprintRow | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [generationSource, setGenerationSource] = useState<'perplexity' | 'ollama' | null>(null);
-  const [fallbackUsed, setFallbackUsed] = useState(false);
 
   const loadBlueprint = useCallback(async () => {
     try {
@@ -49,21 +47,6 @@ function DynamicWizardContent({ id }: { id: string }): React.JSX.Element {
         Array.isArray(data.dynamic_questions) ? data.dynamic_questions.length : 'not an array'
       );
 
-      // Extract generation metadata if available
-      if (data.dynamic_questions_raw && typeof data.dynamic_questions_raw === 'object') {
-        const raw = data.dynamic_questions_raw as Record<string, unknown>;
-        if (raw.metadata && typeof raw.metadata === 'object') {
-          const metadata = raw.metadata as Record<string, unknown>;
-          setGenerationSource((metadata.source as 'perplexity' | 'ollama' | null) || null);
-          setFallbackUsed((metadata.fallbackUsed as boolean) || false);
-
-          logger.info('dynamic_questions.wizard.loaded', 'Dynamic wizard loaded with metadata', {
-            blueprintId: id,
-            source: metadata.source,
-            fallbackUsed: metadata.fallbackUsed,
-          });
-        }
-      }
 
       setBlueprint(data);
     } catch (error) {
@@ -118,10 +101,12 @@ function DynamicWizardContent({ id }: { id: string }): React.JSX.Element {
       <div className="min-h-screen bg-[#020C1B]">
         {/* Header */}
         <StandardHeader
-          title="Dynamic Questions"
-          subtitle="Dynamic questions are being generated for your blueprint."
+          title="Dynamic questionnaire"
           backHref="/"
           backLabel="Back to Dashboard"
+          backButtonStyle="icon-only"
+          showDarkModeToggle={false}
+          showUserAvatar={false}
           user={user}
         />
 
@@ -243,26 +228,67 @@ function DynamicWizardContent({ id }: { id: string }): React.JSX.Element {
     <div className="min-h-screen bg-[#020C1B]">
       {/* Header */}
       <StandardHeader
-        title="Dynamic Questions"
-        subtitle="Answer these personalized questions based on your learning objectives. Your responses will help us create a comprehensive learning blueprint tailored to your needs."
+        title="Dynamic questionnaire"
         backHref="/"
         backLabel="Back to Dashboard"
+        backButtonStyle="icon-only"
+        showDarkModeToggle={false}
+        showUserAvatar={false}
         user={user}
       />
+
+      {/* Hero Section */}
+      <section className="relative overflow-hidden">
+        <div className="relative mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 lg:py-12">
+          <div className="max-w-6xl text-left">
+            {/* Main Title */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94] }}
+              className="mb-8"
+            >
+              <h1 className="font-heading text-7xl font-bold tracking-tight text-white sm:text-8xl md:text-9xl lg:text-10xl">
+                <span>Dynamic </span>
+                <span className="bg-gradient-to-r from-[#a7dadb] to-[#7bc4c4] bg-clip-text text-transparent">
+                  Navigator
+                </span>
+              </h1>
+            </motion.div>
+
+            {/* Subtitle */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.2, ease: [0.25, 0.46, 0.45, 0.94] }}
+              className="mb-12"
+            >
+              <p className="text-xl leading-relaxed text-white/70 sm:text-2xl lg:text-3xl">
+                Answer these{' '}
+                <span className="text-[#a7dadb] font-medium">personalized questions</span>{' '}
+                crafted from your{' '}
+                <span className="text-[#a7dadb] font-medium">learning objectives</span>. Your responses will{' '}
+                <span className="text-[#a7dadb] font-medium drop-shadow-[0_0_8px_rgba(167,218,219,0.8)] brightness-110">illuminate the path</span>{' '}
+                to a{' '}
+                <span className="text-[#a7dadb] font-medium">comprehensive blueprint</span>
+              </p>
+            </motion.div>
+
+            {/* Decorative Line */}
+            <motion.div
+              initial={{ scaleX: 0 }}
+              animate={{ scaleX: 1 }}
+              transition={{ duration: 1, delay: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
+              className="mt-16 h-px w-24"
+              style={{ background: 'linear-gradient(to right, transparent, #a7dadb, transparent)' }}
+            />
+          </div>
+        </div>
+      </section>
 
       {/* Main Content */}
       <main className="w-full px-4 py-8 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-6xl">
-          {/* Generation Source Badge */}
-          {generationSource && (
-            <div className="animate-fade-in-up mb-6 flex justify-center">
-              <GenerationSourceBadge
-                source={generationSource}
-                fallbackUsed={fallbackUsed}
-                size="md"
-              />
-            </div>
-          )}
 
           <DynamicFormRenderer
             formSchema={{

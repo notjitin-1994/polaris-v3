@@ -71,7 +71,7 @@ export function Footer(): React.JSX.Element {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="relative border-t border-white/10 bg-slate-900/95 backdrop-blur-sm">
+    <footer className="relative border-t border-white/10 bg-slate-900/95 backdrop-blur-sm mt-auto">
       <div className="relative mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8 lg:py-16">
         <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5">
           {/* Company Info */}

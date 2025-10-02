@@ -20,7 +20,7 @@ export function ObjectivesInfographic({
   objectives,
 }: ObjectivesInfographicProps): React.JSX.Element {
   return (
-    <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+    <div className="grid grid-cols-3 gap-6">
       {objectives.map((obj, index) => (
         <motion.div
           key={obj.id}

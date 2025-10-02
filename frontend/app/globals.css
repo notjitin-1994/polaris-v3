@@ -86,6 +86,31 @@
   --glow-primary: 0 0 20px rgba(167, 218, 219, 0.3);
   --glow-secondary: 0 0 20px rgba(79, 70, 229, 0.3);
   --glow-subtle: 0 0 10px rgba(167, 218, 219, 0.15);
+
+  /* ========================================
+     GLASS MORPHISM SYSTEM - PERFORMANCE OPTIMIZED
+     ======================================== */
+
+  /* Glass Effect Base Properties */
+  --glass-bg-opacity: 0.08;
+  --glass-border-opacity: 0.12;
+  --glass-blur-amount: 10px;
+
+  /* Glass Shadow System */
+  --glass-shadow-light: rgba(255, 255, 255, 0.1);
+  --glass-shadow-dark: rgba(0, 0, 0, 0.1);
+  --glass-shadow-medium: rgba(0, 0, 0, 0.15);
+  --glass-shadow-strong: rgba(0, 0, 0, 0.2);
+
+  /* Glass Animation Properties */
+  --glass-transition-duration: var(--duration-base);
+  --glass-transition-easing: cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Glass Effect Variations */
+  --glass-subtle-bg-opacity: 0.05;
+  --glass-subtle-border-opacity: 0.08;
+  --glass-strong-bg-opacity: 0.12;
+  --glass-strong-border-opacity: 0.18;
   
   /* Refined Border Colors */
   --border-subtle: rgba(167, 218, 219, 0.08);

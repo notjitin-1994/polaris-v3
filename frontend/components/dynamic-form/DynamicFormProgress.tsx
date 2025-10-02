@@ -50,7 +50,7 @@ export function DynamicFormProgress({
               className={`h-3 w-3 rounded-full border-2 transition-all duration-300 ${
                 index <= currentSection
                   ? 'bg-primary-accent border-primary-accent-light shadow-[0_0_8px_rgba(167,218,219,0.6)]'
-                  : 'bg-background border-white/20'
+                  : 'bg-primary-accent border-primary-accent-light/30'
               }`}
             />
           ))}
@@ -62,7 +62,7 @@ export function DynamicFormProgress({
         <div className="flex-1 space-y-2">
           <div className="flex items-center gap-3">
             <span className="bg-primary/10 border-primary/20 text-primary-accent inline-flex h-7 items-center justify-center rounded-full border px-3 text-[13px] font-semibold tracking-wide">
-              Section {currentSection + 1} of {totalSections}
+              Step {currentSection + 1} of {totalSections}
             </span>
           </div>
           {sectionTitle && (

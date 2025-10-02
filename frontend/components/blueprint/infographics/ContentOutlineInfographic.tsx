@@ -122,11 +122,11 @@ export function ContentOutlineInfographic({
         </div>
       </div>
 
-      {/* Progress Overview */}
+      {/* Progress Overview - Desktop layout on all screen sizes */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="grid grid-cols-2 gap-4 md:grid-cols-4"
+        className="grid grid-cols-4 gap-4"
       >
         {modules.slice(0, 4).map((module, index) => (
           <motion.div

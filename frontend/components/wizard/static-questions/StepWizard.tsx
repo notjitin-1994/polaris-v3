@@ -445,27 +445,32 @@ export function StepWizard(): React.JSX.Element {
           </div>
 
           {/* Navigation */}
-          <div className="flex gap-3 pt-4">
-            <QuestionnaireButton
-              type="button"
-              onClick={goPrev}
-              disabled={currentStepIndex === 0}
-              variant="ghost"
-            >
-              Previous
-            </QuestionnaireButton>
-
-            <QuestionnaireButton
-              type={currentStepIndex === wizardSteps.length - 1 ? 'button' : 'submit'}
-              onClick={currentStepIndex === wizardSteps.length - 1 ? handleFinish : undefined}
-              disabled={currentStepIndex === wizardSteps.length - 1 && !blueprintId}
-              variant="primary"
-              fullWidth
-            >
-              {currentStepIndex === wizardSteps.length - 1
-                ? 'Finish & Continue to Dynamic Questions'
-                : 'Next'}
-            </QuestionnaireButton>
+          <div
+            className="flex items-center justify-end pt-6"
+            style={{
+              borderTop: '1px solid rgba(255, 255, 255, 0.1)',
+            }}
+          >
+            <div className="flex space-x-2">
+              <QuestionnaireButton
+                type="button"
+                onClick={goPrev}
+                disabled={currentStepIndex === 0}
+                variant="ghost"
+              >
+                Previous
+              </QuestionnaireButton>
+              <QuestionnaireButton
+                type={currentStepIndex === wizardSteps.length - 1 ? 'button' : 'submit'}
+                onClick={currentStepIndex === wizardSteps.length - 1 ? handleFinish : undefined}
+                disabled={currentStepIndex === wizardSteps.length - 1 && !blueprintId}
+                variant="primary"
+              >
+                {currentStepIndex === wizardSteps.length - 1
+                  ? 'Finish & Continue to Dynamic Questions'
+                  : 'Next'}
+              </QuestionnaireButton>
+            </div>
           </div>
         </form>
       </FormProvider>

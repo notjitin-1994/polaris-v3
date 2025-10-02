@@ -1,0 +1,696 @@
+{
+  "master": {
+    "tasks": [
+      {
+        "id": 11,
+        "title": "Implement Mobile-First Responsive Breakpoint System",
+        "description": "Create a comprehensive mobile-first breakpoint system with responsive utility classes using Tailwind CSS v4, replacing the current desktop-first approach",
+        "details": "Define breakpoint constants from 320px to 1536px+ (xs: 320px, sm: 640px, md: 768px, lg: 1024px, xl: 1280px, 2xl: 1536px). Create responsive utility classes for containers (containerNarrow, containerWide), grids (gridResponsive, gridCards), and typography scale (display, title, heading, body, caption). Implement mobile-first CSS architecture with min-width media queries. Set up responsive testing framework with viewport simulation capabilities.",
+        "testStrategy": "Unit test breakpoint values and utility class generation. Integration test responsive behavior across all defined breakpoints using Playwright. Visual regression testing with Percy/Chromatic for layout consistency. Performance testing to ensure CSS bundle size remains under 100KB.",
+        "priority": "high",
+        "dependencies": [],
+        "status": "done",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Define Mobile-First Breakpoint Constants and Configuration",
+            "description": "Create a centralized breakpoint configuration system with mobile-first constants and TypeScript types for type-safe usage throughout the application",
+            "dependencies": [],
+            "details": "Create a breakpoints.ts file exporting const BREAKPOINTS = { xs: 320, sm: 640, md: 768, lg: 1024, xl: 1280, '2xl': 1536 } as const. Define TypeScript types: type Breakpoint = keyof typeof BREAKPOINTS. Create utility functions: getBreakpointValue(breakpoint: Breakpoint): number, isAboveBreakpoint(width: number, breakpoint: Breakpoint): boolean. Export CSS custom properties: --breakpoint-xs through --breakpoint-2xl. Configure Tailwind CSS v4 to use these breakpoints in tailwind.config.ts with screens configuration.",
+            "status": "done",
+            "testStrategy": "Unit test breakpoint value retrieval functions. Verify TypeScript type inference works correctly. Test that Tailwind generates correct min-width media queries for each breakpoint."
+          },
+          {
+            "id": 2,
+            "title": "Implement Responsive Container Utility Classes",
+            "description": "Create mobile-first container classes with fluid width behavior and proper padding/margin adjustments for different screen sizes",
+            "dependencies": [
+              "11.1"
+            ],
+            "details": "Create container utility classes in containers.css: .containerNarrow with max-widths (xs: 100%, sm: 640px, md: 768px, lg: 896px, xl: 1024px). .containerWide with max-widths (xs: 100%, sm: 100%, md: 100%, lg: 1024px, xl: 1280px, 2xl: 1536px). Add responsive padding: xs: 16px, sm: 24px, md: 32px, lg: 40px. Implement .container-fluid for full-width containers with responsive padding. Use CSS custom properties for easy customization. Apply mobile-first min-width media queries for all breakpoints.",
+            "status": "done",
+            "testStrategy": "Visual regression test container widths at each breakpoint. Verify padding scales correctly. Test fluid behavior on screens smaller than defined breakpoints."
+          },
+          {
+            "id": 3,
+            "title": "Build Responsive Grid System Classes",
+            "description": "Implement flexible grid utility classes that adapt column counts and gaps based on screen size for optimal mobile layouts",
+            "dependencies": [
+              "11.1"
+            ],
+            "details": "Create grid utility classes in grids.css: .gridResponsive with mobile-first column definitions (xs: 1 column, sm: 2 columns, md: 3 columns, lg: 4 columns). .gridCards optimized for card layouts (xs: 1 column, sm: 2 columns, md: 2 columns, lg: 3 columns, xl: 4 columns). Implement responsive gap sizing: xs: 16px, sm: 20px, md: 24px, lg: 32px. Add .grid-auto-fit and .grid-auto-fill variants using minmax() for truly responsive grids. Include alignment utilities (.grid-center, .grid-start, .grid-stretch) that work across breakpoints.",
+            "status": "done",
+            "testStrategy": "Test grid column counts at each breakpoint. Verify gap spacing scales correctly. Test auto-fit/auto-fill behavior with varying content amounts. Check grid alignment utilities work as expected."
+          },
+          {
+            "id": 4,
+            "title": "Create Responsive Typography Scale System",
+            "description": "Develop a comprehensive typography scale that adjusts font sizes, line heights, and spacing for optimal readability across all device sizes",
+            "dependencies": [
+              "11.1"
+            ],
+            "details": "Create typography scale in typography.css with mobile-first sizing: .display (xs: 32px/1.2, sm: 40px/1.2, md: 48px/1.1, lg: 56px/1.1, xl: 64px/1.1). .title (xs: 24px/1.3, sm: 28px/1.3, md: 32px/1.2, lg: 36px/1.2). .heading (xs: 20px/1.4, sm: 22px/1.4, md: 24px/1.3, lg: 28px/1.3). .body (xs: 16px/1.6, sm: 16px/1.6, md: 18px/1.5, lg: 18px/1.5). .caption (xs: 14px/1.5, sm: 14px/1.5, md: 16px/1.5). Include responsive letter-spacing and margin adjustments. Use CSS clamp() for fluid typography between breakpoints. Add .text-balance utility for better text wrapping on mobile.",
+            "status": "done",
+            "testStrategy": "Visual test typography at each breakpoint for readability. Verify line height ratios maintain vertical rhythm. Test clamp() calculations for smooth scaling. Check text balance on narrow viewports."
+          },
+          {
+            "id": 5,
+            "title": "Set Up Responsive Testing Framework",
+            "description": "Implement automated testing infrastructure to validate responsive behavior across all defined breakpoints and device types",
+            "dependencies": [
+              "11.1",
+              "11.2",
+              "11.3",
+              "11.4"
+            ],
+            "details": "Create responsive testing utilities in test-utils/responsive.ts: createViewportTest() function that runs tests at each breakpoint. Implement Playwright viewport presets matching breakpoint values. Add custom Jest matchers: toBeVisibleAtBreakpoint(), toHaveResponsiveStyles(). Create visual regression test suite using Percy/Chromatic with snapshots at each breakpoint. Set up performance budget tests ensuring CSS bundle stays under 100KB. Implement automated accessibility testing at mobile viewports. Create test fixtures for common responsive patterns (navigation, cards, forms).",
+            "status": "done",
+            "testStrategy": "Test the testing framework itself with known responsive components. Verify viewport simulation accuracy. Ensure visual regression tests catch layout shifts. Validate performance metrics are accurately measured."
+          }
+        ]
+      },
+      {
+        "id": 12,
+        "title": "Replace Backdrop-Filter with Performance-Optimized Glass Effects",
+        "description": "Implement CSS-only glass morphism effects for mobile devices to resolve iOS/iPad performance degradation, with progressive enhancement for capable devices",
+        "details": "Create .glass-mobile and .glass-card-mobile classes using rgba backgrounds, borders, and box-shadows instead of backdrop-filter. Implement progressive enhancement with @supports queries for devices that can handle backdrop-filter. Create fallback styles: background: rgba(255, 255, 255, 0.08), border: 1px solid rgba(255, 255, 255, 0.12), box-shadow with multiple layers. Ensure visual consistency between mobile and desktop glass effects. Add CSS custom properties for easy theming.",
+        "testStrategy": "Performance testing on iOS Safari to verify 60fps animations. Visual testing to ensure glass effects match design specs. Browser compatibility testing across Safari, Chrome, Firefox on mobile. Measure paint and composite times using Chrome DevTools.",
+        "priority": "high",
+        "dependencies": [
+          11
+        ],
+        "status": "done",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Create CSS Custom Properties for Glass Effect Theming",
+            "description": "Define a comprehensive set of CSS custom properties that will control all aspects of the glass morphism effects, enabling easy theming and consistent values across mobile and desktop implementations",
+            "dependencies": [],
+            "details": "Create a :root selector with custom properties including --glass-bg-opacity (0.08), --glass-border-opacity (0.12), --glass-blur-amount (10px), --glass-shadow-light (rgba(255, 255, 255, 0.1)), --glass-shadow-dark (rgba(0, 0, 0, 0.1)). Add theme-specific variations for light and dark modes. Include properties for animation transitions and hover states. Document each property with comments explaining its purpose and acceptable value ranges.",
+            "status": "done",
+            "testStrategy": "Verify custom properties are accessible throughout the CSS cascade. Test theme switching between light and dark modes. Validate that changing custom property values updates all glass effects consistently."
+          },
+          {
+            "id": 2,
+            "title": "Implement Mobile-Optimized Glass Classes Without Backdrop-Filter",
+            "description": "Create .glass-mobile and .glass-card-mobile classes using only performant CSS properties (rgba backgrounds, borders, and layered box-shadows) to achieve glass morphism effects without backdrop-filter",
+            "dependencies": [
+              "12.1"
+            ],
+            "details": "Implement .glass-mobile with background: rgba(255, 255, 255, var(--glass-bg-opacity)), border: 1px solid rgba(255, 255, 255, var(--glass-border-opacity)), and multi-layer box-shadow: 0 2px 4px var(--glass-shadow-dark), 0 4px 8px var(--glass-shadow-dark), inset 0 1px 1px var(--glass-shadow-light). Add .glass-card-mobile variant with adjusted opacity and shadow values. Include transition properties for smooth hover/active states. Ensure proper stacking context with position: relative and z-index management.",
+            "status": "done",
+            "testStrategy": "Test rendering performance on iOS Safari using Timeline recording to ensure 60fps. Verify visual appearance matches design specifications. Test on low-end Android devices for performance validation."
+          },
+          {
+            "id": 3,
+            "title": "Build Progressive Enhancement Detection System",
+            "description": "Create a feature detection system using @supports queries and JavaScript to identify devices capable of handling backdrop-filter and apply enhanced glass effects accordingly",
+            "dependencies": [
+              "12.2"
+            ],
+            "details": "Implement CSS @supports (backdrop-filter: blur(10px)) queries to conditionally apply backdrop-filter effects. Create .glass-enhanced and .glass-card-enhanced classes within the @supports block using backdrop-filter: blur(var(--glass-blur-amount)) combined with the mobile fallback styles. Add JavaScript feature detection using CSS.supports('backdrop-filter', 'blur(10px)') to add data-backdrop-filter-support attribute to the html element. Ensure enhanced styles layer properly on top of base mobile styles.",
+            "status": "done",
+            "testStrategy": "Test @supports detection across different browsers and versions. Verify fallback styles work when backdrop-filter is not supported. Test on devices known to have performance issues with backdrop-filter."
+          },
+          {
+            "id": 4,
+            "title": "Create Unified Glass Effect API Classes",
+            "description": "Develop a unified set of glass effect classes that automatically apply the appropriate styles based on device capabilities, ensuring consistent usage across the application",
+            "dependencies": [
+              "12.3"
+            ],
+            "details": "Create .glass and .glass-card classes that serve as the primary API, automatically applying either mobile or enhanced styles based on feature detection. Implement modifier classes like .glass--strong, .glass--subtle, and .glass--colored for variations. Add utility classes for common patterns: .glass-header, .glass-sidebar, .glass-modal. Include hover and focus states that work across both implementations. Document usage patterns and provide migration guide from existing backdrop-filter implementations.",
+            "status": "done",
+            "testStrategy": "Test that unified classes correctly apply mobile or enhanced styles based on device capabilities. Verify all modifier classes work correctly with both implementations. Test visual consistency between mobile and desktop rendering."
+          },
+          {
+            "id": 5,
+            "title": "Optimize Performance and Add Animation Support",
+            "description": "Fine-tune the glass effects for optimal performance and add support for smooth animations and transitions that work well on mobile devices",
+            "dependencies": [
+              "12.4"
+            ],
+            "details": "Add will-change: transform, opacity to glass elements that will be animated. Implement GPU-accelerated transitions using transform and opacity only. Create .glass--animated modifier for elements that need animation support. Add performance hints using contain: layout style paint for static glass elements. Implement intersection observer to disable glass effects on off-screen elements. Add CSS containment and content-visibility optimizations for long lists with glass items.",
+            "status": "done",
+            "testStrategy": "Profile paint and composite times using Chrome DevTools Performance panel. Test animation smoothness on iOS Safari with 60fps target. Measure memory usage with many glass elements on screen. Verify intersection observer correctly enables/disables effects during scrolling."
+          }
+        ]
+      },
+      {
+        "id": 13,
+        "title": "Implement Touch-First Component System with 44px Minimum Targets",
+        "description": "Create a comprehensive touch-optimized component system ensuring all interactive elements meet 44px minimum touch target requirements",
+        "details": "Define TOUCH_TARGETS constants (minimum: 44px, small: 36px, large: 48px). Create ButtonVariants with touch-friendly sizes and states (primary, secondary) using cn() utility. Implement focus-visible rings for keyboard navigation. Add active states with visual feedback. Create touch-optimized form controls (inputs, checkboxes, radios, selects). Ensure proper spacing between interactive elements (minimum 8px gap).",
+        "testStrategy": "Automated testing to verify all interactive elements meet minimum touch target sizes. Manual testing on various mobile devices for touch accuracy. Accessibility testing with screen readers. User testing for one-handed operation comfort.",
+        "priority": "high",
+        "dependencies": [
+          11
+        ],
+        "status": "done",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Define Touch Target Constants and Base Configuration",
+            "description": "Create a centralized configuration file defining all touch target sizes and spacing constants that will be used throughout the component system",
+            "dependencies": [],
+            "details": "Create a constants file (e.g., touch-targets.ts) that exports TOUCH_TARGETS object with minimum (44px), small (36px), and large (48px) sizes. Define SPACING constants for minimum gaps between interactive elements (8px, 12px, 16px). Include utility functions for calculating touch-safe areas and padding adjustments. Export TypeScript types for TouchTargetSize and SpacingSize for type safety throughout the system.",
+            "status": "done",
+            "testStrategy": "Unit test to verify all constant values meet minimum requirements. Test utility functions with various input scenarios. Validate TypeScript types compile correctly."
+          },
+          {
+            "id": 2,
+            "title": "Create Touch-Optimized Button Component with Variants",
+            "description": "Implement a comprehensive Button component with touch-friendly sizes, proper states, and accessibility features using the cn() utility",
+            "dependencies": [
+              "13.1"
+            ],
+            "details": "Build Button component with variants for primary and secondary styles. Implement size variants (small: 36px height with padding compensation, medium: 44px default, large: 48px). Add hover, active, and disabled states with appropriate visual feedback. Include focus-visible ring styles for keyboard navigation (2px offset, high contrast). Use cn() utility to compose className strings. Ensure minimum touch target is maintained even for small variant through padding. Add aria-labels and role attributes for accessibility.",
+            "status": "done",
+            "testStrategy": "Component testing to verify all button variants meet minimum touch targets. Test keyboard navigation and focus states. Verify active state visual feedback on touch devices. Accessibility audit with screen readers."
+          },
+          {
+            "id": 3,
+            "title": "Implement Touch-Optimized Form Input Components",
+            "description": "Create a suite of form controls including text inputs, textareas, and select dropdowns optimized for touch interaction",
+            "dependencies": [
+              "13.1"
+            ],
+            "details": "Build Input component with 44px minimum height, appropriate padding (12px horizontal, 10px vertical), and clear tap targets. Create Textarea component with touch-friendly resize handles and minimum height. Implement Select component with native mobile dropdown behavior and custom styling maintaining 44px height. Add clear visual focus states and error states. Include input type variants (text, email, password, number) with appropriate mobile keyboards. Ensure proper label association and touch target extension for small labels.",
+            "status": "done",
+            "testStrategy": "Test all input types on various mobile devices for usability. Verify keyboard types trigger correctly. Test error state visibility and touch targets. Validate form submission on mobile browsers."
+          },
+          {
+            "id": 4,
+            "title": "Create Touch-Friendly Checkbox and Radio Components",
+            "description": "Implement checkbox and radio button components with expanded touch targets and clear visual states",
+            "dependencies": [
+              "13.1"
+            ],
+            "details": "Build Checkbox component with 44px touch target area while maintaining standard 20px visual size through transparent padding. Create Radio component with similar touch target expansion technique. Implement custom styling with clear checked/unchecked states and smooth transitions. Add focus-visible styles and keyboard navigation support. Include label integration with entire area being clickable. Support indeterminate state for checkboxes. Ensure proper spacing between multiple checkboxes/radios (minimum 8px gap).",
+            "status": "done",
+            "testStrategy": "Test touch accuracy on mobile devices with multiple checkboxes/radios in close proximity. Verify state changes are smooth and responsive. Test keyboard navigation between options. Validate screen reader announcements."
+          },
+          {
+            "id": 5,
+            "title": "Create Component Documentation and Integration Guide",
+            "description": "Document the touch-first component system with usage examples, best practices, and integration guidelines",
+            "dependencies": [
+              "13.2",
+              "13.3",
+              "13.4"
+            ],
+            "details": "Create comprehensive documentation showing all component variants with code examples. Include touch target visualization guide showing effective touch areas. Document accessibility features and keyboard navigation patterns. Create migration guide for updating existing components to meet touch standards. Include responsive behavior documentation showing how components adapt across breakpoints. Add troubleshooting section for common touch target issues. Create Storybook stories demonstrating all components and their touch areas.",
+            "status": "done",
+            "testStrategy": "Review documentation for completeness and accuracy. Test all code examples for functionality. Validate Storybook stories render correctly on mobile devices. Gather feedback from development team on clarity and usefulness."
+          }
+        ]
+      },
+      {
+        "id": 14,
+        "title": "Build Enhanced Mobile Navigation with Sheet Component",
+        "description": "Implement a gesture-enabled mobile navigation system using Sheet component with proper touch interactions and animations",
+        "details": "Create MobileMenu component using Sheet from UI library. Implement gesture support for swipe-to-open/close with drag offset tracking. Set sheet width to w-80 on mobile, w-96 on larger screens. Add navigation items with 48px touch targets and icon + label layout. Implement SheetClose wrapper for auto-close on navigation. Add haptic feedback for menu interactions. Include keyboard navigation support with proper focus management.",
+        "testStrategy": "Test swipe gestures on touch devices for smooth operation. Verify menu accessibility with keyboard navigation. Test on various screen sizes for proper sheet width. Performance test animations for 60fps. User test for intuitive navigation patterns.",
+        "priority": "high",
+        "dependencies": [
+          13
+        ],
+        "status": "done",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Create Base MobileMenu Component with Sheet Integration",
+            "description": "Set up the foundational MobileMenu component using the Sheet component from the UI library with responsive width configuration",
+            "dependencies": [],
+            "details": "Create MobileMenu.tsx component that imports Sheet, SheetContent, SheetTrigger from UI library. Configure SheetContent with responsive width classes: 'w-80' for mobile (default) and 'sm:w-96' for larger screens. Set up basic component structure with props for isOpen state management and onOpenChange callback. Configure Sheet side='left' for standard mobile navigation pattern. Add data-testid attributes for testing.",
+            "status": "done",
+            "testStrategy": "Unit test component renders with correct width classes. Test prop passing for isOpen/onOpenChange. Verify Sheet component integration works correctly."
+          },
+          {
+            "id": 2,
+            "title": "Implement Touch Gesture Support with Drag Tracking",
+            "description": "Add swipe-to-open and swipe-to-close gesture handling with drag offset tracking for natural touch interactions",
+            "dependencies": [
+              "14.1"
+            ],
+            "details": "Implement useSwipeGesture custom hook that tracks touch events (touchstart, touchmove, touchend). Calculate drag offset and velocity to determine open/close intent. Add threshold of 100px or velocity > 0.5 for gesture completion. Integrate with Sheet's onOpenChange to trigger state changes. Add visual feedback during drag with transform translateX based on drag offset. Implement rubber band effect at boundaries. Store gesture state in component for animation coordination.",
+            "status": "done",
+            "testStrategy": "Test touch event handling with simulated gestures. Verify threshold calculations work correctly. Test gesture cancellation scenarios. Performance test for 60fps during drag."
+          },
+          {
+            "id": 3,
+            "title": "Build Navigation Item Components with Touch Targets",
+            "description": "Create navigation item components with proper touch target sizing, icon/label layout, and SheetClose integration",
+            "dependencies": [
+              "14.1"
+            ],
+            "details": "Create NavItem component with minimum 48px height touch target using padding and min-height. Implement horizontal layout with icon (24px) and label using flexbox with 12px gap. Add active state styling with background color change. Wrap each NavItem with SheetClose component for auto-close behavior. Support optional badge/counter display. Add hover and focus states with proper contrast ratios. Include ripple effect on touch for visual feedback.",
+            "status": "done",
+            "testStrategy": "Verify touch target size meets 48px minimum. Test SheetClose integration closes menu on item click. Test keyboard navigation between items."
+          },
+          {
+            "id": 4,
+            "title": "Add Haptic Feedback and Animation Polish",
+            "description": "Implement haptic feedback for menu interactions and smooth animations for open/close transitions",
+            "dependencies": [
+              "14.2",
+              "14.3"
+            ],
+            "details": "Use Navigator.vibrate API for haptic feedback on menu open (10ms), close (10ms), and item selection (20ms). Add fallback for non-supporting browsers. Implement spring animations for sheet open/close using CSS transitions with cubic-bezier easing. Add subtle scale animation (0.98 to 1) on menu items during press. Configure animation durations: 300ms for sheet slide, 150ms for item interactions. Add will-change CSS property for optimized animations.",
+            "status": "done",
+            "testStrategy": "Test haptic feedback triggers on supported devices. Verify animations run at 60fps using performance profiler. Test fallback behavior on non-haptic devices."
+          },
+          {
+            "id": 5,
+            "title": "Implement Keyboard Navigation and Focus Management",
+            "description": "Add comprehensive keyboard navigation support with proper focus trapping and ARIA attributes",
+            "dependencies": [
+              "14.3",
+              "14.4"
+            ],
+            "details": "Implement focus trap within Sheet when open using react-focus-lock or similar. Add keyboard event handlers: Escape to close, Tab/Shift+Tab for navigation, Enter/Space for selection. Set initial focus to first navigation item on open. Add ARIA attributes: role='navigation', aria-label='Mobile menu', aria-expanded on trigger. Implement roving tabindex pattern for efficient keyboard navigation. Add visual focus indicators with 2px outline offset. Restore focus to trigger element on close.",
+            "status": "done",
+            "testStrategy": "Test Tab key cycles through all interactive elements. Verify Escape key closes menu. Test screen reader announcements. Verify focus restoration on close."
+          }
+        ]
+      },
+      {
+        "id": 15,
+        "title": "Create Responsive Content Layout System",
+        "description": "Design and implement mobile-first layout patterns for dashboard, charts, cards, and forms with adaptive content strategies",
+        "details": "Implement useResponsiveContent hook for dynamic layout adaptation (mobile-compact, mobile-expanded, tablet, desktop). Create responsive chart configurations with height and legend adjustments per breakpoint. Design mobile-first dashboard layouts with single-column on mobile, expanding to multi-column on larger screens. Build adaptive content cards with progressive disclosure. Implement responsive form layouts with stacked fields on mobile, inline on desktop.",
+        "testStrategy": "Test layout adaptation across all breakpoints. Verify content readability and usability at each size. Performance test layout recalculation on resize. Visual regression testing for layout consistency. User testing for content comprehension on mobile.",
+        "priority": "medium",
+        "dependencies": [
+          11,
+          12
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Implement useResponsiveContent Hook",
+            "description": "Create a custom React hook that detects current breakpoint and provides layout adaptation utilities for mobile-compact, mobile-expanded, tablet, and desktop views",
+            "dependencies": [],
+            "details": "Create useResponsiveContent.ts hook that uses ResizeObserver API to detect viewport changes. Define breakpoint thresholds: mobile-compact (<375px), mobile-expanded (375-767px), tablet (768-1023px), desktop (≥1024px). Return current breakpoint, layout configuration object, and helper functions for conditional rendering. Include debouncing for resize events to optimize performance. Export TypeScript interfaces for breakpoint types and layout configurations.",
+            "status": "done",
+            "testStrategy": "Unit test breakpoint detection logic with mocked window dimensions. Test resize event handling and debouncing. Verify correct layout configuration returned for each breakpoint. Test hook cleanup on unmount."
+          },
+          {
+            "id": 2,
+            "title": "Create Responsive Chart Configuration System",
+            "description": "Build a configuration system for charts that automatically adjusts height, legend position, axis labels, and data density based on current breakpoint",
+            "dependencies": [
+              "15.1"
+            ],
+            "details": "Create ChartResponsiveConfig.ts with breakpoint-specific configurations. Mobile-compact: 200px height, legend hidden, simplified axes. Mobile-expanded: 250px height, legend bottom, abbreviated labels. Tablet: 300px height, legend right, full labels. Desktop: 400px height, legend top/right, enhanced tooltips. Implement getChartConfig() function that accepts chart type and current breakpoint. Include responsive font sizes and margin adjustments. Support line, bar, pie, and area chart types.",
+            "status": "done",
+            "testStrategy": "Test configuration generation for each chart type and breakpoint combination. Verify height calculations and legend positioning. Test font size scaling. Mock chart rendering to verify configuration application."
+          },
+          {
+            "id": 3,
+            "title": "Design Mobile-First Dashboard Layout Components",
+            "description": "Implement responsive dashboard layout components that adapt from single-column mobile layouts to multi-column desktop grids with proper spacing and alignment",
+            "dependencies": [
+              "15.1"
+            ],
+            "details": "Create DashboardGrid.tsx component using CSS Grid with responsive grid-template-columns. Mobile: single column with 16px padding. Tablet: 2-column grid with 24px gap. Desktop: 3-4 column grid with 32px gap. Implement DashboardCard wrapper component with responsive padding and shadow. Create DashboardSection component for grouping related cards. Use container queries for nested responsive behavior. Include smooth transitions between layout changes using CSS transitions.",
+            "status": "done",
+            "testStrategy": "Visual regression testing across all breakpoints. Test grid reflow behavior on resize. Verify proper spacing and alignment. Test with varying content sizes. Performance test layout recalculation speed."
+          },
+          {
+            "id": 4,
+            "title": "Build Adaptive Content Cards with Progressive Disclosure",
+            "description": "Create card components that show condensed content on mobile with expand/collapse functionality, while displaying full content on larger screens",
+            "dependencies": [
+              "15.1",
+              "15.3"
+            ],
+            "details": "Create AdaptiveCard.tsx component with mobile-first design. Mobile view: show title, key metric, and expand button. Expanded mobile: reveal description, secondary metrics, and actions. Tablet/Desktop: display all content by default. Implement smooth height animations for expand/collapse. Add touch-friendly tap targets (min 44px). Include loading skeletons that adapt to current layout. Support card variants: metric, chart, list, and summary cards. Use aria-expanded for accessibility.",
+            "status": "pending",
+            "testStrategy": "Test expand/collapse functionality on mobile. Verify content visibility at each breakpoint. Test animation performance. Accessibility testing for screen readers. Touch target size validation."
+          },
+          {
+            "id": 5,
+            "title": "Implement Responsive Form Layout System",
+            "description": "Create form components that stack fields vertically on mobile and arrange them inline or in columns on larger screens with appropriate spacing and validation display",
+            "dependencies": [
+              "15.1"
+            ],
+            "details": "Create ResponsiveForm.tsx with FormField wrapper component. Mobile: full-width fields, stacked layout, labels above inputs, validation below. Tablet: 2-column layout for short fields, maintain stacking for complex inputs. Desktop: inline labels for short fields, multi-column grid, side-by-side related fields. Implement responsive button groups: stacked on mobile, inline on desktop. Add responsive spacing system: compact on mobile, comfortable on desktop. Include touch-optimized input heights (min 48px on mobile). Support form sections with responsive headers.",
+            "status": "pending",
+            "testStrategy": "Test form layout at each breakpoint. Verify input accessibility and touch targets. Test validation message positioning. Keyboard navigation testing. Test with various field types and configurations."
+          }
+        ]
+      },
+      {
+        "id": 16,
+        "title": "Implement Smart Viewport Management System",
+        "description": "Create intelligent viewport handling with orientation detection and device classification for optimal responsive behavior",
+        "details": "Build useViewportManager hook tracking width, height, device type (isMobile, isTablet, isDesktop), and orientation. Add resize and orientationchange event listeners with debouncing. Implement viewport state management for responsive component behavior. Create viewport-based conditional rendering utilities. Add safe area inset handling for notched devices. Include viewport meta tag optimization for proper mobile rendering.",
+        "testStrategy": "Test viewport detection accuracy across devices. Verify orientation change handling. Test performance impact of resize listeners. Validate safe area handling on notched devices. Test viewport meta tag behavior on various mobile browsers.",
+        "priority": "medium",
+        "dependencies": [
+          11
+        ],
+        "status": "done",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Create Core Viewport Detection Hook with Device Classification",
+            "description": "Build the foundational useViewportManager hook that tracks viewport dimensions and classifies devices based on breakpoint thresholds",
+            "dependencies": [],
+            "details": "Create useViewportManager hook in hooks/useViewportManager.ts. Define device breakpoints matching the project's responsive system (mobile: <768px, tablet: 768-1024px, desktop: >1024px). Implement state management for viewport dimensions (width, height), device type flags (isMobile, isTablet, isDesktop), and orientation (portrait/landscape). Use useState to track current viewport state and return an object with all viewport properties. Initialize with window.innerWidth/innerHeight on mount.",
+            "status": "done",
+            "testStrategy": "Unit test hook initialization with mocked window dimensions. Test device classification logic against various viewport sizes. Verify correct orientation detection for different aspect ratios."
+          },
+          {
+            "id": 2,
+            "title": "Implement Debounced Event Listeners for Viewport Changes",
+            "description": "Add resize and orientationchange event listeners with proper debouncing to prevent performance issues during viewport transitions",
+            "dependencies": [
+              "16.1"
+            ],
+            "details": "Extend useViewportManager hook with useEffect to attach window resize and orientationchange event listeners. Implement debounce utility function with 150ms delay to throttle updates. Create handleViewportChange function that updates all viewport state (dimensions, device type, orientation). Ensure proper cleanup of event listeners on unmount. Add support for both window.orientation API and matchMedia for orientation detection as fallback.",
+            "status": "done",
+            "testStrategy": "Test debounce behavior with rapid resize events. Verify event listener cleanup on unmount. Test orientation change detection on devices supporting both APIs."
+          },
+          {
+            "id": 3,
+            "title": "Build Viewport-Based Conditional Rendering Utilities",
+            "description": "Create utility components and hooks for conditional rendering based on viewport characteristics",
+            "dependencies": [
+              "16.1",
+              "16.2"
+            ],
+            "details": "Create ViewportConditional component that accepts showOn prop (mobile/tablet/desktop array). Build useMediaQuery hook for custom breakpoint queries. Implement Show/Hide components with viewport props (ShowOnMobile, HideOnDesktop, etc.). Create useDeviceType hook that returns current device classification. Add TypeScript interfaces for all viewport utilities. Export all utilities from a central viewport/index.ts file.",
+            "status": "done",
+            "testStrategy": "Test conditional rendering at various viewport sizes. Verify components mount/unmount correctly on viewport changes. Test TypeScript type safety for all utilities."
+          },
+          {
+            "id": 4,
+            "title": "Implement Safe Area Inset Handling for Notched Devices",
+            "description": "Add support for safe area insets on devices with notches, rounded corners, or home indicators",
+            "dependencies": [
+              "16.1"
+            ],
+            "details": "Create useSafeAreaInsets hook that reads CSS environment variables (safe-area-inset-top/right/bottom/left). Build SafeAreaProvider component that provides inset values via context. Implement utility classes for safe area padding (safe-top, safe-bottom, etc.). Add getSafeAreaValue utility function with fallback values. Create SafeAreaView wrapper component for automatic safe area padding. Include CSS custom properties for dynamic safe area values.",
+            "status": "done",
+            "testStrategy": "Test on devices with notches (iPhone X+, newer Android devices). Verify fallback behavior on devices without safe areas. Test landscape orientation safe area handling."
+          },
+          {
+            "id": 5,
+            "title": "Create Viewport Meta Tag Manager and Optimization System",
+            "description": "Implement dynamic viewport meta tag management for optimal mobile rendering and zoom control",
+            "dependencies": [
+              "16.1"
+            ],
+            "details": "Create ViewportMetaManager component that dynamically updates viewport meta tag based on device type. Implement setViewportMeta utility function with options for width, initial-scale, user-scalable, and viewport-fit. Add support for viewport-fit=cover for full-screen experiences on notched devices. Create useViewportMeta hook for component-level viewport control. Include preset configurations for common scenarios (fixed, scalable, full-coverage). Ensure meta tag updates don't cause layout shifts.",
+            "status": "done",
+            "testStrategy": "Test meta tag updates across different mobile browsers. Verify zoom behavior matches configuration. Test viewport-fit=cover on notched devices. Validate no layout shifts occur during meta tag updates."
+          }
+        ]
+      },
+      {
+        "id": 17,
+        "title": "Build Progressive Enhancement Framework",
+        "description": "Implement feature detection system for progressive enhancement ensuring graceful degradation on older devices",
+        "details": "Create useProgressiveEnhancement hook detecting: backdrop-filter support, WebGL availability, touch capability, IntersectionObserver, and Service Worker support. Implement CSS.supports() checks for modern CSS features. Add WebGL context detection for advanced graphics. Create capability-based component rendering logic. Build fallback strategies for unsupported features. Implement performance budgets based on device capabilities.",
+        "testStrategy": "Test feature detection accuracy across browsers. Verify fallback implementations work correctly. Test on older devices (iPhone SE 1st gen, older Android). Validate progressive enhancement doesn't break core functionality. Performance test with features disabled.",
+        "priority": "medium",
+        "dependencies": [
+          12
+        ],
+        "status": "done",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Create Core Feature Detection Utilities",
+            "description": "Build foundational feature detection functions for CSS, JavaScript APIs, and browser capabilities",
+            "dependencies": [],
+            "details": "Create a features.ts file with detection functions: detectCSSSupport() using CSS.supports() for backdrop-filter, gap, aspect-ratio, and container queries. Implement detectAPISupport() checking for IntersectionObserver, ResizeObserver, Service Worker, and Web Workers. Add detectDeviceCapabilities() for touch support (ontouchstart in window), device memory (navigator.deviceMemory), and connection speed (navigator.connection). Export a getFeatureSupport() function that returns a comprehensive capabilities object.",
+            "status": "done",
+            "testStrategy": "Mock window and navigator objects to test detection logic. Verify correct feature detection across different browser environments. Test fallback behavior when APIs are unavailable."
+          },
+          {
+            "id": 2,
+            "title": "Implement WebGL Detection and Graphics Capability Assessment",
+            "description": "Create WebGL context detection system with performance tier classification",
+            "dependencies": [
+              "17.1"
+            ],
+            "details": "Build detectWebGLSupport() function that attempts to create WebGL and WebGL2 contexts. Implement getGraphicsCapabilities() to detect: max texture size, available extensions (OES_texture_float, WEBGL_depth_texture), shader precision, and max vertex attributes. Create performance tier classification (low/medium/high) based on capabilities. Add GPU vendor detection for known performance profiles. Return detailed graphics capability object including tier, features, and limitations.",
+            "status": "done",
+            "testStrategy": "Test WebGL context creation with mocked canvas elements. Verify tier classification logic with different capability sets. Test graceful handling when WebGL is disabled or unavailable."
+          },
+          {
+            "id": 3,
+            "title": "Build useProgressiveEnhancement Hook",
+            "description": "Create React hook that provides feature detection results and manages capability-based rendering",
+            "dependencies": [
+              "17.1",
+              "17.2"
+            ],
+            "details": "Implement useProgressiveEnhancement() hook that runs feature detection on mount and stores results in state. Add SSR-safe detection with useEffect for client-only features. Include device classification (mobile/tablet/desktop) based on viewport and touch capability. Provide enhancement levels: 'basic' (core features only), 'standard' (most features), 'full' (all features including WebGL). Export typed ProgressiveEnhancementContext for app-wide access. Include performance budget calculations based on detected capabilities.",
+            "status": "done",
+            "testStrategy": "Test hook behavior in SSR and client environments. Verify correct enhancement level assignment. Test context provider integration and type safety."
+          },
+          {
+            "id": 4,
+            "title": "Create Capability-Based Component Rendering System",
+            "description": "Build components and utilities for conditional rendering based on detected capabilities",
+            "dependencies": [
+              "17.3"
+            ],
+            "details": "Create <ProgressiveFeature> component accepting requiredFeatures prop and fallback content. Implement withProgressive() HOC for wrapping components with capability checks. Build renderByCapability() utility function for inline conditional rendering. Create feature-specific components: <ProgressiveBackdrop> (backdrop-filter with fallback), <ProgressiveAnimation> (reduced motion aware), <ProgressiveImage> (WebP/AVIF with fallbacks). Add capability class names to document.body for CSS-based progressive enhancement.",
+            "status": "done",
+            "testStrategy": "Test component rendering with different capability sets. Verify fallback content displays correctly. Test HOC wrapper functionality and prop passing."
+          },
+          {
+            "id": 5,
+            "title": "Implement Fallback Strategies and Performance Budgets",
+            "description": "Create comprehensive fallback implementations and performance budget system",
+            "dependencies": [
+              "17.4"
+            ],
+            "details": "Build fallback strategies: solid backgrounds for backdrop-filter, static images for WebGL content, click handlers for hover interactions on touch devices, polling for IntersectionObserver, localStorage for Service Worker cache. Implement performance budget system with thresholds for JavaScript bundle size, image loading, animation complexity based on device tier. Create useFallback() hook for component-level fallback management. Add monitoring for performance budget violations with console warnings in development.",
+            "status": "done",
+            "testStrategy": "Test each fallback implementation in isolation. Verify performance budget calculations and warnings. Test graceful degradation from full to basic enhancement levels."
+          }
+        ]
+      },
+      {
+        "id": 18,
+        "title": "Optimize Images and Assets for Mobile Performance",
+        "description": "Implement responsive image loading with density-aware serving, lazy loading, and efficient caching strategies",
+        "details": "Implement responsive image components with srcset for different densities (1x, 2x, 3x). Add lazy loading with IntersectionObserver for below-fold content. Create WebP/AVIF format detection with fallbacks. Implement blur-up placeholder technique for perceived performance. Add resource hints (preload, prefetch) for critical assets. Configure efficient caching headers and service worker caching strategies.",
+        "testStrategy": "Test image loading performance on slow networks (3G). Verify correct density images load per device. Test lazy loading threshold accuracy. Measure Core Web Vitals impact (LCP, CLS). Validate caching behavior across sessions.",
+        "priority": "medium",
+        "dependencies": [
+          16
+        ],
+        "status": "done",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Create Responsive Image Component with Density-Aware Serving",
+            "description": "Build a reusable ResponsiveImage component that automatically generates and serves appropriate image densities based on device pixel ratio",
+            "dependencies": [],
+            "details": "Create ResponsiveImage.tsx component that accepts src, alt, width, height, and sizes props. Generate srcset with 1x, 2x, and 3x variants using a URL transformation function. Implement automatic sizes calculation based on container width. Add support for art direction with picture element for different aspect ratios at various breakpoints. Include TypeScript interfaces for props and utility functions for generating srcset strings. Component should output optimized img tags with proper width/height attributes to prevent layout shift.",
+            "status": "done",
+            "testStrategy": "Unit test srcset generation logic for various input scenarios. Integration test to verify correct image selection based on device pixel ratio. Visual regression test for layout stability across breakpoints."
+          },
+          {
+            "id": 2,
+            "title": "Implement Lazy Loading with IntersectionObserver",
+            "description": "Add intelligent lazy loading system using IntersectionObserver API with configurable thresholds and loading states",
+            "dependencies": [
+              "18.1"
+            ],
+            "details": "Create useLazyLoad custom hook that wraps IntersectionObserver with rootMargin of 50px for below-fold content. Implement LazyImage wrapper component that uses the hook and shows loading placeholder. Add support for native loading='lazy' as progressive enhancement. Create loading state management with blur-up placeholder technique using base64 encoded low-quality image previews (LQIP). Implement error handling with retry logic and fallback images. Add preload hints for above-fold images detected via viewport position.",
+            "status": "done",
+            "testStrategy": "Test IntersectionObserver triggers at correct scroll positions. Verify placeholder to full image transition smoothness. Test on slow 3G to ensure loading states work properly."
+          },
+          {
+            "id": 3,
+            "title": "Add Modern Image Format Detection with Fallbacks",
+            "description": "Implement WebP and AVIF format detection with automatic fallback to JPEG/PNG for unsupported browsers",
+            "dependencies": [
+              "18.1"
+            ],
+            "details": "Create image format detection utility using feature detection for WebP/AVIF support. Implement Picture component that generates source elements for AVIF, WebP, and fallback formats. Add server-side format negotiation support via Accept headers. Create image optimization pipeline configuration for generating multiple formats. Implement format preference logic: AVIF > WebP > original format. Add format-specific quality settings (AVIF: 80, WebP: 85, JPEG: 90). Include runtime format switching based on network conditions.",
+            "status": "done",
+            "testStrategy": "Test format detection accuracy across browsers. Verify fallback chain works correctly. Measure file size savings with modern formats. Test quality perception at different compression levels."
+          },
+          {
+            "id": 4,
+            "title": "Configure Resource Hints and Preloading Strategy",
+            "description": "Implement intelligent resource hints system for critical assets with preload, prefetch, and preconnect directives",
+            "dependencies": [
+              "18.2"
+            ],
+            "details": "Create ResourceHints component that injects link tags for critical resources. Implement priority system: preload for hero images and critical CSS, prefetch for likely next navigation, preconnect for third-party domains. Add dynamic hint generation based on route and viewport. Create configuration for critical image identification (LCP candidates). Implement adaptive loading that adjusts hints based on connection speed. Add resource hint budget management to prevent over-fetching. Include Next.js Head integration for SSR compatibility.",
+            "status": "done",
+            "testStrategy": "Verify resource hints appear in document head correctly. Test loading waterfall to ensure critical resources load first. Measure LCP improvement with preloading. Validate hint effectiveness using Chrome DevTools."
+          },
+          {
+            "id": 5,
+            "title": "Implement Caching Strategy with Service Worker",
+            "description": "Set up comprehensive caching strategy using Cache-Control headers and service worker for offline image availability",
+            "dependencies": [
+              "18.3",
+              "18.4"
+            ],
+            "details": "Configure Cache-Control headers: images (max-age=31536000, immutable), HTML (no-cache), API (private, max-age=0). Implement service worker with cache-first strategy for images and network-first for HTML. Create versioned cache names for cache busting. Add intelligent cache size management with LRU eviction for images over 50MB total. Implement offline fallback images for failed network requests. Add cache warming for critical images on service worker install. Include cache analytics to track hit rates and optimize strategy.",
+            "status": "done",
+            "testStrategy": "Test cache headers using curl or browser DevTools. Verify service worker caching behavior in offline mode. Test cache eviction when size limit reached. Validate cache versioning during updates."
+          }
+        ]
+      },
+      {
+        "id": 19,
+        "title": "Implement Mobile-Specific Interaction Features",
+        "description": "Add native mobile interaction patterns including pull-to-refresh, swipe gestures, and haptic feedback for enhanced user experience",
+        "details": "Implement pull-to-refresh with visual feedback and loading states. Add horizontal swipe gestures for content navigation (cards, galleries). Create haptic feedback API wrapper for supported devices. Implement long-press context menus for mobile. Add momentum scrolling for smooth lists. Create touch-friendly loading states and skeletons. Implement offline mode detection with user notifications.",
+        "testStrategy": "Test gesture recognition accuracy and responsiveness. Verify haptic feedback on supported devices. Test pull-to-refresh threshold and animation smoothness. Validate offline mode behavior. User test for gesture discoverability and intuitiveness.",
+        "priority": "low",
+        "dependencies": [
+          14,
+          17
+        ],
+        "status": "done",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Create Haptic Feedback API Wrapper",
+            "description": "Build a cross-platform haptic feedback wrapper that provides consistent API for vibration patterns across iOS and Android devices",
+            "dependencies": [],
+            "details": "Create HapticFeedback class with methods for light, medium, and heavy impact feedback. Implement platform detection using navigator.vibrate() for Android and window.webkit?.messageHandlers for iOS. Add fallback for unsupported devices. Define haptic patterns: selection (10ms), success (20ms), warning (30ms), error (50ms). Create useHaptic hook for React components with debouncing to prevent excessive vibrations. Include permission handling and user preference settings.",
+            "status": "done",
+            "testStrategy": "Test vibration API availability detection across browsers. Verify haptic patterns trigger correctly on supported devices. Test fallback behavior on desktop. Validate debouncing prevents rapid successive vibrations."
+          },
+          {
+            "id": 2,
+            "title": "Implement Pull-to-Refresh Component",
+            "description": "Create a reusable pull-to-refresh component with smooth animations and customizable loading states for mobile content refresh",
+            "dependencies": [
+              "19.1"
+            ],
+            "details": "Build PullToRefresh wrapper component tracking touch events (touchstart, touchmove, touchend). Implement pull threshold detection (default 80px) with elastic resistance calculation. Create animated loading indicator with three states: pulling, refreshing, complete. Add spring physics for smooth release animation. Include customizable refresh callback with Promise support. Implement visual feedback with transform3d for hardware acceleration. Add haptic feedback on threshold reach and completion.",
+            "status": "done",
+            "testStrategy": "Test pull gesture recognition and threshold accuracy. Verify animation smoothness at 60fps. Test with different scroll containers. Validate proper cleanup of touch event listeners. Test concurrent pull attempts handling."
+          },
+          {
+            "id": 3,
+            "title": "Build Swipe Gesture System for Content Navigation",
+            "description": "Implement horizontal swipe gesture detection for navigating through cards, galleries, and carousel content with momentum physics",
+            "dependencies": [
+              "19.1"
+            ],
+            "details": "Create SwipeGestureDetector class using touch events with velocity tracking. Implement swipe threshold detection (minimum 50px distance, 0.3s max duration). Add momentum scrolling with deceleration physics (friction coefficient 0.95). Build useSwipeable hook returning bind props and swipe state. Create SwipeableContainer component for cards/galleries with snap points. Include edge bounce effects and rubber-band scrolling. Add haptic feedback for snap points. Implement gesture conflict resolution with vertical scrolling.",
+            "status": "done",
+            "testStrategy": "Test swipe velocity and direction detection accuracy. Verify momentum calculations match native behavior. Test gesture conflicts with scrolling. Validate snap point alignment. Test multi-touch gesture handling."
+          },
+          {
+            "id": 4,
+            "title": "Create Long-Press Context Menu System",
+            "description": "Implement touch-friendly context menus triggered by long-press gestures with proper positioning and backdrop handling",
+            "dependencies": [
+              "19.1",
+              "19.3"
+            ],
+            "details": "Build LongPressDetector using touch events with 500ms default threshold. Create ContextMenu component with portal rendering for proper z-index management. Implement smart positioning algorithm to keep menu on-screen with collision detection. Add backdrop blur effect with touch-outside-to-close behavior. Include menu item components with 44px minimum touch targets. Add haptic feedback on long-press trigger. Implement gesture cancellation on scroll start. Create useLongPress hook for easy integration.",
+            "status": "done",
+            "testStrategy": "Test long-press timing accuracy across devices. Verify menu positioning near screen edges. Test scroll cancellation behavior. Validate accessibility with screen readers. Test backdrop touch handling."
+          },
+          {
+            "id": 5,
+            "title": "Implement Offline Mode Detection and UI States",
+            "description": "Create comprehensive offline detection system with user notifications and touch-optimized loading states",
+            "dependencies": [
+              "19.2",
+              "19.4"
+            ],
+            "details": "Build OfflineDetector service using navigator.onLine and connection events. Create toast notification system with swipe-to-dismiss gestures. Implement skeleton screens with shimmer animations for loading states. Add touch-friendly retry buttons (44px targets) for failed requests. Create offline indicator banner with connection status. Build request queue for offline actions with sync on reconnect. Implement progressive loading states: skeleton → partial → complete. Add pull-to-refresh integration for manual retry.",
+            "status": "done",
+            "testStrategy": "Test offline detection accuracy with network throttling. Verify notification appearance/dismissal. Test request queuing and sync behavior. Validate skeleton screen performance. Test retry mechanism reliability."
+          }
+        ]
+      },
+      {
+        "id": 20,
+        "title": "Set Up Performance Monitoring and Analytics",
+        "description": "Implement comprehensive performance monitoring system tracking Core Web Vitals, user interactions, and device-specific metrics",
+        "details": "Integrate web-vitals library for Core Web Vitals tracking (LCP, FID, CLS, TTFB, FCP). Set up real user monitoring (RUM) with device segmentation. Implement custom performance marks for critical user journeys. Add error boundary tracking for mobile-specific issues. Create performance budget alerts (bundle size, runtime metrics). Set up A/B testing framework for mobile optimizations. Configure analytics for touch interaction patterns.",
+        "testStrategy": "Verify metrics collection accuracy against Chrome DevTools. Test RUM data collection across devices. Validate performance budget enforcement in CI/CD. Test error tracking for mobile edge cases. Verify analytics data integrity and segmentation.",
+        "priority": "low",
+        "dependencies": [
+          18,
+          19
+        ],
+        "status": "done",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Integrate Web Vitals Library and Core Metrics Collection",
+            "description": "Set up web-vitals library to track Core Web Vitals (LCP, FID, CLS, TTFB, FCP) and implement base performance monitoring infrastructure",
+            "dependencies": [],
+            "details": "Install web-vitals package and create a performance monitoring service. Implement PerformanceMonitor class with methods to initialize web-vitals tracking, capture metrics, and batch send to analytics endpoint. Create usePerformanceMetrics hook to access metrics in components. Set up metric collection for LCP (Largest Contentful Paint), FID (First Input Delay), CLS (Cumulative Layout Shift), TTFB (Time to First Byte), and FCP (First Contentful Paint). Include timestamp, page URL, and session ID with each metric.",
+            "status": "done",
+            "testStrategy": "Create unit tests for metric collection functions. Verify metrics match Chrome DevTools measurements within 5% margin. Test batching logic and network failure handling."
+          },
+          {
+            "id": 2,
+            "title": "Implement Real User Monitoring with Device Segmentation",
+            "description": "Create RUM system that segments performance data by device type, viewport size, connection speed, and browser",
+            "dependencies": [
+              "20.1"
+            ],
+            "details": "Extend PerformanceMonitor to capture device context using viewport data from Task 16's useViewportManager hook. Implement device classification (mobile, tablet, desktop) and connection type detection (4G, 3G, WiFi). Create RUM dashboard data structure with segments for device type, OS, browser, connection speed, and geographic region. Add user session tracking with anonymous IDs. Implement sampling strategy (e.g., 10% of users) to manage data volume. Create performance data aggregation logic for percentile calculations (P50, P75, P95).",
+            "status": "done",
+            "testStrategy": "Test device detection accuracy across user agents. Verify data segmentation logic with mock data. Test sampling algorithm distribution. Validate session tracking across page navigations."
+          },
+          {
+            "id": 3,
+            "title": "Add Custom Performance Marks and User Journey Tracking",
+            "description": "Implement performance.mark() and performance.measure() for critical user journeys and mobile-specific interactions",
+            "dependencies": [
+              "20.1"
+            ],
+            "details": "Create PerformanceMarker utility class with methods to mark journey start/end points. Define critical user journeys: initial load, search interaction, form submission, content navigation, pull-to-refresh completion. Implement automatic marking for touch interactions from Task 19 (swipe gestures, long press, haptic feedback triggers). Add performance.measure() calculations between marks. Create journey performance reports showing time distributions. Include interaction type (touch vs click) in journey data.",
+            "status": "done",
+            "testStrategy": "Unit test mark/measure wrapper functions. Verify timing accuracy for user journeys. Test integration with touch gesture tracking. Validate journey completion detection."
+          },
+          {
+            "id": 4,
+            "title": "Set Up Performance Budget Monitoring and Alerts",
+            "description": "Create automated performance budget enforcement system with CI/CD integration and real-time alerting",
+            "dependencies": [
+              "20.1",
+              "20.2"
+            ],
+            "details": "Define performance budgets: bundle sizes (main: 200KB, vendor: 150KB), Core Web Vitals thresholds (LCP < 2.5s, FID < 100ms, CLS < 0.1), runtime metrics (memory usage, frame rate). Create budget configuration file with thresholds per metric and device type. Implement webpack-bundle-analyzer integration for build-time checks. Add runtime budget monitoring using Performance Observer API. Create alert system with severity levels (warning at 80%, critical at 100%). Integrate with CI/CD pipeline to block deployments exceeding budgets. Set up Slack/email notifications for budget violations.",
+            "status": "done",
+            "testStrategy": "Test budget calculation accuracy. Verify CI/CD integration blocks builds correctly. Test alert triggering at different threshold levels. Validate device-specific budget enforcement."
+          },
+          {
+            "id": 5,
+            "title": "Implement Analytics for Touch Patterns and A/B Testing Framework",
+            "description": "Create comprehensive touch interaction analytics and A/B testing system for mobile optimization experiments",
+            "dependencies": [
+              "20.3"
+            ],
+            "details": "Build TouchAnalytics service tracking interaction patterns: tap locations heatmap data, swipe directions and velocities, scroll depth and speed, pinch-zoom usage, long-press frequency. Create A/B testing framework with variant assignment, feature flags for mobile optimizations (e.g., button sizes, gesture thresholds), and conversion tracking. Implement analytics for error boundaries specific to mobile issues (orientation changes, memory pressure, network transitions). Add interaction funnel analysis for multi-step processes. Create mobile-specific engagement metrics (rage taps, accidental touches, gesture success rates).",
+            "status": "done",
+            "testStrategy": "Test touch event capture accuracy and performance impact. Verify A/B test variant distribution is random. Test feature flag switching without page reload. Validate error boundary tracking captures mobile-specific errors."
+          }
+        ]
+      }
+    ],
+    "metadata": {
+      "created": "2025-10-02T19:14:24.400Z",
+      "updated": "2025-10-02T20:49:04.494Z",
+      "description": "Tasks for master context"
+    }
+  }
+}

@@ -78,7 +78,7 @@ export function TargetAudienceInfographic({
               <h4 className="text-text-secondary mb-3 text-sm font-medium">
                 Department Distribution
               </h4>
-              <div className="grid grid-cols-1 items-center gap-6 lg:grid-cols-2">
+              <div className="grid grid-cols-2 items-center gap-6">
                 {/* Pie Chart */}
                 <div className="h-64">
                   <ResponsiveContainer width="100%" height="100%">
@@ -145,7 +145,7 @@ export function TargetAudienceInfographic({
             </ResponsiveContainer>
           </div>
 
-          <div className="mt-4 grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-5">
+          <div className="mt-4 grid grid-cols-5 gap-3">
             {learning_preferences.modalities.map((modality, index) => (
               <motion.div
                 key={modality.type}

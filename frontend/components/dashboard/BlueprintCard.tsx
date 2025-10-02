@@ -331,7 +331,7 @@ export function BlueprintCard({
                       } else if (blueprintData?.description) {
                         content = blueprintData.description;
                       } else {
-                        content = 'This comprehensive program transforms participants into AI-literate practitioners through a gamified, story-driven learning experience built around compelling narratives and real-world application development.';
+                        content = 'This is a placeholder executive summary. The full summary will be available as soon as your blueprint is generated with AI-powered insights.';
                       }
 
                       // Truncate to exactly 3 lines of text ending with "..."
@@ -394,7 +394,7 @@ export function BlueprintCard({
                     } catch {
                       return (
                         <p className="leading-relaxed">
-                          This comprehensive program transforms participants into AI-literate practitioners through a gamified, story-driven learning experience...
+                          This is a placeholder executive summary. The full summary will be available as soon as your blueprint is generated with AI-powered insights.
                           <motion.button
                             className={cn(
                               'inline-flex items-center gap-1 ml-1',
@@ -424,10 +424,10 @@ export function BlueprintCard({
                 {/* Summary Metrics */}
                 <div className="flex items-center justify-between pt-2 border-t border-white/10">
                   <div className="flex items-center gap-2">
-                    <div className="h-2 w-2 rounded-full bg-primary animate-pulse" />
+                    <div className="h-2 w-2 rounded-full bg-warning animate-pulse" />
                     <span className="text-xs font-medium text-white/60">Scope</span>
                   </div>
-                  <span className="text-xs font-bold text-primary">Comprehensive</span>
+                  <span className="text-xs font-bold text-warning">Unavailable</span>
                 </div>
               </div>
 

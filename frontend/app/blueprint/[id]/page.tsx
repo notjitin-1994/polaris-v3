@@ -384,7 +384,7 @@ export default function BlueprintPage({ params }: PageProps): React.JSX.Element 
         transition={{ delay: 0.2 }}
         className={`relative z-10 ${
           (viewMode === 'presentation' ? 'mx-auto max-w-7xl' : 'mx-auto max-w-6xl') as const
-        } px-4 py-8 sm:px-6 sm:py-12 lg:px-8`}
+        } px-8 py-12`}
       >
         {/* Main Content Card */}
         <motion.div
@@ -392,7 +392,7 @@ export default function BlueprintPage({ params }: PageProps): React.JSX.Element 
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
           className={`glass-card overflow-hidden ${
-            viewMode === 'presentation' ? 'p-8 lg:p-16' : 'p-6 sm:p-8 lg:p-12'
+            viewMode === 'presentation' ? 'p-16' : 'p-12'
           }`}
         >
           {/* Decorative Line with Teal Glow */}

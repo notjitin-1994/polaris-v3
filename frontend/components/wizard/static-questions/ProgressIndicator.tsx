@@ -56,7 +56,7 @@ export function ProgressIndicator({ currentIndex, onSelect }: ProgressProps): Re
               className={`h-2 w-2 rounded-full border-2 transition-all duration-300 ${
                 idx <= currentIndex
                   ? 'bg-primary-accent border-primary-accent-light shadow-[0_0_8px_rgba(167,218,219,0.6)]'
-                  : 'bg-background border-white/20'
+                  : 'bg-primary-accent border-primary-accent-light/30'
               }`}
             />
           ))}

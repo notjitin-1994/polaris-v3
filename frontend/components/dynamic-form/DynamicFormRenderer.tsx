@@ -524,49 +524,6 @@ export const DynamicFormRenderer = React.forwardRef<DynamicFormRef, DynamicFormR
                   </div>
                 )}
 
-                {/* Action buttons */}
-                <div
-                  className="flex items-center justify-between pt-6"
-                  style={{
-                    borderTop: '1px solid rgba(255, 255, 255, 0.1)',
-                  }}
-                >
-                  <div className="flex space-x-2">
-                    {!isFirstSection && (
-                      <DynamicFormButton
-                        type="button"
-                        onClick={previousSection}
-                        variant="ghost"
-                        disabled={disabled}
-                      >
-                        Previous
-                      </DynamicFormButton>
-                    )}
-                  </div>
-
-                  <div className="flex space-x-2">
-                    {isLastSection ? (
-                      <DynamicFormButton
-                        type="submit"
-                        disabled={disabled || isSubmitting}
-                        loading={isSubmitting}
-                        variant="primary"
-                      >
-                        {formSchema.settings?.submitButtonText || 'Submit'}
-                      </DynamicFormButton>
-                    ) : (
-                      <DynamicFormButton
-                        type="button"
-                        onClick={nextSection}
-                        variant="primary"
-                        disabled={disabled}
-                      >
-                        Next
-                      </DynamicFormButton>
-                    )}
-                  </div>
-                </div>
-
                 {/* Save Status */}
                 <div className="flex items-center justify-start py-2">
                   {isSaving && (
@@ -585,8 +542,8 @@ export const DynamicFormRenderer = React.forwardRef<DynamicFormRef, DynamicFormR
                     </div>
                   )}
                   {!isSaving && lastSaved && (
-                    <div className="animate-fade-in flex items-center gap-2 text-green-400">
-                      <div className="flex h-3 w-3 items-center justify-center rounded-full bg-green-500">
+                    <div className="animate-fade-in text-success flex items-center gap-2">
+                      <div className="bg-success flex h-3 w-3 items-center justify-center rounded-full">
                         <svg className="h-2 w-2 text-white" fill="currentColor" viewBox="0 0 20 20">
                           <path
                             fillRule="evenodd"
@@ -598,6 +555,44 @@ export const DynamicFormRenderer = React.forwardRef<DynamicFormRef, DynamicFormR
                       <span className="text-xs font-medium">All changes saved</span>
                     </div>
                   )}
+                </div>
+
+                {/* Action buttons */}
+                <div
+                  className="flex items-center justify-end pt-6"
+                  style={{
+                    borderTop: '1px solid rgba(255, 255, 255, 0.1)',
+                  }}
+                >
+                  <div className="flex space-x-2">
+                    <DynamicFormButton
+                      type="button"
+                      onClick={previousSection}
+                      disabled={disabled || isFirstSection}
+                      variant="ghost"
+                    >
+                      Previous
+                    </DynamicFormButton>
+                    {isLastSection ? (
+                      <DynamicFormButton
+                        type="submit"
+                        disabled={disabled || isSubmitting}
+                        loading={isSubmitting}
+                        variant="primary"
+                      >
+                        {formSchema.settings?.submitButtonText || 'Complete Blueprint'}
+                      </DynamicFormButton>
+                    ) : (
+                      <DynamicFormButton
+                        type="button"
+                        onClick={nextSection}
+                        variant="primary"
+                        disabled={disabled}
+                      >
+                        Next
+                      </DynamicFormButton>
+                    )}
+                  </div>
                 </div>
               </form>
             </FormProvider>

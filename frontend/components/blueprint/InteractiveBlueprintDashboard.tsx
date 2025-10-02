@@ -352,10 +352,10 @@ export function InteractiveBlueprintDashboard({
         </motion.div>
       )}
 
-      {/* Enhanced Stats Grid */}
+      {/* Enhanced Stats Grid - Desktop layout on all screen sizes */}
       <motion.div
         variants={containerVariants}
-        className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4"
+        className="grid grid-cols-4 gap-6"
       >
         <StatCard
           icon={Clock}

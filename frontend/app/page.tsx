@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState, useCallback } from 'react';
-import Link from 'next/link';
+// import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import {
@@ -378,7 +378,7 @@ function DashboardContent() {
   const dashboardTitle = 'Dashboard';
 
   return (
-    <div className="relative h-screen w-full overflow-hidden bg-[#020C1B] text-[rgb(224,224,224)]">
+    <div className="relative min-h-screen w-full bg-[#020C1B] text-[rgb(224,224,224)] flex flex-col">
       {/* Header */}
       <StandardHeader
         title={dashboardTitle}
@@ -389,10 +389,12 @@ function DashboardContent() {
         user={user}
       />
 
-      {/* Hero Section */}
-      <section className="relative overflow-hidden">
-        <div className="relative mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
-          <div className="max-w-4xl text-left">
+      {/* Main Content Area */}
+      <div className="flex-1">
+        {/* Hero Section */}
+        <section className="relative overflow-hidden">
+          <div className="relative mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 lg:py-12">
+          <div className="max-w-6xl text-left">
             {/* Welcome Message */}
             <motion.div
               initial={{ opacity: 0, y: 30 }}
@@ -401,7 +403,7 @@ function DashboardContent() {
               className="mb-8"
             >
               <h1 className="font-heading text-7xl font-bold tracking-tight text-white sm:text-8xl md:text-9xl lg:text-10xl">
-                <span>Welcome, </span>
+                <span>Welcome back, </span>
                 <span style={{ color: '#a7dadb' }}>
                   {getFirstName()}
                 </span>
@@ -417,11 +419,15 @@ function DashboardContent() {
               className="mb-12"
             >
               <p className="text-xl leading-relaxed text-white/70 sm:text-2xl lg:text-3xl">
-                Your learning blueprint workspace —{' '}
-                <span style={{ color: '#a7dadb' }} className="font-medium">create</span>,{' '}
-                <span style={{ color: '#a7dadb' }} className="font-medium">manage</span>, and{' '}
-                <span style={{ color: '#a7dadb' }} className="font-medium">explore</span>{' '}
-                personalized learning paths that accelerate your growth.
+                Your mission control —{' '}
+                <span style={{ color: '#a7dadb' }} className="font-medium">chart</span>{' '}
+                learning starmaps,{' '}
+                <span style={{ color: '#a7dadb' }} className="font-medium">orchestrate</span>{' '}
+                your constellations,
+                <br />
+                and{' '}
+                <span style={{ color: '#a7dadb' }} className="font-medium">discover</span>{' '}
+                insights that illuminate your training universe.
               </p>
             </motion.div>
 
@@ -438,10 +444,10 @@ function DashboardContent() {
         </div>
       </section>
 
-      <div className="page-enter animate-fade-in-up animate-delay-75 relative z-10 mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+      <div className="page-enter animate-fade-in-up animate-delay-75 relative z-10 mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8 pb-32">
 
         {/* Blueprint List */}
-        <section id="blueprints" className="space-y-6">
+        <section id="blueprints" className="space-y-6 mb-16">
           <div className="flex flex-col lg:flex-row gap-6">
             {/* Left side - Blueprint list */}
             <div className="flex-1 space-y-6">
@@ -685,12 +691,14 @@ function DashboardContent() {
           placeholder="Starmap for Professional Development and Career Growth Path"
           maxLength={80}
         />
+        </div>
       </div>
     </div>
   );
 }
 
-// Workspace Action Card Component
+// Workspace Action Card Component - Commented out as unused
+/*
 interface WorkspaceActionCardProps {
   onClick?: () => void;
   label: string;
@@ -743,6 +751,7 @@ function WorkspaceActionCard({
     </Component>
   );
 }
+*/
 
 export default function Home() {
   return (

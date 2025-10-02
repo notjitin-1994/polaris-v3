@@ -8,17 +8,22 @@
 import { useState } from 'react';
 import type React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Sparkles, CheckCircle } from 'lucide-react';
-import { StandardHeader } from '@/components/layout/StandardHeader';
+import { Sparkles, CheckCircle, ArrowLeft } from 'lucide-react';
+import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
-import ProtectedRoute from '@/components/auth/ProtectedRoute';
-import { AuthProvider } from '@/contexts/AuthContext';
 
 type LoadingType = 'dynamic-questions' | 'blueprint-generation';
 
 function DemoContent(): React.JSX.Element {
   const { user } = useAuth();
   const [activeDemo, setActiveDemo] = useState<LoadingType>('dynamic-questions');
+
+  // For demo purposes, create a mock user if none exists
+  const demoUser = user || {
+    id: 'demo-user',
+    email: 'demo@smartslate.com',
+    user_metadata: { name: 'Demo User' }
+  };
   const [progress, setProgress] = useState(45); // Demo progress
   const [currentStep, setCurrentStep] = useState(2);
 
@@ -67,14 +72,59 @@ function DemoContent(): React.JSX.Element {
 
   return (
     <div className="min-h-screen bg-[#020C1B]">
-      {/* Header */}
-      <StandardHeader
-        title="Loading Screens Demo"
-        subtitle="Preview the beautiful loading experiences for dynamic questions and blueprint generation"
-        backHref="/"
-        backLabel="Back to Dashboard"
-        user={user}
-      />
+      {/* Header - Matching Static Wizard Style */}
+      <header className="glass relative overflow-hidden border-b border-neutral-200/50 sticky top-0 z-50">
+        {/* Subtle background effects */}
+        <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
+          <div className="bg-primary/[0.02] absolute inset-0" />
+        </div>
+
+        {/* Content */}
+        <div className="relative mx-auto max-w-7xl px-4 py-5 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between gap-4">
+            {/* Left side: Back button + Title */}
+            <div className="flex min-w-0 flex-1 items-center gap-3">
+              <Link
+                href="/"
+                className="group text-text-secondary hover:text-foreground focus-visible:ring-primary/50 inline-flex items-center gap-1.5 rounded-md border border-white/10 bg-white/5 px-3 py-2 text-sm font-medium transition-all duration-200 focus-visible:rounded focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none active:scale-[0.98] hover:bg-white/10"
+                aria-label="Back to Dashboard"
+              >
+                <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-0.5" />
+                <span>Back to Dashboard</span>
+              </Link>
+
+              <div className="flex min-w-0 flex-1 items-center gap-3">
+                {/* Main Title */}
+                <div className="flex-1">
+                  <h1 className="font-heading text-4xl font-bold tracking-tight text-white sm:text-5xl md:text-6xl lg:text-7xl">
+                    <span>Loading Screens </span>
+                    <span className="bg-gradient-to-r from-[#a7dadb] to-[#7bc4c4] bg-clip-text text-transparent">
+                      Demo
+                    </span>
+                  </h1>
+
+                  {/* Subtitle */}
+                  <p className="text-xl leading-relaxed text-white/70 sm:text-2xl mt-2">
+                    Preview the beautiful loading experiences for{' '}
+                    <span className="text-[#a7dadb] font-medium">dynamic questions</span>{' '}
+                    and{' '}
+                    <span className="text-[#a7dadb] font-medium">blueprint generation</span>
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Right side: User avatar */}
+            <div className="flex shrink-0 items-center gap-2">
+              <div className="rounded-full ring-1 ring-neutral-200/50">
+                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#a7dadb] to-[#7bc4c4] flex items-center justify-center text-white font-semibold text-sm">
+                  {demoUser.email?.[0]?.toUpperCase() || 'D'}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </header>
 
       {/* Demo Selector */}
       <div className="w-full border-b border-white/10 px-4 py-4">
@@ -103,6 +153,53 @@ function DemoContent(): React.JSX.Element {
           </button>
         </div>
       </div>
+
+      {/* Dynamic Questions Demo Header - Only show for dynamic questions demo */}
+      {activeDemo === 'dynamic-questions' && (
+        <header className="glass relative overflow-hidden border-b border-neutral-200/50 sticky top-0 z-50">
+          {/* Subtle background effects */}
+          <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
+            <div className="bg-primary/[0.02] absolute inset-0" />
+          </div>
+
+          {/* Content */}
+          <div className="relative mx-auto max-w-7xl px-4 py-5 sm:px-6 lg:px-8">
+            <div className="flex items-center justify-between gap-4">
+              {/* Left side: Back button + Title */}
+              <div className="flex min-w-0 flex-1 items-center gap-3">
+                <div className="flex min-w-0 flex-1 items-center gap-3">
+                  {/* Main Title - Matching Static Wizard */}
+                  <div className="flex-1">
+                    <h1 className="font-heading text-4xl font-bold tracking-tight text-white sm:text-5xl md:text-6xl lg:text-7xl">
+                      <span>Generating </span>
+                      <span className="bg-gradient-to-r from-[#a7dadb] to-[#7bc4c4] bg-clip-text text-transparent">
+                        Dynamic Questions
+                      </span>
+                    </h1>
+
+                    {/* Subtitle */}
+                    <p className="text-xl leading-relaxed text-white/70 sm:text-2xl mt-2">
+                      Our AI is analyzing your responses and creating{' '}
+                      <span className="text-[#a7dadb] font-medium">personalized questions</span>.{' '}
+                      This typically takes{' '}
+                      <span className="text-[#a7dadb] font-medium drop-shadow-[0_0_8px_rgba(167,218,219,0.8)] brightness-110">5-15 seconds</span>
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Right side: User avatar */}
+              <div className="flex shrink-0 items-center gap-2">
+                <div className="rounded-full ring-1 ring-neutral-200/50">
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#a7dadb] to-[#7bc4c4] flex items-center justify-center text-white font-semibold text-sm">
+                    {demoUser.email?.[0]?.toUpperCase() || 'D'}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </header>
+      )}
 
       {/* Main Content - Loading Screen Preview */}
       <main className="w-full px-4 py-8 sm:px-6 lg:px-8">
@@ -291,11 +388,5 @@ function DemoContent(): React.JSX.Element {
 }
 
 export default function DemoLoadingPage(): React.JSX.Element {
-  return (
-    <AuthProvider>
-      <ProtectedRoute>
-        <DemoContent />
-      </ProtectedRoute>
-    </AuthProvider>
-  );
+  return <DemoContent />;
 }

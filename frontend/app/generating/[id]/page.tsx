@@ -9,7 +9,8 @@ import { useEffect, useState, use } from 'react';
 import type React from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { Sparkles, CheckCircle, AlertCircle } from 'lucide-react';
+import { Sparkles, CheckCircle, AlertCircle, ArrowLeft } from 'lucide-react';
+import Link from 'next/link';
 import ProtectedRoute from '@/components/auth/ProtectedRoute';
 import { AuthProvider, useAuth } from '@/contexts/AuthContext';
 import { StandardHeader } from '@/components/layout/StandardHeader';
@@ -151,14 +152,74 @@ function GeneratingContent({ id }: { id: string }): React.JSX.Element {
 
   return (
     <div className="min-h-screen bg-[#020C1B]">
-      {/* Header */}
-      <StandardHeader
-        title="Generating Your Learning Blueprint"
-        subtitle="Our AI is analyzing your responses and creating a comprehensive, personalized learning blueprint. This typically takes 30-60 seconds."
-        backHref="/"
-        backLabel="Back to Dashboard"
-        user={user}
-      />
+      {/* Header - Matching Static Wizard Style */}
+      <header className="glass relative overflow-hidden border-b border-neutral-200/50 sticky top-0 z-50">
+        {/* Subtle background effects */}
+        <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
+          <div className="bg-primary/[0.02] absolute inset-0" />
+        </div>
+
+        {/* Content */}
+        <div className="relative mx-auto max-w-7xl px-4 py-5 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between gap-4">
+            {/* Left side: Back button + Title */}
+            <div className="flex min-w-0 flex-1 items-center gap-3">
+              <Link
+                href="/"
+                className="group text-text-secondary hover:text-foreground focus-visible:ring-primary/50 inline-flex items-center gap-1.5 rounded-md border border-white/10 bg-white/5 px-3 py-2 text-sm font-medium transition-all duration-200 focus-visible:rounded focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none active:scale-[0.98] hover:bg-white/10"
+                aria-label="Back to Dashboard"
+              >
+                <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-0.5" />
+                <span>Back to Dashboard</span>
+              </Link>
+
+              <div className="flex min-w-0 flex-1 items-center gap-3">
+                {/* Main Title - Matching Static Wizard */}
+                <div className="flex-1">
+                  <motion.div
+                    initial={{ opacity: 0, y: 30 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94] }}
+                  >
+                    <h1 className="font-heading text-4xl font-bold tracking-tight text-white sm:text-5xl md:text-6xl lg:text-7xl">
+                      <span>Generating </span>
+                      <span className="bg-gradient-to-r from-[#a7dadb] to-[#7bc4c4] bg-clip-text text-transparent">
+                        Dynamic Questions
+                      </span>
+                    </h1>
+                  </motion.div>
+
+                  {/* Subtitle */}
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.8, delay: 0.2, ease: [0.25, 0.46, 0.45, 0.94] }}
+                    className="mt-4"
+                  >
+                    <p className="text-xl leading-relaxed text-white/70 sm:text-2xl">
+                      Our AI is analyzing your responses and creating{' '}
+                      <span className="text-[#a7dadb] font-medium">personalized questions</span>.{' '}
+                      This typically takes{' '}
+                      <span className="text-[#a7dadb] font-medium drop-shadow-[0_0_8px_rgba(167,218,219,0.8)] brightness-110">5-15 seconds</span>
+                    </p>
+                  </motion.div>
+                </div>
+              </div>
+            </div>
+
+            {/* Right side: User avatar */}
+            {user && (
+              <div className="flex shrink-0 items-center gap-2">
+                <div className="rounded-full ring-1 ring-neutral-200/50">
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#a7dadb] to-[#7bc4c4] flex items-center justify-center text-white font-semibold text-sm">
+                    {user.email?.[0]?.toUpperCase() || 'U'}
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </header>
 
       {/* Main Content */}
       <main className="w-full px-4 py-8 sm:px-6 lg:px-8">

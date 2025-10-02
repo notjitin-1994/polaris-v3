@@ -1,646 +1,498 @@
-# Perplexity-Powered Dynamic Questionnaire System PRD
-## Product Requirements Document
-**Version:** 1.0  
-**Date:** October 1, 2025  
-**Status:** Ready for Implementation
-
----
+# World-Class Responsive Design Enhancement PRD
 
 ## Executive Summary
 
-Transform the SmartSlate dynamic questionnaire generation from Ollama-only to a Perplexity-first system with Ollama fallback. This enables deep research-backed question generation that adapts to user responses, provides diverse input methods, and ensures zero data loss through robust error handling and comprehensive logging.
+This PRD outlines a comprehensive responsive design transformation for SmartSlate Polaris v3, elevating the user experience from mobile-tolerant to mobile-first, world-class, and industry-standard. The current implementation has mobile adaptations but lacks true responsive excellence, with performance issues on iOS devices and suboptimal touch experiences.
 
----
+## Current State Analysis
 
-## Problem Statement
+### Strengths
+- Sophisticated design system with semantic tokens
+- Glass morphism aesthetic with fallback support
+- Dark/light theme implementation
+- Animation system with motion preferences
+- Mobile menu implementation exists
 
-### Current State
-- Dynamic questions are generated solely by local Ollama instance
-- Limited research capabilities beyond training data cutoff
-- No centralized logging for debugging questionnaire issues
-- Input types are hardcoded, not dynamically extensible from LLM responses
-- No fallback mechanism when Ollama is unavailable
+### Critical Issues
+1. **Performance Degradation**: Heavy backdrop-filter usage disabled on iOS/iPad
+2. **Mobile-First Deficit**: Desktop-first layouts adapted for mobile rather than designed mobile-first
+3. **Touch Experience**: Suboptimal touch targets and interactions
+4. **Content Layout**: Complex dashboard layouts break on mobile without alternatives
+5. **Viewport Strategy**: Missing proper mobile viewport optimization
+6. **Progressive Enhancement**: No graceful degradation for older devices
 
-### Desired State
-- Perplexity AI (sonar-pro) generates research-backed dynamic questions
-- Ollama serves as failsafe fallback
-- System accepts and renders ANY input type suggested by LLM
-- Comprehensive logging accessible at /logs endpoint
-- All data properly saved to database with user_id and blueprint_id association
-- Upstream and downstream compatible with existing infrastructure
+## Vision & Goals
 
----
-
-## Goals & Success Metrics
-
-### Primary Goals
-1. **Research-Enhanced Questions**: Leverage Perplexity's real-time web research for contextual, industry-specific questions
-2. **Zero Downtime**: Automatic fallback to Ollama ensures 100% availability
-3. **Extensible Input System**: Support unlimited input types without code changes
-4. **Full Observability**: Complete request/response logging for debugging and optimization
+### Primary Objectives
+- **Mobile-First Excellence**: Design every component from mobile up
+- **Performance Parity**: Consistent experience across all devices and browsers
+- **Touch-First Interactions**: Optimize for touch while maintaining desktop functionality
+- **Progressive Enhancement**: Graceful degradation for older devices
+- **Industry Standards**: Exceed WCAG 2.1 AA and modern responsive design best practices
 
 ### Success Metrics
-- 95%+ Perplexity success rate for question generation
-- <5s response time for dynamic question generation
-- 100% data persistence success rate
-- Support for 30+ input types (up from current 27)
-- Zero breaking changes to existing wizards
+- **Performance**: Core Web Vitals scores in "Good" range across all devices
+- **Accessibility**: WCAG 2.1 AA compliance with 100% pass rate
+- **User Experience**: 90%+ user satisfaction on mobile devices
+- **Cross-Platform**: Identical visual experience across iOS/Android/Desktop
+- **Touch Targets**: All interactive elements meet 44px minimum touch target
 
----
+## Technical Requirements
 
-## System Architecture
+### 1. Mobile-First Architecture
+```typescript
+// New responsive breakpoint system
+export const BREAKPOINTS = {
+  xs: '320px',   // Small phones
+  sm: '640px',   // Standard phones
+  md: '768px',   // Tablets
+  lg: '1024px',  // Small laptops
+  xl: '1280px',  // Desktops
+  '2xl': '1536px' // Large screens
+} as const;
 
-### High-Level Flow
-```
-User completes static questionnaire
-    ↓
-API receives static answers + user context
-    ↓
-Try: Perplexity (sonar-pro) generates dynamic questions with research
-    ↓ (if fails)
-Fallback: Ollama (local) generates dynamic questions
-    ↓
-Parse JSON response with sections, questions, input types
-    ↓
-Validate schema, extend input types if new ones present
-    ↓
-Save to database (blueprint_generator.dynamic_questions & dynamic_questions_raw)
-    ↓
-Wizard renders with dynamic input components
-    ↓
-User completes, saves to dynamic_answers
-    ↓
-All requests/responses logged for debugging
-```
+// Mobile-first utility classes
+export const responsiveClasses = {
+  // Container patterns
+  container: 'w-full max-w-none px-4 sm:px-6 lg:px-8',
+  containerNarrow: 'w-full max-w-4xl mx-auto px-4 sm:px-6 lg:px-8',
+  containerWide: 'w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8',
 
-### Component Architecture
+  // Grid patterns
+  gridResponsive: 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6',
+  gridCards: 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8',
 
-#### 1. **API Layer** (`/frontend/app/api/`)
-- **`/api/dynamic-questions/route.ts`** (NEW)
-  - Receives: `{ blueprintId, staticAnswers, userPrompts }`
-  - Orchestrates: Perplexity → Ollama fallback
-  - Returns: `{ sections: [], metadata: { model, timestamp, duration } }`
-  
-- **`/api/perplexity-research/route.ts`** (NEW)
-  - Specialized Perplexity endpoint for question generation
-  - Timeout: 75s (matches existing Perplexity config)
-  - Retries: 2 attempts with exponential backoff
-
-#### 2. **Service Layer** (`/frontend/lib/services/`)
-- **`questionGenerationService.ts`** (NEW)
-  - `generateWithPerplexity()`: Primary research-backed generation
-  - `generateWithOllama()`: Fallback generation
-  - `orchestrateGeneration()`: Main coordinator with error handling
-
-#### 3. **Dynamic Form System** (`/frontend/lib/dynamic-form/`)
-- **`schema.ts`** (ENHANCED)
-  - Add dynamic schema extension mechanism
-  - Support unknown input types with graceful degradation
-  - Runtime type registration system
-
-- **`components/DynamicInputRegistry.tsx`** (NEW)
-  - Render factory for input types
-  - Fallback to generic input for unknown types
-  - Extensible registration pattern
-
-#### 4. **Database Schema** (EXISTING - No changes needed)
-```sql
-blueprint_generator:
-  - static_answers (JSONB) ✓
-  - dynamic_questions (JSONB) ✓ Form schema for rendering
-  - dynamic_questions_raw (JSONB) ✓ Raw LLM response
-  - dynamic_answers (JSONB) ✓ User responses
-  - user_id (UUID) ✓
-  - id (UUID) ✓
-```
-
-#### 5. **Logging System** (NEW)
-- **`/frontend/app/logs/page.tsx`**
-  - Real-time log viewer
-  - Filter by: level, service, timestamp, user
-  - Search and export capabilities
-
-- **`/frontend/lib/logging/`**
-  - `logger.ts`: Structured logging service
-  - `logStore.ts`: In-memory + persistent storage
-  - `types.ts`: Log entry schemas
-
----
-
-## Detailed Requirements
-
-### FR-1: Perplexity Integration
-**Priority:** P0 (Critical)
-
-**Requirements:**
-- Use `sonar-pro` model for optimal research depth
-- Maximum 8700 tokens per request
-- Temperature: 0.1 for consistency
-- Include static answers, user prompts in context
-- Request web research for industry-specific insights
-- Parse strict JSON response
-
-**Prompt Template:**
-```
-You are an expert Learning Experience Designer with access to current web research.
-
-CONTEXT:
-- Static questionnaire responses: {staticAnswers}
-- User role: {role}
-- Industry: {industry}
-- Additional context: {userPrompts}
-
-TASK:
-Generate a dynamic questionnaire with 5 sections, 7 questions each (35 total).
-Research current best practices for {industry} learning programs.
-Adapt questions based on the static responses provided.
-
-OUTPUT SCHEMA (strict JSON):
-{
-  "sections": [
-    {
-      "id": "s1",
-      "title": "Section Title",
-      "description": "Section description",
-      "order": 1,
-      "questions": [
-        {
-          "id": "q1_s1",
-          "label": "Question text",
-          "type": "text|textarea|select|multiselect|radio_pills|radio_cards|checkbox_pills|checkbox_cards|scale|enhanced_scale|labeled_slider|toggle_switch|currency|number_spinner|email|url|date|number",
-          "required": true|false,
-          "helpText": "Help text",
-          "placeholder": "Placeholder",
-          "options": [{"value": "v1", "label": "Label 1"}],
-          "scaleConfig": {"min": 1, "max": 5, "minLabel": "Low", "maxLabel": "High"},
-          "validation": [{"type": "required", "message": "Required"}],
-          "metadata": {"researchSource": "citation if applicable"}
-        }
-      ]
-    }
-  ],
-  "metadata": {
-    "generatedAt": "ISO timestamp",
-    "model": "sonar-pro",
-    "researchCitations": ["source1", "source2"]
+  // Typography scale
+  textResponsive: {
+    display: 'text-xl sm:text-2xl lg:text-3xl xl:text-4xl',
+    title: 'text-lg sm:text-xl lg:text-2xl',
+    heading: 'text-base sm:text-lg lg:text-xl',
+    body: 'text-sm sm:text-base',
+    caption: 'text-xs sm:text-sm'
   }
-}
-
-REQUIREMENTS:
-- Use diverse input types based on question nature
-- Prefer visual inputs (pills, cards) over traditional select/multiselect
-- Use scales for ratings, sliders for ranges
-- Include research citations in metadata when applicable
-- Ensure logical question flow and dependencies
-- NO PREAMBLE OR MARKDOWN - ONLY VALID JSON
-```
-
-### FR-2: Ollama Fallback
-**Priority:** P0 (Critical)
-
-**Requirements:**
-- Activate automatically if Perplexity fails
-- Use existing prompt from `.taskmaster/dynamic-questions-prompt.md`
-- Same JSON schema as Perplexity
-- Log fallback trigger event
-- Model: `qwen3:30b-a3b` (current config)
-- Timeout: 120s (longer than Perplexity)
-
-**Fallback Triggers:**
-- Perplexity API returns 4xx/5xx
-- Request timeout (>75s)
-- Invalid API key
-- Rate limit exceeded
-- Network error
-
-### FR-3: Dynamic Input Type System
-**Priority:** P0 (Critical)
-
-**Requirements:**
-- Parse any `type` value from LLM JSON response
-- If type exists in schema (27 current types), render normally
-- If type is NEW:
-  1. Log new type discovery
-  2. Attempt intelligent mapping to closest known type
-  3. Render with generic fallback component
-  4. Display admin notification for manual implementation
-  5. Continue functioning without breaking
-
-**Extensibility Pattern:**
-```typescript
-// New types auto-register at runtime
-const inputTypeRegistry = new Map<string, ComponentType>();
-
-// LLM returns unknown type "date_time_picker"
-if (!inputTypeRegistry.has(type)) {
-  const mappedType = intelligentTypeMapper(type); // → "date"
-  logger.warn('Unknown input type', { type, mappedTo: mappedType });
-  return <FallbackInput type={mappedType} {...props} />;
-}
-```
-
-### FR-4: Data Persistence
-**Priority:** P0 (Critical)
-
-**Save Dynamic Questions:**
-```sql
-UPDATE blueprint_generator
-SET 
-  dynamic_questions = $1,  -- Form schema for UI
-  dynamic_questions_raw = $2,  -- Raw LLM response
-  updated_at = now()
-WHERE id = $3 AND user_id = $4
-```
-
-**Save Dynamic Answers:**
-```sql
-UPDATE blueprint_generator
-SET 
-  dynamic_answers = $1,
-  status = 'completed',
-  updated_at = now()
-WHERE id = $2 AND user_id = $3
-```
-
-**Validation:**
-- Verify blueprint exists and belongs to user
-- Validate JSON schema before save
-- Handle partial answers (auto-save)
-- Optimistic UI updates
-
-### FR-5: Logging System
-**Priority:** P1 (High)
-
-**Log Entry Schema:**
-```typescript
-interface LogEntry {
-  id: string;
-  timestamp: string;
-  level: 'debug' | 'info' | 'warn' | 'error';
-  service: string;
-  event: string;
-  userId?: string;
-  blueprintId?: string;
-  metadata: {
-    duration?: number;
-    model?: string;
-    error?: string;
-    request?: any;
-    response?: any;
-  };
-}
-```
-
-**Log Events:**
-- `dynamic_questions.perplexity.request`
-- `dynamic_questions.perplexity.success`
-- `dynamic_questions.perplexity.failure`
-- `dynamic_questions.ollama.fallback`
-- `dynamic_questions.ollama.success`
-- `dynamic_questions.schema.validation`
-- `dynamic_questions.input_type.unknown`
-- `dynamic_questions.save.success`
-- `dynamic_questions.save.failure`
-
-**Logs Page (`/logs`):**
-- Real-time updates (SSE or polling)
-- Filter by level, service, user, blueprint
-- Search functionality
-- Export to JSON/CSV
-- Secure: Require authentication, admin role check
-
-### FR-6: Wizard Integration
-**Priority:** P1 (High)
-
-**Requirements:**
-- Maintain existing StepWizard flow
-- Add loading state during generation (5-15s expected)
-- Display generation source (Perplexity/Ollama badge)
-- Show progress indicator
-- Allow regeneration if user dissatisfied
-- Auto-save answers every 2s
-- Resume capability for incomplete questionnaires
-
----
-
-## Supported Input Types
-
-### Current (27 types)
-| Category | Types |
-|----------|-------|
-| Text | `text`, `textarea`, `email`, `url` |
-| Number | `number`, `number_spinner`, `currency` |
-| Selection | `select`, `multiselect` |
-| Visual Selection | `radio_pills`, `radio_cards`, `checkbox_pills`, `checkbox_cards` |
-| Scales | `scale`, `enhanced_scale`, `labeled_slider` |
-| Special | `date`, `toggle_switch` |
-
-### Extension Mechanism
-- LLM can propose ANY type
-- System maps unknown → closest known
-- Admin notified for manual implementation
-- No breaking changes to existing questionnaires
-
----
-
-## Technical Specifications
-
-### Environment Variables
-```bash
-# Perplexity (already configured)
-PERPLEXITY_API_KEY=<key>
-PERPLEXITY_BASE_URL=https://api.perplexity.ai
-PERPLEXITY_MODEL=sonar-pro
-PERPLEXITY_MAX_TOKENS=8700
-PERPLEXITY_TEMPERATURE=0.1
-
-# Ollama (already configured)
-OLLAMA_BASE_URL=http://localhost:11434/api
-OLLAMA_MODEL=qwen3:30b-a3b
-```
-
-### API Endpoints
-
-**POST `/api/dynamic-questions`**
-```typescript
-Request: {
-  blueprintId: string;
-  staticAnswers: Record<string, any>;
-  userPrompts?: string[];
-}
-
-Response: {
-  success: boolean;
-  sections: Section[];
-  metadata: {
-    model: 'perplexity' | 'ollama';
-    duration: number;
-    timestamp: string;
-  };
-  error?: string;
-}
-```
-
-**GET `/api/dynamic-questions/:blueprintId`**
-```typescript
-Response: {
-  questions: Section[];
-  answers: Record<string, any>;
-  status: 'pending' | 'completed';
-}
-```
-
-**POST `/api/dynamic-answers`**
-```typescript
-Request: {
-  blueprintId: string;
-  answers: Record<string, any>;
-}
-
-Response: {
-  success: boolean;
-  saved: boolean;
-}
-```
-
-**GET `/api/logs`** (Admin only)
-```typescript
-Query: {
-  level?: string;
-  service?: string;
-  userId?: string;
-  from?: string;
-  to?: string;
-  limit?: number;
-}
-
-Response: {
-  logs: LogEntry[];
-  total: number;
-  page: number;
-}
-```
-
----
-
-## Error Handling
-
-### Error Scenarios & Recovery
-
-| Scenario | Recovery Strategy |
-|----------|------------------|
-| Perplexity timeout | Fallback to Ollama |
-| Ollama unavailable | Show cached questions or allow manual input |
-| Invalid JSON from LLM | Retry with simplified prompt |
-| Unknown input type | Map to closest type, continue |
-| Database save failure | Queue for retry, show user notification |
-| Network error | Retry with exponential backoff (3 attempts) |
-
-### User-Facing Errors
-```typescript
-const errorMessages = {
-  generation_failed: "We couldn't generate questions right now. Using fallback method.",
-  save_failed: "Your answers weren't saved. They're cached locally and will retry automatically.",
-  unknown_input: "This question type isn't fully supported yet. Using a simplified version.",
 };
 ```
 
----
+### 2. Performance-Optimized Glass Effects
+```typescript
+// Replace backdrop-filter with CSS-only alternatives
+.glass-mobile {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
 
-## Testing Requirements
+.glass-card-mobile {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.1) 0%,
+    rgba(255, 255, 255, 0.05) 100%
+  );
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
 
-### Unit Tests
-- [ ] Perplexity service integration
-- [ ] Ollama fallback logic
-- [ ] Input type registry and mapping
-- [ ] JSON schema validation
-- [ ] Logging service
+// Progressive enhancement for capable devices
+@supports (backdrop-filter: blur(20px)) {
+  .glass-desktop {
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+  }
+}
+```
 
-### Integration Tests
-- [ ] Full question generation flow (Perplexity → DB)
-- [ ] Fallback flow (Perplexity fail → Ollama → DB)
-- [ ] Wizard rendering with diverse input types
-- [ ] Answer persistence and retrieval
-- [ ] Logs API with filtering
+### 3. Touch-First Component System
 
-### E2E Tests
-- [ ] Complete user journey: static → dynamic → answers → blueprint
-- [ ] Resume incomplete questionnaire
-- [ ] Handle Perplexity outage gracefully
-- [ ] New input type discovery and rendering
-- [ ] Logs page accessibility and filtering
+#### Touch Target Standards
+```typescript
+// Minimum 44px touch targets for all interactive elements
+export const TOUCH_TARGETS = {
+  minimum: 'min-h-[44px] min-w-[44px]',
+  small: 'min-h-[36px] min-w-[36px]',
+  large: 'min-h-[48px] min-w-[48px]'
+} as const;
 
-### Load Tests
-- [ ] 10 concurrent question generations
-- [ ] Database save performance under load
-- [ ] Log system performance (1000+ entries)
+// Touch-friendly button system
+export const ButtonVariants = {
+  primary: cn(
+    'touch-target bg-primary text-primary-foreground',
+    'hover:bg-primary/90 active:bg-primary/80',
+    'focus-visible:ring-2 focus-visible:ring-primary/50',
+    'transition-colors duration-200',
+    'disabled:opacity-50 disabled:pointer-events-none'
+  ),
+  secondary: cn(
+    'touch-target bg-secondary text-secondary-foreground',
+    'hover:bg-secondary/90 active:bg-secondary/80',
+    'focus-visible:ring-2 focus-visible:ring-secondary/50',
+    'transition-colors duration-200'
+  )
+};
+```
 
----
+#### Mobile Navigation Enhancement
+```typescript
+// Improved mobile menu with gesture support
+export const MobileMenu = () => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [dragOffset, setDragOffset] = useState(0);
 
-## Security & Privacy
+  return (
+    <Sheet open={isOpen} onOpenChange={setIsOpen}>
+      <SheetTrigger asChild>
+        <Button variant="ghost" className={TOUCH_TARGETS.minimum}>
+          <MenuIcon />
+        </Button>
+      </SheetTrigger>
 
-### Data Protection
-- All API routes require authentication (`useSession`)
-- RLS policies enforce user_id matching
-- Logs scrub sensitive data (API keys, PII)
-- Admin-only access to logs page
+      <SheetContent side="left" className="w-80 sm:w-96">
+        <SheetHeader>
+          <SheetTitle>Navigation</SheetTitle>
+        </SheetHeader>
 
-### API Key Security
-- Environment variables only
-- Never exposed client-side
-- Rotate if compromised
-- Rate limiting on endpoints
+        <nav className="mt-6 space-y-4">
+          {navigationItems.map((item) => (
+            <SheetClose key={item.id} asChild>
+              <Button
+                variant="ghost"
+                className={cn(
+                  TOUCH_TARGETS.large,
+                  'w-full justify-start text-left'
+                )}
+                onClick={() => handleNavigation(item)}
+              >
+                <item.icon className="mr-3 h-5 w-5" />
+                {item.label}
+              </Button>
+            </SheetClose>
+          ))}
+        </nav>
+      </SheetContent>
+    </Sheet>
+  );
+};
+```
 
----
+## Implementation Strategy
 
-## Migration & Compatibility
+### Phase 1: Foundation & Architecture (Week 1-2)
 
-### Backward Compatibility
-- Existing blueprints with Ollama-generated questions: **No changes needed**
-- New blueprints: Use Perplexity by default
-- Schema: Fully compatible with existing DB structure
-- Wizard: Render old and new questions identically
+#### 1.1 Responsive Breakpoint System
+- [ ] Define comprehensive breakpoint system (320px - 1536px+)
+- [ ] Create responsive utility class system
+- [ ] Implement mobile-first CSS architecture
+- [ ] Set up responsive testing framework
 
-### Migration Steps
-1. Deploy new API endpoints (feature-flagged)
-2. Test with subset of users
-3. Monitor logs for issues
-4. Gradual rollout to 100%
-5. Deprecate old generation endpoint after 30 days
+#### 1.2 Performance Optimization
+- [ ] Replace backdrop-filter with CSS-only alternatives for mobile
+- [ ] Implement progressive enhancement for desktop
+- [ ] Optimize animation performance for touch devices
+- [ ] Create device-specific CSS bundles
 
----
+#### 1.3 Touch Target Standards
+- [ ] Audit all interactive elements for 44px minimum targets
+- [ ] Implement touch-friendly button variants
+- [ ] Create touch-optimized form controls
+- [ ] Add touch feedback animations
 
-## Performance Targets
+### Phase 2: Layout & Navigation (Week 3-4)
 
-| Metric | Target | Current |
-|--------|--------|---------|
-| Question generation | <10s | ~15s (Ollama) |
-| Fallback activation | <2s | N/A |
-| Answer save | <500ms | ~300ms |
-| Logs page load | <1s | N/A |
-| Wizard render | <2s | ~1.5s |
+#### 2.1 Mobile-First Layout System
+- [ ] Redesign GlobalLayout for mobile-first approach
+- [ ] Implement responsive grid systems
+- [ ] Create mobile-optimized container patterns
+- [ ] Design adaptive sidebar/drawer navigation
 
----
+#### 2.2 Enhanced Mobile Navigation
+- [ ] Implement Sheet-based mobile menu
+- [ ] Add gesture-based navigation support
+- [ ] Create touch-optimized navigation items
+- [ ] Implement keyboard navigation for accessibility
 
-## Rollout Plan
+#### 2.3 Responsive Content Layouts
+- [ ] Design mobile-first dashboard layouts
+- [ ] Create responsive chart containers
+- [ ] Implement adaptive content cards
+- [ ] Build responsive form layouts
 
-### Phase 1: Foundation (Week 1)
-- [ ] Implement logging system
-- [ ] Create logs page
-- [ ] Add Perplexity service wrapper
+### Phase 3: Component Enhancement (Week 5-6)
 
-### Phase 2: Core Logic (Week 2)
-- [ ] Build question generation orchestrator
-- [ ] Implement fallback mechanism
-- [ ] Add API endpoints
+#### 3.1 Touch-Optimized Components
+- [ ] Redesign all buttons for touch interaction
+- [ ] Create mobile-friendly form inputs
+- [ ] Implement touch-optimized dropdowns/modals
+- [ ] Build responsive data tables
 
-### Phase 3: UI Integration (Week 3)
-- [ ] Extend dynamic form system
-- [ ] Integrate with wizard
-- [ ] Add loading states
+#### 3.2 Mobile-Specific Features
+- [ ] Implement pull-to-refresh functionality
+- [ ] Add swipe gestures for content navigation
+- [ ] Create mobile-optimized loading states
+- [ ] Implement haptic feedback for interactions
 
-### Phase 4: Testing & Polish (Week 4)
-- [ ] Complete test suite
-- [ ] Performance optimization
-- [ ] Documentation
+#### 3.3 Performance Enhancements
+- [ ] Optimize images for different screen densities
+- [ ] Implement lazy loading for content
+- [ ] Create efficient mobile animations
+- [ ] Add service worker for offline functionality
 
-### Phase 5: Launch (Week 5)
-- [ ] Feature flag rollout
-- [ ] Monitor metrics
-- [ ] Collect feedback
+### Phase 4: Testing & Validation (Week 7-8)
 
----
+#### 4.1 Cross-Device Testing
+- [ ] Test on 50+ device/browser combinations
+- [ ] Validate touch target sizes across devices
+- [ ] Performance testing on low-end devices
+- [ ] Accessibility testing with screen readers
 
-## Open Questions
+#### 4.2 User Experience Validation
+- [ ] Conduct user testing sessions on mobile devices
+- [ ] Gather feedback on touch interactions
+- [ ] Validate responsive breakpoints
+- [ ] Test with various content sizes
 
-1. Should we cache Perplexity responses to save API costs?
-2. Do we want user-facing regeneration button in wizard?
-3. Should logs be persistent (DB) or ephemeral (in-memory)?
-4. Maximum number of dynamic question sets per blueprint?
-5. Should we add A/B testing for Perplexity vs Ollama quality?
+#### 4.3 Performance Optimization
+- [ ] Achieve Core Web Vitals "Good" scores
+- [ ] Optimize for iOS Safari performance
+- [ ] Implement efficient memory management
+- [ ] Add performance monitoring
 
----
+## Advanced Responsive Features
 
-## Success Criteria
+### 5.1 Adaptive Content Strategy
+```typescript
+// Dynamic content adaptation based on screen size
+export const useResponsiveContent = () => {
+  const { width } = useWindowSize();
 
-### Launch Readiness
-- [ ] 100% test coverage for critical paths
-- [ ] <1% error rate in staging
-- [ ] Logs accessible and useful
-- [ ] Documentation complete
-- [ ] Security review passed
+  const getOptimalLayout = useCallback(() => {
+    if (width < 640) return 'mobile-compact';
+    if (width < 1024) return 'mobile-expanded';
+    if (width < 1280) return 'tablet';
+    return 'desktop';
+  }, [width]);
 
-### Post-Launch (30 days)
-- [ ] 90%+ Perplexity success rate
-- [ ] <5% fallback activation rate
-- [ ] Zero data loss incidents
-- [ ] Positive user feedback (NPS >8)
-- [ ] Performance targets met
+  const getChartConfig = useCallback((baseConfig: ChartConfig) => {
+    const layout = getOptimalLayout();
 
----
+    switch (layout) {
+      case 'mobile-compact':
+        return { ...baseConfig, height: 200, showLegend: false };
+      case 'mobile-expanded':
+        return { ...baseConfig, height: 300, showLegend: true };
+      case 'tablet':
+        return { ...baseConfig, height: 350, showLegend: true };
+      default:
+        return baseConfig;
+    }
+  }, [getOptimalLayout]);
 
-## Appendices
+  return { getOptimalLayout, getChartConfig };
+};
+```
 
-### A. Example Perplexity Response
-```json
-{
-  "sections": [
-    {
-      "id": "s1",
-      "title": "Learning Environment Analysis",
-      "description": "Understanding your organization's learning ecosystem",
-      "order": 1,
-      "questions": [
-        {
-          "id": "q1_s1",
-          "label": "What learning management systems (LMS) does your organization currently use?",
-          "type": "checkbox_pills",
-          "required": true,
-          "helpText": "Select all that apply. Based on 2025 industry trends, hybrid LMS adoption is increasing.",
-          "options": [
-            {"value": "moodle", "label": "Moodle", "icon": "🎓"},
-            {"value": "canvas", "label": "Canvas", "icon": "🎨"},
-            {"value": "blackboard", "label": "Blackboard", "icon": "📚"},
-            {"value": "cornerstone", "label": "Cornerstone", "icon": "🏢"},
-            {"value": "successfactors", "label": "SAP SuccessFactors", "icon": "💼"},
-            {"value": "other", "label": "Other", "icon": "⚙️"}
-          ],
-          "metadata": {
-            "researchSource": "2025 LMS Market Report - MarketsandMarkets"
+### 5.2 Smart Viewport Management
+```typescript
+// Intelligent viewport handling
+export const useViewportManager = () => {
+  const [viewport, setViewport] = useState({
+    width: 0,
+    height: 0,
+    isMobile: false,
+    isTablet: false,
+    isDesktop: false,
+    orientation: 'portrait' as 'portrait' | 'landscape'
+  });
+
+  useEffect(() => {
+    const updateViewport = () => {
+      const width = window.innerWidth;
+      const height = window.innerHeight;
+      const orientation = width > height ? 'landscape' : 'portrait';
+
+      setViewport({
+        width,
+        height,
+        isMobile: width < 768,
+        isTablet: width >= 768 && width < 1024,
+        isDesktop: width >= 1024,
+        orientation
+      });
+    };
+
+    updateViewport();
+    window.addEventListener('resize', updateViewport);
+    window.addEventListener('orientationchange', updateViewport);
+
+    return () => {
+      window.removeEventListener('resize', updateViewport);
+      window.removeEventListener('orientationchange', updateViewport);
+    };
+  }, []);
+
+  return viewport;
+};
+```
+
+### 5.3 Progressive Enhancement Framework
+```typescript
+// Feature detection and progressive enhancement
+export const useProgressiveEnhancement = () => {
+  const [capabilities, setCapabilities] = useState({
+    backdropFilter: false,
+    webGL: false,
+    touch: false,
+    intersectionObserver: false,
+    serviceWorker: false
+  });
+
+  useEffect(() => {
+    const detectCapabilities = async () => {
+      const results = {
+        backdropFilter: CSS.supports('backdrop-filter', 'blur(10px)'),
+        webGL: (() => {
+          try {
+            const canvas = document.createElement('canvas');
+            return !!(canvas.getContext('webgl') || canvas.getContext('experimental-webgl'));
+          } catch {
+            return false;
           }
-        }
-      ]
-    }
-  ],
-  "metadata": {
-    "generatedAt": "2025-10-01T12:34:56Z",
-    "model": "sonar-pro",
-    "researchCitations": [
-      "2025 LMS Market Report - MarketsandMarkets",
-      "Learning Tech Trends Q3 2025 - EdTech Review"
-    ]
-  }
-}
-```
+        })(),
+        touch: 'ontouchstart' in window || navigator.maxTouchPoints > 0,
+        intersectionObserver: 'IntersectionObserver' in window,
+        serviceWorker: 'serviceWorker' in navigator
+      };
 
-### B. Input Type Mapping Logic
-```typescript
-const intelligentTypeMapper = (unknownType: string): InputType => {
-  const mappings: Record<string, InputType> = {
-    'datetime': 'date',
-    'time': 'text',
-    'file': 'text',  // Fallback until file upload implemented
-    'rich_text': 'textarea',
-    'dropdown': 'select',
-    'checklist': 'checkbox_pills',
-    'rating': 'scale',
-  };
-  
-  return mappings[unknownType.toLowerCase()] || 'text';
+      setCapabilities(results);
+    };
+
+    detectCapabilities();
+  }, []);
+
+  return capabilities;
 };
 ```
 
----
+## Quality Assurance Strategy
 
-**Document End**
+### 6.1 Comprehensive Testing Framework
 
+#### Device Testing Matrix
+- **Mobile Phones**: iPhone SE (1st gen) to iPhone 15 Pro Max, Pixel 3 to Pixel 8 Pro
+- **Tablets**: iPad Mini to iPad Pro, Android tablets (Samsung, Google)
+- **Desktop**: Various screen sizes from 1024px to 4K displays
+- **Browsers**: Safari, Chrome, Firefox, Edge (latest 2 versions each)
+
+#### Performance Benchmarks
+- **Core Web Vitals**:
+  - LCP < 2.5s across all devices
+  - FID < 100ms on mobile
+  - CLS < 0.1 across all breakpoints
+- **Animation Performance**: 60fps animations on all devices
+- **Memory Usage**: < 100MB on mobile devices
+
+#### Accessibility Standards
+- **WCAG 2.1 AA Compliance**: 100% pass rate
+- **Screen Reader Support**: Full compatibility with VoiceOver/TalkBack
+- **Keyboard Navigation**: Complete keyboard accessibility
+- **Color Contrast**: Enhanced contrast ratios for outdoor viewing
+
+### 6.2 User Experience Validation
+
+#### Usability Testing Protocol
+1. **Task Completion Rates**: 95%+ success rate for core tasks
+2. **Time on Task**: Optimal completion times across devices
+3. **Error Rates**: < 5% user errors on primary interactions
+4. **Satisfaction Scores**: 90%+ user satisfaction ratings
+
+#### Mobile-Specific Testing
+- **One-Handed Usage**: Comfortable operation with thumb navigation
+- **Outdoor Visibility**: Readable in bright sunlight conditions
+- **Battery Impact**: Minimal battery drain during extended use
+- **Network Conditions**: Performance across 3G/4G/5G/WiFi
+
+## Risk Mitigation
+
+### 7.1 Performance Risks
+- **Mitigation**: Implement progressive enhancement with feature detection
+- **Fallback**: CSS-only implementations for critical visual effects
+- **Monitoring**: Real-time performance monitoring with alerting
+
+### 7.2 Browser Compatibility Risks
+- **Mitigation**: Comprehensive browser support matrix
+- **Fallback**: Graceful degradation for older browsers
+- **Testing**: Automated testing across supported browsers
+
+### 7.3 Accessibility Risks
+- **Mitigation**: WCAG 2.1 AA compliance validation
+- **Testing**: Automated accessibility testing + manual validation
+- **Auditing**: Regular accessibility audits with external experts
+
+## Success Criteria & Measurement
+
+### 8.1 Key Performance Indicators
+- **Mobile Performance Score**: > 90 on Lighthouse mobile testing
+- **Touch Target Compliance**: 100% of interactive elements meet 44px minimum
+- **Responsive Breakpoint Coverage**: Zero layout breaks across tested devices
+- **Animation Performance**: 60fps animations maintained across all interactions
+
+### 8.2 User Experience Metrics
+- **Task Success Rate**: > 95% completion rate for core user journeys
+- **Mobile Session Duration**: Average session time matches desktop
+- **Bounce Rate**: < 30% bounce rate on mobile devices
+- **Feature Adoption**: Equal feature usage across mobile and desktop
+
+### 8.3 Technical Excellence Metrics
+- **Bundle Size**: < 500KB gzipped for mobile-first bundles
+- **Runtime Performance**: < 16ms frame render time on mobile devices
+- **Memory Efficiency**: < 50MB memory usage during extended sessions
+- **Network Efficiency**: Optimized asset loading and caching strategies
+
+## Implementation Timeline
+
+### Week 1-2: Foundation
+- [ ] Responsive architecture setup
+- [ ] Performance optimization framework
+- [ ] Touch target standards implementation
+
+### Week 3-4: Layout & Navigation
+- [ ] Mobile-first layout system
+- [ ] Enhanced navigation components
+- [ ] Responsive content layouts
+
+### Week 5-6: Component Enhancement
+- [ ] Touch-optimized component library
+- [ ] Mobile-specific feature implementation
+- [ ] Performance enhancements
+
+### Week 7-8: Testing & Validation
+- [ ] Comprehensive testing framework
+- [ ] User experience validation
+- [ ] Performance optimization
+
+## Dependencies & Resources
+
+### Technical Dependencies
+- **React 19**: Latest React features for optimal performance
+- **Next.js 15**: App Router and server component optimization
+- **Tailwind CSS v4**: Responsive utility system
+- **Framer Motion**: Performance-optimized animations
+
+### Team Resources
+- **UX Designer**: Mobile-first design strategy and user testing
+- **Frontend Engineers**: Responsive implementation and performance optimization
+- **QA Engineers**: Cross-device testing and accessibility validation
+- **DevOps Engineers**: Performance monitoring and deployment optimization
+
+### External Resources
+- **Accessibility Consultants**: WCAG compliance auditing
+- **Performance Consultants**: Core Web Vitals optimization
+- **User Research Firms**: Usability testing and feedback collection
+
+## Conclusion
+
+This comprehensive responsive design transformation will elevate SmartSlate Polaris v3 from mobile-tolerant to mobile-first excellence, ensuring world-class user experiences across all devices and platforms. The implementation strategy focuses on performance, accessibility, and user experience while maintaining the application's sophisticated design aesthetic.
+
+The result will be an application that not only meets but exceeds modern responsive design standards, providing users with seamless experiences whether they're using the latest iPhone, an older Android device, or a desktop computer.
