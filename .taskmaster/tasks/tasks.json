@@ -321,7 +321,7 @@
         "dependencies": [
           24
         ],
-        "status": "in-progress",
+        "status": "done",
         "subtasks": [
           {
             "id": 1,
@@ -351,7 +351,7 @@
               "25.2"
             ],
             "details": "Switch to the cleanup/consolidation branch. Remove smartslate-app/ using git rm -rf. Commit the removal with a message referencing the archive branch and dependency verification.",
-            "status": "in-progress",
+            "status": "done",
             "testStrategy": ""
           },
           {
@@ -362,7 +362,7 @@
               "25.3"
             ],
             "details": "Run npm run build, npm run test, and npm run dev. Confirm that all commands complete without errors and the development server starts correctly.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": ""
           }
         ]
@@ -377,7 +377,7 @@
         "dependencies": [
           25
         ],
-        "status": "pending",
+        "status": "in-progress",
         "subtasks": [
           {
             "id": 1,
@@ -385,7 +385,7 @@
             "description": "Scan the 'frontend/smartslate-polaris/src/components' directory and compare with 'frontend/components' to determine which components are unique to the nested app.",
             "dependencies": [],
             "details": "Use a script or manual comparison to list all components present in the nested app but not in the main frontend. Document the list of unique components for migration.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": ""
           },
           {
@@ -396,7 +396,7 @@
               "26.1"
             ],
             "details": "Move each unique component to 'frontend/src/components/features/'. Update all import statements in the codebase to reference the new locations. Ensure TypeScript compatibility and resolve any import errors.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": ""
           },
           {
@@ -407,7 +407,7 @@
               "26.2"
             ],
             "details": "Use version control commands to remove the nested app and commit the changes with a clear message. Ensure no remaining dependencies on the removed directory.",
-            "status": "pending",
+            "status": "in-progress",
             "testStrategy": ""
           },
           {
@@ -752,7 +752,7 @@
     ],
     "metadata": {
       "created": "2025-09-27T10:54:14.464Z",
-      "updated": "2025-10-02T12:19:53.664Z",
+      "updated": "2025-10-02T12:26:45.052Z",
       "description": "Tasks for master context"
     }
   },
