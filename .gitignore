@@ -100,9 +100,13 @@ ssh_keys/
 .DS_Store
 
 # Task filesimage,
-# tasks.json
-# tasks/ 
 sshkey
 sshkey.pub
 .vercel
 image.png
+
+# Environment variables
+
+# Task files
+# tasks.json
+# tasks/ 
