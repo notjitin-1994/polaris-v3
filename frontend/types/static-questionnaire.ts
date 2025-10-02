@@ -145,7 +145,10 @@ export interface StaticQuestionsFormValuesV1 {
   constraints: string[];
 }
 
-export type StaticQuestionsFormValues = StaticQuestionsFormValuesV1 | StaticQuestionsFormValuesV2;
+// Union type for backward compatibility
+export type StaticQuestionsFormValuesUnion =
+  | StaticQuestionsFormValuesV1
+  | StaticQuestionsFormValuesV2;
 
 // Type guards
 export function isV2Schema(data: unknown): data is StaticQuestionsFormValuesV2 {

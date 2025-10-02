@@ -1,8 +1,14 @@
 import { z } from 'zod';
-import { formStateSchema } from './schema';
-import { FormSchema, Question, Section, ValidationResult, InputType } from './schema';
+import {
+  formStateSchema,
+  FormSchema,
+  Question,
+  Section,
+  ValidationResult,
+  InputType,
+} from './schema';
 
-// Re-export FormState from schema but also define it here to avoid circular imports
+// Re-export FormState from schema
 export type FormState = z.infer<typeof formStateSchema>;
 
 // Form renderer props
@@ -240,14 +246,4 @@ export interface UseFormValidationReturn {
   validateSection: (sectionId: string) => ValidationResult;
   validateForm: () => ValidationResult;
   clearErrors: (questionId?: string) => void;
-}
-
-export interface UseFormPersistenceReturn {
-  isSaving: boolean;
-  lastSaved: Date | null;
-  hasUnsavedChanges: boolean;
-  saveStatus: 'idle' | 'saving' | 'saved' | 'error';
-  save: () => Promise<void>;
-  load: () => Promise<FormState | null>;
-  clear: () => void;
 }

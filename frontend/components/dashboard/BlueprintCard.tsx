@@ -15,6 +15,7 @@ import {
   Sparkles,
   TrendingUp,
   Trash2,
+  Info,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { BlueprintRow } from '@/lib/db/blueprints';
@@ -40,6 +41,7 @@ export function BlueprintCard({
 }: BlueprintCardProps): React.JSX.Element {
   const router = useRouter();
   const [isHovered, setIsHovered] = useState(false);
+  const [isInfoHovered, setIsInfoHovered] = useState(false);
 
   // Mouse tracking for interactive spotlight
   const mouseX = useMotionValue(0);
@@ -192,33 +194,6 @@ export function BlueprintCard({
             </div>
           </div>
 
-          {/* Meta Information */}
-          <div className="flex flex-wrap items-center gap-4 text-xs text-white/50">
-            {/* Version and Generated Info */}
-            <div className="flex items-center gap-3">
-              <span className="font-medium text-white/40">v{blueprint.version}</span>
-              {blueprint.blueprint_markdown && (
-                <div className="text-success flex items-center gap-1">
-                  <TrendingUp className="h-3 w-3" />
-                  <span className="font-medium">Generated</span>
-                </div>
-              )}
-            </div>
-
-            {/* Date Information */}
-            <div className="flex items-center gap-1.5">
-              <Calendar className="h-3.5 w-3.5" />
-              <span>{formatDate(blueprint.created_at)}</span>
-            </div>
-
-            {blueprint.updated_at && blueprint.updated_at !== blueprint.created_at && (
-              <div className="flex items-center gap-1.5">
-                <Clock className="h-3.5 w-3.5" />
-                <span>Updated {formatDate(blueprint.updated_at)}</span>
-              </div>
-            )}
-          </div>
-
           {/* Progress Bar */}
           <div className="space-y-2">
             <div className="flex items-center justify-between text-xs">
@@ -260,8 +235,82 @@ export function BlueprintCard({
             </div>
           </div>
 
+          {/* Info Button - Bottom Left */}
+          <div className="absolute bottom-4 left-6">
+            <div className="relative">
+              <motion.button
+                type="button"
+                className={cn(
+                  'flex items-center justify-center',
+                  'h-8 w-8 rounded-full',
+                  'border border-white/20 bg-white/10 hover:bg-white/20',
+                  'text-white/70 hover:border-white/30 hover:text-white',
+                  'transition-all duration-200',
+                  'backdrop-blur-sm'
+                )}
+                onMouseEnter={() => setIsInfoHovered(true)}
+                onMouseLeave={() => setIsInfoHovered(false)}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                title="Blueprint information"
+                aria-label="Blueprint information"
+              >
+                <Info className="h-4 w-4" />
+              </motion.button>
+
+              {/* Hover Tooltip */}
+              <motion.div
+                className={cn(
+                  'absolute bottom-full left-1/2 mb-2 -translate-x-1/2',
+                  'min-w-max rounded-lg px-3 py-2',
+                  'bg-gray-900/95 text-xs text-white',
+                  'border border-white/20 backdrop-blur-sm',
+                  'pointer-events-none z-50'
+                )}
+                initial={{ opacity: 0, y: 5, scale: 0.95 }}
+                animate={{
+                  opacity: isInfoHovered ? 1 : 0,
+                  y: isInfoHovered ? 0 : 5,
+                  scale: isInfoHovered ? 1 : 0.95,
+                }}
+                transition={{ duration: 0.15 }}
+              >
+                <div className="flex min-w-0 flex-col gap-2">
+                  {/* Version and Generated Info */}
+                  <div className="flex items-center gap-3">
+                    <span className="font-medium text-white/60">v{blueprint.version}</span>
+                    {blueprint.blueprint_markdown && (
+                      <div className="text-success flex items-center gap-1">
+                        <TrendingUp className="h-3 w-3" />
+                        <span className="font-medium">Generated</span>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Date Information */}
+                  <div className="flex items-center gap-1.5 text-white/80">
+                    <Calendar className="h-3.5 w-3.5" />
+                    <span>{formatDate(blueprint.created_at)}</span>
+                  </div>
+
+                  {blueprint.updated_at && blueprint.updated_at !== blueprint.created_at && (
+                    <div className="flex items-center gap-1.5 text-white/80">
+                      <Clock className="h-3.5 w-3.5" />
+                      <span>Updated {formatDate(blueprint.updated_at)}</span>
+                    </div>
+                  )}
+                </div>
+
+                {/* Tooltip Arrow */}
+                <div className="absolute top-full left-1/2 -translate-x-1/2">
+                  <div className="h-0 w-0 border-t-4 border-r-4 border-l-4 border-t-gray-900/95 border-r-transparent border-l-transparent" />
+                </div>
+              </motion.div>
+            </div>
+          </div>
+
           {/* Action Buttons */}
-          <div className="mt-auto flex items-center justify-end gap-2">
+          <div className="mt-auto flex items-end justify-end gap-2 pb-1">
             {/* Rename Button */}
             <motion.button
               type="button"

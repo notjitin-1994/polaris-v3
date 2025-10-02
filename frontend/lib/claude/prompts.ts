@@ -44,6 +44,7 @@ CRITICAL: Every section will be displayed as an INFOGRAPHIC with animations. Pro
 
 VISUALIZATION TYPES:
 - "infographic": Default for data-rich sections (objectives, audience, assessment, metrics, strategy)
+- "chart": For quantitative data visualization (bar, line, pie, radar charts)
 - "timeline": For sequential/temporal data (implementation phases, content modules)
 - "table": For structured comparative data (risks, resources)
 - "markdown": ONLY for pure narrative summaries (executive summary, strategy overview)

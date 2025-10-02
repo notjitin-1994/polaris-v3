@@ -30,6 +30,8 @@ const mockFormSchema: FormSchema = {
           placeholder: 'Enter your email',
         },
       ],
+      isCollapsible: true,
+      isRequired: true,
     },
     {
       id: 'section-2',
@@ -42,11 +44,13 @@ const mockFormSchema: FormSchema = {
           type: 'select',
           required: false,
           options: [
-            { value: 'yes', label: 'Yes' },
-            { value: 'no', label: 'No' },
+            { value: 'yes', label: 'Yes', disabled: false },
+            { value: 'no', label: 'No', disabled: false },
           ],
         },
       ],
+      isCollapsible: true,
+      isRequired: true,
     },
   ],
   settings: {
@@ -56,6 +60,7 @@ const mockFormSchema: FormSchema = {
     allowSectionJump: true,
     submitButtonText: 'Submit',
     saveButtonText: 'Save Progress',
+    theme: 'auto' as const,
   },
 };
 
@@ -193,14 +198,14 @@ describe('DynamicFormRenderer', () => {
     // Wait for validation to complete and form to be valid
     await waitFor(
       () => {
-        const submitButton = screen.getByText('Submit Form');
+        const submitButton = screen.getByText('Submit');
         expect(submitButton).not.toBeDisabled();
       },
       { timeout: 3000 }
     );
 
     // Submit form
-    const submitButton = screen.getByText('Submit Form');
+    const submitButton = screen.getByText('Submit');
     fireEvent.click(submitButton);
 
     await waitFor(() => {
@@ -285,7 +290,7 @@ describe('DynamicFormRenderer', () => {
     );
 
     const nameInput = screen.getByLabelText('Full Name');
-    const submitButton = screen.getByText('Submit Form');
+    const submitButton = screen.getByText('Submit');
 
     expect(nameInput).toBeDisabled();
     expect(submitButton).toBeDisabled();
@@ -317,14 +322,14 @@ describe('DynamicFormRenderer', () => {
     // Wait for validation to complete
     await waitFor(
       () => {
-        const submitButton = screen.getByText('Submit Form');
+        const submitButton = screen.getByText('Submit');
         expect(submitButton).not.toBeDisabled();
       },
       { timeout: 3000 }
     );
 
     // Submit form
-    const submitButton = screen.getByText('Submit Form');
+    const submitButton = screen.getByText('Submit');
     fireEvent.click(submitButton);
 
     // Should show loading state
