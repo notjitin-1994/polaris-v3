@@ -738,7 +738,9 @@ export function PortalPage() {
                   aria-expanded={solaraOpen}
                   aria-controls="section-solara"
                 >
-                  <span>Solara</span>
+                  <span className="font-semibold !text-[#FFD700] drop-shadow-[0_0_10px_rgba(255,215,0,0.3)]">
+                    Solara
+                  </span>
                   <span
                     className={`text-primary-400/80 inline-block text-xs transition-transform ${solaraOpen ? 'rotate-90' : ''}`}
                   >

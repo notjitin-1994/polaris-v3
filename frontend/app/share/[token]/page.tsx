@@ -177,7 +177,7 @@ export default function SharedBlueprintPage({ params }: PageProps): React.JSX.El
           </p>
           <button
             onClick={() => router.push('/')}
-            className="bg-primary text-primary-foreground hover:bg-primary/90 inline-flex items-center gap-2 rounded-xl px-6 py-3 font-medium transition-all hover:shadow-lg"
+            className="inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-6 py-3 font-medium text-white transition-all hover:bg-indigo-700 hover:shadow-lg"
           >
             <ExternalLink className="h-4 w-4" />
             <span>Visit SmartSlate</span>
@@ -340,10 +340,10 @@ export default function SharedBlueprintPage({ params }: PageProps): React.JSX.El
             href="/"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            className="bg-primary text-primary-foreground hover:bg-primary/90 inline-flex items-center gap-2 rounded-xl px-6 py-3 font-medium shadow-lg transition-all hover:shadow-xl"
+            className="inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-6 py-3 font-medium text-white shadow-lg transition-all hover:bg-indigo-700 hover:shadow-xl"
           >
             <Sparkles className="h-5 w-5" />
-            <span>Get Started with SmartSlate</span>
+            <span>Go to Polaris</span>
           </motion.a>
         </motion.div>
       </div>
@@ -354,11 +354,14 @@ export default function SharedBlueprintPage({ params }: PageProps): React.JSX.El
           Powered by{' '}
           <Link
             href="/"
-            className="text-primary hover:text-primary/80 font-medium transition-colors"
+            className="font-semibold !text-[#FFD700] drop-shadow-[0_0_10px_rgba(255,215,0,0.3)] transition-colors hover:!text-[#FFF000]"
           >
-            SmartSlate
+            Solara
           </Link>{' '}
-          - AI-Powered Learning Blueprint Generator
+          - Built by{' '}
+          <span className="font-semibold !text-[#a7dadb] drop-shadow-[0_0_10px_rgba(167,218,219,0.3)] transition-colors hover:!text-[#7bc5c7]">
+            Smartslate
+          </span>
         </p>
       </footer>
     </main>

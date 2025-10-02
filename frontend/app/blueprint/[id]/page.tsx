@@ -245,7 +245,7 @@ export default function BlueprintPage({ params }: PageProps): React.JSX.Element 
               : 'The blueprint you are looking for does not exist or you do not have access to it.'}
           </p>
           <Link
-            className="bg-primary text-primary-foreground hover:bg-primary/90 inline-flex items-center gap-2 rounded-xl px-6 py-3 font-medium transition-all hover:shadow-lg"
+            className="inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-6 py-3 font-medium text-white transition-all hover:bg-indigo-700 hover:shadow-lg"
             href="/"
           >
             <ArrowLeft className="h-4 w-4" />

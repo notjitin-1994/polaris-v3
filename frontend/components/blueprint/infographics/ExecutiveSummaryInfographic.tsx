@@ -7,7 +7,7 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Sparkles, Target, Users, TrendingUp, Wand2 } from 'lucide-react';
+import { Compass, Target, Users, TrendingUp, Wand2 } from 'lucide-react';
 
 interface ExecutiveSummaryInfographicProps {
   content: string;
@@ -47,13 +47,9 @@ export function ExecutiveSummaryInfographic({
         <div className="relative z-10">
           <div className="mb-6 flex items-center justify-between">
             <div className="flex flex-1 items-center gap-3">
-              <motion.div
-                animate={{ rotate: [0, 360] }}
-                transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
-                className="bg-primary/20 rounded-xl p-3"
-              >
-                <Sparkles className="text-primary h-6 w-6" />
-              </motion.div>
+              <div className="bg-primary/20 rounded-xl p-3">
+                <Compass className="text-primary h-6 w-6" />
+              </div>
               <div>
                 <h3 className="text-xl font-bold text-white">Strategic Overview</h3>
                 {metadata?.organization && (
@@ -106,10 +102,12 @@ export function ExecutiveSummaryInfographic({
               className="glass-card group hover:border-primary/30 rounded-xl border border-white/10 p-5 transition-all"
             >
               <div className="mb-3 flex items-center gap-2">
-                <div className="bg-primary/20 rounded-lg p-2">
-                  {index === 0 && <Target className="text-primary h-4 w-4" />}
-                  {index === 1 && <Users className="text-secondary h-4 w-4" />}
-                  {index === 2 && <TrendingUp className="text-success h-4 w-4" />}
+                <div className="bg-primary/20 flex h-[20px] min-w-[20px] items-center justify-center rounded-lg p-2">
+                  <span
+                    className={`text-sm font-bold ${index === 0 ? 'text-primary' : index === 1 ? 'text-secondary' : 'text-success'}`}
+                  >
+                    {index + 1}
+                  </span>
                 </div>
                 <span className="text-primary text-xs font-bold tracking-wider uppercase">
                   Highlight {index + 1}

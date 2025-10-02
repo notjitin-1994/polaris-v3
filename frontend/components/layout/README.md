@@ -264,8 +264,3 @@ export default function Page() {
 - Modern browsers with CSS Grid and Flexbox support
 - ES6+ features (covered by Next.js transpilation)
 - Tailwind CSS v4 compatible
-
-
-
-
-
