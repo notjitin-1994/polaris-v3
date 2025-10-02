@@ -48,7 +48,7 @@ export function LoginFormContent(): React.JSX.Element {
   }
 
   return (
-    <form onSubmit={onSubmit} className="animate-fade-in-up space-y-5">
+    <form onSubmit={onSubmit} className="animate-fade-in-up space-y-8">
       <AuthInput
         value={identifierRaw}
         onChange={(raw, parsed) => {
