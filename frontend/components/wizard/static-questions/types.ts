@@ -2,19 +2,21 @@ import { z } from 'zod';
 import {
   staticQuestionsSchemaV1,
   staticQuestionsSchemaV2,
+  staticQuestionsSchema,
   type StaticQuestionsFormValuesV1,
   type StaticQuestionsFormValuesV2,
+  type StaticQuestionsFormValues,
 } from './validation';
 
 // Re-export from validation for convenience
-export { staticQuestionsSchemaV1, staticQuestionsSchemaV2 };
-export type { StaticQuestionsFormValuesV1, StaticQuestionsFormValuesV2 };
+export { staticQuestionsSchemaV1, staticQuestionsSchemaV2, staticQuestionsSchema };
+export type { StaticQuestionsFormValuesV1, StaticQuestionsFormValuesV2, StaticQuestionsFormValues };
 
-// Main type is V2
-export type StaticQuestionsFormValues = StaticQuestionsFormValuesV2;
+// Main type is the union type for backward compatibility
+export type StaticQuestionsFormValuesCompat = StaticQuestionsFormValuesV2;
 
-// Export V2 as default - use only V2 schema, not union
-export const staticQuestionsSchema = staticQuestionsSchemaV2;
+// Export union schema as default for backward compatibility
+export const staticQuestionsSchemaCompat = staticQuestionsSchema;
 
 export type WizardStepConfig = {
   key: string;

@@ -132,6 +132,9 @@ export interface StaticQuestionsFormValuesV2 {
   evaluation: EvaluationData;
 }
 
+// Use V2 as the main type for consistency
+export type StaticQuestionsFormValues = StaticQuestionsFormValuesV2;
+
 // Backward compatibility
 export interface StaticQuestionsFormValuesV1 {
   version?: 1;

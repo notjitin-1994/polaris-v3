@@ -1,4 +1,9 @@
-import { FormSchema, FormState, Question, Section, ValidationResult, InputType } from './schema';
+import { z } from 'zod';
+import { formStateSchema } from './schema';
+import { FormSchema, Question, Section, ValidationResult, InputType } from './schema';
+
+// Re-export FormState from schema but also define it here to avoid circular imports
+export type FormState = z.infer<typeof formStateSchema>;
 
 // Form renderer props
 export interface DynamicFormRendererProps {

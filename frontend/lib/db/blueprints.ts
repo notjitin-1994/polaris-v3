@@ -6,6 +6,7 @@ import { AggregatedAnswer } from '@/lib/services/answerAggregation';
 
 export type BlueprintInsert = Database['public']['Tables']['blueprint_generator']['Insert'];
 export type BlueprintRow = Database['public']['Tables']['blueprint_generator']['Row'];
+export type BlueprintUpdate = Database['public']['Tables']['blueprint_generator']['Update'];
 
 export class BlueprintService {
   private supabase: SupabaseClient<Database>;
