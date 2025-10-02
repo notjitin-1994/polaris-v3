@@ -76,7 +76,7 @@
         "dependencies": [
           21
         ],
-        "status": "in-progress",
+        "status": "done",
         "subtasks": [
           {
             "id": 1,
@@ -117,7 +117,7 @@
               "22.3"
             ],
             "details": "Use 'git push --force --all' and 'git push --force --tags' to update the remote repository. Notify all collaborators to re-clone or reset their local repositories.",
-            "status": "in-progress",
+            "status": "done",
             "testStrategy": ""
           },
           {
@@ -128,7 +128,7 @@
               "22.4"
             ],
             "details": "Run truffleHog and similar tools on the cleaned repository. Manually inspect for patterns like 'BEGIN RSA', 'password=', and 'api_key='. Document and address any findings.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": ""
           },
           {
@@ -139,7 +139,7 @@
               "22.5"
             ],
             "details": "Generate new SSH keys and credentials. Update all relevant systems and services. Remove old keys from authorized_keys and revoke any compromised tokens.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": ""
           },
           {
@@ -150,7 +150,7 @@
               "22.6"
             ],
             "details": "Clone the repository afresh, scan for secrets, and review access permissions. Confirm that no sensitive data remains and that access control policies are enforced.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": ""
           }
         ]
@@ -165,7 +165,7 @@
         "dependencies": [
           22
         ],
-        "status": "pending",
+        "status": "done",
         "subtasks": [
           {
             "id": 1,
@@ -173,7 +173,7 @@
             "description": "Design and implement a standardized .env.example file that lists all required environment variables without exposing sensitive values.",
             "dependencies": [],
             "details": "Ensure the template covers all application, API, database, and authentication variables. Use placeholder values and document expected formats for each variable.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": ""
           },
           {
@@ -184,7 +184,7 @@
               "23.1"
             ],
             "details": "Add rules for .env, .env.local, .env.*.local, and common secret file extensions. Include patterns for API keys, tokens, and credential directories.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": ""
           },
           {
@@ -195,7 +195,7 @@
               "23.2"
             ],
             "details": "Install git-secrets, register AWS and custom patterns for API keys and passwords, and verify pre-commit hooks are active for all contributors.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": ""
           },
           {
@@ -206,7 +206,7 @@
               "23.3"
             ],
             "details": "Set up environment variable management in Vercel dashboard and ensure secrets are referenced securely in build and deployment workflows.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": ""
           },
           {
@@ -217,7 +217,7 @@
               "23.4"
             ],
             "details": "Document usage of .env files, git-secrets, CI/CD integration, and procedures for updating or rotating secrets. Include troubleshooting and escalation steps.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": ""
           },
           {
@@ -228,7 +228,7 @@
               "23.5"
             ],
             "details": "Test pre-commit hooks, verify .env files are ignored, audit environment variable loading in all environments, and periodically review access controls and logs.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": ""
           }
         ]
@@ -243,7 +243,7 @@
         "dependencies": [
           21
         ],
-        "status": "pending",
+        "status": "done",
         "subtasks": [
           {
             "id": 1,
@@ -251,7 +251,7 @@
             "description": "Develop and refine a script to scan all application files and extract import/export relationships, generating a raw dependency map for each app.",
             "dependencies": [],
             "details": "Use TypeScript and Node.js to traverse codebases (frontend, smartslate-app, frontend/smartslate-polaris), parsing all relevant files for import/export statements. Store results in a structured format for further analysis.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": ""
           },
           {
@@ -262,7 +262,7 @@
               "24.1"
             ],
             "details": "Process the raw dependency map to detect imports/exports that cross application boundaries. Highlight any dependencies from production apps to those marked for removal.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": ""
           },
           {
@@ -273,7 +273,7 @@
               "24.2"
             ],
             "details": "Format findings into a readable document and visual graph (e.g., Mermaid), clearly indicating unused, duplicate, and critical paths. Include recommendations for safe removal.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": ""
           },
           {
@@ -284,7 +284,7 @@
               "24.3"
             ],
             "details": "Perform manual inspection of flagged files and modules, confirming that no essential production imports exist in apps slated for removal. Document any discrepancies or edge cases.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": ""
           },
           {
@@ -295,7 +295,7 @@
               "24.4"
             ],
             "details": "Rename or move directories (e.g., smartslate-app) and attempt to build the project. Monitor for broken imports, missing dependencies, or build failures.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": ""
           },
           {
@@ -306,7 +306,7 @@
               "24.5"
             ],
             "details": "Execute all automated tests and verify build completion. Check for errors, missing modules, and confirm that the development server starts correctly.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": ""
           }
         ]
@@ -321,7 +321,7 @@
         "dependencies": [
           24
         ],
-        "status": "pending",
+        "status": "in-progress",
         "subtasks": [
           {
             "id": 1,
@@ -329,7 +329,7 @@
             "description": "Move the unused smartslate-app directory into an archive location and create a dedicated archive branch for future reference.",
             "dependencies": [],
             "details": "Create a new branch named archive/smartslate-app. Move smartslate-app/ to .archive/smartslate-app-removed-<date>/. Commit and push the changes to the archive branch.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": ""
           },
           {
@@ -340,7 +340,7 @@
               "25.1"
             ],
             "details": "Write clear commit messages explaining the archiving rationale. Ensure the archive branch is pushed to remote and referenced in documentation or internal notes.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": ""
           },
           {
@@ -351,7 +351,7 @@
               "25.2"
             ],
             "details": "Switch to the cleanup/consolidation branch. Remove smartslate-app/ using git rm -rf. Commit the removal with a message referencing the archive branch and dependency verification.",
-            "status": "pending",
+            "status": "in-progress",
             "testStrategy": ""
           },
           {
@@ -752,7 +752,7 @@
     ],
     "metadata": {
       "created": "2025-09-27T10:54:14.464Z",
-      "updated": "2025-10-02T11:43:05.964Z",
+      "updated": "2025-10-02T12:19:53.664Z",
       "description": "Tasks for master context"
     }
   },

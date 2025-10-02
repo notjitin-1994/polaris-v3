@@ -9,13 +9,83 @@ dev-debug.log
 # Dependency directories
 node_modules/
 
-# Environment variables
+# ==============================================================================
+# ENVIRONMENT VARIABLES & SECRETS
+# ==============================================================================
+
+# Standard environment files
 .env
 .env.local
 .env.*.local
 
-# Cursor MCP (do not commit API keys)
+# Cursor MCP configuration (contains API keys)
 .cursor/mcp.json
+
+# Additional environment patterns
+.env.development
+.env.production
+.env.staging
+.env.test
+
+# ==============================================================================
+# CRYPTOGRAPHIC KEYS & CERTIFICATES
+# ==============================================================================
+
+# SSH keys and certificates
+*.key
+*.pem
+*.crt
+*.cert
+*.p12
+*.pfx
+*.cer
+sshkey
+sshkey.pub
+id_rsa
+id_rsa.pub
+*.pem
+*.key
+
+# Private keys and certificates
+private.key
+server.key
+client.key
+*.private
+*_private.key
+
+# ==============================================================================
+# API KEYS & TOKENS
+# ==============================================================================
+
+# Common API key patterns
+*_api_key
+*_secret
+*_token
+*api*key*
+*secret*key*
+*access*token*
+
+# Specific service patterns
+anthropic*key*
+claude*key*
+openai*key*
+perplexity*key*
+
+# ==============================================================================
+# SENSITIVE DIRECTORIES
+# ==============================================================================
+
+# Credential and secret directories
+secrets/
+credentials/
+keys/
+certs/
+security/
+auth/
+
+# SSH directories
+.ssh/
+ssh_keys/
 
 # Editor directories and files
 .idea

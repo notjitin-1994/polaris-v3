@@ -30,8 +30,63 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files (can opt-in for committing if needed)
-.env*
+# ==============================================================================
+# ENVIRONMENT VARIABLES & SECRETS
+# ==============================================================================
+
+# All environment files (NEVER commit these!)
+.env
+.env.local
+.env.*.local
+.env.development
+.env.production
+.env.staging
+.env.test
+
+# Cursor MCP (contains API keys)
+.cursor/mcp.json
+
+# ==============================================================================
+# CRYPTOGRAPHIC KEYS & CERTIFICATES
+# ==============================================================================
+
+# SSH keys and certificates
+*.key
+*.pem
+*.crt
+*.cert
+*.p12
+*.pfx
+*.cer
+sshkey
+sshkey.pub
+id_rsa
+id_rsa.pub
+
+# Private keys and certificates
+private.key
+server.key
+client.key
+*.private
+*_private.key
+
+# ==============================================================================
+# API KEYS & TOKENS
+# ==============================================================================
+
+# Common API key patterns
+*_api_key
+*_secret
+*_token
+*api*key*
+*secret*key*
+*access*token*
+
+# Specific service patterns
+anthropic*key*
+claude*key*
+openai*key*
+perplexity*key*
 
 # vercel
 .vercel
