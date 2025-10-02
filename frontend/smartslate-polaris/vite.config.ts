@@ -23,11 +23,7 @@ export default defineConfig(({ mode }) => {
   )
     .trim()
     .replace(/\/$/, '');
-  const PERPLEXITY_API_KEY = (
-    env.PERPLEXITY_API_KEY ||
-    env.VITE_PERPLEXITY_API_KEY ||
-    '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'
-  ).trim();
+  const PERPLEXITY_API_KEY = (env.PERPLEXITY_API_KEY || env.VITE_PERPLEXITY_API_KEY || '').trim();
   const PERPLEXITY_BASE_URL = (
     env.VITE_PERPLEXITY_BASE_URL ||
     env.PERPLEXITY_BASE_URL ||

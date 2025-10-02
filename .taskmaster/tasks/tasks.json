@@ -9,7 +9,7 @@
         "testStrategy": "Verify backup integrity by cloning from backup location and comparing file counts. Test rollback procedure on a test branch. Ensure all team members can access backup location and understand rollback commands.",
         "priority": "high",
         "dependencies": [],
-        "status": "pending",
+        "status": "done",
         "subtasks": [
           {
             "id": 1,
@@ -17,7 +17,7 @@
             "description": "Perform a full backup of the repository using git clone --mirror, compress the backup, and verify its integrity by restoring from the backup and comparing repository contents.",
             "dependencies": [],
             "details": "Follow the 3-2-1 backup rule: maintain at least three copies, use both local and remote/offsite storage, and automate verification steps such as file integrity checks and test restores. Document the backup process and verification results.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": ""
           },
           {
@@ -28,7 +28,7 @@
               "21.1"
             ],
             "details": "Use an annotated tag (e.g., v3-pre-cleanup) with a descriptive message. Ensure the tag is pushed to all relevant remotes for rollback purposes.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": ""
           },
           {
@@ -39,7 +39,7 @@
               "21.2"
             ],
             "details": "Create the branch from the tagged snapshot, push it to the remote, and update repository settings to enforce branch protection rules as needed.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": ""
           },
           {
@@ -50,7 +50,7 @@
               "21.3"
             ],
             "details": "Include steps for verifying rollback success (build, deploy, test). Store the documentation in ROLLBACK.md and ensure it is accessible to the team.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": ""
           },
           {
@@ -61,7 +61,7 @@
               "21.4"
             ],
             "details": "Hold a team meeting or send detailed written communication. Verify that all relevant team members can access the backup location and understand the procedures.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": ""
           }
         ]
@@ -76,7 +76,7 @@
         "dependencies": [
           21
         ],
-        "status": "pending",
+        "status": "in-progress",
         "subtasks": [
           {
             "id": 1,
@@ -84,7 +84,7 @@
             "description": "Systematically search the repository and its history for all exposed SSH keys, credentials, and sensitive files using automated tools and manual review.",
             "dependencies": [],
             "details": "Use tools like truffleHog, git log, and grep to detect secrets. Document all findings, including file paths and commit hashes where secrets appear.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": ""
           },
           {
@@ -95,7 +95,7 @@
               "22.1"
             ],
             "details": "Remove directories such as 'ssh_keys/' and any other files containing secrets. Commit with a clear message indicating security-related removal.",
-            "status": "pending",
+            "status": "in-progress",
             "testStrategy": ""
           },
           {
@@ -682,12 +682,77 @@
           29
         ],
         "status": "pending",
-        "subtasks": []
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Validate Pre-Deployment Checklist",
+            "description": "Confirm all pre-deployment requirements are met, including passing tests, validated staging environment, team notification, documented rollback procedure, and configured monitoring alerts.",
+            "dependencies": [],
+            "details": "Review and check off each item in the pre-deployment checklist to ensure readiness for production deployment. This includes verifying test results, staging validation, communication with the team, rollback documentation, and monitoring setup.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 2,
+            "title": "Create and Tag Release",
+            "description": "Merge the cleaned codebase into the main branch and create a versioned release tag with a detailed changelog.",
+            "dependencies": [
+              "30.1"
+            ],
+            "details": "Perform a git merge of the cleanup/consolidation branch into main, then create and push a release tag (e.g., v3-cleanup-complete) with a summary of changes such as file removals, documentation updates, and security improvements.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 3,
+            "title": "Execute Production Deployment",
+            "description": "Trigger the production deployment process using the configured deployment platform (e.g., Vercel) and monitor deployment status.",
+            "dependencies": [
+              "30.2"
+            ],
+            "details": "Push the tagged release to the main branch, which will automatically trigger deployment to production via the deployment platform. Monitor deployment logs and status for any immediate issues.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 4,
+            "title": "Set Up and Run Monitoring Health Checks",
+            "description": "Implement and execute automated health checks on key endpoints to verify application health post-deployment.",
+            "dependencies": [
+              "30.3"
+            ],
+            "details": "Deploy and run a monitoring script that checks the health of critical endpoints (e.g., API, homepage, login, dashboard) at regular intervals, capturing status codes and response times.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 5,
+            "title": "Configure Alerting and Incident Response",
+            "description": "Set up alerting for failed health checks and define incident response procedures, including rollback triggers.",
+            "dependencies": [
+              "30.4"
+            ],
+            "details": "Configure alerting mechanisms to notify the team of health check failures. Document and communicate the incident response plan, including escalation paths and rollback steps if critical failures are detected.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 6,
+            "title": "Document Post-Mortem and Lessons Learned",
+            "description": "Record any incidents, issues, and resolutions encountered during deployment and monitoring, and document lessons learned.",
+            "dependencies": [
+              "30.5"
+            ],
+            "details": "Compile a post-mortem report detailing any deployment incidents, monitoring alerts, response actions, and improvements for future deployments. Share findings with the team.",
+            "status": "pending",
+            "testStrategy": ""
+          }
+        ]
       }
     ],
     "metadata": {
       "created": "2025-09-27T10:54:14.464Z",
-      "updated": "2025-10-02T11:20:30.503Z",
+      "updated": "2025-10-02T11:41:30.928Z",
       "description": "Tasks for master context"
     }
   },

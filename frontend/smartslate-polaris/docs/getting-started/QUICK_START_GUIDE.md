@@ -221,4 +221,4 @@ After testing the basic flow:
 
 ---
 
-**Note**: The Perplexity API key (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) is configured and ready to use. For production, consider implementing server-side API proxy for security.
+**Note**: The Perplexity API key must be configured via environment variables. For production, consider implementing server-side API proxy for security.

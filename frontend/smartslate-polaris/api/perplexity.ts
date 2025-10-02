@@ -52,9 +52,6 @@ function normalizePerplexityModel(input?: string): string {
   return 'sonar-pro';
 }
 
-// Temporary hardcoded key - this should be removed in production
-const HARDCODED_KEY = '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';
-
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   const startTime = Date.now();
 
@@ -78,7 +75,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   try {
-    const apiKey = PERPLEXITY_API_KEY || HARDCODED_KEY;
+    const apiKey = PERPLEXITY_API_KEY;
 
     if (!apiKey) {
       console.error('Perplexity API key not configured');
