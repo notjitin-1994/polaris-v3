@@ -18,6 +18,7 @@ import { RenameDialog } from '@/components/ui/RenameDialog';
 import { getSupabaseBrowserClient } from '@/lib/supabase/client';
 import { createBrowserBlueprintService } from '@/lib/db/blueprints.client';
 import { parseAndValidateBlueprintJSON } from '@/lib/ollama/blueprintValidation';
+import { AnyBlueprint, isFullBlueprint } from '@/lib/ollama/schema';
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -208,6 +209,50 @@ export default function BlueprintPage({ params }: PageProps): React.JSX.Element 
     }
   };
 
+  const handleExportWord = async () => {
+    if (!data || !blueprintData || !isFullBlueprint(blueprintData)) return;
+
+    setIsExporting(true);
+    showToast('Preparing Word document export...');
+
+    try {
+      const { exportService } = await import('@/lib/export/ExportService');
+
+      const result = await exportService.exportBlueprint(
+        blueprintData,
+        {
+          format: 'docx',
+          includeMetadata: true,
+          includeCharts: false,
+          pageSize: 'A4',
+          orientation: 'portrait',
+          quality: 'high',
+        }
+      );
+
+      if (result.success && result.data) {
+        // Create download link
+        const url = URL.createObjectURL(result.data);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${blueprintTitle.replace(/[^a-zA-Z0-9\s-_]/g, '').replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.docx`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+
+        showToast('Word document downloaded successfully');
+      } else {
+        throw new Error(result.error || 'Word export failed');
+      }
+    } catch (error) {
+      console.error('Word export error:', error);
+      showToast('Word export failed. Please try again.');
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
   if (loading) {
     return (
       <main className="bg-background flex min-h-screen w-full items-center justify-center p-4">
@@ -256,7 +301,7 @@ export default function BlueprintPage({ params }: PageProps): React.JSX.Element 
   }
 
   // Parse and normalize blueprint JSON for dashboard
-  let blueprintData = null;
+  let blueprintData: AnyBlueprint | null = null;
   if (data?.blueprint_json) {
     try {
       // Parse the blueprint JSON (already validated during generation)
@@ -271,7 +316,7 @@ export default function BlueprintPage({ params }: PageProps): React.JSX.Element 
           string,
           unknown
         >;
-        blueprintData = cleanBlueprint;
+        blueprintData = cleanBlueprint as AnyBlueprint;
       }
     } catch (e) {
       console.error('Failed to parse blueprint JSON:', e);
@@ -340,16 +385,16 @@ export default function BlueprintPage({ params }: PageProps): React.JSX.Element 
         )}
       </motion.button>
 
-      {/* Export Button - Direct PDF Export */}
+      {/* Export Word Document Button */}
       <motion.button
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
         type="button"
         className="pressable bg-secondary hover:bg-secondary/90 text-secondary-foreground inline-flex h-8 w-8 items-center justify-center rounded-lg shadow-lg transition-all hover:shadow-xl disabled:cursor-not-allowed disabled:opacity-50"
-        onClick={handleExportPDF}
+        onClick={handleExportWord}
         disabled={isExporting}
-        title="Export blueprint as PDF"
-        aria-label="Export blueprint as PDF"
+        title="Export blueprint as Word document"
+        aria-label="Export blueprint as Word document"
       >
         <Download className="h-3.5 w-3.5" aria-hidden="true" />
       </motion.button>
@@ -383,7 +428,7 @@ export default function BlueprintPage({ params }: PageProps): React.JSX.Element 
         animate={{ opacity: 1 }}
         transition={{ delay: 0.2 }}
         className={`relative z-10 ${
-          (viewMode === 'presentation' ? 'mx-auto max-w-7xl' : 'mx-auto max-w-6xl') as const
+          viewMode === 'presentation' ? 'mx-auto max-w-7xl' : 'mx-auto max-w-6xl'
         } px-8 py-12`}
       >
         {/* Main Content Card */}
@@ -395,6 +440,96 @@ export default function BlueprintPage({ params }: PageProps): React.JSX.Element 
             viewMode === 'presentation' ? 'p-16' : 'p-12'
           }`}
         >
+          {/* Blueprint Metadata Section */}
+          {isFullBlueprint(blueprintData) && blueprintData?.metadata && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5 }}
+              className="mb-8"
+            >
+              <div className="glass-card rounded-2xl border border-white/10 bg-gradient-to-br from-primary/5 via-transparent to-secondary/5 p-6">
+                <div className="grid grid-cols-2 gap-6 md:grid-cols-4">
+                  {isFullBlueprint(blueprintData) && blueprintData.metadata.organization && (
+                    <div className="flex flex-col items-center justify-center space-y-2">
+                      <div className="text-primary bg-primary/10 rounded-full p-3">
+                        <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                        </svg>
+                      </div>
+                      <div className="text-center">
+                        <p className="text-text-disabled text-xs font-medium uppercase tracking-wider">
+                          Organization
+                        </p>
+                        <p className="text-white font-semibold">
+                          {isFullBlueprint(blueprintData) ? blueprintData.metadata.organization : ''}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+
+                  {isFullBlueprint(blueprintData) && blueprintData.metadata.role && (
+                    <div className="flex flex-col items-center justify-center space-y-2">
+                      <div className="text-secondary bg-secondary/10 rounded-full p-3">
+                        <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
+                        </svg>
+                      </div>
+                      <div className="text-center">
+                        <p className="text-text-disabled text-xs font-medium uppercase tracking-wider">
+                          Role
+                        </p>
+                        <p className="text-white font-semibold">
+                          {isFullBlueprint(blueprintData) ? blueprintData.metadata.role : ''}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+
+                  {isFullBlueprint(blueprintData) && blueprintData.metadata.generated_at && (
+                    <div className="flex flex-col items-center justify-center space-y-2">
+                      <div className="text-success bg-success/10 rounded-full p-3">
+                        <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                      </div>
+                      <div className="text-center">
+                        <p className="text-text-disabled text-xs font-medium uppercase tracking-wider">
+                          Generated
+                        </p>
+                        <p className="text-white font-semibold">
+                          {isFullBlueprint(blueprintData) ? new Date(blueprintData.metadata.generated_at).toLocaleDateString('en-US', {
+                            month: 'short',
+                            day: 'numeric',
+                            year: 'numeric',
+                          }) : ''}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+
+                  {isFullBlueprint(blueprintData) && blueprintData.metadata.version && (
+                    <div className="flex flex-col items-center justify-center space-y-2">
+                      <div className="text-warning bg-warning/10 rounded-full p-3">
+                        <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+                        </svg>
+                      </div>
+                      <div className="text-center">
+                        <p className="text-text-disabled text-xs font-medium uppercase tracking-wider">
+                          Version
+                        </p>
+                        <p className="text-white font-semibold">
+                          {isFullBlueprint(blueprintData) ? blueprintData.metadata.version : ''}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </motion.div>
+          )}
+
           {/* Decorative Line with Teal Glow */}
           <div className="mb-8 flex items-center gap-4">
             <div className="relative h-px flex-1">
@@ -406,7 +541,7 @@ export default function BlueprintPage({ params }: PageProps): React.JSX.Element 
           {/* Blueprint Renderer */}
           <BlueprintRenderer
             markdown={markdown}
-            blueprint={blueprintData}
+            blueprint={blueprintData || undefined}
             isEditMode={isEditingMarkdown}
             onSaveMarkdown={handleSaveMarkdown}
             onCancelEdit={() => setIsEditingMarkdown(false)}

@@ -24,6 +24,10 @@ export class BatchExportService {
       const results: ExportResult[] = [];
       const total = blueprints.length;
 
+      // Export in all requested formats
+      const formats: ExportFormat[] =
+        options.format === 'json' ? ['pdf', 'markdown', 'json', 'docx'] : [options.format];
+
       // Create a folder for each blueprint
       for (let i = 0; i < blueprints.length; i++) {
         const blueprint = blueprints[i];
@@ -36,10 +40,6 @@ export class BatchExportService {
         if (!blueprintFolder) {
           throw new Error(`Failed to create folder for blueprint: ${blueprint.title}`);
         }
-
-        // Export in all requested formats
-        const formats: ExportFormat[] =
-          options.format === 'json' ? ['pdf', 'markdown', 'json', 'docx'] : [options.format];
 
         for (const format of formats) {
           const exportOptions: ExportOptions = {

@@ -8,6 +8,7 @@ import { UserAvatar } from './UserAvatar';
 import { IconSidebarToggle, IconLogout } from './icons';
 import { useAuth } from '@/contexts/AuthContext';
 import { DarkModeToggle } from '@/components/theme/DarkModeToggle';
+import { responsiveClasses } from '@/lib/responsive';
 
 interface HeaderProps {
   title?: string;
@@ -86,7 +87,12 @@ export const Header = memo(function Header({
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
     >
-      <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div
+        className={`relative ${responsiveClasses.headerContainer}`}
+        style={{
+          maxWidth: '1280px', // Explicit max-width for consistency
+        }}
+      >
         {/* Subtle ambient glow */}
         <div
           aria-hidden="true"

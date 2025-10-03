@@ -8,9 +8,8 @@
 import { useEffect, useState, use } from 'react';
 import type React from 'react';
 import { useRouter } from 'next/navigation';
-import { motion } from 'framer-motion';
-import { Sparkles, CheckCircle, AlertCircle, ArrowLeft } from 'lucide-react';
-import Link from 'next/link';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Compass, CheckCircle, AlertCircle, Sparkles, Orbit } from 'lucide-react';
 import ProtectedRoute from '@/components/auth/ProtectedRoute';
 import { AuthProvider, useAuth } from '@/contexts/AuthContext';
 import { StandardHeader } from '@/components/layout/StandardHeader';
@@ -33,42 +32,41 @@ function GeneratingContent({ id }: { id: string }): React.JSX.Element {
 
   useEffect(() => {
     let progressInterval: NodeJS.Timeout | null = null;
-    let statusInterval: NodeJS.Timeout | null = null;
     let completed = false;
 
-    const steps = [
-      'Analyzing questionnaire responses...',
-      'Generating learning objectives...',
-      'Designing instructional strategy...',
-      'Creating content outline...',
-      'Planning resources and timeline...',
-      'Finalizing assessment strategy...',
+    // Real blueprint generation steps that match backend processing
+    const blueprintSteps = [
+      { step: 1, message: 'Analyzing questionnaire responses', progress: 10 },
+      { step: 2, message: 'Generating learning objectives', progress: 30 },
+      { step: 3, message: 'Mapping your learning universe', progress: 50 },
+      { step: 4, message: 'Creating content outline', progress: 70 },
+      { step: 5, message: 'Planning resources and timeline', progress: 90 },
+      { step: 6, message: 'Finalizing assessment strategy', progress: 95 },
     ];
 
-    // Simulated progress (smooth animation)
+    // Progress through real steps based on time elapsed
     const startProgress = () => {
-      progressInterval = setInterval(() => {
-        setProgress((prev) => {
-          if (prev >= 90 || completed) return prev;
-          return Math.min(90, prev + Math.random() * 3);
-        });
-      }, 400);
-    };
+      let stepIndex = 0;
 
-    // Cycle through steps
-    const startStepRotation = () => {
-      statusInterval = setInterval(() => {
-        setCurrentStep((prev) => {
-          const nextStep = (prev % steps.length) + 1;
-          setStatus(steps[nextStep - 1]);
-          return nextStep;
-        });
-      }, 8000); // Change step every 8 seconds
+      progressInterval = setInterval(() => {
+        if (completed) return;
+
+        const currentStepInfo = blueprintSteps[stepIndex];
+        if (currentStepInfo) {
+          setCurrentStep(currentStepInfo.step);
+          setStatus(currentStepInfo.message);
+          setProgress(currentStepInfo.progress);
+
+          // Move to next step after appropriate time
+          if (stepIndex < blueprintSteps.length - 1) {
+            stepIndex++;
+          }
+        }
+      }, 5000); // Progress through each step every 5 seconds
     };
 
     const stopIntervals = () => {
       if (progressInterval) clearInterval(progressInterval);
-      if (statusInterval) clearInterval(statusInterval);
     };
 
     const generateBlueprint = async () => {
@@ -76,7 +74,6 @@ function GeneratingContent({ id }: { id: string }): React.JSX.Element {
 
       try {
         startProgress();
-        startStepRotation();
 
         logger.info('blueprint.generation.ui.start', 'Starting blueprint generation from UI', {
           blueprintId: id,
@@ -151,228 +148,333 @@ function GeneratingContent({ id }: { id: string }): React.JSX.Element {
   }, [id, router, user?.id]);
 
   return (
-    <div className="min-h-screen bg-[#020C1B]">
-      {/* Header - Matching Static Wizard Style */}
-      <header className="glass relative overflow-hidden border-b border-neutral-200/50 sticky top-0 z-50">
-        {/* Subtle background effects */}
-        <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
-          <div className="bg-primary/[0.02] absolute inset-0" />
-        </div>
+    <div className="min-h-screen bg-gradient-to-br from-[#020C1B] via-[#0A1B2A] to-[#020C1B] relative overflow-hidden">
+      {/* Animated Background Elements */}
+      <div className="pointer-events-none absolute inset-0 z-0">
+        {/* Primary gradient overlay */}
+        <div className="bg-primary/[0.02] absolute inset-0" />
 
-        {/* Content */}
-        <div className="relative mx-auto max-w-7xl px-4 py-5 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between gap-4">
-            {/* Left side: Back button + Title */}
-            <div className="flex min-w-0 flex-1 items-center gap-3">
-              <Link
-                href="/"
-                className="group text-text-secondary hover:text-foreground focus-visible:ring-primary/50 inline-flex items-center gap-1.5 rounded-md border border-white/10 bg-white/5 px-3 py-2 text-sm font-medium transition-all duration-200 focus-visible:rounded focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none active:scale-[0.98] hover:bg-white/10"
-                aria-label="Back to Dashboard"
-              >
-                <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-0.5" />
-                <span>Back to Dashboard</span>
-              </Link>
+        {/* Floating orbital elements */}
+        <motion.div
+          className="absolute top-1/3 right-1/4 h-28 w-28 rounded-full border border-secondary/10"
+          animate={{
+            rotate: -360,
+            scale: [1.1, 1, 1.1],
+          }}
+          transition={{
+            rotate: { duration: 18, repeat: Infinity, ease: "linear" },
+            scale: { duration: 3.5, repeat: Infinity, ease: "easeInOut" }
+          }}
+        >
+          <div className="absolute top-0 right-1/2 h-2 w-2 -translate-x-1 -translate-y-1 rounded-full bg-secondary/60" />
+        </motion.div>
 
-              <div className="flex min-w-0 flex-1 items-center gap-3">
-                {/* Main Title - Matching Static Wizard */}
-                <div className="flex-1">
-                  <motion.div
-                    initial={{ opacity: 0, y: 30 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94] }}
-                  >
-                    <h1 className="font-heading text-4xl font-bold tracking-tight text-white sm:text-5xl md:text-6xl lg:text-7xl">
-                      <span>Generating </span>
-                      <span className="bg-gradient-to-r from-[#a7dadb] to-[#7bc4c4] bg-clip-text text-transparent">
-                        Dynamic Questions
-                      </span>
-                    </h1>
-                  </motion.div>
+        <motion.div
+          className="absolute bottom-1/4 left-1/3 h-20 w-20 rounded-full border border-primary/10"
+          animate={{
+            rotate: 360,
+            scale: [1, 1.3, 1],
+          }}
+          transition={{
+            rotate: { duration: 12, repeat: Infinity, ease: "linear" },
+            scale: { duration: 2.5, repeat: Infinity, ease: "easeInOut" }
+          }}
+        >
+          <div className="absolute bottom-0 left-1/2 h-1 w-1 -translate-x-0.5 translate-y-0.5 rounded-full bg-primary/60" />
+        </motion.div>
 
-                  {/* Subtitle */}
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.8, delay: 0.2, ease: [0.25, 0.46, 0.45, 0.94] }}
-                    className="mt-4"
-                  >
-                    <p className="text-xl leading-relaxed text-white/70 sm:text-2xl">
-                      Our AI is analyzing your responses and creating{' '}
-                      <span className="text-[#a7dadb] font-medium">personalized questions</span>.{' '}
-                      This typically takes{' '}
-                      <span className="text-[#a7dadb] font-medium drop-shadow-[0_0_8px_rgba(167,218,219,0.8)] brightness-110">5-15 seconds</span>
-                    </p>
-                  </motion.div>
-                </div>
-              </div>
-            </div>
+        {/* Sparkle effects */}
+        {[...Array(8)].map((_, i) => (
+          <motion.div
+            key={i}
+            className="absolute h-1 w-1 rounded-full bg-secondary/40"
+            style={{
+              top: `${15 + i * 12}%`,
+              right: `${15 + (i % 3) * 25}%`,
+            }}
+            animate={{
+              opacity: [0, 1, 0],
+              scale: [0, 1, 0],
+            }}
+            transition={{
+              duration: 2.5,
+              repeat: Infinity,
+              delay: i * 0.25,
+            }}
+          />
+        ))}
+      </div>
 
-            {/* Right side: User avatar */}
-            {user && (
-              <div className="flex shrink-0 items-center gap-2">
-                <div className="rounded-full ring-1 ring-neutral-200/50">
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#a7dadb] to-[#7bc4c4] flex items-center justify-center text-white font-semibold text-sm">
-                    {user.email?.[0]?.toUpperCase() || 'U'}
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-      </header>
+      {/* Header */}
+      <StandardHeader
+        title="Constructing Your Starmap"
+        backHref="/"
+        backLabel="Back to Dashboard"
+        backButtonStyle="icon-only"
+        showDarkModeToggle={false}
+        showUserAvatar={false}
+        size="compact"
+        user={user}
+      />
 
       {/* Main Content */}
-      <main className="w-full px-4 py-8 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-3xl">
-          <div className="glass-card animate-scale-in rounded-2xl p-8 md:p-12">
-            {/* Icon */}
-            <div className="mb-8 flex justify-center">
-              {error ? (
-                <div className="bg-error/10 flex h-20 w-20 items-center justify-center rounded-full">
-                  <AlertCircle className="text-error h-10 w-10" />
-                </div>
-              ) : progress === 100 && !error ? (
-                <motion.div
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  transition={{ type: 'spring', duration: 0.5 }}
-                  className="bg-success/10 flex h-20 w-20 items-center justify-center rounded-full"
-                >
-                  <CheckCircle className="text-success h-10 w-10" />
-                </motion.div>
-              ) : (
-                <motion.div
-                  animate={{ rotate: 360 }}
-                  transition={{ duration: 3, repeat: Infinity, ease: 'linear' }}
-                  className="bg-primary/10 flex h-20 w-20 items-center justify-center rounded-full"
-                >
-                  <Sparkles className="text-primary h-10 w-10" />
-                </motion.div>
-              )}
-            </div>
-
-            {/* Status Message */}
-            <h2 className="text-title text-foreground mb-3 text-center">
-              {error
-                ? 'Generation Failed'
-                : progress === 100
-                  ? 'Blueprint Ready!'
-                  : 'Generating Blueprint'}
-            </h2>
-
-            <p className="text-body text-text-secondary mb-8 text-center">{error || status}</p>
-
-            {/* Progress Bar */}
-            {!error && (
-              <div className="mx-auto mb-6 max-w-md">
-                <div className="text-text-secondary mb-2 flex justify-between text-sm">
-                  <span>Progress</span>
-                  <span>{Math.round(progress)}%</span>
-                </div>
-                <div className="bg-surface h-2 overflow-hidden rounded-full">
-                  <motion.div
-                    className="bg-primary h-full"
-                    initial={{ width: '0%' }}
-                    animate={{ width: `${progress}%` }}
-                    transition={{ duration: 0.3 }}
-                  />
-                </div>
-              </div>
-            )}
-
-            {/* Powered by Solara Badge */}
-            <div className="mt-6 flex justify-center">
-              <div className="glass-strong rounded-full px-4 py-2 text-xs">
-                <span className="text-text-secondary">Powered by </span>
-                <span className="font-semibold text-[#FFD700] drop-shadow-[0_0_10px_rgba(255,215,0,0.3)]">
-                  Solara
-                </span>
-              </div>
-            </div>
-
-            {/* Step Indicators */}
-            {!error && progress < 100 && (
-              <div className="mt-8 flex justify-center gap-2">
-                {[1, 2, 3, 4, 5, 6].map((step) => (
-                  <motion.div
-                    key={step}
-                    className={`h-2 w-2 rounded-full ${
-                      step === currentStep
-                        ? 'bg-primary'
-                        : step < currentStep
-                          ? 'bg-secondary'
-                          : 'bg-surface'
-                    }`}
-                    animate={
-                      step === currentStep
-                        ? {
-                            scale: [1, 1.3, 1],
-                            opacity: [0.7, 1, 0.7],
-                          }
-                        : {}
-                    }
-                    transition={{
-                      duration: 1.5,
-                      repeat: Infinity,
-                      ease: 'easeInOut',
-                    }}
-                  />
-                ))}
-              </div>
-            )}
-
-            {/* Error Actions */}
-            {error && (
-              <div className="mt-6 flex justify-center gap-4">
-                <button
-                  onClick={() => router.push('/')}
-                  className="bg-surface text-foreground hover:bg-surface/80 rounded-xl px-6 py-3 text-sm font-medium transition-colors"
-                >
-                  Back to Dashboard
-                </button>
-                <button
-                  onClick={() => router.refresh()}
-                  className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-xl px-6 py-3 text-sm font-medium transition-colors"
-                >
-                  Try Again
-                </button>
-              </div>
-            )}
-          </div>
-
-          {/* Info Card */}
-          {!error && progress < 100 && (
+      <main className="relative z-10 flex flex-1 items-center justify-center px-4 py-8 sm:px-6 lg:px-8">
+        <div className="mx-auto w-full max-w-4xl">
+          <div className="grid gap-8 lg:grid-cols-2 lg:gap-12">
+            {/* Main Loading Card */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 1 }}
-              className="glass-strong mt-6 rounded-xl p-6"
+              className="glass-card animate-scale-in space-y-8 rounded-3xl p-8 md:p-10"
             >
-              <h3 className="text-foreground mb-3 text-sm font-semibold">What&apos;s happening?</h3>
-              <ul className="text-text-secondary space-y-2 text-sm">
-                <li className="flex items-start gap-2">
-                  <CheckCircle className="text-success mt-0.5 h-4 w-4 flex-shrink-0" />
-                  <span>Analyzing your questionnaire responses</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <CheckCircle className="text-success mt-0.5 h-4 w-4 flex-shrink-0" />
-                  <span>Creating personalized learning objectives</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <CheckCircle className="text-success mt-0.5 h-4 w-4 flex-shrink-0" />
-                  <span>Designing instructional strategies</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  {progress > 60 ? (
-                    <CheckCircle className="text-success mt-0.5 h-4 w-4 flex-shrink-0" />
+              {/* Icon Section */}
+              <div className="relative mb-8 flex justify-center">
+                <div className="relative">
+                  {error ? (
+                    <motion.div
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      className="bg-error/10 flex h-24 w-24 items-center justify-center rounded-full ring-2 ring-error/20"
+                    >
+                      <AlertCircle className="text-error h-12 w-12" />
+                    </motion.div>
+                  ) : progress === 100 && !error ? (
+                    <motion.div
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      transition={{ type: 'spring', duration: 0.6, bounce: 0.4 }}
+                      className="bg-success/10 flex h-24 w-24 items-center justify-center rounded-full ring-2 ring-success/20"
+                    >
+                      <CheckCircle className="text-success h-12 w-12" />
+                    </motion.div>
                   ) : (
-                    <div className="border-primary mt-0.5 h-4 w-4 flex-shrink-0 animate-spin rounded-full border-2 border-t-transparent" />
+                    <div className="relative">
+                      <motion.div
+                        className="bg-primary/10 flex h-24 w-24 items-center justify-center rounded-full ring-2 ring-primary/20"
+                        animate={{
+                          boxShadow: [
+                            '0 0 0 0 rgba(59, 130, 246, 0.2)',
+                            '0 0 0 8px rgba(59, 130, 246, 0)',
+                          ],
+                        }}
+                        transition={{
+                          duration: 2,
+                          repeat: Infinity,
+                          ease: "easeInOut",
+                        }}
+                      >
+                        <Compass className="text-primary h-12 w-12" />
+                      </motion.div>
+
+                      {/* Pulsing rings */}
+                      <motion.div
+                        className="absolute inset-0 rounded-full border-2 border-primary/30"
+                        animate={{
+                          scale: [1, 1.2, 1],
+                          opacity: [0.6, 0, 0.6],
+                        }}
+                        transition={{
+                          duration: 2,
+                          repeat: Infinity,
+                          ease: "easeInOut",
+                        }}
+                      />
+                    </div>
                   )}
-                  <span>Generating comprehensive blueprint</span>
-                </li>
-              </ul>
+                </div>
+              </div>
+
+              {/* Title Section */}
+              <div className="text-center">
+                <AnimatePresence mode="wait">
+                  <motion.h1
+                    key={error ? 'error' : progress === 100 ? 'complete' : 'loading'}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    className="text-display text-foreground mb-2"
+                  >
+                    {error
+                      ? 'Starmap Generation Failed'
+                      : progress === 100
+                        ? 'Starmap Constructed Successfully'
+                        : 'Plotting Stellar Coordinates'}
+                  </motion.h1>
+                </AnimatePresence>
+
+                <motion.p
+                  className="text-body text-text-secondary"
+                  animate={{ opacity: [0.7, 1, 0.7] }}
+                  transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                >
+                  {error || status}
+                </motion.p>
+              </div>
+
+              {/* Progress Section */}
+              {!error && (
+                <div className="space-y-6">
+                  <div className="mx-auto max-w-sm">
+                    <div className="text-text-secondary mb-3 flex justify-between text-sm font-medium">
+                      <span>Progress</span>
+                      <span>{Math.round(progress)}%</span>
+                    </div>
+                    <div className="bg-surface/50 h-3 overflow-hidden rounded-full backdrop-blur-sm">
+                      <motion.div
+                        className="bg-[var(--primary-accent)] h-full rounded-full"
+                        initial={{ width: '0%' }}
+                        animate={{ width: `${progress}%` }}
+                        transition={{ duration: 0.5, ease: "easeOut" }}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Step Indicators */}
+                  <div className="flex justify-center gap-3">
+                    {[1, 2, 3, 4, 5, 6].map((step) => (
+                      <motion.div
+                        key={step}
+                        className={`relative h-3 w-3 rounded-full ${
+                          step < currentStep
+                            ? 'bg-[var(--primary-accent-dark)]'
+                            : step === currentStep
+                              ? 'bg-[var(--primary-accent)] shadow-lg'
+                              : 'bg-surface/60'
+                        }`}
+                        animate={
+                          step === currentStep
+                            ? {
+                                scale: [1, 1.4, 1],
+                                boxShadow: [
+                                  '0 0 0 0 rgba(167, 218, 219, 0.4)',
+                                  '0 0 0 8px rgba(167, 218, 219, 0)',
+                                ],
+                              }
+                            : {}
+                        }
+                        transition={{
+                          duration: 1.5,
+                          repeat: step === currentStep ? Infinity : 0,
+                          ease: 'easeInOut',
+                        }}
+                      >
+                        {step < currentStep && (
+                          <motion.div
+                            initial={{ scale: 0 }}
+                            animate={{ scale: 1 }}
+                            className="absolute inset-0 rounded-full bg-[var(--primary-accent-dark)]"
+                          />
+                        )}
+                      </motion.div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Powered by Solara Badge */}
+              <motion.div
+                className="flex justify-center"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.5 }}
+              >
+                <div className="glass-strong rounded-full px-6 py-3 text-sm backdrop-blur-md">
+                  <span className="text-text-secondary">Powered by </span>
+                  <span className="font-semibold text-yellow-400 drop-shadow-[0_0_8px_rgba(250,204,21,0.8)] brightness-110">
+                    Solara
+                  </span>
+                  <Sparkles className="ml-1 inline h-3 w-3 text-yellow-400" />
+                </div>
+              </motion.div>
+
+              {/* Error Actions */}
+              {error && (
+                <motion.div
+                  className="flex justify-center gap-4"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.2 }}
+                >
+                  <button
+                    onClick={() => router.push('/')}
+                    className="bg-surface text-foreground hover:bg-surface/80 rounded-xl px-6 py-3 text-sm font-medium transition-all duration-200 focus-visible:ring-2 focus-visible:ring-surface/50"
+                  >
+                    Back to Dashboard
+                  </button>
+                  <button
+                    onClick={() => router.refresh()}
+                    className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-xl px-6 py-3 text-sm font-medium transition-all duration-200 focus-visible:ring-2 focus-visible:ring-primary/50"
+                  >
+                    Try Again
+                  </button>
+                </motion.div>
+              )}
             </motion.div>
-          )}
+
+            {/* Mission Status Card */}
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.3 }}
+              className="glass-strong rounded-2xl p-6 backdrop-blur-md"
+            >
+              <div className="mb-4 flex items-center gap-2">
+                <Orbit className="text-primary h-5 w-5" />
+                <h3 className="text-foreground text-sm font-semibold">Mission Status</h3>
+              </div>
+
+              <div className="space-y-3">
+                {[
+                  'Synthesizing navigation data',
+                  'Plotting personalized learning coordinates',
+                  'Designing orbital trajectory strategies',
+                  'Assembling your complete starmap',
+                ].map((stepText, index) => {
+                  const stepNumber = index + 1;
+                  const isCompleted = stepNumber < currentStep;
+                  const isCurrent = stepNumber === currentStep;
+                  const isFuture = stepNumber > currentStep;
+
+                  return (
+                    <motion.div
+                      key={stepNumber}
+                      className={`flex items-start gap-3 rounded-lg p-2 transition-colors ${
+                        isCurrent ? 'bg-primary/5' : ''
+                      }`}
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ delay: 0.1 * index }}
+                    >
+                      <div className="mt-0.5 flex-shrink-0">
+                        {isCompleted ? (
+                          <motion.div
+                            initial={{ scale: 0 }}
+                            animate={{ scale: 1 }}
+                            transition={{ type: 'spring', duration: 0.3 }}
+                          >
+                            <CheckCircle className="text-success h-4 w-4" />
+                          </motion.div>
+                        ) : isCurrent ? (
+                          <motion.div
+                            className="h-4 w-4 rounded-full border-2 border-primary border-t-transparent"
+                            animate={{ rotate: 360 }}
+                            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                          />
+                        ) : (
+                          <div className="h-4 w-4 rounded-full border-2 border-surface" />
+                        )}
+                      </div>
+                      <span className={`text-sm ${
+                        isFuture ? 'text-text-disabled' : 'text-text-secondary'
+                      }`}>
+                        {stepText}
+                      </span>
+                    </motion.div>
+                  );
+                })}
+              </div>
+            </motion.div>
+          </div>
         </div>
       </main>
     </div>

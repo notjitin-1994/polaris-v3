@@ -54,7 +54,7 @@ export function DashboardFilters({ className }: DashboardFiltersProps): React.JS
           </div>
           <Button
             variant="outline"
-            size="sm"
+            size="small"
             onClick={resetFilters}
             className="text-slate-600 dark:text-slate-400"
           >

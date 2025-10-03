@@ -164,7 +164,7 @@ export function ContentOutlineInfographic({
               whileHover={{ scale: 1.2 }}
               className="bg-primary absolute top-6 left-0 z-10 flex h-12 w-12 items-center justify-center rounded-full"
             >
-              <span className="text-lg font-bold text-white">{index + 1}</span>
+              <span className="text-lg font-bold text-primary-foreground">{index + 1}</span>
             </motion.div>
 
             {/* Module Card */}
@@ -187,10 +187,10 @@ export function ContentOutlineInfographic({
                     </div>
                     <p className="text-text-secondary text-sm">{module.description}</p>
                     {module.delivery_method && (
-                      <div className="mt-2 flex items-center gap-2">
-                        <PlayCircle className="text-secondary h-4 w-4" />
-                        <span className="text-secondary text-xs">{module.delivery_method}</span>
-                      </div>
+                        <div className="mt-2 flex items-center gap-2">
+                          <PlayCircle className="text-primary h-4 w-4" />
+                          <span className="text-primary text-xs">{module.delivery_method}</span>
+                        </div>
                     )}
                   </div>
                   <motion.div
@@ -250,12 +250,12 @@ export function ContentOutlineInfographic({
                                   transition={{ delay: aIndex * 0.1 }}
                                   className="flex items-start gap-3 rounded-lg bg-white/5 p-4"
                                 >
-                                  <div className="bg-secondary/20 text-secondary mt-1 flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full text-xs font-bold">
+                                  <div className="bg-primary/20 text-primary mt-1 flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full text-xs font-bold">
                                     {aIndex + 1}
                                   </div>
                                   <div className="flex-1">
                                     <div className="mb-1 flex items-center gap-2">
-                                      <span className="text-secondary text-sm font-medium">
+                                      <span className="text-primary text-sm font-medium">
                                         {activity.type}
                                       </span>
                                       {activity.duration && (

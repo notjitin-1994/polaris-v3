@@ -88,7 +88,7 @@ export class ExportService {
    * Export multiple blueprints in batch
    */
   public async exportBatch(
-    blueprints: Blueprint[],
+    blueprints: AnyBlueprint[],
     options: BatchExportOptions,
     dashboardDataMap?: Map<string, DashboardData>
   ): Promise<ExportResult> {
@@ -167,6 +167,7 @@ export class ExportService {
   private async exportToPDF(data: ExportData, options: ExportOptions): Promise<ExportResult> {
     try {
       const { BlueprintPDFGenerator } = await import('./pdfGenerator');
+      const { AnyBlueprint } = await import('../ollama/schema');
       const { ChartCaptureService } = await import('./chartCapture');
 
       const pdfGenerator = new BlueprintPDFGenerator();
@@ -393,6 +394,7 @@ export class ExportService {
         metadata: {
           title: zipFileName || 'batch-export',
           description: `Batch export containing ${successCount} files`,
+          createdAt: new Date().toISOString(),
           exportedAt: new Date().toISOString(),
           version: '1.0.0',
         },

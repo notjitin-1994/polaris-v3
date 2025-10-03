@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { RenameDialog } from '@/components/ui/RenameDialog';
+import { ConfirmationDialog } from '@/components/ui/ConfirmationDialog';
 import ProtectedRoute from '@/components/auth/ProtectedRoute';
 import { useAuth } from '@/contexts/AuthContext';
 import { createBrowserBlueprintService } from '@/lib/db/blueprints.client';
@@ -39,6 +40,12 @@ function DashboardContent() {
   const [pageInput, setPageInput] = useState('');
   const [isSelectionMode, setIsSelectionMode] = useState(false);
   const [selectedBlueprints, setSelectedBlueprints] = useState<Set<string>>(new Set());
+  const [deletionDialog, setDeletionDialog] = useState<{
+    isOpen: boolean;
+    type: 'single' | 'bulk';
+    blueprintId?: string;
+    blueprintName?: string;
+  }>({ isOpen: false, type: 'single' });
   const router = useRouter();
 
   const BLUEPRINTS_PER_PAGE = 4;
@@ -228,37 +235,71 @@ function DashboardContent() {
         return;
       }
 
-      // Confirm deletion
-      if (
-        !confirm('Are you sure you want to delete this blueprint? This action cannot be undone.')
-      ) {
+      const blueprint = blueprints.find(bp => bp.id === blueprintId);
+      if (!blueprint) {
+        console.error('Blueprint not found');
         return;
       }
 
-      try {
-        const supabase = getSupabaseBrowserClient();
-        const { error } = await supabase
-          .from('blueprint_generator')
-          .delete()
-          .eq('id', blueprintId)
-          .eq('user_id', user.id);
-
-        if (error) {
-          console.error('Delete error:', error);
-          alert('Failed to delete blueprint. Please try again.');
-          return;
-        }
-
-        // Remove from local state
-        setBlueprints((prev) => prev.filter((bp) => bp.id !== blueprintId));
-        console.log('Blueprint deleted successfully:', blueprintId);
-      } catch (err) {
-        console.error('Error deleting blueprint:', err);
-        alert('Failed to delete blueprint. Please try again.');
-      }
+      // Open confirmation dialog
+      setDeletionDialog({
+        isOpen: true,
+        type: 'single',
+        blueprintId,
+        blueprintName: blueprint.title || `Blueprint #${blueprintId.slice(0, 8)}`
+      });
     },
-    [user?.id]
+    [user?.id, blueprints]
   );
+
+  const handleConfirmDelete = useCallback(async () => {
+    if (!user?.id) {
+      console.error('User not authenticated');
+      return;
+    }
+
+    const { type, blueprintId } = deletionDialog;
+    let blueprintIdsToDelete: string[] = [];
+
+    if (type === 'single' && blueprintId) {
+      blueprintIdsToDelete = [blueprintId];
+    } else if (type === 'bulk') {
+      blueprintIdsToDelete = Array.from(selectedBlueprints);
+    }
+
+    if (blueprintIdsToDelete.length === 0) {
+      return;
+    }
+
+    try {
+      const supabase = getSupabaseBrowserClient();
+      const { error } = await supabase
+        .from('blueprint_generator')
+        .delete()
+        .in('id', blueprintIdsToDelete)
+        .eq('user_id', user.id);
+
+      if (error) {
+        console.error('Delete error:', error);
+        alert('Failed to delete blueprint(s). Please try again.');
+        return;
+      }
+
+      // Remove from local state
+      setBlueprints((prev) => prev.filter((bp) => !blueprintIdsToDelete.includes(bp.id)));
+
+      // Clear selection if in bulk mode
+      if (type === 'bulk') {
+        setSelectedBlueprints(new Set());
+        setIsSelectionMode(false);
+      }
+
+      console.log('Blueprint(s) deleted successfully:', blueprintIdsToDelete);
+    } catch (err) {
+      console.error('Error deleting blueprint(s):', err);
+      alert('Failed to delete blueprint(s). Please try again.');
+    }
+  }, [user?.id, deletionDialog, selectedBlueprints]);
 
   const handleToggleSelectionMode = useCallback(() => {
     setIsSelectionMode((prev) => !prev);
@@ -290,40 +331,11 @@ function DashboardContent() {
       return;
     }
 
-    // Confirm bulk deletion
-    if (
-      !confirm(
-        `Are you sure you want to delete ${selectedBlueprints.size} selected blueprint${selectedBlueprints.size > 1 ? 's' : ''}? This action cannot be undone.`
-      )
-    ) {
-      return;
-    }
-
-    try {
-      const supabase = getSupabaseBrowserClient();
-      const blueprintIds = Array.from(selectedBlueprints);
-
-      const { error } = await supabase
-        .from('blueprint_generator')
-        .delete()
-        .in('id', blueprintIds)
-        .eq('user_id', user.id);
-
-      if (error) {
-        console.error('Bulk delete error:', error);
-        alert('Failed to delete selected blueprints. Please try again.');
-        return;
-      }
-
-      // Remove from local state
-      setBlueprints((prev) => prev.filter((bp) => !selectedBlueprints.has(bp.id)));
-      setSelectedBlueprints(new Set());
-      setIsSelectionMode(false);
-      console.log('Blueprints deleted successfully:', blueprintIds);
-    } catch (err) {
-      console.error('Error deleting blueprints:', err);
-      alert('Failed to delete blueprints. Please try again.');
-    }
+    // Open confirmation dialog for bulk deletion
+    setDeletionDialog({
+      isOpen: true,
+      type: 'bulk'
+    });
   }, [user?.id, selectedBlueprints]);
 
   const [resumingBlueprintId, setResumingBlueprintId] = useState<string | null>(null);
@@ -386,6 +398,7 @@ function DashboardContent() {
         sticky={false}
         showDarkModeToggle={false}
         showUserAvatar={false}
+        size="compact"
         user={user}
       />
 
@@ -690,6 +703,18 @@ function DashboardContent() {
           description="Enter a new name for your blueprint"
           placeholder="Starmap for Professional Development and Career Growth Path"
           maxLength={80}
+        />
+
+        {/* Confirmation Dialog */}
+        <ConfirmationDialog
+          isOpen={deletionDialog.isOpen}
+          onClose={() => setDeletionDialog({ isOpen: false, type: 'single' })}
+          onConfirm={handleConfirmDelete}
+          title="Confirm Deletion"
+          description="This action cannot be undone."
+          variant="destructive"
+          itemName="blueprint"
+          itemCount={deletionDialog.type === 'bulk' ? selectedBlueprints.size : 1}
         />
         </div>
       </div>

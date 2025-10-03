@@ -69,7 +69,11 @@ Be comprehensive yet concise. Every field should add value to the interactive da
  * Includes context from questionnaires and user-specific information
  */
 export function buildBlueprintPrompt(context: BlueprintContext): string {
-  return `Generate a comprehensive learning blueprint based on the following inputs:
+  const now = new Date();
+  const currentDate = now.toISOString().split('T')[0]; // YYYY-MM-DD format
+  const futureDate = new Date(now.getTime() + 45 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]; // 45 days later
+
+  const prompt = `Generate a comprehensive learning blueprint based on the following inputs:
 
 ORGANIZATION CONTEXT:
 - Organization: ${context.organization}
@@ -218,8 +222,8 @@ OUTPUT SCHEMA:
     "phases": [
       {
         "phase": "Design",
-        "start_date": "2025-01-01",
-        "end_date": "2025-02-15",
+        "start_date": "{{CURRENT_DATE}}",
+        "end_date": "{{CURRENT_DATE_PLUS_45_DAYS}}",
         "milestones": ["Milestone 1", "Milestone 2"],
         "dependencies": []
       }
@@ -273,6 +277,11 @@ CRITICAL REQUIREMENTS:
 6. All monetary amounts should be numbers
 7. Percentages should be numbers (0-100)
 8. Be comprehensive but avoid unnecessary verbosity`;
+
+  // Replace date placeholders with actual dates
+  return prompt
+    .replace('{{CURRENT_DATE}}', currentDate)
+    .replace('{{CURRENT_DATE_PLUS_45_DAYS}}', futureDate);
 }
 
 /**

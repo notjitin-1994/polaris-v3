@@ -44,7 +44,7 @@ export function DrillDownView({ className }: DrillDownViewProps): React.JSX.Elem
             <div className="flex items-center gap-4">
               <Button
                 variant="ghost"
-                size="sm"
+                size="small"
                 onClick={drillUp}
                 disabled={drillDownState.path.length <= 1}
               >
@@ -57,7 +57,7 @@ export function DrillDownView({ className }: DrillDownViewProps): React.JSX.Elem
                 <p className="text-sm text-slate-600 dark:text-slate-400">{pathString}</p>
               </div>
             </div>
-            <Button variant="ghost" size="sm" onClick={resetDrillDown}>
+            <Button variant="ghost" size="small" onClick={resetDrillDown}>
               <X className="h-4 w-4" />
             </Button>
           </div>
@@ -73,10 +73,10 @@ export function DrillDownView({ className }: DrillDownViewProps): React.JSX.Elem
               <span>Path: {pathString}</span>
             </div>
             <div className="flex items-center gap-2">
-              <Button variant="secondary" size="sm" onClick={drillUp}>
+              <Button variant="secondary" size="small" onClick={drillUp}>
                 Back
               </Button>
-              <Button variant="secondary" size="sm" onClick={resetDrillDown}>
+              <Button variant="secondary" size="small" onClick={resetDrillDown}>
                 Close
               </Button>
             </div>

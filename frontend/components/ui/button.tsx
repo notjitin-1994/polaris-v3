@@ -109,12 +109,22 @@ export interface ButtonProps
 export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant, size, ...props }, ref) => {
     // Auto-recommend touch target size based on context if not explicitly set
-    const recommendedSize = size || (props['data-touch-context'] ?
+    const recommendedTouchSize = (props as any)['data-touch-context'] ?
       getRecommendedTouchSize(
         'button',
-        props['data-touch-context'] as any,
-        props['data-available-space'] as any
-      ) : 'medium');
+        (props as any)['data-touch-context'],
+        (props as any)['data-available-space']
+      ) : 'minimum';
+
+    // Map touch target sizes to button size variants
+    const sizeMapping: Record<string, 'small' | 'medium' | 'large' | 'extra-large' | 'icon'> = {
+      'minimum': 'medium',
+      'small': 'small',
+      'large': 'large',
+      'extra-large': 'extra-large'
+    };
+
+    const recommendedSize = size || sizeMapping[recommendedTouchSize] || 'medium';
 
     return (
       <button

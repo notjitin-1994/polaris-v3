@@ -101,12 +101,13 @@ function DynamicWizardContent({ id }: { id: string }): React.JSX.Element {
       <div className="min-h-screen bg-[#020C1B]">
         {/* Header */}
         <StandardHeader
-          title="Dynamic questionnaire"
+          title="Celestial Cartography"
           backHref="/"
           backLabel="Back to Dashboard"
           backButtonStyle="icon-only"
           showDarkModeToggle={false}
           showUserAvatar={false}
+          size="compact"
           user={user}
         />
 
@@ -228,7 +229,7 @@ function DynamicWizardContent({ id }: { id: string }): React.JSX.Element {
     <div className="min-h-screen bg-[#020C1B]">
       {/* Header */}
       <StandardHeader
-        title="Dynamic questionnaire"
+        title="Celestial Cartography"
         backHref="/"
         backLabel="Back to Dashboard"
         backButtonStyle="icon-only"
@@ -249,9 +250,9 @@ function DynamicWizardContent({ id }: { id: string }): React.JSX.Element {
               className="mb-8"
             >
               <h1 className="font-heading text-7xl font-bold tracking-tight text-white sm:text-8xl md:text-9xl lg:text-10xl">
-                <span>Dynamic </span>
+                <span>Starmap </span>
                 <span className="bg-gradient-to-r from-[#a7dadb] to-[#7bc4c4] bg-clip-text text-transparent">
-                  Navigator
+                  Cartographer
                 </span>
               </h1>
             </motion.div>
@@ -264,13 +265,13 @@ function DynamicWizardContent({ id }: { id: string }): React.JSX.Element {
               className="mb-12"
             >
               <p className="text-xl leading-relaxed text-white/70 sm:text-2xl lg:text-3xl">
-                Answer these{' '}
+                Chart your course with{' '}
                 <span className="text-[#a7dadb] font-medium">personalized questions</span>{' '}
-                crafted from your{' '}
-                <span className="text-[#a7dadb] font-medium">learning objectives</span>. Your responses will{' '}
-                <span className="text-[#a7dadb] font-medium drop-shadow-[0_0_8px_rgba(167,218,219,0.8)] brightness-110">illuminate the path</span>{' '}
-                to a{' '}
-                <span className="text-[#a7dadb] font-medium">comprehensive blueprint</span>
+                derived from your{' '}
+                <span className="text-[#a7dadb] font-medium">mission parameters</span>. We'll use these{' '}
+                <span className="text-[#a7dadb] font-medium drop-shadow-[0_0_8px_rgba(167,218,219,0.8)] brightness-110">coordinates</span>{' '}
+                to craft your{' '}
+                <span className="text-[#a7dadb] font-medium">complete learning trajectory</span>
               </p>
             </motion.div>
 

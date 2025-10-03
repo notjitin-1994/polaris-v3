@@ -1,6 +1,6 @@
-import { getSupabase } from '@/lib/supabaseClient';
+import { getSupabaseBrowserClient } from '@/lib/supabase/client';
 
-const supabase = getSupabase();
+const supabase = getSupabaseBrowserClient();
 
 // Types
 export type PolarisJobStage =

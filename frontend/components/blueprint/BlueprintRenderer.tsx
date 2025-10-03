@@ -399,10 +399,10 @@ export function BlueprintRenderer({
                       initial={{ opacity: 0, scale: 0.8 }}
                       animate={{ opacity: 1, scale: 1 }}
                       transition={{ delay: 0.3 }}
-                      className="border-secondary/40 bg-secondary/20 inline-flex items-center gap-2 rounded-full border px-4 py-2"
+                      className="border-primary/40 bg-primary/20 inline-flex items-center gap-2 rounded-full border px-4 py-2"
                     >
-                      <Sparkles className="text-secondary h-4 w-4" />
-                      <span className="text-secondary">AI Enhanced</span>
+                      <Sparkles className="text-primary h-4 w-4" />
+                      <span className="text-primary">AI Enhanced</span>
                     </motion.div>
                   </div>
 
@@ -424,40 +424,60 @@ export function BlueprintRenderer({
                         </span>
                       </button>
 
-                      {/* Section Navigation Dropdown */}
+                      {/* Section Navigation Dropdown - Overlay */}
                       <AnimatePresence>
                         {showSectionNav && (
-                          <motion.div
-                            initial={{ opacity: 0, scale: 0.95, y: -10 }}
-                            animate={{ opacity: 1, scale: 1, y: 0 }}
-                            exit={{ opacity: 0, scale: 0.95, y: -10 }}
-                            className="glass-card absolute top-full right-0 z-50 mt-2 max-h-96 w-72 overflow-y-auto"
-                          >
-                            <div className="p-2">
-                              {sections.map((section, index) => (
-                                <button
-                                  key={index}
-                                  onClick={() => goToPage(index)}
-                                  className={`text-text-secondary flex w-full items-start gap-3 rounded-lg px-3 py-2.5 text-left text-sm transition-all ${
-                                    currentPage === index
-                                      ? 'bg-primary/20 text-primary border-primary/30 border'
-                                      : 'hover:bg-white/5 hover:text-white'
-                                  }`}
-                                >
-                                  <span
-                                    className={`mt-0.5 flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full text-xs font-bold ${
+                          <>
+                            {/* Backdrop to capture clicks outside */}
+                            <motion.div
+                              initial={{ opacity: 0 }}
+                              animate={{ opacity: 1 }}
+                              exit={{ opacity: 0 }}
+                              className="fixed inset-0 z-40"
+                              onClick={() => setShowSectionNav(false)}
+                            />
+                            {/* Overlay Panel */}
+                            <motion.div
+                              initial={{ opacity: 0, scale: 0.95, y: -10 }}
+                              animate={{ opacity: 1, scale: 1, y: 0 }}
+                              exit={{ opacity: 0, scale: 0.95, y: -10 }}
+                              className="fixed right-6 top-auto bottom-auto z-50 max-h-96 w-72 overflow-y-auto shadow-2xl"
+                              style={{
+                                top: '50%',
+                                transform: 'translateY(-50%)',
+                                background: 'rgba(2, 12, 27, 0.95)',
+                                backdropFilter: 'blur(16px)',
+                                border: '1px solid rgba(167, 218, 219, 0.2)',
+                                borderRadius: '16px',
+                                boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
+                              }}
+                            >
+                              <div className="p-2">
+                                {sections.map((section, index) => (
+                                  <button
+                                    key={index}
+                                    onClick={() => goToPage(index)}
+                                    className={`text-text-secondary flex w-full items-start gap-3 rounded-lg px-3 py-2.5 text-left text-sm transition-all ${
                                       currentPage === index
-                                        ? 'bg-primary/30 text-primary'
-                                        : 'bg-white/10 text-white/70'
+                                        ? 'bg-primary/20 text-primary border-primary/30 border'
+                                        : 'hover:bg-white/5 hover:text-white'
                                     }`}
                                   >
-                                    {index + 1}
-                                  </span>
-                                  <span className="line-clamp-2 flex-1">{section.title}</span>
-                                </button>
-                              ))}
-                            </div>
-                          </motion.div>
+                                    <span
+                                      className={`mt-0.5 flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full text-xs font-bold ${
+                                        currentPage === index
+                                          ? 'bg-primary text-primary-foreground'
+                                          : 'bg-neutral-200 text-neutral-700'
+                                      }`}
+                                    >
+                                      {index + 1}
+                                    </span>
+                                    <span className="line-clamp-2 flex-1">{section.title}</span>
+                                  </button>
+                                ))}
+                              </div>
+                            </motion.div>
+                          </>
                         )}
                       </AnimatePresence>
                     </motion.div>
@@ -474,7 +494,7 @@ export function BlueprintRenderer({
                     className="mb-6 flex items-center gap-3 border-b border-white/10 pb-4"
                   >
                     <div className="bg-primary flex h-10 w-10 items-center justify-center rounded-xl">
-                      <span className="text-lg font-bold text-white">{currentPage + 1}</span>
+                      <span className="text-lg font-bold text-primary-foreground">{currentPage + 1}</span>
                     </div>
                     <div>
                       <h2 className="text-2xl font-bold text-white">{currentSection.title}</h2>
@@ -572,7 +592,7 @@ export function BlueprintRenderer({
                             (props as unknown as { className?: string }).className?.includes(
                               'counter-reset-item'
                             )
-                              ? 'before:counter-increment-item before:text-primary before:bg-primary/20 before:absolute before:top-0 before:left-0 before:flex before:h-6 before:w-6 before:items-center before:justify-center before:rounded-full before:text-xs before:font-bold before:content-[counter(item)]'
+                              ? 'before:counter-increment-item before:text-primary-foreground before:bg-primary before:absolute before:top-0 before:left-0 before:flex before:h-6 before:w-6 before:items-center before:justify-center before:rounded-full before:text-xs before:font-bold before:content-[counter(item)]'
                               : 'before:bg-primary before:absolute before:top-[0.6em] before:left-0 before:h-2 before:w-2 before:rounded-full before:content-[""]'
                           }`}
                           {...props}

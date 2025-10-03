@@ -243,8 +243,8 @@ export function BudgetResourcesInfographic({
           className="glass-strong rounded-xl border border-white/10 p-6"
         >
           <div className="mb-6 flex items-center gap-3">
-            <div className="bg-secondary/20 rounded-xl p-3">
-              <Wrench className="text-secondary h-6 w-6" />
+            <div className="bg-primary/20 rounded-xl p-3">
+              <Wrench className="text-primary h-6 w-6" />
             </div>
             <div>
               <h4 className="text-lg font-bold text-white">Tools & Platforms</h4>

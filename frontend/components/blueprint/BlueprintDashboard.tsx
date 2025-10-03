@@ -28,6 +28,7 @@ import {
   Activity,
   Sparkles,
   ChevronRight,
+  Calendar,
 } from 'lucide-react';
 import type { AnyBlueprint } from '@/lib/ollama/schema';
 
@@ -93,7 +94,7 @@ export function BlueprintDashboard({
     accent: ['#F59E0B', '#EF4444', '#10B981', '#3B82F6'],
     gradient: {
       primary: 'bg-primary/20',
-      secondary: 'bg-secondary/20',
+      secondary: 'bg-primary/20',
       success: 'bg-success/20',
       warning: 'bg-warning/20',
     },
@@ -144,13 +145,11 @@ export function BlueprintDashboard({
     // Derive icon color from gradient
     const iconColor = gradient.includes('primary')
       ? 'text-primary'
-      : gradient.includes('secondary')
-        ? 'text-secondary'
-        : gradient.includes('success')
-          ? 'text-success'
-          : gradient.includes('warning')
-            ? 'text-warning'
-            : 'text-primary';
+      : gradient.includes('success')
+        ? 'text-success'
+        : gradient.includes('warning')
+          ? 'text-warning'
+          : 'text-primary';
 
     return (
       <motion.div
@@ -241,7 +240,7 @@ export function BlueprintDashboard({
           <span className="text-primary text-sm font-bold tracking-wider uppercase">
             Blueprint Analytics
           </span>
-          <Sparkles className="text-secondary h-5 w-5 animate-pulse" />
+          <Sparkles className="text-primary h-5 w-5 animate-pulse" />
         </motion.div>
         <h2 className="mb-3 text-4xl font-bold text-white">Learning Journey Overview</h2>
         <p className="text-text-secondary mx-auto max-w-3xl text-lg">

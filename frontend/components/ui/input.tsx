@@ -52,18 +52,27 @@ const inputVariants = cva(
 )
 
 export interface InputProps
-  extends React.InputHTMLAttributes<HTMLInputElement>,
+  extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'size'>,
     VariantProps<typeof inputVariants> {}
 
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
   ({ className, variant, size, ...props }, ref) => {
     // Auto-recommend touch target size based on context if not explicitly set
-    const recommendedSize = size || (props['data-touch-context'] ?
+    const recommendedTouchSize = (props as any)['data-touch-context'] ?
       getRecommendedTouchSize(
         'input',
-        props['data-touch-context'] as any,
-        props['data-available-space'] as any
-      ) : 'medium');
+        (props as any)['data-touch-context'],
+        (props as any)['data-available-space']
+      ) : 'minimum';
+
+    // Map touch target sizes to input size variants
+    const sizeMapping: Record<string, 'small' | 'medium' | 'large'> = {
+      'minimum': 'medium',
+      'small': 'small',
+      'large': 'large'
+    };
+
+    const recommendedSize = size || sizeMapping[recommendedTouchSize] || 'medium';
 
     return (
       <input

@@ -40,7 +40,7 @@ export function ExecutiveSummaryInfographic({
         {/* Decorative Background */}
         <div className="absolute inset-0 opacity-5">
           <div className="bg-primary absolute top-0 right-0 h-64 w-64 rounded-full blur-3xl" />
-          <div className="bg-secondary absolute bottom-0 left-0 h-64 w-64 rounded-full blur-3xl" />
+          <div className="bg-primary absolute bottom-0 left-0 h-64 w-64 rounded-full blur-3xl" />
         </div>
 
         {/* Content */}
@@ -104,7 +104,7 @@ export function ExecutiveSummaryInfographic({
               <div className="mb-3 flex items-center gap-2">
                 <div className="bg-primary/20 flex h-[20px] min-w-[20px] items-center justify-center rounded-lg p-2">
                   <span
-                    className={`text-sm font-bold ${index === 0 ? 'text-primary' : index === 1 ? 'text-secondary' : 'text-success'}`}
+                    className={`text-sm font-bold ${index === 0 ? 'text-primary' : index === 1 ? 'text-primary' : 'text-success'}`}
                   >
                     {index + 1}
                   </span>

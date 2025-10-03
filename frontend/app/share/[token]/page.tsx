@@ -272,18 +272,6 @@ export default function SharedBlueprintPage({ params }: PageProps): React.JSX.El
             </h1>
           </div>
 
-          {/* CTA Button */}
-          <motion.a
-            href="https://polaris.smartslate.io"
-            target="_blank"
-            rel="noopener noreferrer"
-            whileHover={{ y: -2 }}
-            whileTap={{ scale: 0.98 }}
-            className="bg-secondary hover:bg-secondary/90 rounded px-4 py-2 text-sm font-semibold text-white/90 shadow-lg transition-all hover:text-white hover:shadow-[0_8px_25px_rgba(0,0,0,0.15)] sm:px-6 sm:py-2.5 sm:text-base"
-          >
-            <span className="hidden sm:inline">Create New Starmap</span>
-            <span className="sm:hidden">Create</span>
-          </motion.a>
         </div>
       </motion.header>
 
@@ -299,6 +287,96 @@ export default function SharedBlueprintPage({ params }: PageProps): React.JSX.El
           transition={{ delay: 0.2 }}
           className="glass-card overflow-hidden p-6 sm:p-8 lg:p-12"
         >
+          {/* Blueprint Metadata Section */}
+          {blueprintData?.metadata && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5 }}
+              className="mb-8"
+            >
+              <div className="glass-card rounded-2xl border border-white/10 bg-gradient-to-br from-primary/5 via-transparent to-secondary/5 p-6">
+                <div className="grid grid-cols-2 gap-6 md:grid-cols-4">
+                  {blueprintData.metadata.organization && (
+                    <div className="flex flex-col items-center justify-center space-y-2">
+                      <div className="text-primary bg-primary/10 rounded-full p-3">
+                        <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                        </svg>
+                      </div>
+                      <div className="text-center">
+                        <p className="text-text-disabled text-xs font-medium uppercase tracking-wider">
+                          Organization
+                        </p>
+                        <p className="text-white font-semibold">
+                          {blueprintData.metadata.organization}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+
+                  {blueprintData.metadata.role && (
+                    <div className="flex flex-col items-center justify-center space-y-2">
+                      <div className="text-secondary bg-secondary/10 rounded-full p-3">
+                        <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
+                        </svg>
+                      </div>
+                      <div className="text-center">
+                        <p className="text-text-disabled text-xs font-medium uppercase tracking-wider">
+                          Role
+                        </p>
+                        <p className="text-white font-semibold">
+                          {blueprintData.metadata.role}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+
+                  {blueprintData.metadata.generated_at && (
+                    <div className="flex flex-col items-center justify-center space-y-2">
+                      <div className="text-success bg-success/10 rounded-full p-3">
+                        <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                      </div>
+                      <div className="text-center">
+                        <p className="text-text-disabled text-xs font-medium uppercase tracking-wider">
+                          Generated
+                        </p>
+                        <p className="text-white font-semibold">
+                          {new Date(blueprintData.metadata.generated_at).toLocaleDateString('en-US', {
+                            month: 'short',
+                            day: 'numeric',
+                            year: 'numeric',
+                          })}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+
+                  {blueprintData.metadata.version && (
+                    <div className="flex flex-col items-center justify-center space-y-2">
+                      <div className="text-warning bg-warning/10 rounded-full p-3">
+                        <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+                        </svg>
+                      </div>
+                      <div className="text-center">
+                        <p className="text-text-disabled text-xs font-medium uppercase tracking-wider">
+                          Version
+                        </p>
+                        <p className="text-white font-semibold">
+                          {blueprintData.metadata.version}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </motion.div>
+          )}
+
           {/* Decorative Line */}
           <div className="mb-8 flex items-center gap-4">
             <div className="relative h-px flex-1">

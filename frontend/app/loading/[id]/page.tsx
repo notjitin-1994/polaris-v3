@@ -8,8 +8,8 @@
 import { useEffect, useState, use } from 'react';
 import type React from 'react';
 import { useRouter } from 'next/navigation';
-import { motion } from 'framer-motion';
-import { Sparkles, CheckCircle, AlertCircle } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Telescope, CheckCircle, AlertCircle, Sparkles, Orbit } from 'lucide-react';
 import ProtectedRoute from '@/components/auth/ProtectedRoute';
 import { AuthProvider, useAuth } from '@/contexts/AuthContext';
 import { StandardHeader } from '@/components/layout/StandardHeader';
@@ -33,7 +33,6 @@ function LoadingContent({ id }: { id: string }): React.JSX.Element {
 
   useEffect(() => {
     let progressInterval: NodeJS.Timeout | null = null;
-    let statusInterval: NodeJS.Timeout | null = null;
     let completed = false;
 
     // Validate blueprint id is a UUID before proceeding
@@ -45,38 +44,37 @@ function LoadingContent({ id }: { id: string }): React.JSX.Element {
       return;
     }
 
-    const steps = [
-      'Analyzing your responses...',
-      'Researching best practices...',
-      'Crafting personalized questions...',
-      'Validating question quality...',
-      'Finalizing dynamic questionnaire...',
+    // Real trajectory computation steps that match backend processing
+    const trajectorySteps = [
+      { step: 1, message: 'Analyzing your mission parameters', progress: 10 },
+      { step: 2, message: 'Cross-referencing stellar archives', progress: 30 },
+      { step: 3, message: 'Calibrating personalized vectors', progress: 50 },
+      { step: 4, message: 'Assembling your navigation chart', progress: 90 },
     ];
 
-    // Simulated progress (smooth animation)
+    // Progress through real steps based on time elapsed
     const startProgress = () => {
-      progressInterval = setInterval(() => {
-        setProgress((prev) => {
-          if (prev >= 90 || completed) return prev;
-          return Math.min(90, prev + Math.random() * 4);
-        });
-      }, 350);
-    };
+      let stepIndex = 0;
 
-    // Cycle through steps
-    const startStepRotation = () => {
-      statusInterval = setInterval(() => {
-        setCurrentStep((prev) => {
-          const nextStep = (prev % steps.length) + 1;
-          setStatus(steps[nextStep - 1]);
-          return nextStep;
-        });
-      }, 6000); // Change step every 6 seconds
+      progressInterval = setInterval(() => {
+        if (completed) return;
+
+        const currentStepInfo = trajectorySteps[stepIndex];
+        if (currentStepInfo) {
+          setCurrentStep(currentStepInfo.step);
+          setStatus(currentStepInfo.message);
+          setProgress(currentStepInfo.progress);
+
+          // Move to next step after appropriate time
+          if (stepIndex < trajectorySteps.length - 1) {
+            stepIndex++;
+          }
+        }
+      }, 4000); // Progress through each step every 4 seconds
     };
 
     const stopIntervals = () => {
       if (progressInterval) clearInterval(progressInterval);
-      if (statusInterval) clearInterval(statusInterval);
     };
 
     const generateDynamicQuestions = async () => {
@@ -84,7 +82,6 @@ function LoadingContent({ id }: { id: string }): React.JSX.Element {
 
       try {
         startProgress();
-        startStepRotation();
 
         logger.info('dynamic_questions.generation.start', 'Starting question generation from UI', {
           blueprintId: id,
@@ -169,173 +166,333 @@ function LoadingContent({ id }: { id: string }): React.JSX.Element {
   }, [router, id, user?.id]);
 
   return (
-    <div className="min-h-screen bg-[#020C1B]">
+    <div className="min-h-screen bg-gradient-to-br from-[#020C1B] via-[#0A1B2A] to-[#020C1B] relative overflow-hidden">
+      {/* Animated Background Elements */}
+      <div className="pointer-events-none absolute inset-0 z-0">
+        {/* Primary gradient overlay */}
+        <div className="bg-primary/[0.02] absolute inset-0" />
+
+        {/* Floating orbital elements */}
+        <motion.div
+          className="absolute top-1/4 left-1/4 h-32 w-32 rounded-full border border-primary/10"
+          animate={{
+            rotate: 360,
+            scale: [1, 1.1, 1],
+          }}
+          transition={{
+            rotate: { duration: 20, repeat: Infinity, ease: "linear" },
+            scale: { duration: 4, repeat: Infinity, ease: "easeInOut" }
+          }}
+        >
+          <div className="absolute top-0 left-1/2 h-2 w-2 -translate-x-1 -translate-y-1 rounded-full bg-primary/60" />
+        </motion.div>
+
+        <motion.div
+          className="absolute bottom-1/3 right-1/4 h-24 w-24 rounded-full border border-secondary/10"
+          animate={{
+            rotate: -360,
+            scale: [1.2, 1, 1.2],
+          }}
+          transition={{
+            rotate: { duration: 15, repeat: Infinity, ease: "linear" },
+            scale: { duration: 3, repeat: Infinity, ease: "easeInOut" }
+          }}
+        >
+          <div className="absolute top-1/2 left-0 h-1 w-1 -translate-x-0.5 -translate-y-0.5 rounded-full bg-secondary/60" />
+        </motion.div>
+
+        {/* Sparkle effects */}
+        {[...Array(6)].map((_, i) => (
+          <motion.div
+            key={i}
+            className="absolute h-1 w-1 rounded-full bg-primary/40"
+            style={{
+              top: `${20 + i * 15}%`,
+              left: `${10 + (i % 3) * 30}%`,
+            }}
+            animate={{
+              opacity: [0, 1, 0],
+              scale: [0, 1, 0],
+            }}
+            transition={{
+              duration: 2,
+              repeat: Infinity,
+              delay: i * 0.3,
+            }}
+          />
+        ))}
+      </div>
+
       {/* Header */}
       <StandardHeader
-        title="Generating Dynamic Questions"
-        subtitle="Our AI is analyzing your responses and creating personalized questions. This typically takes 5-15 seconds."
+        title="Analyzing Mission Data"
         backHref="/"
         backLabel="Back to Dashboard"
+        backButtonStyle="icon-only"
+        showDarkModeToggle={false}
+        showUserAvatar={false}
+        size="compact"
         user={user}
       />
 
-      {/* Main Content with Glassmorphic Background */}
-      <main className="relative flex flex-1 items-center justify-center overflow-hidden px-4 py-8 sm:px-6 lg:px-8">
-        {/* Ambient glow background */}
-        <div className="pointer-events-none absolute inset-0 z-0">
-          <div className="bg-primary/[0.02] absolute inset-0" />
-        </div>
-
-        <div className="relative z-10 mx-auto w-full max-w-3xl">
-          <div className="glass-card animate-scale-in p-8 text-center md:p-12">
-            {/* Icon */}
-            <div className="mb-8 flex justify-center">
-              {error ? (
-                <div className="bg-error/10 flex h-20 w-20 items-center justify-center rounded-full">
-                  <AlertCircle className="text-error h-10 w-10" />
-                </div>
-              ) : progress === 100 && !error ? (
-                <motion.div
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  transition={{ type: 'spring', duration: 0.5 }}
-                  className="bg-success/10 flex h-20 w-20 items-center justify-center rounded-full"
-                >
-                  <CheckCircle className="text-success h-10 w-10" />
-                </motion.div>
-              ) : (
-                <motion.div
-                  animate={{ rotate: 360 }}
-                  transition={{ duration: 3, repeat: Infinity, ease: 'linear' }}
-                  className="bg-primary/10 flex h-20 w-20 items-center justify-center rounded-full"
-                >
-                  <Sparkles className="text-primary h-10 w-10" />
-                </motion.div>
-              )}
-            </div>
-
-            {/* Status Message */}
-            <h2 className="text-title text-foreground mb-3 text-center">
-              {error
-                ? 'Generation Failed'
-                : progress === 100
-                  ? 'Questions Ready!'
-                  : 'Generating Questions'}
-            </h2>
-
-            <p className="text-body text-text-secondary mb-8 text-center">{error || status}</p>
-
-            {/* Progress Bar */}
-            {!error && (
-              <div className="mx-auto mb-6 max-w-md">
-                <div className="text-text-secondary mb-2 flex justify-between text-sm">
-                  <span>Progress</span>
-                  <span>{Math.round(progress)}%</span>
-                </div>
-                <div className="bg-surface h-2 overflow-hidden rounded-full">
-                  <motion.div
-                    className="bg-primary h-full"
-                    initial={{ width: '0%' }}
-                    animate={{ width: `${progress}%` }}
-                    transition={{ duration: 0.3 }}
-                  />
-                </div>
-              </div>
-            )}
-
-            {/* Powered by Solara Badge */}
-            <div className="mt-6 flex justify-center">
-              <div className="glass-strong rounded-full px-4 py-2 text-xs">
-                <span className="text-text-secondary">Powered by </span>
-                <span className="font-semibold text-[#FFD700] drop-shadow-[0_0_10px_rgba(255,215,0,0.3)]">
-                  Solara
-                </span>
-              </div>
-            </div>
-
-            {/* Step Indicators */}
-            {!error && progress < 100 && (
-              <div className="mt-8 flex justify-center gap-2">
-                {[1, 2, 3, 4, 5].map((step) => (
-                  <motion.div
-                    key={step}
-                    className={`h-2 w-2 rounded-full ${
-                      step === currentStep
-                        ? 'bg-primary'
-                        : step < currentStep
-                          ? 'bg-secondary'
-                          : 'bg-surface'
-                    }`}
-                    animate={
-                      step === currentStep
-                        ? {
-                            scale: [1, 1.3, 1],
-                            opacity: [0.7, 1, 0.7],
-                          }
-                        : {}
-                    }
-                    transition={{
-                      duration: 1.5,
-                      repeat: Infinity,
-                      ease: 'easeInOut',
-                    }}
-                  />
-                ))}
-              </div>
-            )}
-
-            {/* Error Actions */}
-            {error && (
-              <div className="mt-6 flex justify-center gap-4">
-                <button
-                  onClick={() => router.push('/')}
-                  className="bg-surface text-foreground hover:bg-surface/80 rounded-xl px-6 py-3 text-sm font-medium transition-colors"
-                >
-                  Back to Dashboard
-                </button>
-                <button
-                  onClick={() => router.refresh()}
-                  className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-xl px-6 py-3 text-sm font-medium transition-colors"
-                >
-                  Try Again
-                </button>
-              </div>
-            )}
-          </div>
-
-          {/* Info Card */}
-          {!error && progress < 100 && (
+      {/* Main Content */}
+      <main className="relative z-10 flex flex-1 items-center justify-center px-4 py-8 sm:px-6 lg:px-8">
+        <div className="mx-auto w-full max-w-4xl">
+          <div className="grid gap-8 lg:grid-cols-2 lg:gap-12">
+            {/* Main Loading Card */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 1 }}
-              className="glass-strong mt-6 rounded-xl p-6"
+              className="glass-card animate-scale-in space-y-8 rounded-3xl p-8 md:p-10"
             >
-              <h3 className="text-foreground mb-3 text-sm font-semibold">What&apos;s happening?</h3>
-              <ul className="text-text-secondary space-y-2 text-sm">
-                <li className="flex items-start gap-2">
-                  <CheckCircle className="text-success mt-0.5 h-4 w-4 flex-shrink-0" />
-                  <span>Analyzing your static questionnaire responses</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <CheckCircle className="text-success mt-0.5 h-4 w-4 flex-shrink-0" />
-                  <span>Researching industry-specific best practices</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <CheckCircle className="text-success mt-0.5 h-4 w-4 flex-shrink-0" />
-                  <span>Creating personalized questions</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  {progress > 60 ? (
-                    <CheckCircle className="text-success mt-0.5 h-4 w-4 flex-shrink-0" />
+              {/* Icon Section */}
+              <div className="relative mb-8 flex justify-center">
+                <div className="relative">
+                  {error ? (
+                    <motion.div
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      className="bg-error/10 flex h-24 w-24 items-center justify-center rounded-full ring-2 ring-error/20"
+                    >
+                      <AlertCircle className="text-error h-12 w-12" />
+                    </motion.div>
+                  ) : progress === 100 && !error ? (
+                    <motion.div
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      transition={{ type: 'spring', duration: 0.6, bounce: 0.4 }}
+                      className="bg-success/10 flex h-24 w-24 items-center justify-center rounded-full ring-2 ring-success/20"
+                    >
+                      <CheckCircle className="text-success h-12 w-12" />
+                    </motion.div>
                   ) : (
-                    <div className="border-primary mt-0.5 h-4 w-4 flex-shrink-0 animate-spin rounded-full border-2 border-t-transparent" />
+                    <div className="relative">
+                      <motion.div
+                        className="bg-primary/10 flex h-24 w-24 items-center justify-center rounded-full ring-2 ring-primary/20"
+                        animate={{
+                          boxShadow: [
+                            '0 0 0 0 rgba(59, 130, 246, 0.2)',
+                            '0 0 0 8px rgba(59, 130, 246, 0)',
+                          ],
+                        }}
+                        transition={{
+                          duration: 2,
+                          repeat: Infinity,
+                          ease: "easeInOut",
+                        }}
+                      >
+                        <Telescope className="text-primary h-12 w-12" />
+                      </motion.div>
+
+                      {/* Pulsing rings */}
+                      <motion.div
+                        className="absolute inset-0 rounded-full border-2 border-primary/30"
+                        animate={{
+                          scale: [1, 1.2, 1],
+                          opacity: [0.6, 0, 0.6],
+                        }}
+                        transition={{
+                          duration: 2,
+                          repeat: Infinity,
+                          ease: "easeInOut",
+                        }}
+                      />
+                    </div>
                   )}
-                  <span>Generating comprehensive questionnaire</span>
-                </li>
-              </ul>
+                </div>
+              </div>
+
+              {/* Title Section */}
+              <div className="text-center">
+                <AnimatePresence mode="wait">
+                  <motion.h1
+                    key={error ? 'error' : progress === 100 ? 'complete' : 'loading'}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    className="text-display text-foreground mb-2"
+                  >
+                    {error
+                      ? 'Trajectory Calculation Failed'
+                      : progress === 100
+                        ? 'Trajectory Plotted Successfully'
+                        : 'Plotting Trajectory'}
+                  </motion.h1>
+                </AnimatePresence>
+
+                <motion.p
+                  className="text-body text-text-secondary"
+                  animate={{ opacity: [0.7, 1, 0.7] }}
+                  transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                >
+                  {error || status}
+                </motion.p>
+              </div>
+
+              {/* Progress Section */}
+              {!error && (
+                <div className="space-y-6">
+                  <div className="mx-auto max-w-sm">
+                    <div className="text-text-secondary mb-3 flex justify-between text-sm font-medium">
+                      <span>Progress</span>
+                      <span>{Math.round(progress)}%</span>
+                    </div>
+                    <div className="bg-surface/50 h-3 overflow-hidden rounded-full backdrop-blur-sm">
+                      <motion.div
+                        className="bg-[var(--primary-accent)] h-full rounded-full"
+                        initial={{ width: '0%' }}
+                        animate={{ width: `${progress}%` }}
+                        transition={{ duration: 0.5, ease: "easeOut" }}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Step Indicators */}
+                  <div className="flex justify-center gap-3">
+                    {[1, 2, 3, 4].map((step) => (
+                      <motion.div
+                        key={step}
+                        className={`relative h-3 w-3 rounded-full ${
+                          step < currentStep
+                            ? 'bg-[var(--primary-accent-dark)]'
+                            : step === currentStep
+                              ? 'bg-[var(--primary-accent)] shadow-lg'
+                              : 'bg-surface/60'
+                        }`}
+                        animate={
+                          step === currentStep
+                            ? {
+                                scale: [1, 1.4, 1],
+                                boxShadow: [
+                                  '0 0 0 0 rgba(167, 218, 219, 0.4)',
+                                  '0 0 0 8px rgba(167, 218, 219, 0)',
+                                ],
+                              }
+                            : {}
+                        }
+                        transition={{
+                          duration: 1.5,
+                          repeat: step === currentStep ? Infinity : 0,
+                          ease: 'easeInOut',
+                        }}
+                      >
+                        {step < currentStep && (
+                          <motion.div
+                            initial={{ scale: 0 }}
+                            animate={{ scale: 1 }}
+                            className="absolute inset-0 rounded-full bg-[var(--primary-accent-dark)]"
+                          />
+                        )}
+                      </motion.div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Powered by Solara Badge */}
+              <motion.div
+                className="flex justify-center"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.5 }}
+              >
+                <div className="glass-strong rounded-full px-6 py-3 text-sm backdrop-blur-md">
+                  <span className="text-text-secondary">Powered by </span>
+                  <span className="font-semibold text-yellow-400 drop-shadow-[0_0_8px_rgba(250,204,21,0.8)] brightness-110">
+                    Solara
+                  </span>
+                  <Sparkles className="ml-1 inline h-3 w-3 text-yellow-400" />
+                </div>
+              </motion.div>
+
+              {/* Error Actions */}
+              {error && (
+                <motion.div
+                  className="flex justify-center gap-4"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.2 }}
+                >
+                  <button
+                    onClick={() => router.push('/')}
+                    className="bg-surface text-foreground hover:bg-surface/80 rounded-xl px-6 py-3 text-sm font-medium transition-all duration-200 focus-visible:ring-2 focus-visible:ring-surface/50"
+                  >
+                    Back to Dashboard
+                  </button>
+                  <button
+                    onClick={() => router.refresh()}
+                    className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-xl px-6 py-3 text-sm font-medium transition-all duration-200 focus-visible:ring-2 focus-visible:ring-primary/50"
+                  >
+                    Try Again
+                  </button>
+                </motion.div>
+              )}
             </motion.div>
-          )}
+
+            {/* Trajectory Computation Card */}
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.3 }}
+              className="glass-strong rounded-2xl p-6 backdrop-blur-md"
+            >
+              <div className="mb-4 flex items-center gap-2">
+                <Orbit className="text-primary h-5 w-5" />
+                <h3 className="text-foreground text-sm font-semibold">Trajectory Computation</h3>
+              </div>
+
+              <div className="space-y-3">
+                {[
+                  'Analyzing your mission parameters',
+                  'Cross-referencing stellar archives',
+                  'Calibrating personalized vectors',
+                  'Assembling your navigation chart',
+                ].map((stepText, index) => {
+                  const stepNumber = index + 1;
+                  const isCompleted = stepNumber < currentStep;
+                  const isCurrent = stepNumber === currentStep;
+                  const isFuture = stepNumber > currentStep;
+
+                  return (
+                    <motion.div
+                      key={stepNumber}
+                      className={`flex items-start gap-3 rounded-lg p-2 transition-colors ${
+                        isCurrent ? 'bg-primary/5' : ''
+                      }`}
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ delay: 0.1 * index }}
+                    >
+                      <div className="mt-0.5 flex-shrink-0">
+                        {isCompleted ? (
+                          <motion.div
+                            initial={{ scale: 0 }}
+                            animate={{ scale: 1 }}
+                            transition={{ type: 'spring', duration: 0.3 }}
+                          >
+                            <CheckCircle className="text-success h-4 w-4" />
+                          </motion.div>
+                        ) : isCurrent ? (
+                          <motion.div
+                            className="h-4 w-4 rounded-full border-2 border-primary border-t-transparent"
+                            animate={{ rotate: 360 }}
+                            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                          />
+                        ) : (
+                          <div className="h-4 w-4 rounded-full border-2 border-surface" />
+                        )}
+                      </div>
+                      <span className={`text-sm ${
+                        isFuture ? 'text-text-disabled' : 'text-text-secondary'
+                      }`}>
+                        {stepText}
+                      </span>
+                    </motion.div>
+                  );
+                })}
+              </div>
+            </motion.div>
+          </div>
         </div>
       </main>
     </div>

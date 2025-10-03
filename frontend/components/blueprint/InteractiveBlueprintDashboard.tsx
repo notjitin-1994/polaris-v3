@@ -100,8 +100,8 @@ export function InteractiveBlueprintDashboard({
       id: 'objectives',
       title: 'Learning Objectives',
       icon: Target,
-      gradient: 'bg-success/20',
-      iconColor: 'text-success',
+      gradient: 'bg-primary/20',
+      iconColor: 'text-primary',
       description: `${objectives.length} measurable objectives`,
       defaultExpanded: true,
     });
@@ -112,8 +112,8 @@ export function InteractiveBlueprintDashboard({
       id: 'target_audience',
       title: 'Target Audience',
       icon: Users,
-      gradient: 'bg-secondary/20',
-      iconColor: 'text-secondary',
+      gradient: 'bg-primary/20',
+      iconColor: 'text-primary',
       description: 'Demographics and learning preferences',
     });
   }
@@ -156,8 +156,8 @@ export function InteractiveBlueprintDashboard({
       id: 'timeline',
       title: 'Implementation Timeline',
       icon: Calendar,
-      gradient: 'bg-secondary/20',
-      iconColor: 'text-secondary',
+      gradient: 'bg-primary/20',
+      iconColor: 'text-primary',
       description: `${blueprint.implementation_timeline.phases.length} phases`,
     });
   }

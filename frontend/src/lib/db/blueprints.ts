@@ -413,17 +413,36 @@ export class BlueprintService {
    */
   public async updateDynamicAnswers(
     blueprintId: string,
-    dynamicAnswers: Record<string, unknown>
+    dynamicAnswers: Record<string, unknown>,
+    userId?: string
   ): Promise<BlueprintRow> {
-    const { data, error } = await this.supabase
+    // Get current user if not provided (for backward compatibility)
+    if (!userId) {
+      try {
+        const { data: { user } } = await this.supabase.auth.getUser();
+        if (user) {
+          userId = user.id;
+        }
+      } catch (error) {
+        // If we can't get the user, continue without user filter (less secure but maintains compatibility)
+        console.warn('Could not get authenticated user for updateDynamicAnswers');
+      }
+    }
+
+    let query = this.supabase
       .from('blueprint_generator')
       .update({
         dynamic_answers: dynamicAnswers,
         status: 'draft', // Keep as draft until blueprint is generated
       })
-      .eq('id', blueprintId)
-      .select()
-      .single();
+      .eq('id', blueprintId);
+
+    // Only add user_id filter if we have a userId (for security)
+    if (userId) {
+      query = query.eq('user_id', userId);
+    }
+
+    const { data, error } = await query.select().single();
 
     if (error) {
       console.error('Error updating dynamic answers:', {

@@ -137,7 +137,7 @@ export const ExportButton: React.FC<ExportButtonProps> = ({
   return (
     <>
       <div className={`flex gap-2 ${className}`}>
-        <Button onClick={handleExportAll} disabled={isExporting} variant="primary" size="md">
+        <Button onClick={handleExportAll} disabled={isExporting} variant="primary" size="medium">
           {isExporting ? (
             <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />
           ) : (

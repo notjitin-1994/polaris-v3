@@ -83,6 +83,9 @@ export function ResponsiveImage({
     rootMargin: '50px',
   })
 
+  // Type assertion for the ref to match div element type
+  const divRef = intersectionRef as React.RefObject<HTMLDivElement>
+
   // Generate responsive srcset based on device pixel ratio
   const srcset = React.useMemo(() => {
     if (!src) return undefined
@@ -143,6 +146,7 @@ export function ResponsiveImage({
         document.head.removeChild(link)
       }
     }
+    return undefined
   }, [priority, shouldLoad, src])
 
   if (hasError) {
@@ -174,7 +178,7 @@ export function ResponsiveImage({
 
   return (
     <div
-      ref={intersectionRef}
+      ref={divRef}
       className={cn("relative overflow-hidden", className)}
       data-testid={testId}
     >

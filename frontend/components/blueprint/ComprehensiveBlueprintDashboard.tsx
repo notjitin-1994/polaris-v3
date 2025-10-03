@@ -117,13 +117,11 @@ export function ComprehensiveBlueprintDashboard({
     // Derive icon color from gradient
     const iconColor = gradient.includes('primary')
       ? 'text-primary'
-      : gradient.includes('secondary')
-        ? 'text-secondary'
-        : gradient.includes('success')
-          ? 'text-success'
-          : gradient.includes('warning')
-            ? 'text-warning'
-            : 'text-primary';
+      : gradient.includes('success')
+        ? 'text-success'
+        : gradient.includes('warning')
+          ? 'text-warning'
+          : 'text-primary';
 
     return (
       <motion.div
@@ -143,7 +141,7 @@ export function ComprehensiveBlueprintDashboard({
             </div>
           </div>
           <div className="space-y-2">
-            <p className="text-text-secondary text-sm font-medium">{label}</p>
+            <p className="text-text-primary text-sm font-medium">{label}</p>
             <div className="flex items-baseline gap-1">
               {mounted && isInView ? (
                 shouldReduceAnimations ? (
@@ -195,10 +193,10 @@ export function ComprehensiveBlueprintDashboard({
           <span className="text-primary text-sm font-bold tracking-wider uppercase">
             Comprehensive Blueprint Analytics
           </span>
-          <Sparkles className="text-secondary h-5 w-5 animate-pulse" />
+          <Sparkles className="text-primary h-5 w-5 animate-pulse" />
         </motion.div>
         <h2 className="mb-3 text-4xl font-bold text-white">{blueprint.metadata.title}</h2>
-        <p className="text-text-secondary mx-auto max-w-3xl text-lg">
+        <p className="text-text-primary mx-auto max-w-3xl text-lg">
           {blueprint.executive_summary?.content?.substring(0, 200)}...
         </p>
       </motion.div>
@@ -220,7 +218,7 @@ export function ComprehensiveBlueprintDashboard({
           icon={Layers}
           label="Learning Modules"
           value={modules.length}
-          gradient="bg-secondary/20"
+          gradient="bg-primary/20"
           delay={0.1}
         />
         <StatCard
@@ -250,7 +248,7 @@ export function ComprehensiveBlueprintDashboard({
           onModify={() => console.log('Modify Executive Summary')}
         >
           <div className="prose prose-invert max-w-none">
-            <p className="text-text-secondary leading-relaxed">
+            <p className="text-text-primary leading-relaxed">
               {blueprint.executive_summary.content}
             </p>
           </div>
@@ -280,8 +278,8 @@ export function ComprehensiveBlueprintDashboard({
           icon={Users}
           title="Target Audience"
           description="Demographics and learning preferences"
-          gradient="bg-secondary/20"
-          iconColor="text-secondary"
+          gradient="bg-primary/20"
+          iconColor="text-primary"
           onModify={() => console.log('Modify Target Audience')}
         >
           <TargetAudienceInfographic data={blueprint.target_audience} />
@@ -306,7 +304,7 @@ export function ComprehensiveBlueprintDashboard({
                     <h4 className="mb-2 text-xl font-bold text-white">
                       {index + 1}. {module.title}
                     </h4>
-                    <p className="text-text-secondary text-sm">{module.description}</p>
+                    <p className="text-text-primary text-sm">{module.description}</p>
                   </div>
                   <span className="bg-primary rounded-full px-4 py-1 text-sm font-bold text-slate-900">
                     {module.duration}
@@ -315,7 +313,7 @@ export function ComprehensiveBlueprintDashboard({
 
                 {module.topics && module.topics.length > 0 && (
                   <div className="mb-4">
-                    <p className="text-text-secondary mb-2 text-sm font-semibold">Topics:</p>
+                    <p className="text-text-primary mb-2 text-sm font-semibold">Topics:</p>
                     <div className="flex flex-wrap gap-2">
                       {module.topics.map((topic, tIndex) => (
                         <span
@@ -331,7 +329,7 @@ export function ComprehensiveBlueprintDashboard({
 
                 {module.learning_activities && module.learning_activities.length > 0 && (
                   <div className="mb-4">
-                    <p className="text-text-secondary mb-2 text-sm font-semibold">
+                    <p className="text-text-primary mb-2 text-sm font-semibold">
                       Learning Activities:
                     </p>
                     <div className="space-y-2">
@@ -340,7 +338,7 @@ export function ComprehensiveBlueprintDashboard({
                           key={aIndex}
                           className="bg-primary/10 border-primary/20 flex items-start gap-2 rounded-lg border p-3"
                         >
-                          <span className="bg-secondary rounded px-2 py-0.5 text-xs font-bold text-slate-900">
+                          <span className="bg-primary rounded px-2 py-0.5 text-xs font-bold text-slate-900">
                             {activity.type}:
                           </span>
                           <span className="text-foreground flex-1 text-sm">
@@ -415,8 +413,8 @@ export function ComprehensiveBlueprintDashboard({
           icon={Calendar}
           title="Implementation Timeline"
           description={`${blueprint.implementation_timeline.phases.length} phases from start to finish`}
-          gradient="bg-secondary/20"
-          iconColor="text-secondary"
+          gradient="bg-primary/20"
+          iconColor="text-primary"
           onModify={() => console.log('Modify Implementation Timeline')}
         >
           <TimelineInfographic
@@ -471,7 +469,7 @@ export function ComprehensiveBlueprintDashboard({
           onModify={() => console.log('Modify Instructional Strategy')}
         >
           <div className="prose prose-invert max-w-none">
-            <p className="text-text-secondary mb-6 leading-relaxed">
+            <p className="text-text-primary mb-6 leading-relaxed">
               {blueprint.instructional_strategy.overview}
             </p>
 
@@ -485,7 +483,7 @@ export function ComprehensiveBlueprintDashboard({
                       {modality.allocation_percent}%
                     </span>
                   </div>
-                  <p className="text-text-secondary text-sm">{modality.rationale}</p>
+                  <p className="text-text-primary text-sm">{modality.rationale}</p>
                   {modality.tools && modality.tools.length > 0 && (
                     <div className="mt-2 flex flex-wrap gap-2">
                       {modality.tools.map((tool, tIndex) => (
@@ -515,7 +513,7 @@ export function ComprehensiveBlueprintDashboard({
           onModify={() => console.log('Modify Sustainability Plan')}
         >
           <div className="prose prose-invert max-w-none">
-            <p className="text-text-secondary leading-relaxed">
+            <p className="text-text-primary leading-relaxed">
               {blueprint.sustainability_plan.content}
             </p>
           </div>
@@ -561,7 +559,7 @@ function SectionCard({
           </div>
           <div>
             <h3 className="text-xl font-bold text-white">{title}</h3>
-            <p className="text-text-secondary text-sm">{description}</p>
+            <p className="text-text-primary text-sm">{description}</p>
           </div>
         </div>
 
@@ -601,7 +599,7 @@ function SectionCard({
             transition={{ duration: 0.3 }}
             className="rounded-full bg-white/5 p-2 transition-colors hover:bg-white/10"
           >
-            <ChevronUp className="text-text-secondary h-5 w-5" />
+            <ChevronUp className="text-text-primary h-5 w-5" />
           </motion.div>
         </div>
       </button>

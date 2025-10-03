@@ -49,7 +49,7 @@ export function SustainabilityPlanInfographic({
             </motion.div>
             <h3 className="text-lg font-bold text-white">Long-Term Sustainability</h3>
           </div>
-          <p className="text-text-secondary text-sm leading-relaxed">{content}</p>
+          <p className="text-text-primary text-sm leading-relaxed">{content}</p>
         </div>
       </motion.div>
 
@@ -107,7 +107,7 @@ export function SustainabilityPlanInfographic({
                         className="flex items-start gap-3 rounded-lg bg-white/5 p-3"
                       >
                         <div className="bg-primary mt-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-full" />
-                        <span className="text-text-secondary text-sm">{trigger}</span>
+                        <span className="text-text-primary text-sm">{trigger}</span>
                       </motion.div>
                     ))}
                   </div>
@@ -125,8 +125,8 @@ export function SustainabilityPlanInfographic({
             className="glass space-y-4 rounded-xl border border-white/10 p-6"
           >
             <div className="flex items-center gap-3">
-              <div className="bg-secondary/20 rounded-xl p-3">
-                <TrendingUp className="text-secondary h-5 w-5" />
+              <div className="bg-primary/20 rounded-xl p-3">
+                <TrendingUp className="text-primary h-5 w-5" />
               </div>
               <h3 className="text-base font-bold text-white">Scaling Considerations</h3>
             </div>
@@ -139,12 +139,12 @@ export function SustainabilityPlanInfographic({
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.3 + index * 0.1 }}
                   whileHover={{ scale: 1.02, x: 5 }}
-                  className="group hover:bg-secondary/10 flex items-start gap-3 rounded-lg bg-white/5 p-4 transition-all"
+                  className="group hover:bg-primary/10 flex items-start gap-3 rounded-lg bg-white/5 p-4 transition-all"
                 >
-                  <div className="bg-secondary/20 text-secondary mt-1 flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full text-xs font-bold">
+                  <div className="bg-primary/20 text-primary mt-1 flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full text-xs font-bold">
                     {index + 1}
                   </div>
-                  <span className="text-text-secondary text-sm leading-relaxed group-hover:text-white">
+                  <span className="text-text-primary text-sm leading-relaxed group-hover:text-white">
                     {consideration}
                   </span>
                 </motion.div>
@@ -168,7 +168,7 @@ export function SustainabilityPlanInfographic({
               Longevity
             </span>
           </div>
-          <p className="text-text-secondary text-sm">Designed for long-term impact and evolution</p>
+          <p className="text-text-primary text-sm">Designed for long-term impact and evolution</p>
         </div>
 
         <div className="glass rounded-xl border border-white/10 p-4">
@@ -178,17 +178,17 @@ export function SustainabilityPlanInfographic({
               Adaptability
             </span>
           </div>
-          <p className="text-text-secondary text-sm">Regular reviews ensure continued relevance</p>
+          <p className="text-text-primary text-sm">Regular reviews ensure continued relevance</p>
         </div>
 
         <div className="glass rounded-xl border border-white/10 p-4">
           <div className="mb-2 flex items-center gap-2">
-            <div className="bg-secondary h-2 w-2 rounded-full" />
-            <span className="text-secondary text-xs font-semibold tracking-wider uppercase">
+            <div className="bg-primary h-2 w-2 rounded-full" />
+            <span className="text-primary text-xs font-semibold tracking-wider uppercase">
               Scalability
             </span>
           </div>
-          <p className="text-text-secondary text-sm">Built to grow with organizational needs</p>
+          <p className="text-text-primary text-sm">Built to grow with organizational needs</p>
         </div>
       </motion.div>
     </div>

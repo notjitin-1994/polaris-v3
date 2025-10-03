@@ -20,6 +20,7 @@ function StaticWizardContent(): React.JSX.Element {
         backButtonStyle="icon-only"
         showDarkModeToggle={false}
         showUserAvatar={false}
+        size="compact"
         user={user}
       />
 

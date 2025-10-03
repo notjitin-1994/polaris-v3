@@ -226,6 +226,9 @@ export async function POST(req: NextRequest): Promise<NextResponse<GenerateBluep
     // Convert blueprint to comprehensive markdown
     const markdown = convertBlueprintToMarkdown(result.blueprint);
 
+    // Extract title from generated blueprint metadata
+    const generatedTitle = result.blueprint.metadata?.title || `Blueprint ${blueprintId.slice(0, 8)}`;
+
     // Save to database
     const { error: saveError } = await supabase
       .from('blueprint_generator')
@@ -236,6 +239,7 @@ export async function POST(req: NextRequest): Promise<NextResponse<GenerateBluep
         },
         blueprint_markdown: markdown,
         status: 'completed',
+        title: generatedTitle,
         updated_at: new Date().toISOString(),
       })
       .eq('id', blueprintId)

@@ -8,6 +8,7 @@ import { DarkModeToggle } from '@/components/theme/DarkModeToggle';
 import { UserAvatar } from './UserAvatar';
 import { useAuth } from '@/contexts/AuthContext';
 import type { User } from '@supabase/supabase-js';
+import { responsiveClasses } from '@/lib/responsive';
 
 export interface StandardHeaderProps {
   /**
@@ -115,7 +116,10 @@ export function StandardHeader({
 
       {/* Content */}
       <div
-        className={`relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 ${isCompact ? 'py-2.5' : 'py-5'}`}
+        className={`relative ${responsiveClasses.headerContainer} ${isCompact ? 'py-2.5' : 'py-5'}`}
+        style={{
+          maxWidth: '1280px', // Explicit max-width for consistency
+        }}
       >
         <div className="flex items-center justify-between gap-4">
           {/* Left side: Back button + Title (inline for compact) */}

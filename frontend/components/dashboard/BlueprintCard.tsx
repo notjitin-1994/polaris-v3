@@ -361,8 +361,9 @@ export function BlueprintCard({
                         truncatedContent = content;
                       }
 
-                      // Check if content ends with "..." to show continue reading
+                      // Check if content ends with "..." to show continue reading, or if it's a draft placeholder
                       const needsContinueReading = truncatedContent.endsWith('...');
+                      const isDraftPlaceholder = content === 'This is a placeholder executive summary. The full summary will be available as soon as your blueprint is generated with AI-powered insights.';
 
                       return (
                         <p className="leading-relaxed">
@@ -389,32 +390,60 @@ export function BlueprintCard({
                               </svg>
                             </motion.button>
                           )}
+                          {isDraftPlaceholder && blueprint.status === 'draft' && (
+                            <motion.button
+                              className={cn(
+                                'inline-flex items-center gap-1 ml-1',
+                                'text-xs font-medium text-primary hover:text-primary-dark',
+                                'transition-all duration-200 group',
+                                'hover:underline hover:underline-offset-2'
+                              )}
+                              whileHover={{ scale: 1.02 }}
+                              whileTap={{ scale: 0.98 }}
+                              onClick={() => onResume(blueprint.id)}
+                            >
+                              <span>Complete blueprint</span>
+                              <svg
+                                className="h-3 w-3 transition-transform duration-200 group-hover:translate-x-0.5"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                              >
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                              </svg>
+                            </motion.button>
+                          )}
                         </p>
                       );
                     } catch {
+                      const isDraftPlaceholder = true; // Always show complete button for draft placeholders
+
                       return (
                         <p className="leading-relaxed">
                           This is a placeholder executive summary. The full summary will be available as soon as your blueprint is generated with AI-powered insights.
-                          <motion.button
-                            className={cn(
-                              'inline-flex items-center gap-1 ml-1',
-                              'text-xs font-medium text-primary hover:text-primary-dark',
-                              'transition-all duration-200 group',
-                              'hover:underline hover:underline-offset-2'
-                            )}
-                            whileHover={{ scale: 1.02 }}
-                            whileTap={{ scale: 0.98 }}
-                          >
-                            <span>Continue reading</span>
-                            <svg
-                              className="h-3 w-3 transition-transform duration-200 group-hover:translate-x-0.5"
-                              fill="none"
-                              stroke="currentColor"
-                              viewBox="0 0 24 24"
+                          {isDraftPlaceholder && blueprint.status === 'draft' && (
+                            <motion.button
+                              className={cn(
+                                'inline-flex items-center gap-1 ml-1',
+                                'text-xs font-medium text-primary hover:text-primary-dark',
+                                'transition-all duration-200 group',
+                                'hover:underline hover:underline-offset-2'
+                              )}
+                              whileHover={{ scale: 1.02 }}
+                              whileTap={{ scale: 0.98 }}
+                              onClick={() => onResume(blueprint.id)}
                             >
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                            </svg>
-                          </motion.button>
+                              <span>Complete blueprint</span>
+                              <svg
+                                className="h-3 w-3 transition-transform duration-200 group-hover:translate-x-0.5"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                              >
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                              </svg>
+                            </motion.button>
+                          )}
                         </p>
                       );
                     }
@@ -424,10 +453,81 @@ export function BlueprintCard({
                 {/* Summary Metrics */}
                 <div className="flex items-center justify-between pt-2 border-t border-white/10">
                   <div className="flex items-center gap-2">
-                    <div className="h-2 w-2 rounded-full bg-warning animate-pulse" />
+                    <div className={cn(
+                      "h-2 w-2 rounded-full animate-pulse",
+                      blueprint.status === 'completed' ? 'bg-primary' : 'bg-warning'
+                    )} />
                     <span className="text-xs font-medium text-white/60">Scope</span>
                   </div>
-                  <span className="text-xs font-bold text-warning">Unavailable</span>
+                  {(() => {
+                    // Extract scope information from blueprint data for completed blueprints
+                    if (blueprint.status === 'completed' && blueprint.blueprint_json) {
+                      try {
+                        const blueprintData = blueprint.blueprint_json as any;
+
+                        // Try to find scope information in various sections
+                        let scopeInfo = '';
+
+                        // Check target audience for demographic scope
+                        if (blueprintData.target_audience?.demographics) {
+                          const demographics = blueprintData.target_audience.demographics;
+                          const roles = demographics.roles || [];
+                          const experienceLevels = demographics.experience_levels || [];
+                          const departments = demographics.department_distribution || [];
+
+                          if (roles.length > 0) {
+                            scopeInfo += `${roles.length} roles`;
+                          }
+                          if (experienceLevels.length > 0) {
+                            if (scopeInfo) scopeInfo += ', ';
+                            scopeInfo += `${experienceLevels.length} exp levels`;
+                          }
+                          if (departments.length > 0) {
+                            if (scopeInfo) scopeInfo += ', ';
+                            scopeInfo += `${departments.length} depts`;
+                          }
+                        }
+
+                        // Check content outline for module count
+                        if (blueprintData.content_outline?.modules) {
+                          const moduleCount = blueprintData.content_outline.modules.length;
+                          if (scopeInfo) scopeInfo += ', ';
+                          scopeInfo += `${moduleCount} modules`;
+                        }
+
+                        // Check resources for budget/scope indicators
+                        if (blueprintData.resources?.budget) {
+                          const budget = blueprintData.resources.budget;
+                          if (budget.total && scopeInfo) scopeInfo += ', ';
+                          if (budget.total) {
+                            scopeInfo += `$${budget.total.toLocaleString()} budget`;
+                          }
+                        }
+
+                        // If no specific scope info found, try to infer from available sections
+                        if (!scopeInfo) {
+                          const sections = Object.keys(blueprintData).filter(key =>
+                            key !== 'metadata' && key !== 'executive_summary'
+                          );
+                          scopeInfo = `${sections.length} sections`;
+                        }
+
+                        return (
+                          <span className="text-xs font-bold text-primary">
+                            {scopeInfo || 'Available'}
+                          </span>
+                        );
+                      } catch {
+                        return (
+                          <span className="text-xs font-bold text-warning">Unavailable</span>
+                        );
+                      }
+                    }
+
+                    return (
+                      <span className="text-xs font-bold text-warning">Unavailable</span>
+                    );
+                  })()}
                 </div>
               </div>
 

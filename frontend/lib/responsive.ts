@@ -155,6 +155,11 @@ export const responsiveClasses = {
   containerWide: 'w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8',
 
   /**
+   * Standard header container with consistent width
+   */
+  headerContainer: 'w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8',
+
+  /**
    * Full-width container for hero sections and banners
    */
   containerFull: 'w-full px-4 sm:px-6 lg:px-8',

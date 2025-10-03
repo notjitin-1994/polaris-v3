@@ -206,6 +206,7 @@ export function BlueprintFilters({
       document.addEventListener('mousedown', handleClickOutside);
       return () => document.removeEventListener('mousedown', handleClickOutside);
     }
+    return undefined;
   }, [variant, isExpanded]);
 
   // Header variant - button with dropdown

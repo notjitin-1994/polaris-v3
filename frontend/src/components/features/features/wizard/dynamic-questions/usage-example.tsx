@@ -9,13 +9,13 @@
 
 import { useState, useEffect } from 'react';
 import { DynamicQuestionsLoader } from './DynamicQuestionsLoader';
-import type { NAField } from '@/lib/dynamic-form/types';
+import type { Question } from '@/lib/dynamic-form/types';
 
 interface DynamicQuestionsStepProps {
   /** Existing static answers to inform question generation */
   staticAnswers: Record<string, unknown>;
   /** Callback when questions are generated */
-  onQuestionsGenerated?: (questions: NAField[]) => void;
+  onQuestionsGenerated?: (questions: Question[]) => void;
   /** Callback when user completes this step */
   onComplete?: (answers: Record<string, unknown>) => void;
 }
@@ -32,7 +32,7 @@ export function DynamicQuestionsStepExample({
   const [loading, setLoading] = useState(true);
   const [generationPhase, setGenerationPhase] = useState('Initializing AI analysis...');
   const [statusText, setStatusText] = useState('Preparing');
-  const [questions, setQuestions] = useState<NAField[]>([]);
+  const [questions, setQuestions] = useState<Question[]>([]);
   const [answers, setAnswers] = useState<Record<string, unknown>>({});
   const [error, setError] = useState<string | null>(null);
 

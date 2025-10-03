@@ -35,7 +35,7 @@ export function InstructionalStrategyInfographic({
   // Generate colors for each modality
   const colors = [
     { bg: 'bg-primary/20', text: 'text-primary', bar: 'bg-primary' },
-    { bg: 'bg-secondary/20', text: 'text-secondary', bar: 'bg-secondary' },
+    { bg: 'bg-primary/20', text: 'text-primary', bar: 'bg-primary' },
     { bg: 'bg-success/20', text: 'text-success', bar: 'bg-success' },
     { bg: 'bg-warning/20', text: 'text-warning', bar: 'bg-warning' },
   ];
@@ -54,18 +54,18 @@ export function InstructionalStrategyInfographic({
           </div>
           <h3 className="text-lg font-bold text-white">Strategic Approach</h3>
         </div>
-        <p className="text-text-secondary text-sm leading-relaxed">{overview}</p>
+        <p className="text-text-primary text-sm leading-relaxed">{overview}</p>
       </motion.div>
 
       {/* Learning Modalities */}
       <div className="space-y-4">
         <div className="mb-4 flex items-center gap-3">
-          <div className="bg-secondary/20 rounded-xl p-3">
-            <Layers className="text-secondary h-6 w-6" />
+          <div className="bg-primary/20 rounded-xl p-3">
+            <Layers className="text-primary h-6 w-6" />
           </div>
           <div>
             <h3 className="text-lg font-bold text-white">Learning Modalities</h3>
-            <p className="text-text-secondary text-sm">Distribution across learning methods</p>
+            <p className="text-text-primary text-sm">Distribution across learning methods</p>
           </div>
         </div>
 
@@ -87,7 +87,7 @@ export function InstructionalStrategyInfographic({
                 <div className="mb-3 flex items-start justify-between">
                   <div className="flex-1">
                     <h4 className="mb-1 text-base font-semibold text-white">{modality.type}</h4>
-                    <p className="text-text-secondary text-sm">{modality.rationale}</p>
+                    <p className="text-text-primary text-sm">{modality.rationale}</p>
                   </div>
                   <div className="ml-4 flex flex-col items-end">
                     <span className={`text-2xl font-bold ${color.text}`}>
@@ -142,7 +142,7 @@ export function InstructionalStrategyInfographic({
             </div>
             <h3 className="text-lg font-bold text-white">Cohort Model</h3>
           </div>
-          <p className="text-text-secondary text-sm leading-relaxed">{cohort_model}</p>
+          <p className="text-text-primary text-sm leading-relaxed">{cohort_model}</p>
         </motion.div>
       )}
 
@@ -170,7 +170,7 @@ export function InstructionalStrategyInfographic({
                 className="flex items-start gap-3 rounded-lg bg-white/5 p-4"
               >
                 <div className="bg-success mt-0.5 h-2 w-2 flex-shrink-0 rounded-full" />
-                <span className="text-text-secondary text-sm">{consideration}</span>
+                <span className="text-text-primary text-sm">{consideration}</span>
               </motion.div>
             ))}
           </div>

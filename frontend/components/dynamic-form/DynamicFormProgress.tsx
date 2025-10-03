@@ -71,7 +71,7 @@ export function DynamicFormProgress({
             </h3>
           )}
           {sectionDescription && (
-            <p className="text-text-secondary max-w-lg text-[15px] leading-relaxed">
+            <p className="text-text-secondary text-[15px] leading-relaxed">
               {sectionDescription}
             </p>
           )}
