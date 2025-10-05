@@ -37,9 +37,7 @@ function StaticWizardContent(): React.JSX.Element {
             >
               <h1 className="font-heading lg:text-10xl text-7xl font-bold tracking-tight text-white sm:text-8xl md:text-9xl">
                 <span>Starmap </span>
-                <span className="bg-gradient-to-r from-[#a7dadb] to-[#7bc4c4] bg-clip-text text-transparent">
-                  Navigator
-                </span>
+                <span className="text-primary">Navigator</span>
               </h1>
             </motion.div>
 

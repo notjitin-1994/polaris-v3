@@ -10,7 +10,7 @@ export function AssessmentTypeStep(): React.JSX.Element {
     formState: { errors },
   } = useFormContext<StaticQuestionsFormValues>();
 
-  const assessmentExamples = [
+  const _assessmentExamples = [
     'Multiple choice quizzes',
     'Practical projects',
     'Code reviews',

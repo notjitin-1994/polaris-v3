@@ -15,7 +15,7 @@ import { BlueprintRow } from '@/lib/db/blueprints';
 import { StandardHeader } from '@/components/layout/StandardHeader';
 import { createServiceLogger } from '@/lib/logging';
 
-const logger = createServiceLogger('ui');
+const _logger = createServiceLogger('ui');
 
 interface DynamicWizardPageProps {
   params: Promise<{ id: string }>;

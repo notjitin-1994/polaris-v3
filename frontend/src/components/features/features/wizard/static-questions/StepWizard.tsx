@@ -21,8 +21,8 @@ import {
   ConstraintsStep,
   EvaluationStep,
 } from '@/components/wizard/static-questions/steps';
-import { QuestionnaireLayout } from '@/components/wizard/static-questions/QuestionnaireLayout';
-import { QuestionnaireCard } from '@/components/wizard/static-questions/QuestionnaireCard';
+import { _QuestionnaireLayout } from '@/components/wizard/static-questions/QuestionnaireLayout';
+import { _QuestionnaireCard } from '@/components/wizard/static-questions/QuestionnaireCard';
 import { QuestionnaireProgress } from '@/components/wizard/static-questions/QuestionnaireProgress';
 import { QuestionnaireButton } from '@/components/wizard/static-questions/QuestionnaireButton';
 import { useSession } from '@/hooks/useSession';
@@ -294,7 +294,7 @@ export function StepWizard(): React.JSX.Element {
     setStep(Math.max(currentStepIndex - 1, 0));
   };
 
-  const goTo = async (index: number) => {
+  const _goTo = async (index: number) => {
     if (index <= currentStepIndex) return setStep(index);
     // Allow navigation without validation for now
     setStep(index);

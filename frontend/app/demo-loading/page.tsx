@@ -18,7 +18,7 @@ function DemoContent(): React.JSX.Element {
   const [activeDemo, setActiveDemo] = useState<LoadingType>('dynamic-questions');
 
   // For demo purposes, create a mock user if none exists
-  const demoUser = user || {
+  const _demoUser = user || {
     id: 'demo-user',
     email: 'demo@smartslate.com',
     user_metadata: { name: 'Demo User' },

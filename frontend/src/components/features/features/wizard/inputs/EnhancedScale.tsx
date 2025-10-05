@@ -73,7 +73,7 @@ export function EnhancedScale({
       <div className="flex items-center justify-between gap-2">
         {options.map((option, index) => {
           const isSelected = value === option;
-          const intensity = index / (options.length - 1);
+          const _intensity = index / (options.length - 1);
 
           return (
             <button

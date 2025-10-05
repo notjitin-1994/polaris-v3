@@ -185,7 +185,7 @@ export default function BlueprintPage({ params }: PageProps): React.JSX.Element 
     setTimeout(() => setShowSuccessToast(false), 3000);
   };
 
-  const handleExportPDF = async () => {
+  const _handleExportPDF = async () => {
     if (!data) return;
 
     setIsExporting(true);
