@@ -48,26 +48,26 @@ export function SuccessMetricsInfographic({
             whileHover={{ y: -8, scale: 1.02 }}
             className="group flex min-h-[400px]"
           >
-            <div className="glass-card hover:glass-strong relative flex-1 overflow-hidden rounded-2xl border border-white/10 transition-all duration-500 hover:border-primary/20 hover:shadow-2xl">
+            <div className="glass-card hover:glass-strong hover:border-primary/20 relative flex-1 overflow-hidden rounded-2xl border border-white/10 transition-all duration-500 hover:shadow-2xl">
               {/* Subtle background gradient */}
-              <div className="bg-gradient-to-br from-primary/5 via-transparent to-primary/10 absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+              <div className="from-primary/5 to-primary/10 absolute inset-0 bg-gradient-to-br via-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
 
               {/* Content Container */}
               <div className="relative z-10 p-8">
                 {/* Header Section */}
                 <div className="mb-6 flex items-start justify-between">
                   <div className="flex-1">
-                    <div className="bg-primary/10 text-primary mb-3 inline-flex items-center gap-2 rounded-full px-4 py-2 text-xs font-semibold uppercase tracking-wider">
+                    <div className="bg-primary/10 text-primary mb-3 inline-flex items-center gap-2 rounded-full px-4 py-2 text-xs font-semibold tracking-wider uppercase">
                       <BarChart3 className="h-3 w-3" />
                       KPI METRIC
                     </div>
-                    <h3 className="text-foreground text-xl font-bold leading-tight">
+                    <h3 className="text-foreground text-xl leading-tight font-bold">
                       {metric.metric}
                     </h3>
                   </div>
                   <motion.div
                     whileHover={{ rotate: 15, scale: 1.1 }}
-                    className="bg-success/10 text-success rounded-full p-2 transition-colors group-hover:bg-success/20"
+                    className="bg-success/10 text-success group-hover:bg-success/20 rounded-full p-2 transition-colors"
                   >
                     <TrendingUp className="h-5 w-5" />
                   </motion.div>
@@ -77,7 +77,7 @@ export function SuccessMetricsInfographic({
                 <div className="mb-8">
                   {/* Metric Header */}
                   <div className="mb-4 flex items-center justify-between">
-                    <div className="text-text-secondary text-xs font-medium uppercase tracking-wider">
+                    <div className="text-text-secondary text-xs font-medium tracking-wider uppercase">
                       Performance Comparison
                     </div>
                     <div className="bg-primary/10 text-primary rounded-full px-3 py-1 text-xs font-semibold">
@@ -87,7 +87,7 @@ export function SuccessMetricsInfographic({
 
                   {/* Integrated Current/Target Display */}
                   <motion.div
-                    className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-surface/50 to-surface/30 p-1"
+                    className="from-surface/50 to-surface/30 relative overflow-hidden rounded-2xl bg-gradient-to-r p-1"
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: index * 0.1 + 0.3 }}
@@ -95,7 +95,7 @@ export function SuccessMetricsInfographic({
                     <div className="relative flex">
                       {/* Current Value Section */}
                       <div className="bg-surface/80 border-primary/20 relative flex-1 rounded-l-xl border-r p-6">
-                        <div className="text-text-secondary mb-2 text-xs font-medium uppercase tracking-wider">
+                        <div className="text-text-secondary mb-2 text-xs font-medium tracking-wider uppercase">
                           Current
                         </div>
                         <motion.div
@@ -106,13 +106,11 @@ export function SuccessMetricsInfographic({
                         >
                           {metric.current_baseline}
                         </motion.div>
-                        <div className="text-text-secondary mt-1 text-xs">
-                          Baseline performance
-                        </div>
+                        <div className="text-text-secondary mt-1 text-xs">Baseline performance</div>
                       </div>
 
                       {/* Comparison Indicator */}
-                      <div className="bg-primary/20 border-primary/40 flex w-16 items-center justify-center border-l border-r">
+                      <div className="bg-primary/20 border-primary/40 flex w-16 items-center justify-center border-r border-l">
                         <motion.div
                           initial={{ scale: 0 }}
                           animate={{ scale: 1 }}
@@ -125,7 +123,7 @@ export function SuccessMetricsInfographic({
 
                       {/* Target Value Section */}
                       <div className="bg-primary/15 border-primary/30 relative flex-1 rounded-r-xl border-l p-6">
-                        <div className="text-primary mb-2 text-xs font-medium uppercase tracking-wider">
+                        <div className="text-primary mb-2 text-xs font-medium tracking-wider uppercase">
                           Target
                         </div>
                         <motion.div
@@ -136,9 +134,7 @@ export function SuccessMetricsInfographic({
                         >
                           {metric.target}
                         </motion.div>
-                        <div className="text-primary/80 mt-1 text-xs">
-                          Goal achievement
-                        </div>
+                        <div className="text-primary/80 mt-1 text-xs">Goal achievement</div>
                       </div>
                     </div>
                   </motion.div>
@@ -151,7 +147,7 @@ export function SuccessMetricsInfographic({
                     transition={{ delay: index * 0.1 + 0.6, duration: 0.8, ease: 'easeOut' }}
                   >
                     <motion.div
-                      className="bg-gradient-to-r from-primary/40 to-primary h-full rounded-full"
+                      className="from-primary/40 to-primary h-full rounded-full bg-gradient-to-r"
                       initial={{ width: '0%' }}
                       animate={{ width: '100%' }}
                       transition={{ delay: index * 0.1 + 0.7, duration: 1.2, ease: 'easeOut' }}
@@ -166,8 +162,12 @@ export function SuccessMetricsInfographic({
                       <Activity className="h-4 w-4" />
                     </div>
                     <div className="flex-1">
-                      <div className="text-text-secondary text-xs font-medium">Measurement Method</div>
-                      <div className="text-foreground text-sm font-medium">{metric.measurement_method}</div>
+                      <div className="text-text-secondary text-xs font-medium">
+                        Measurement Method
+                      </div>
+                      <div className="text-foreground text-sm font-medium">
+                        {metric.measurement_method}
+                      </div>
                     </div>
                   </div>
 
@@ -176,7 +176,9 @@ export function SuccessMetricsInfographic({
                       <Target className="h-4 w-4" />
                     </div>
                     <div className="flex-1">
-                      <div className="text-text-secondary text-xs font-medium">Evaluation Timeline</div>
+                      <div className="text-text-secondary text-xs font-medium">
+                        Evaluation Timeline
+                      </div>
                       <div className="text-foreground text-sm font-medium">{metric.timeline}</div>
                     </div>
                   </div>
@@ -185,7 +187,7 @@ export function SuccessMetricsInfographic({
 
               {/* Animated accent line */}
               <motion.div
-                className="bg-gradient-to-r from-primary/60 to-primary absolute bottom-0 left-0 h-1 w-full"
+                className="from-primary/60 to-primary absolute bottom-0 left-0 h-1 w-full bg-gradient-to-r"
                 initial={{ scaleX: 0 }}
                 animate={{ scaleX: 1 }}
                 transition={{ delay: index * 0.1 + 0.5, duration: 0.8, ease: 'easeOut' }}

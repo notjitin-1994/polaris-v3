@@ -111,7 +111,6 @@ export default function StarmapJobsDashboard() {
         setSavedCount(statsData.completed);
       }
       if (env.isDev) {
-        // eslint-disable-next-line no-console
         console.log(
           '[TierLimits] created(total)=',
           statsData?.total,

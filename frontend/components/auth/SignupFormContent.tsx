@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import type React from 'react';
 import { AuthInput } from './AuthInput';
 import { PasswordInput } from './PasswordInput';
@@ -15,16 +15,41 @@ export function SignupFormContent(): React.JSX.Element {
   const _router = useRouter();
   const [identifierRaw, setIdentifierRaw] = useState('');
   const [identifier, setIdentifier] = useState<IdentifierValue>({ kind: 'unknown', raw: '' });
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
   const [password, setPassword] = useState('');
   const [confirm, setConfirm] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showPasswordStrength, setShowPasswordStrength] = useState(false);
+  const [animatingOut, setAnimatingOut] = useState(false);
+
+  // Handle exit animation timing
+  useEffect(() => {
+    if (!showPasswordStrength && password) {
+      setAnimatingOut(true);
+      const timer = setTimeout(() => {
+        setAnimatingOut(false);
+      }, 200); // Match the animation duration
+      return () => clearTimeout(timer);
+    }
+  }, [showPasswordStrength, password]);
 
   async function onSubmit(e: React.FormEvent): Promise<void> {
     e.preventDefault();
 
     if (identifier.kind !== 'email') {
       setError('Please enter a valid email address');
+      return;
+    }
+
+    if (!firstName.trim()) {
+      setError('Please enter your first name');
+      return;
+    }
+
+    if (!lastName.trim()) {
+      setError('Please enter your last name');
       return;
     }
 
@@ -39,15 +64,35 @@ export function SignupFormContent(): React.JSX.Element {
     try {
       const supabase = getSupabaseBrowserClient();
 
-      const { error: signUpError } = await supabase.auth.signUp({
+      const { data, error: signUpError } = await supabase.auth.signUp({
         email: identifier.email,
         password,
         options: {
           emailRedirectTo: `${window.location.origin}/auth/callback`,
+          data: {
+            first_name: firstName.trim(),
+            last_name: lastName.trim(),
+            full_name: `${firstName.trim()} ${lastName.trim()}`,
+          },
         },
       });
 
       if (signUpError) throw signUpError;
+
+      // Update user profile if signup was successful
+      if (data.user) {
+        const { error: profileError } = await supabase.from('user_profiles').upsert({
+          user_id: data.user.id,
+          first_name: firstName.trim(),
+          last_name: lastName.trim(),
+          full_name: `${firstName.trim()} ${lastName.trim()}`,
+        });
+
+        if (profileError) {
+          console.error('Error updating user profile:', profileError);
+          // Don't throw here as the user account was created successfully
+        }
+      }
 
       // Force immediate redirect using window.location
       window.location.href = '/';
@@ -58,7 +103,33 @@ export function SignupFormContent(): React.JSX.Element {
   }
 
   return (
-    <form onSubmit={onSubmit} className="animate-fade-in-up space-y-5">
+    <form onSubmit={onSubmit} className="animate-fade-in-up space-y-6">
+      {/* Name fields */}
+      <div className="grid grid-cols-2 gap-4">
+        <div className="space-y-2">
+          <label className="block text-sm text-white/70">First name</label>
+          <input
+            className="focus:ring-primary focus:border-primary w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white placeholder-white/40 ring-0 transition outline-none focus:ring-[1.2px]"
+            placeholder="John"
+            value={firstName}
+            onChange={(e) => setFirstName(e.target.value)}
+            autoComplete="given-name"
+            required
+          />
+        </div>
+        <div className="space-y-2">
+          <label className="block text-sm text-white/70">Last name</label>
+          <input
+            className="focus:ring-primary focus:border-primary w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white placeholder-white/40 ring-0 transition outline-none focus:ring-[1.2px]"
+            placeholder="Doe"
+            value={lastName}
+            onChange={(e) => setLastName(e.target.value)}
+            autoComplete="family-name"
+            required
+          />
+        </div>
+      </div>
+
       <AuthInput
         value={identifierRaw}
         onChange={(raw, parsed) => {
@@ -66,15 +137,30 @@ export function SignupFormContent(): React.JSX.Element {
           setIdentifier(parsed);
         }}
       />
-      <PasswordInput
-        label="Password"
-        value={password}
-        onChange={setPassword}
-        placeholder="Create a strong password"
-        autoComplete="new-password"
-        name="new-password"
-      />
-      <PasswordStrength value={password} />
+
+      <div className="space-y-4">
+        <PasswordInput
+          label="Password"
+          value={password}
+          onChange={setPassword}
+          placeholder="Create a strong password"
+          autoComplete="new-password"
+          name="new-password"
+          onFocus={() => setShowPasswordStrength(true)}
+          onBlur={() => setShowPasswordStrength(false)}
+        />
+        {(showPasswordStrength || animatingOut) && password && (
+          <div
+            className={`${
+              showPasswordStrength
+                ? 'animate-in slide-in-from-top-2 duration-300'
+                : 'animate-out fade-out slide-out-to-top-2 duration-200'
+            }`}
+          >
+            <PasswordStrength value={password} />
+          </div>
+        )}
+      </div>
       <PasswordInput
         label="Confirm password"
         value={confirm}
@@ -84,7 +170,7 @@ export function SignupFormContent(): React.JSX.Element {
         name="confirm-password"
       />
 
-      {error && <p className="text-sm text-red-400">{error}</p>}
+      {error && <p className="text-error text-sm">{error}</p>}
 
       <button
         type="submit"

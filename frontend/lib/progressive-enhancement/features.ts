@@ -1,69 +1,69 @@
-"use client"
+'use client';
 
 export interface FeatureSupport {
   // CSS Features
-  backdropFilter: boolean
-  gap: boolean
-  aspectRatio: boolean
-  containerQueries: boolean
-  customProperties: boolean
-  grid: boolean
-  flexbox: boolean
+  backdropFilter: boolean;
+  gap: boolean;
+  aspectRatio: boolean;
+  containerQueries: boolean;
+  customProperties: boolean;
+  grid: boolean;
+  flexbox: boolean;
 
   // JavaScript APIs
-  intersectionObserver: boolean
-  resizeObserver: boolean
-  mutationObserver: boolean
-  serviceWorker: boolean
-  webWorkers: boolean
-  fetch: boolean
-  promises: boolean
-  asyncAwait: boolean
+  intersectionObserver: boolean;
+  resizeObserver: boolean;
+  mutationObserver: boolean;
+  serviceWorker: boolean;
+  webWorkers: boolean;
+  fetch: boolean;
+  promises: boolean;
+  asyncAwait: boolean;
 
   // Device Capabilities
-  touch: boolean
-  deviceMemory?: number
+  touch: boolean;
+  deviceMemory?: number;
   connection?: {
-    effectiveType: string
-    downlink: number
-    rtt: number
-  }
+    effectiveType: string;
+    downlink: number;
+    rtt: number;
+  };
 
   // Graphics
-  webGL: boolean
-  webGL2: boolean
-  canvas: boolean
+  webGL: boolean;
+  webGL2: boolean;
+  canvas: boolean;
 
   // Performance
-  performanceObserver: boolean
-  performanceMark: boolean
+  performanceObserver: boolean;
+  performanceMark: boolean;
 
   // Storage
-  indexedDB: boolean
-  localStorage: boolean
-  sessionStorage: boolean
+  indexedDB: boolean;
+  localStorage: boolean;
+  sessionStorage: boolean;
 
   // Media
-  mediaQueries: boolean
-  pictureElement: boolean
-  webp: boolean
-  avif: boolean
+  mediaQueries: boolean;
+  pictureElement: boolean;
+  webp: boolean;
+  avif: boolean;
 
   // Accessibility
-  prefersReducedMotion: boolean
-  prefersColorScheme: boolean
+  prefersReducedMotion: boolean;
+  prefersColorScheme: boolean;
 
   // Network
-  offline: boolean
-  online: boolean
+  offline: boolean;
+  online: boolean;
 }
 
 /**
  * Detect CSS feature support using CSS.supports()
  */
 function detectCSSSupport(): Partial<FeatureSupport> {
-  if (typeof window === "undefined" || !window.CSS?.supports) {
-    return {}
+  if (typeof window === 'undefined' || !window.CSS?.supports) {
+    return {};
   }
 
   return {
@@ -74,15 +74,15 @@ function detectCSSSupport(): Partial<FeatureSupport> {
     customProperties: CSS.supports('--custom-property', 'value'),
     grid: CSS.supports('display', 'grid'),
     flexbox: CSS.supports('display', 'flex'),
-  }
+  };
 }
 
 /**
  * Detect JavaScript API support
  */
 function detectAPISupport(): Partial<FeatureSupport> {
-  if (typeof window === "undefined") {
-    return {}
+  if (typeof window === 'undefined') {
+    return {};
   }
 
   return {
@@ -103,49 +103,53 @@ function detectAPISupport(): Partial<FeatureSupport> {
     pictureElement: 'HTMLPictureElement' in window,
     webp: true, // We'll assume WebP is supported, can be tested with image loading
     avif: true, // We'll assume AVIF is supported, can be tested with image loading
-    prefersReducedMotion: 'matchMedia' in window && window.matchMedia('(prefers-reduced-motion)').matches !== undefined,
-    prefersColorScheme: 'matchMedia' in window && window.matchMedia('(prefers-color-scheme)').matches !== undefined,
+    prefersReducedMotion:
+      'matchMedia' in window && window.matchMedia('(prefers-reduced-motion)').matches !== undefined,
+    prefersColorScheme:
+      'matchMedia' in window && window.matchMedia('(prefers-color-scheme)').matches !== undefined,
     offline: 'onLine' in navigator,
     online: 'onLine' in navigator,
-  }
+  };
 }
 
 /**
  * Detect device capabilities
  */
 function detectDeviceCapabilities(): Partial<FeatureSupport> {
-  if (typeof navigator === "undefined") {
-    return {}
+  if (typeof navigator === 'undefined') {
+    return {};
   }
 
   return {
     touch: 'ontouchstart' in window || navigator.maxTouchPoints > 0,
     deviceMemory: (navigator as any).deviceMemory,
-    connection: (navigator as any).connection ? {
-      effectiveType: (navigator as any).connection.effectiveType,
-      downlink: (navigator as any).connection.downlink,
-      rtt: (navigator as any).connection.rtt,
-    } : undefined,
-  }
+    connection: (navigator as any).connection
+      ? {
+          effectiveType: (navigator as any).connection.effectiveType,
+          downlink: (navigator as any).connection.downlink,
+          rtt: (navigator as any).connection.rtt,
+        }
+      : undefined,
+  };
 }
 
 /**
  * Detect graphics capabilities
  */
 function detectGraphicsCapabilities(): Partial<FeatureSupport> {
-  if (typeof document === "undefined") {
-    return {}
+  if (typeof document === 'undefined') {
+    return {};
   }
 
-  const canvas = document.createElement('canvas')
-  const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl')
-  const gl2 = canvas.getContext('webgl2')
+  const canvas = document.createElement('canvas');
+  const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+  const gl2 = canvas.getContext('webgl2');
 
   return {
     webGL: !!gl,
     webGL2: !!gl2,
     canvas: !!canvas.getContext('2d'),
-  }
+  };
 }
 
 /**
@@ -164,34 +168,31 @@ export function getFeatureSupport(): FeatureSupport {
 
     // Graphics
     ...detectGraphicsCapabilities(),
-  }
+  };
 }
 
 /**
  * Check if a specific feature is supported
  */
 export function isFeatureSupported(feature: keyof FeatureSupport): boolean {
-  const support = getFeatureSupport()
-  return support[feature] === true
+  const support = getFeatureSupport();
+  return support[feature] === true;
 }
 
 /**
  * Get enhancement level based on detected capabilities
  */
-export type EnhancementLevel = 'basic' | 'standard' | 'full'
+export type EnhancementLevel = 'basic' | 'standard' | 'full';
 
 export function getEnhancementLevel(): EnhancementLevel {
-  const support = getFeatureSupport()
+  const support = getFeatureSupport();
 
   // Basic level: Core functionality, no advanced features
   const hasBasicSupport =
-    support.flexbox &&
-    support.promises &&
-    support.fetch &&
-    support.localStorage
+    support.flexbox && support.promises && support.fetch && support.localStorage;
 
   if (!hasBasicSupport) {
-    return 'basic'
+    return 'basic';
   }
 
   // Standard level: Most modern features but not cutting-edge
@@ -200,33 +201,30 @@ export function getEnhancementLevel(): EnhancementLevel {
     support.gap &&
     support.intersectionObserver &&
     support.resizeObserver &&
-    support.serviceWorker
+    support.serviceWorker;
 
   if (!hasStandardSupport) {
-    return 'standard'
+    return 'standard';
   }
 
   // Full level: All features including advanced graphics
   const hasFullSupport =
-    support.webGL &&
-    support.webGL2 &&
-    support.containerQueries &&
-    support.aspectRatio
+    support.webGL && support.webGL2 && support.containerQueries && support.aspectRatio;
 
-  return hasFullSupport ? 'full' : 'standard'
+  return hasFullSupport ? 'full' : 'standard';
 }
 
 /**
  * Performance budget based on enhancement level and device capabilities
  */
 export function getPerformanceBudget(): {
-  maxBundleSize: number
-  maxImageSize: number
-  maxAnimationComplexity: number
-  recommendedImageFormat: 'jpeg' | 'webp' | 'avif'
+  maxBundleSize: number;
+  maxImageSize: number;
+  maxAnimationComplexity: number;
+  recommendedImageFormat: 'jpeg' | 'webp' | 'avif';
 } {
-  const level = getEnhancementLevel()
-  const support = getFeatureSupport()
+  const level = getEnhancementLevel();
+  const support = getFeatureSupport();
 
   switch (level) {
     case 'basic':
@@ -235,7 +233,7 @@ export function getPerformanceBudget(): {
         maxImageSize: 50 * 1024, // 50KB
         maxAnimationComplexity: 1, // Simple animations only
         recommendedImageFormat: 'jpeg',
-      }
+      };
 
     case 'standard':
       return {
@@ -243,7 +241,7 @@ export function getPerformanceBudget(): {
         maxImageSize: 150 * 1024, // 150KB
         maxAnimationComplexity: 2, // Moderate animations
         recommendedImageFormat: support.webp ? 'webp' : 'jpeg',
-      }
+      };
 
     case 'full':
     default:
@@ -252,6 +250,6 @@ export function getPerformanceBudget(): {
         maxImageSize: 300 * 1024, // 300KB
         maxAnimationComplexity: 3, // Complex animations allowed
         recommendedImageFormat: support.avif ? 'avif' : support.webp ? 'webp' : 'jpeg',
-      }
+      };
   }
 }

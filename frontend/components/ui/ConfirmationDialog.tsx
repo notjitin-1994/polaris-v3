@@ -82,9 +82,10 @@ export function ConfirmationDialog({
 
   const isDisabled = loading || isLoading;
   const displayName = itemCount > 1 ? `${itemCount} ${itemName}s` : itemName;
-  const fullDescription = itemCount > 1
-    ? `Are you sure you want to delete ${displayName}? ${description}`
-    : `Are you sure you want to delete this ${itemName}? ${description}`;
+  const fullDescription =
+    itemCount > 1
+      ? `Are you sure you want to delete ${displayName}? ${description}`
+      : `Are you sure you want to delete this ${itemName}? ${description}`;
 
   const Icon = variant === 'destructive' ? Trash2 : AlertTriangle;
 
@@ -98,17 +99,17 @@ export function ConfirmationDialog({
         <div className="border-b border-white/10 bg-white/5 p-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
-              <div className={`border-primary/20 flex h-10 w-10 items-center justify-center rounded-full border ${
-                variant === 'destructive'
-                  ? 'bg-error/10 text-error'
-                  : 'bg-warning/10 text-warning'
-              }`}>
+              <div
+                className={`border-primary/20 flex h-10 w-10 items-center justify-center rounded-full border ${
+                  variant === 'destructive'
+                    ? 'bg-error/10 text-error'
+                    : 'bg-warning/10 text-warning'
+                }`}
+              >
                 <Icon className="h-5 w-5" />
               </div>
               <div>
-                <h2 className="font-heading text-xl font-semibold text-white">
-                  {title}
-                </h2>
+                <h2 className="font-heading text-xl font-semibold text-white">{title}</h2>
                 <p className="text-sm text-white/60">
                   {itemCount > 1 ? `Delete ${displayName}` : `Delete ${itemName}`}
                 </p>
@@ -129,27 +130,23 @@ export function ConfirmationDialog({
         <div className="p-6">
           <div className="space-y-4">
             {/* Warning Message */}
-            <div className={`border-warning/20 text-warning flex items-start space-x-3 rounded-lg border px-4 py-3 text-sm ${
-              variant === 'destructive' ? 'border-error/20 text-error' : ''
-            }`}>
-              <AlertTriangle className="h-5 w-5 flex-shrink-0 mt-0.5" />
+            <div
+              className={`border-warning/20 text-warning flex items-start space-x-3 rounded-lg border px-4 py-3 text-sm ${
+                variant === 'destructive' ? 'border-error/20 text-error' : ''
+              }`}
+            >
+              <AlertTriangle className="mt-0.5 h-5 w-5 flex-shrink-0" />
               <div>
                 <p className="font-medium">
                   {itemCount > 1 ? 'Multiple items will be deleted' : 'This item will be deleted'}
                 </p>
-                <p className="mt-1 text-white/80">
-                  {fullDescription}
-                </p>
+                <p className="mt-1 text-white/80">{fullDescription}</p>
               </div>
             </div>
 
             {/* Actions */}
             <div className="flex justify-end space-x-3 pt-2">
-              <Button
-                variant="ghost"
-                onClick={onClose}
-                disabled={isDisabled}
-              >
+              <Button variant="ghost" onClick={onClose} disabled={isDisabled}>
                 {cancelText}
               </Button>
               <Button
@@ -189,4 +186,3 @@ export function ConfirmationDialog({
     </div>
   );
 }
-

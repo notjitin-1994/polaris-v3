@@ -12,6 +12,8 @@ export interface Database {
         Row: {
           user_id: string;
           full_name: string | null;
+          first_name: string | null;
+          last_name: string | null;
           avatar_url: string | null;
           preferences: Json;
           created_at: string;
@@ -20,6 +22,8 @@ export interface Database {
         Insert: {
           user_id: string;
           full_name?: string | null;
+          first_name?: string | null;
+          last_name?: string | null;
           avatar_url?: string | null;
           preferences?: Json;
           created_at?: string;
@@ -27,6 +31,8 @@ export interface Database {
         };
         Update: {
           full_name?: string | null;
+          first_name?: string | null;
+          last_name?: string | null;
           avatar_url?: string | null;
           preferences?: Json;
           updated_at?: string;
@@ -100,7 +106,7 @@ export interface Database {
         ];
       };
     };
-    Views: {};
+    Views: Record<string, never>;
     Functions: {
       set_updated_at: unknown;
       increment_blueprint_version: unknown;
@@ -110,6 +116,6 @@ export interface Database {
       };
       validate_static_answers: unknown;
     };
-    Enums: {};
+    Enums: Record<string, never>;
   };
 }

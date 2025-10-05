@@ -1,78 +1,78 @@
-"use client"
+'use client';
 
-import { useCallback, useEffect, useMemo, useState } from "react"
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 export interface BreakpointConfig {
-  name: string
-  minWidth: number
-  maxWidth?: number
+  name: string;
+  minWidth: number;
+  maxWidth?: number;
   layout: {
-    columns: number
-    spacing: 'tight' | 'normal' | 'loose'
-    density: 'compact' | 'normal' | 'spacious'
-    fontScale: number
-  }
+    columns: number;
+    spacing: 'tight' | 'normal' | 'loose';
+    density: 'compact' | 'normal' | 'spacious';
+    fontScale: number;
+  };
 }
 
 export interface ResponsiveContentState {
   /**
    * Current breakpoint name
    */
-  breakpoint: string
+  breakpoint: string;
 
   /**
    * Current breakpoint configuration
    */
-  breakpointConfig: BreakpointConfig
+  breakpointConfig: BreakpointConfig;
 
   /**
    * Current viewport width
    */
-  width: number
+  width: number;
 
   /**
    * Current viewport height
    */
-  height: number
+  height: number;
 
   /**
    * Whether current breakpoint is mobile
    */
-  isMobile: boolean
+  isMobile: boolean;
 
   /**
    * Whether current breakpoint is tablet
    */
-  isTablet: boolean
+  isTablet: boolean;
 
   /**
    * Whether current breakpoint is desktop
    */
-  isDesktop: boolean
+  isDesktop: boolean;
 
   /**
    * Layout configuration for current breakpoint
    */
-  layout: BreakpointConfig['layout']
+  layout: BreakpointConfig['layout'];
 }
 
 export interface UseResponsiveContentOptions {
   /**
    * Custom breakpoint configurations
    */
-  breakpoints?: BreakpointConfig[]
+  breakpoints?: BreakpointConfig[];
 
   /**
    * Debounce delay for resize events (ms)
    * @default 150
    */
-  debounceDelay?: number
+  debounceDelay?: number;
 
   /**
    * Whether to listen for orientation changes
    * @default true
    */
-  listenToOrientation?: boolean
+  listenToOrientation?: boolean;
 }
 
 /**
@@ -122,7 +122,7 @@ const DEFAULT_BREAKPOINTS: BreakpointConfig[] = [
       fontScale: 1.0625, // Slightly larger for desktop readability
     },
   },
-]
+];
 
 /**
  * Custom hook for responsive content management with breakpoint-based layout adaptation
@@ -149,54 +149,58 @@ const DEFAULT_BREAKPOINTS: BreakpointConfig[] = [
  * }
  * ```
  */
-export function useResponsiveContent(options: UseResponsiveContentOptions = {}): ResponsiveContentState {
+export function useResponsiveContent(
+  options: UseResponsiveContentOptions = {}
+): ResponsiveContentState {
   const {
     breakpoints = DEFAULT_BREAKPOINTS,
     debounceDelay = 150,
     listenToOrientation = true,
-  } = options
+  } = options;
 
   const [dimensions, setDimensions] = useState(() => {
-    if (typeof window === "undefined") {
-      return { width: 1024, height: 768 }
+    if (typeof window === 'undefined') {
+      return { width: 1024, height: 768 };
     }
     return {
       width: window.innerWidth,
       height: window.innerHeight,
-    }
-  })
+    };
+  });
 
   // Debounced resize handler
   const debouncedResizeHandler = useMemo(() => {
-    let timeoutId: NodeJS.Timeout
+    let timeoutId: NodeJS.Timeout;
 
     return () => {
-      clearTimeout(timeoutId)
+      clearTimeout(timeoutId);
       timeoutId = setTimeout(() => {
-        if (typeof window !== "undefined") {
+        if (typeof window !== 'undefined') {
           setDimensions({
             width: window.innerWidth,
             height: window.innerHeight,
-          })
+          });
         }
-      }, debounceDelay)
-    }
-  }, [debounceDelay])
+      }, debounceDelay);
+    };
+  }, [debounceDelay]);
 
   // Find current breakpoint based on width
   const currentBreakpoint = useMemo(() => {
-    return breakpoints.find(bp => {
-      const withinMin = dimensions.width >= bp.minWidth
-      const withinMax = bp.maxWidth ? dimensions.width <= bp.maxWidth : true
-      return withinMin && withinMax
-    }) || breakpoints[breakpoints.length - 1] // Fallback to largest breakpoint
-  }, [dimensions.width, breakpoints])
+    return (
+      breakpoints.find((bp) => {
+        const withinMin = dimensions.width >= bp.minWidth;
+        const withinMax = bp.maxWidth ? dimensions.width <= bp.maxWidth : true;
+        return withinMin && withinMax;
+      }) || breakpoints[breakpoints.length - 1]
+    ); // Fallback to largest breakpoint
+  }, [dimensions.width, breakpoints]);
 
   // Calculate responsive state
   const responsiveState = useMemo((): ResponsiveContentState => {
-    const isMobile = currentBreakpoint.name.startsWith('mobile')
-    const isTablet = currentBreakpoint.name === 'tablet'
-    const isDesktop = currentBreakpoint.name === 'desktop'
+    const isMobile = currentBreakpoint.name.startsWith('mobile');
+    const isTablet = currentBreakpoint.name === 'tablet';
+    const isDesktop = currentBreakpoint.name === 'desktop';
 
     return {
       breakpoint: currentBreakpoint.name,
@@ -207,47 +211,47 @@ export function useResponsiveContent(options: UseResponsiveContentOptions = {}):
       isTablet,
       isDesktop,
       layout: currentBreakpoint.layout,
-    }
-  }, [currentBreakpoint, dimensions])
+    };
+  }, [currentBreakpoint, dimensions]);
 
   // Resize observer for more precise dimension tracking
   useEffect(() => {
-    if (typeof window === "undefined") return
+    if (typeof window === 'undefined') return;
 
     const resizeObserver = new ResizeObserver((entries) => {
       for (const entry of entries) {
         if (entry.target === window.document.body) {
-          debouncedResizeHandler()
-          break
+          debouncedResizeHandler();
+          break;
         }
       }
-    })
+    });
 
-    resizeObserver.observe(document.body)
+    resizeObserver.observe(document.body);
 
     return () => {
-      resizeObserver.disconnect()
-    }
-  }, [debouncedResizeHandler])
+      resizeObserver.disconnect();
+    };
+  }, [debouncedResizeHandler]);
 
   // Window resize listener as fallback
   useEffect(() => {
-    if (typeof window === "undefined") return
+    if (typeof window === 'undefined') return;
 
-    window.addEventListener("resize", debouncedResizeHandler)
+    window.addEventListener('resize', debouncedResizeHandler);
     if (listenToOrientation) {
-      window.addEventListener("orientationchange", debouncedResizeHandler)
+      window.addEventListener('orientationchange', debouncedResizeHandler);
     }
 
     return () => {
-      window.removeEventListener("resize", debouncedResizeHandler)
+      window.removeEventListener('resize', debouncedResizeHandler);
       if (listenToOrientation) {
-        window.removeEventListener("orientationchange", debouncedResizeHandler)
+        window.removeEventListener('orientationchange', debouncedResizeHandler);
       }
-    }
-  }, [debouncedResizeHandler, listenToOrientation])
+    };
+  }, [debouncedResizeHandler, listenToOrientation]);
 
-  return responsiveState
+  return responsiveState;
 }
 
 /**
@@ -256,13 +260,13 @@ export function useResponsiveContent(options: UseResponsiveContentOptions = {}):
 export function getResponsiveSpacing(spacing: 'tight' | 'normal' | 'loose'): string {
   switch (spacing) {
     case 'tight':
-      return '8px'
+      return '8px';
     case 'normal':
-      return '16px'
+      return '16px';
     case 'loose':
-      return '24px'
+      return '24px';
     default:
-      return '16px'
+      return '16px';
   }
 }
 
@@ -270,14 +274,14 @@ export function getResponsiveSpacing(spacing: 'tight' | 'normal' | 'loose'): str
  * Utility function to get responsive font scale multiplier
  */
 export function getResponsiveFontScale(fontScale: number): number {
-  return fontScale
+  return fontScale;
 }
 
 /**
  * Hook for responsive conditional rendering
  */
 export function useResponsiveRender() {
-  const responsive = useResponsiveContent()
+  const responsive = useResponsiveContent();
 
   return {
     showOnMobile: responsive.isMobile,
@@ -287,5 +291,5 @@ export function useResponsiveRender() {
     showOnTabletAndUp: responsive.isTablet || responsive.isDesktop,
     hideOnMobile: !responsive.isMobile,
     hideOnDesktop: !responsive.isDesktop,
-  }
+  };
 }

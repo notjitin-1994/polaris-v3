@@ -2,7 +2,13 @@ import { NextResponse, type NextRequest } from 'next/server';
 import { createServerClient } from '@supabase/ssr';
 
 // Public routes do not require authentication
-const PUBLIC_PATHS = new Set(['/login', '/signup', '/auth/callback', '/favicon.ico', '/demo-loading']);
+const PUBLIC_PATHS = new Set([
+  '/login',
+  '/signup',
+  '/auth/callback',
+  '/favicon.ico',
+  '/demo-loading',
+]);
 // Auth pages that should redirect to home if user is logged in
 const AUTH_PATHS = new Set(['/login', '/signup']);
 

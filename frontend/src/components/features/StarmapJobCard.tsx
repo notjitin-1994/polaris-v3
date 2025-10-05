@@ -329,7 +329,7 @@ export function StarmapJobCard({ job, onView, onResume, onDelete, deleting }: St
         // fallback to any line containing the word risk
         const anyRisk = /^(?:[-*•]\s*)?(.{4,}?risk.{2,})$/gim;
         let r2: RegExpExecArray | null;
-        // eslint-disable-next-line no-cond-assign
+
         while ((r2 = anyRisk.exec(reportSource)) && items.risksItemsHeur.length < 5) {
           const txt = (r2 && r2[1] ? r2[1] : '').trim();
           if (txt) items.risksItemsHeur.push({ label: txt });

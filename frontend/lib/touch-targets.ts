@@ -37,7 +37,7 @@ export const TOUCH_TARGETS = {
    * Extra large touch target for hero elements (56px)
    * Used for primary CTAs and important navigation
    */
-  'extra-large': 'min-h-[56px] min-w-[56px]'
+  'extra-large': 'min-h-[56px] min-w-[56px]',
 } as const;
 
 /**
@@ -52,7 +52,7 @@ export const TOUCH_TARGET_VALUES = {
   minimum: 44,
   small: 36,
   large: 48,
-  'extra-large': 56
+  'extra-large': 56,
 } as const;
 
 // ========================================
@@ -86,7 +86,7 @@ export const TOUCH_SPACING = {
    * Generous spacing for complex layouts (24px)
    * Used when elements need clear visual separation
    */
-  generous: 'gap-6' // 24px
+  generous: 'gap-6', // 24px
 } as const;
 
 /**
@@ -101,7 +101,7 @@ export const TOUCH_SPACING_VALUES = {
   minimum: 8,
   standard: 12,
   comfortable: 16,
-  generous: 24
+  generous: 24,
 } as const;
 
 // ========================================
@@ -118,8 +118,8 @@ export function calculateEffectiveTouchArea(
   extendedPadding = 0
 ): { width: number; height: number } {
   return {
-    width: Math.max(visualWidth + (extendedPadding * 2), TOUCH_TARGET_VALUES.minimum),
-    height: Math.max(visualHeight + (extendedPadding * 2), TOUCH_TARGET_VALUES.minimum)
+    width: Math.max(visualWidth + extendedPadding * 2, TOUCH_TARGET_VALUES.minimum),
+    height: Math.max(visualHeight + extendedPadding * 2, TOUCH_TARGET_VALUES.minimum),
   };
 }
 
@@ -137,7 +137,7 @@ export function validateTouchTarget(
   return {
     isValid: minDimension >= requiredValue,
     actualSize: minDimension,
-    requiredSize: requiredValue
+    requiredSize: requiredValue,
   };
 }
 
@@ -188,12 +188,14 @@ export function calculateTouchPadding(
     return { horizontal: 0, vertical: 0 };
   }
 
-  const horizontalPadding = visualWidth < targetValue ? Math.ceil((targetValue - visualWidth) / 2) : 0;
-  const verticalPadding = visualHeight < targetValue ? Math.ceil((targetValue - visualHeight) / 2) : 0;
+  const horizontalPadding =
+    visualWidth < targetValue ? Math.ceil((targetValue - visualWidth) / 2) : 0;
+  const verticalPadding =
+    visualHeight < targetValue ? Math.ceil((targetValue - visualHeight) / 2) : 0;
 
   return {
     horizontal: horizontalPadding,
-    vertical: verticalPadding
+    vertical: verticalPadding,
   };
 }
 
@@ -228,7 +230,7 @@ export const TOUCH_STATES = {
   /**
    * Disabled state - element is not interactive
    */
-  disabled: 'opacity-50 cursor-not-allowed pointer-events-none'
+  disabled: 'opacity-50 cursor-not-allowed pointer-events-none',
 } as const;
 
 /**
@@ -249,7 +251,7 @@ export function getResponsiveTouchAdjustments(screenWidth: number) {
     return {
       minimumReduction: 2, // Reduce minimum by 2px on very small screens
       smallReduction: 1,
-      enableCompactMode: true
+      enableCompactMode: true,
     };
   }
 
@@ -258,7 +260,7 @@ export function getResponsiveTouchAdjustments(screenWidth: number) {
     return {
       minimumIncrease: 2, // Increase minimum by 2px on tablets
       smallIncrease: 1,
-      enableComfortMode: true
+      enableComfortMode: true,
     };
   }
 
@@ -268,7 +270,7 @@ export function getResponsiveTouchAdjustments(screenWidth: number) {
     minimumIncrease: 0,
     smallIncrease: 0,
     enableCompactMode: false,
-    enableComfortMode: false
+    enableComfortMode: false,
   };
 }
 
@@ -326,7 +328,7 @@ export const TOUCH_ACCESSIBILITY = {
   /**
    * Touch target extension for small visual elements
    */
-  touchTargetExtension: '4px'
+  touchTargetExtension: '4px',
 } as const;
 
 // ========================================
@@ -411,14 +413,12 @@ export function validateTouchCompliance(
   const margin = parseInt(style.margin) || 0;
 
   if (margin < TOUCH_SPACING_VALUES.minimum) {
-    issues.push(
-      `Element spacing ${margin}px is below minimum ${TOUCH_SPACING_VALUES.minimum}px`
-    );
+    issues.push(`Element spacing ${margin}px is below minimum ${TOUCH_SPACING_VALUES.minimum}px`);
   }
 
   return {
     compliant: issues.length === 0,
-    issues
+    issues,
   };
 }
 
@@ -436,46 +436,43 @@ export function getRecommendedTouchSize(
       secondary: 'minimum' as TouchTargetSize,
       navigation: 'minimum' as TouchTargetSize,
       form: 'large' as TouchTargetSize,
-      toolbar: 'minimum' as TouchTargetSize
+      toolbar: 'minimum' as TouchTargetSize,
     },
     input: {
       primary: 'large' as TouchTargetSize,
       secondary: 'minimum' as TouchTargetSize,
       navigation: 'minimum' as TouchTargetSize,
       form: 'large' as TouchTargetSize,
-      toolbar: 'minimum' as TouchTargetSize
+      toolbar: 'minimum' as TouchTargetSize,
     },
     link: {
       primary: 'minimum' as TouchTargetSize,
       secondary: 'minimum' as TouchTargetSize,
       navigation: 'minimum' as TouchTargetSize,
       form: 'minimum' as TouchTargetSize,
-      toolbar: 'minimum' as TouchTargetSize
+      toolbar: 'minimum' as TouchTargetSize,
     },
     checkbox: {
       primary: 'large' as TouchTargetSize,
       secondary: 'minimum' as TouchTargetSize,
       navigation: 'minimum' as TouchTargetSize,
       form: 'minimum' as TouchTargetSize,
-      toolbar: 'minimum' as TouchTargetSize
+      toolbar: 'minimum' as TouchTargetSize,
     },
     radio: {
       primary: 'large' as TouchTargetSize,
       secondary: 'minimum' as TouchTargetSize,
       navigation: 'minimum' as TouchTargetSize,
       form: 'minimum' as TouchTargetSize,
-      toolbar: 'minimum' as TouchTargetSize
-    }
+      toolbar: 'minimum' as TouchTargetSize,
+    },
   };
 
   const size = recommendations[elementType]?.[context] || 'minimum';
 
   // Adjust based on available space if provided
   if (availableSpace) {
-    return getOptimalTouchTarget(
-      context === 'primary' ? 'primary' : 'secondary',
-      availableSpace
-    );
+    return getOptimalTouchTarget(context === 'primary' ? 'primary' : 'secondary', availableSpace);
   }
 
   return size;
@@ -503,5 +500,5 @@ export default {
   getResponsiveTouchTarget,
   generateTouchClasses,
   validateTouchCompliance,
-  getRecommendedTouchSize
+  getRecommendedTouchSize,
 };

@@ -19,37 +19,37 @@ const buttonVariants = cva(
           'bg-primary text-primary-foreground shadow-sm',
           'hover:bg-primary/90 hover:shadow-md',
           'active:bg-primary/80 active:scale-[0.98]',
-          'focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:ring-offset-2'
+          'focus-visible:ring-primary/50 focus-visible:ring-2 focus-visible:ring-offset-2'
         ),
         secondary: cn(
           'bg-secondary text-secondary-foreground shadow-sm',
           'hover:bg-secondary/90 hover:shadow-md',
           'active:bg-secondary/80 active:scale-[0.98]',
-          'focus-visible:ring-2 focus-visible:ring-secondary/50 focus-visible:ring-offset-2'
+          'focus-visible:ring-secondary/50 focus-visible:ring-2 focus-visible:ring-offset-2'
         ),
         ghost: cn(
           'text-foreground',
           'hover:bg-foreground/5 hover:shadow-sm',
           'active:bg-foreground/10 active:scale-[0.98]',
-          'focus-visible:ring-2 focus-visible:ring-secondary/50 focus-visible:ring-offset-2'
+          'focus-visible:ring-secondary/50 focus-visible:ring-2 focus-visible:ring-offset-2'
         ),
         destructive: cn(
           'bg-error text-white shadow-sm',
           'hover:bg-error/90 hover:shadow-md',
           'active:bg-error/80 active:scale-[0.98]',
-          'focus-visible:ring-2 focus-visible:ring-error/50 focus-visible:ring-offset-2'
+          'focus-visible:ring-error/50 focus-visible:ring-2 focus-visible:ring-offset-2'
         ),
         outline: cn(
-          'border border-neutral-300 text-foreground',
+          'text-foreground border border-neutral-300',
           'hover:bg-foreground/5 hover:border-neutral-400 hover:shadow-sm',
           'active:bg-foreground/10 active:scale-[0.98]',
-          'focus-visible:ring-2 focus-visible:ring-secondary/50 focus-visible:ring-offset-2'
+          'focus-visible:ring-secondary/50 focus-visible:ring-2 focus-visible:ring-offset-2'
         ),
         link: cn(
           'text-primary underline-offset-4',
-          'hover:underline hover:text-primary/80',
+          'hover:text-primary/80 hover:underline',
           'active:text-primary/70',
-          'focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:ring-offset-2',
+          'focus-visible:ring-primary/50 focus-visible:ring-2 focus-visible:ring-offset-2',
           'px-2' // Minimal padding for link variant
         ),
       },
@@ -109,19 +109,20 @@ export interface ButtonProps
 export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant, size, ...props }, ref) => {
     // Auto-recommend touch target size based on context if not explicitly set
-    const recommendedTouchSize = (props as any)['data-touch-context'] ?
-      getRecommendedTouchSize(
-        'button',
-        (props as any)['data-touch-context'],
-        (props as any)['data-available-space']
-      ) : 'minimum';
+    const recommendedTouchSize = (props as any)['data-touch-context']
+      ? getRecommendedTouchSize(
+          'button',
+          (props as any)['data-touch-context'],
+          (props as any)['data-available-space']
+        )
+      : 'minimum';
 
     // Map touch target sizes to button size variants
     const sizeMapping: Record<string, 'small' | 'medium' | 'large' | 'extra-large' | 'icon'> = {
-      'minimum': 'medium',
-      'small': 'small',
-      'large': 'large',
-      'extra-large': 'extra-large'
+      minimum: 'medium',
+      small: 'small',
+      large: 'large',
+      'extra-large': 'extra-large',
     };
 
     const recommendedSize = size || sizeMapping[recommendedTouchSize] || 'medium';
@@ -146,43 +147,43 @@ export const TouchButtonVariants = {
   primaryAction: {
     variant: 'primary' as const,
     size: 'large' as const,
-    'data-touch-context': 'primary'
+    'data-touch-context': 'primary',
   },
 
   // Secondary action button (alternative actions)
   secondaryAction: {
     variant: 'secondary' as const,
     size: 'medium' as const,
-    'data-touch-context': 'secondary'
+    'data-touch-context': 'secondary',
   },
 
   // Navigation button (menu items, links)
   navigation: {
     variant: 'ghost' as const,
     size: 'medium' as const,
-    'data-touch-context': 'navigation'
+    'data-touch-context': 'navigation',
   },
 
   // Form submission button
   formSubmit: {
     variant: 'primary' as const,
     size: 'large' as const,
-    'data-touch-context': 'form'
+    'data-touch-context': 'form',
   },
 
   // Destructive action button (delete, cancel, etc.)
   destructive: {
     variant: 'destructive' as const,
     size: 'medium' as const,
-    'data-touch-context': 'primary'
+    'data-touch-context': 'primary',
   },
 
   // Icon-only button (compact UI)
   icon: {
     variant: 'ghost' as const,
     size: 'icon' as const,
-    'data-touch-context': 'toolbar'
-  }
+    'data-touch-context': 'toolbar',
+  },
 } as const;
 
 /**
@@ -199,23 +200,19 @@ export const ButtonGroup = React.forwardRef<HTMLDivElement, ButtonGroupProps>(
   ({ children, orientation = 'horizontal', spacing = 'normal', className }, ref) => {
     const orientationClasses = {
       horizontal: 'flex flex-row',
-      vertical: 'flex flex-col'
+      vertical: 'flex flex-col',
     };
 
     const spacingClasses = {
       tight: 'gap-1',
       normal: 'gap-2',
-      loose: 'gap-3'
+      loose: 'gap-3',
     };
 
     return (
       <div
         ref={ref}
-        className={cn(
-          orientationClasses[orientation],
-          spacingClasses[spacing],
-          className
-        )}
+        className={cn(orientationClasses[orientation], spacingClasses[spacing], className)}
         role="group"
       >
         {children}
@@ -265,10 +262,7 @@ export const LoadingButton = React.forwardRef<HTMLButtonElement, LoadingButtonPr
       <Button
         ref={ref}
         disabled={loading || disabled}
-        className={cn(
-          loading && 'cursor-wait',
-          className
-        )}
+        className={cn(loading && 'cursor-wait', className)}
         {...props}
       >
         {loading ? (

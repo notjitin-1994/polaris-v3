@@ -104,13 +104,12 @@ export function BlueprintFilters({
     // Apply progress range filter
     if (currentFilters.progressRange.min > 0 || currentFilters.progressRange.max < 100) {
       filtered = filtered.filter((blueprint) => {
-        const progress = blueprint.status === 'completed'
-          ? 100
-          : blueprint.status === 'generating'
-            ? 65
-            : 15; // Default progress for draft
-        return progress >= currentFilters.progressRange.min &&
-               progress <= currentFilters.progressRange.max;
+        const progress =
+          blueprint.status === 'completed' ? 100 : blueprint.status === 'generating' ? 65 : 15; // Default progress for draft
+        return (
+          progress >= currentFilters.progressRange.min &&
+          progress <= currentFilters.progressRange.max
+        );
       });
     }
 
@@ -144,7 +143,9 @@ export function BlueprintFilters({
           break;
         case 'status':
           const statusOrder = { draft: 0, generating: 1, completed: 2, error: 3 };
-          comparison = statusOrder[a.status as keyof typeof statusOrder] - statusOrder[b.status as keyof typeof statusOrder];
+          comparison =
+            statusOrder[a.status as keyof typeof statusOrder] -
+            statusOrder[b.status as keyof typeof statusOrder];
           break;
         case 'progress':
           const progressA = a.status === 'completed' ? 100 : a.status === 'generating' ? 65 : 15;
@@ -165,11 +166,8 @@ export function BlueprintFilters({
     onFilteredBlueprintsChange(filteredBlueprints);
   }, [blueprints, filters, applyFilters, onFilteredBlueprintsChange]);
 
-  const updateFilter = <K extends keyof FilterState>(
-    key: K,
-    value: FilterState[K]
-  ) => {
-    setFilters(prev => ({ ...prev, [key]: value }));
+  const updateFilter = <K extends keyof FilterState>(key: K, value: FilterState[K]) => {
+    setFilters((prev) => ({ ...prev, [key]: value }));
   };
 
   const resetFilters = () => {
@@ -185,11 +183,11 @@ export function BlueprintFilters({
   };
 
   const toggleStatusFilter = (status: 'draft' | 'generating' | 'completed' | 'error') => {
-    setFilters(prev => ({
+    setFilters((prev) => ({
       ...prev,
       statusFilter: prev.statusFilter.includes(status)
-        ? prev.statusFilter.filter(s => s !== status)
-        : [...prev.statusFilter, status]
+        ? prev.statusFilter.filter((s) => s !== status)
+        : [...prev.statusFilter, status],
     }));
   };
 
@@ -212,11 +210,11 @@ export function BlueprintFilters({
   // Header variant - button with dropdown
   if (variant === 'header') {
     return (
-      <div className="relative filter-dropdown-container">
+      <div className="filter-dropdown-container relative">
         <motion.button
           onClick={() => setIsExpanded(!isExpanded)}
           className={cn(
-            'btn-secondary pressable flex items-center gap-2 px-5 py-2.5 rounded-xl min-w-[140px]',
+            'btn-secondary pressable flex min-w-[140px] items-center gap-2 rounded-xl px-5 py-2.5',
             className
           )}
           whileHover={{ scale: 1.02 }}
@@ -225,14 +223,11 @@ export function BlueprintFilters({
           <Search className="h-4 w-4" />
           <span>Search & Filter</span>
           {activeFiltersCount > 0 && (
-            <span className="bg-primary text-primary-foreground text-xs rounded-full h-5 w-5 flex items-center justify-center">
+            <span className="bg-primary text-primary-foreground flex h-5 w-5 items-center justify-center rounded-full text-xs">
               {activeFiltersCount}
             </span>
           )}
-          <motion.div
-            animate={{ rotate: isExpanded ? 180 : 0 }}
-            transition={{ duration: 0.2 }}
-          >
+          <motion.div animate={{ rotate: isExpanded ? 180 : 0 }} transition={{ duration: 0.2 }}>
             <ChevronDown className="h-4 w-4" />
           </motion.div>
         </motion.button>
@@ -240,48 +235,47 @@ export function BlueprintFilters({
         <AnimatePresence>
           {isExpanded && (
             <motion.div
-              className="absolute top-full right-0 mt-2 w-[640px] max-h-[80vh] overflow-hidden z-50"
+              className="absolute top-full right-0 z-50 mt-2 max-h-[80vh] w-[640px] overflow-hidden"
               initial={{ opacity: 0, y: -10, scale: 0.95 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -10, scale: 0.95 }}
               transition={{ duration: 0.2, ease: 'easeOut' }}
             >
               <div className="glass rounded-2xl border border-white/10 shadow-2xl backdrop-blur-xl">
-
                 {/* Reorganized Filters Content */}
                 <div className="max-h-[60vh] overflow-y-auto">
                   {/* Line 1: Search */}
-                  <div className="p-4 border-b border-white/10 relative">
+                  <div className="relative border-b border-white/10 p-4">
                     {/* Close button in top-right corner */}
                     <motion.button
                       onClick={() => setIsExpanded(false)}
-                      className="absolute top-2 right-2 h-6 w-6 rounded-full hover:bg-white/10 flex items-center justify-center transition-colors z-10"
+                      className="absolute top-2 right-2 z-10 flex h-6 w-6 items-center justify-center rounded-full transition-colors hover:bg-white/10"
                       whileHover={{ scale: 1.1 }}
                       whileTap={{ scale: 0.9 }}
                     >
-                      <X className="h-3 w-3 text-text-secondary" />
+                      <X className="text-text-secondary h-3 w-3" />
                     </motion.button>
 
                     <div className="relative pr-8">
-                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-text-secondary" />
+                      <Search className="text-text-secondary absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform" />
                       <input
                         type="text"
                         placeholder="Search blueprints..."
                         value={filters.search}
                         onChange={(e) => updateFilter('search', e.target.value)}
-                        className="w-full pl-10 pr-4 py-2 rounded-lg border border-neutral-300 bg-background text-foreground placeholder:text-text-disabled focus:ring-2 focus:ring-secondary/50 focus:border-secondary focus:outline-none transition-all text-sm"
+                        className="bg-background text-foreground placeholder:text-text-disabled focus:ring-secondary/50 focus:border-secondary w-full rounded-lg border border-neutral-300 py-2 pr-4 pl-10 text-sm transition-all focus:ring-2 focus:outline-none"
                       />
                     </div>
                   </div>
 
                   {/* Line 2: Sort by and Filter by side by side */}
-                  <div className="p-4 border-b border-white/10">
-                    <div className="grid grid-cols-2 gap-4 relative">
+                  <div className="border-b border-white/10 p-4">
+                    <div className="relative grid grid-cols-2 gap-4">
                       {/* Vertical separator */}
-                      <div className="absolute left-1/2 top-0 bottom-0 w-px bg-gradient-to-b from-transparent via-white/10 to-transparent transform -translate-x-1/2"></div>
+                      <div className="absolute top-0 bottom-0 left-1/2 w-px -translate-x-1/2 transform bg-gradient-to-b from-transparent via-white/10 to-transparent"></div>
                       {/* Sort by */}
                       <div>
-                        <label className="block text-sm font-medium text-foreground mb-2">
+                        <label className="text-foreground mb-2 block text-sm font-medium">
                           Sort by
                         </label>
                         <div className="grid grid-cols-2 gap-2">
@@ -293,7 +287,7 @@ export function BlueprintFilters({
                                 key={option.value}
                                 onClick={() => updateFilter('sortBy', option.value)}
                                 className={cn(
-                                  'flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all',
+                                  'flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-all',
                                   isSelected
                                     ? 'bg-primary text-primary-foreground'
                                     : 'bg-surface text-text-secondary hover:bg-surface hover:text-foreground'
@@ -308,11 +302,16 @@ export function BlueprintFilters({
                           })}
                         </div>
 
-                        <div className="flex items-center gap-2 mt-3">
-                          <span className="text-xs text-text-secondary">Order:</span>
+                        <div className="mt-3 flex items-center gap-2">
+                          <span className="text-text-secondary text-xs">Order:</span>
                           <motion.button
-                            onClick={() => updateFilter('sortOrder', filters.sortOrder === 'asc' ? 'desc' : 'asc')}
-                            className="flex items-center gap-2 px-2 py-1 rounded-md bg-surface text-text-secondary hover:bg-surface hover:text-foreground transition-all"
+                            onClick={() =>
+                              updateFilter(
+                                'sortOrder',
+                                filters.sortOrder === 'asc' ? 'desc' : 'asc'
+                              )
+                            }
+                            className="bg-surface text-text-secondary hover:bg-surface hover:text-foreground flex items-center gap-2 rounded-md px-2 py-1 transition-all"
                             whileHover={{ scale: 1.05 }}
                             whileTap={{ scale: 0.95 }}
                           >
@@ -330,7 +329,7 @@ export function BlueprintFilters({
 
                       {/* Filter by status */}
                       <div>
-                        <label className="block text-sm font-medium text-foreground mb-3">
+                        <label className="text-foreground mb-3 block text-sm font-medium">
                           Filter by status
                         </label>
                         <div className="space-y-2">
@@ -342,9 +341,9 @@ export function BlueprintFilters({
                                 key={status.value}
                                 onClick={() => toggleStatusFilter(status.value)}
                                 className={cn(
-                                  'flex items-center gap-3 w-full px-3 py-2 rounded-lg text-sm transition-all',
+                                  'flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm transition-all',
                                   isSelected
-                                    ? 'bg-primary/10 text-primary border border-primary/20'
+                                    ? 'bg-primary/10 text-primary border-primary/20 border'
                                     : 'text-text-secondary hover:text-foreground hover:bg-surface'
                                 )}
                                 whileHover={{ scale: 1.02 }}
@@ -356,7 +355,7 @@ export function BlueprintFilters({
                                   <motion.div
                                     initial={{ scale: 0 }}
                                     animate={{ scale: 1 }}
-                                    className="ml-auto h-2 w-2 rounded-full bg-primary"
+                                    className="bg-primary ml-auto h-2 w-2 rounded-full"
                                   />
                                 )}
                               </motion.button>
@@ -369,12 +368,12 @@ export function BlueprintFilters({
 
                   {/* Line 3: Progress Range and Date Range side by side */}
                   <div className="p-4">
-                    <div className="grid grid-cols-2 gap-4 relative">
+                    <div className="relative grid grid-cols-2 gap-4">
                       {/* Vertical separator */}
-                      <div className="absolute left-1/2 top-0 bottom-0 w-px bg-gradient-to-b from-transparent via-white/10 to-transparent transform -translate-x-1/2"></div>
+                      <div className="absolute top-0 bottom-0 left-1/2 w-px -translate-x-1/2 transform bg-gradient-to-b from-transparent via-white/10 to-transparent"></div>
                       {/* Progress Range */}
                       <div>
-                        <label className="block text-sm font-medium text-foreground mb-3">
+                        <label className="text-foreground mb-3 block text-sm font-medium">
                           Progress range
                         </label>
                         <div className="space-y-3">
@@ -390,21 +389,21 @@ export function BlueprintFilters({
 
                           {/* Range slider */}
                           <div className="relative">
-                            <div className="relative h-2 bg-surface rounded-lg overflow-hidden">
+                            <div className="bg-surface relative h-2 overflow-hidden rounded-lg">
                               {/* Background track */}
                               <div
                                 className="absolute inset-0 rounded-lg"
                                 style={{
-                                  background: `linear-gradient(to right, rgb(30, 41, 59) 0%, rgb(30, 41, 59) ${filters.progressRange.min}%, rgb(79, 70, 229) ${filters.progressRange.min}%, rgb(79, 70, 229) ${filters.progressRange.max}%, rgb(30, 41, 59) ${filters.progressRange.max}%, rgb(30, 41, 59) 100%)`
+                                  background: `linear-gradient(to right, rgb(30, 41, 59) 0%, rgb(30, 41, 59) ${filters.progressRange.min}%, rgb(79, 70, 229) ${filters.progressRange.min}%, rgb(79, 70, 229) ${filters.progressRange.max}%, rgb(30, 41, 59) ${filters.progressRange.max}%, rgb(30, 41, 59) 100%)`,
                                 }}
                               />
 
                               {/* Min thumb */}
                               <div
-                                className="absolute top-1/2 w-4 h-4 bg-primary border-2 border-primary rounded-full transform -translate-y-1/2 cursor-pointer hover:scale-110 transition-transform"
+                                className="bg-primary border-primary absolute top-1/2 h-4 w-4 -translate-y-1/2 transform cursor-pointer rounded-full border-2 transition-transform hover:scale-110"
                                 style={{
                                   left: `${filters.progressRange.min}%`,
-                                  boxShadow: '0 0 4px rgba(79, 70, 229, 0.5)'
+                                  boxShadow: '0 0 4px rgba(79, 70, 229, 0.5)',
                                 }}
                                 onMouseDown={(e) => {
                                   e.preventDefault();
@@ -414,11 +413,20 @@ export function BlueprintFilters({
                                   const handleMouseMove = (moveEvent: MouseEvent) => {
                                     const rect = parentElement.getBoundingClientRect();
                                     if (rect) {
-                                      const percentage = Math.max(0, Math.min(100, ((moveEvent.clientX - rect.left) / rect.width) * 100));
-                                      const minValue = Math.max(0, Math.min(filters.progressRange.max, Math.round(percentage)));
+                                      const percentage = Math.max(
+                                        0,
+                                        Math.min(
+                                          100,
+                                          ((moveEvent.clientX - rect.left) / rect.width) * 100
+                                        )
+                                      );
+                                      const minValue = Math.max(
+                                        0,
+                                        Math.min(filters.progressRange.max, Math.round(percentage))
+                                      );
                                       updateFilter('progressRange', {
                                         min: minValue,
-                                        max: filters.progressRange.max
+                                        max: filters.progressRange.max,
                                       });
                                     }
                                   };
@@ -435,10 +443,10 @@ export function BlueprintFilters({
 
                               {/* Max thumb */}
                               <div
-                                className="absolute top-1/2 w-4 h-4 bg-primary border-2 border-primary rounded-full transform -translate-y-1/2 cursor-pointer hover:scale-110 transition-transform"
+                                className="bg-primary border-primary absolute top-1/2 h-4 w-4 -translate-y-1/2 transform cursor-pointer rounded-full border-2 transition-transform hover:scale-110"
                                 style={{
                                   left: `${filters.progressRange.max}%`,
-                                  boxShadow: '0 0 4px rgba(79, 70, 229, 0.5)'
+                                  boxShadow: '0 0 4px rgba(79, 70, 229, 0.5)',
                                 }}
                                 onMouseDown={(e) => {
                                   e.preventDefault();
@@ -448,11 +456,20 @@ export function BlueprintFilters({
                                   const handleMouseMove = (moveEvent: MouseEvent) => {
                                     const rect = parentElement.getBoundingClientRect();
                                     if (rect) {
-                                      const percentage = Math.max(filters.progressRange.min, Math.min(100, ((moveEvent.clientX - rect.left) / rect.width) * 100));
-                                      const maxValue = Math.max(filters.progressRange.min, Math.min(100, Math.round(percentage)));
+                                      const percentage = Math.max(
+                                        filters.progressRange.min,
+                                        Math.min(
+                                          100,
+                                          ((moveEvent.clientX - rect.left) / rect.width) * 100
+                                        )
+                                      );
+                                      const maxValue = Math.max(
+                                        filters.progressRange.min,
+                                        Math.min(100, Math.round(percentage))
+                                      );
                                       updateFilter('progressRange', {
                                         min: filters.progressRange.min,
-                                        max: maxValue
+                                        max: maxValue,
                                       });
                                     }
                                   };
@@ -470,7 +487,7 @@ export function BlueprintFilters({
                           </div>
 
                           {/* Range labels */}
-                          <div className="flex justify-between text-xs text-text-secondary">
+                          <div className="text-text-secondary flex justify-between text-xs">
                             <span>0%</span>
                             <span>100%</span>
                           </div>
@@ -479,32 +496,36 @@ export function BlueprintFilters({
 
                       {/* Date Range */}
                       <div>
-                        <label className="block text-sm font-medium text-foreground mb-3">
+                        <label className="text-foreground mb-3 block text-sm font-medium">
                           Date range
                         </label>
                         <div className="grid grid-cols-2 gap-3">
                           <div>
-                            <label className="block text-xs text-text-secondary mb-1">From</label>
+                            <label className="text-text-secondary mb-1 block text-xs">From</label>
                             <input
                               type="date"
                               value={filters.dateRange.start}
-                              onChange={(e) => updateFilter('dateRange', {
-                                ...filters.dateRange,
-                                start: e.target.value
-                              })}
-                              className="w-full px-3 py-2 rounded-lg border border-neutral-300 bg-background text-foreground text-sm focus:ring-2 focus:ring-secondary/50 focus:border-secondary focus:outline-none"
+                              onChange={(e) =>
+                                updateFilter('dateRange', {
+                                  ...filters.dateRange,
+                                  start: e.target.value,
+                                })
+                              }
+                              className="bg-background text-foreground focus:ring-secondary/50 focus:border-secondary w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm focus:ring-2 focus:outline-none"
                             />
                           </div>
                           <div>
-                            <label className="block text-xs text-text-secondary mb-1">To</label>
+                            <label className="text-text-secondary mb-1 block text-xs">To</label>
                             <input
                               type="date"
                               value={filters.dateRange.end}
-                              onChange={(e) => updateFilter('dateRange', {
-                                ...filters.dateRange,
-                                end: e.target.value
-                              })}
-                              className="w-full px-3 py-2 rounded-lg border border-neutral-300 bg-background text-foreground text-sm focus:ring-2 focus:ring-secondary/50 focus:border-secondary focus:outline-none"
+                              onChange={(e) =>
+                                updateFilter('dateRange', {
+                                  ...filters.dateRange,
+                                  end: e.target.value,
+                                })
+                              }
+                              className="bg-background text-foreground focus:ring-secondary/50 focus:border-secondary w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm focus:ring-2 focus:outline-none"
                             />
                           </div>
                         </div>
@@ -514,7 +535,7 @@ export function BlueprintFilters({
                     {activeFiltersCount > 0 && (
                       <motion.button
                         onClick={resetFilters}
-                        className="mt-4 w-full text-xs text-text-secondary hover:text-foreground transition-colors"
+                        className="text-text-secondary hover:text-foreground mt-4 w-full text-xs transition-colors"
                         whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}
                       >
@@ -534,25 +555,22 @@ export function BlueprintFilters({
   // Panel variant - full panel
   return (
     <motion.div
-      className={cn(
-        'glass rounded-2xl border border-white/10 overflow-hidden',
-        className
-      )}
+      className={cn('glass overflow-hidden rounded-2xl border border-white/10', className)}
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
     >
       {/* Header */}
-      <div className="p-6 border-b border-white/10">
+      <div className="border-b border-white/10 p-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="h-8 w-8 rounded-lg bg-primary/20 flex items-center justify-center">
-              <Filter className="h-4 w-4 text-primary" />
+            <div className="bg-primary/20 flex h-8 w-8 items-center justify-center rounded-lg">
+              <Filter className="text-primary h-4 w-4" />
             </div>
             <div>
-              <h3 className="text-sm font-semibold text-foreground">Filters & Search</h3>
+              <h3 className="text-foreground text-sm font-semibold">Filters & Search</h3>
               {activeFiltersCount > 0 && (
-                <p className="text-xs text-text-secondary">
+                <p className="text-text-secondary text-xs">
                   {activeFiltersCount} filter{activeFiltersCount !== 1 ? 's' : ''} active
                 </p>
               )}
@@ -563,7 +581,7 @@ export function BlueprintFilters({
             {activeFiltersCount > 0 && (
               <motion.button
                 onClick={resetFilters}
-                className="text-xs text-text-secondary hover:text-foreground transition-colors"
+                className="text-text-secondary hover:text-foreground text-xs transition-colors"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
@@ -572,15 +590,12 @@ export function BlueprintFilters({
             )}
             <motion.button
               onClick={() => setIsExpanded(!isExpanded)}
-              className="h-8 w-8 rounded-lg border border-white/10 bg-white/5 hover:bg-white/10 flex items-center justify-center transition-all"
+              className="flex h-8 w-8 items-center justify-center rounded-lg border border-white/10 bg-white/5 transition-all hover:bg-white/10"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
-              <motion.div
-                animate={{ rotate: isExpanded ? 180 : 0 }}
-                transition={{ duration: 0.2 }}
-              >
-                <ChevronDown className="h-4 w-4 text-text-secondary" />
+              <motion.div animate={{ rotate: isExpanded ? 180 : 0 }} transition={{ duration: 0.2 }}>
+                <ChevronDown className="text-text-secondary h-4 w-4" />
               </motion.div>
             </motion.button>
           </div>
@@ -597,37 +612,35 @@ export function BlueprintFilters({
             className="overflow-hidden"
           >
             {/* Search */}
-            <div className="p-6 border-b border-white/10">
+            <div className="border-b border-white/10 p-6">
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-text-secondary" />
+                <Search className="text-text-secondary absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform" />
                 <input
                   type="text"
                   placeholder="Search blueprints..."
                   value={filters.search}
                   onChange={(e) => updateFilter('search', e.target.value)}
-                  className="w-full pl-10 pr-4 py-3 rounded-lg border border-neutral-300 bg-background text-foreground placeholder:text-text-disabled focus:ring-2 focus:ring-secondary/50 focus:border-secondary focus:outline-none transition-all"
+                  className="bg-background text-foreground placeholder:text-text-disabled focus:ring-secondary/50 focus:border-secondary w-full rounded-lg border border-neutral-300 py-3 pr-4 pl-10 transition-all focus:ring-2 focus:outline-none"
                 />
                 {filters.search && (
                   <motion.button
                     onClick={() => updateFilter('search', '')}
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 h-6 w-6 rounded-full hover:bg-surface flex items-center justify-center"
+                    className="hover:bg-surface absolute top-1/2 right-3 flex h-6 w-6 -translate-y-1/2 transform items-center justify-center rounded-full"
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.9 }}
                   >
-                    <X className="h-3 w-3 text-text-secondary" />
+                    <X className="text-text-secondary h-3 w-3" />
                   </motion.button>
                 )}
               </div>
             </div>
 
             {/* Sort & View Options */}
-            <div className="p-6 border-b border-white/10 space-y-4">
+            <div className="space-y-4 border-b border-white/10 p-6">
               {/* Sort By */}
               <div>
-                <label className="block text-sm font-medium text-foreground mb-2">
-                  Sort by
-                </label>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                <label className="text-foreground mb-2 block text-sm font-medium">Sort by</label>
+                <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
                   {SORT_OPTIONS.map((option) => {
                     const Icon = option.icon;
                     const isSelected = filters.sortBy === option.value;
@@ -636,7 +649,7 @@ export function BlueprintFilters({
                         key={option.value}
                         onClick={() => updateFilter('sortBy', option.value)}
                         className={cn(
-                          'flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all',
+                          'flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-all',
                           isSelected
                             ? 'bg-primary text-primary-foreground'
                             : 'bg-surface text-text-secondary hover:bg-surface hover:text-foreground'
@@ -652,11 +665,13 @@ export function BlueprintFilters({
                 </div>
 
                 {/* Sort Order Toggle */}
-                <div className="flex items-center gap-2 mt-3">
-                  <span className="text-xs text-text-secondary">Order:</span>
+                <div className="mt-3 flex items-center gap-2">
+                  <span className="text-text-secondary text-xs">Order:</span>
                   <motion.button
-                    onClick={() => updateFilter('sortOrder', filters.sortOrder === 'asc' ? 'desc' : 'asc')}
-                    className="flex items-center gap-2 px-2 py-1 rounded-md bg-surface text-text-secondary hover:bg-surface hover:text-foreground transition-all"
+                    onClick={() =>
+                      updateFilter('sortOrder', filters.sortOrder === 'asc' ? 'desc' : 'asc')
+                    }
+                    className="bg-surface text-text-secondary hover:bg-surface hover:text-foreground flex items-center gap-2 rounded-md px-2 py-1 transition-all"
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                   >
@@ -674,14 +689,12 @@ export function BlueprintFilters({
 
               {/* View Mode Toggle */}
               <div>
-                <label className="block text-sm font-medium text-foreground mb-2">
-                  View mode
-                </label>
+                <label className="text-foreground mb-2 block text-sm font-medium">View mode</label>
                 <div className="flex gap-2">
                   <motion.button
                     onClick={() => updateFilter('viewMode', 'grid')}
                     className={cn(
-                      'flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all',
+                      'flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-all',
                       filters.viewMode === 'grid'
                         ? 'bg-primary text-primary-foreground'
                         : 'bg-surface text-text-secondary hover:bg-surface hover:text-foreground'
@@ -695,7 +708,7 @@ export function BlueprintFilters({
                   <motion.button
                     onClick={() => updateFilter('viewMode', 'list')}
                     className={cn(
-                      'flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all',
+                      'flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-all',
                       filters.viewMode === 'list'
                         ? 'bg-primary text-primary-foreground'
                         : 'bg-surface text-text-secondary hover:bg-surface hover:text-foreground'
@@ -711,8 +724,8 @@ export function BlueprintFilters({
             </div>
 
             {/* Status Filter */}
-            <div className="p-6 border-b border-white/10">
-              <label className="block text-sm font-medium text-foreground mb-3">
+            <div className="border-b border-white/10 p-6">
+              <label className="text-foreground mb-3 block text-sm font-medium">
                 Filter by status
               </label>
               <div className="space-y-2">
@@ -724,9 +737,9 @@ export function BlueprintFilters({
                       key={status.value}
                       onClick={() => toggleStatusFilter(status.value)}
                       className={cn(
-                        'flex items-center gap-3 w-full px-3 py-2 rounded-lg text-sm transition-all',
+                        'flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm transition-all',
                         isSelected
-                          ? 'bg-primary/10 text-primary border border-primary/20'
+                          ? 'bg-primary/10 text-primary border-primary/20 border'
                           : 'text-text-secondary hover:text-foreground hover:bg-surface'
                       )}
                       whileHover={{ scale: 1.02 }}
@@ -738,7 +751,7 @@ export function BlueprintFilters({
                         <motion.div
                           initial={{ scale: 0 }}
                           animate={{ scale: 1 }}
-                          className="ml-auto h-2 w-2 rounded-full bg-primary"
+                          className="bg-primary ml-auto h-2 w-2 rounded-full"
                         />
                       )}
                     </motion.button>
@@ -748,38 +761,34 @@ export function BlueprintFilters({
             </div>
 
             {/* Progress Range Filter */}
-            <div className="p-6 border-b border-white/10">
-              <label className="block text-sm font-medium text-foreground mb-3">
+            <div className="border-b border-white/10 p-6">
+              <label className="text-foreground mb-3 block text-sm font-medium">
                 Progress range
               </label>
               <div className="space-y-3">
                 {/* Current range display */}
                 <div className="flex items-center justify-between text-sm">
-                  <span className="text-text-secondary">
-                    {filters.progressRange.min}%
-                  </span>
-                  <span className="text-text-secondary">
-                    {filters.progressRange.max}%
-                  </span>
+                  <span className="text-text-secondary">{filters.progressRange.min}%</span>
+                  <span className="text-text-secondary">{filters.progressRange.max}%</span>
                 </div>
 
                 {/* Range slider */}
                 <div className="relative">
-                  <div className="relative h-2 bg-surface rounded-lg overflow-hidden">
+                  <div className="bg-surface relative h-2 overflow-hidden rounded-lg">
                     {/* Background track */}
                     <div
                       className="absolute inset-0 rounded-lg"
                       style={{
-                        background: `linear-gradient(to right, rgb(30, 41, 59) 0%, rgb(30, 41, 59) ${filters.progressRange.min}%, rgb(79, 70, 229) ${filters.progressRange.min}%, rgb(79, 70, 229) ${filters.progressRange.max}%, rgb(30, 41, 59) ${filters.progressRange.max}%, rgb(30, 41, 59) 100%)`
+                        background: `linear-gradient(to right, rgb(30, 41, 59) 0%, rgb(30, 41, 59) ${filters.progressRange.min}%, rgb(79, 70, 229) ${filters.progressRange.min}%, rgb(79, 70, 229) ${filters.progressRange.max}%, rgb(30, 41, 59) ${filters.progressRange.max}%, rgb(30, 41, 59) 100%)`,
                       }}
                     />
 
                     {/* Min thumb */}
                     <div
-                      className="absolute top-1/2 w-4 h-4 bg-primary border-2 border-primary rounded-full transform -translate-y-1/2 cursor-pointer hover:scale-110 transition-transform"
+                      className="bg-primary border-primary absolute top-1/2 h-4 w-4 -translate-y-1/2 transform cursor-pointer rounded-full border-2 transition-transform hover:scale-110"
                       style={{
                         left: `${filters.progressRange.min}%`,
-                        boxShadow: '0 0 4px rgba(79, 70, 229, 0.5)'
+                        boxShadow: '0 0 4px rgba(79, 70, 229, 0.5)',
                       }}
                       onMouseDown={(e) => {
                         e.preventDefault();
@@ -789,11 +798,17 @@ export function BlueprintFilters({
                         const handleMouseMove = (moveEvent: MouseEvent) => {
                           const rect = parentElement.getBoundingClientRect();
                           if (rect) {
-                            const percentage = Math.max(0, Math.min(100, ((moveEvent.clientX - rect.left) / rect.width) * 100));
-                            const minValue = Math.max(0, Math.min(filters.progressRange.max, Math.round(percentage)));
+                            const percentage = Math.max(
+                              0,
+                              Math.min(100, ((moveEvent.clientX - rect.left) / rect.width) * 100)
+                            );
+                            const minValue = Math.max(
+                              0,
+                              Math.min(filters.progressRange.max, Math.round(percentage))
+                            );
                             updateFilter('progressRange', {
                               min: minValue,
-                              max: filters.progressRange.max
+                              max: filters.progressRange.max,
                             });
                           }
                         };
@@ -810,10 +825,10 @@ export function BlueprintFilters({
 
                     {/* Max thumb */}
                     <div
-                      className="absolute top-1/2 w-4 h-4 bg-primary border-2 border-primary rounded-full transform -translate-y-1/2 cursor-pointer hover:scale-110 transition-transform"
+                      className="bg-primary border-primary absolute top-1/2 h-4 w-4 -translate-y-1/2 transform cursor-pointer rounded-full border-2 transition-transform hover:scale-110"
                       style={{
                         left: `${filters.progressRange.max}%`,
-                        boxShadow: '0 0 4px rgba(79, 70, 229, 0.5)'
+                        boxShadow: '0 0 4px rgba(79, 70, 229, 0.5)',
                       }}
                       onMouseDown={(e) => {
                         e.preventDefault();
@@ -823,11 +838,17 @@ export function BlueprintFilters({
                         const handleMouseMove = (moveEvent: MouseEvent) => {
                           const rect = parentElement.getBoundingClientRect();
                           if (rect) {
-                            const percentage = Math.max(filters.progressRange.min, Math.min(100, ((moveEvent.clientX - rect.left) / rect.width) * 100));
-                            const maxValue = Math.max(filters.progressRange.min, Math.min(100, Math.round(percentage)));
+                            const percentage = Math.max(
+                              filters.progressRange.min,
+                              Math.min(100, ((moveEvent.clientX - rect.left) / rect.width) * 100)
+                            );
+                            const maxValue = Math.max(
+                              filters.progressRange.min,
+                              Math.min(100, Math.round(percentage))
+                            );
                             updateFilter('progressRange', {
                               min: filters.progressRange.min,
-                              max: maxValue
+                              max: maxValue,
                             });
                           }
                         };
@@ -845,7 +866,7 @@ export function BlueprintFilters({
                 </div>
 
                 {/* Range labels */}
-                <div className="flex justify-between text-xs text-text-secondary">
+                <div className="text-text-secondary flex justify-between text-xs">
                   <span>0%</span>
                   <span>100%</span>
                 </div>
@@ -854,32 +875,34 @@ export function BlueprintFilters({
 
             {/* Date Range Filter */}
             <div className="p-6">
-              <label className="block text-sm font-medium text-foreground mb-3">
-                Date range
-              </label>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <label className="text-foreground mb-3 block text-sm font-medium">Date range</label>
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 <div>
-                  <label className="block text-xs text-text-secondary mb-1">From</label>
+                  <label className="text-text-secondary mb-1 block text-xs">From</label>
                   <input
                     type="date"
                     value={filters.dateRange.start}
-                    onChange={(e) => updateFilter('dateRange', {
-                      ...filters.dateRange,
-                      start: e.target.value
-                    })}
-                    className="w-full px-3 py-2 rounded-lg border border-neutral-300 bg-background text-foreground text-sm focus:ring-2 focus:ring-secondary/50 focus:border-secondary focus:outline-none"
+                    onChange={(e) =>
+                      updateFilter('dateRange', {
+                        ...filters.dateRange,
+                        start: e.target.value,
+                      })
+                    }
+                    className="bg-background text-foreground focus:ring-secondary/50 focus:border-secondary w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm focus:ring-2 focus:outline-none"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs text-text-secondary mb-1">To</label>
+                  <label className="text-text-secondary mb-1 block text-xs">To</label>
                   <input
                     type="date"
                     value={filters.dateRange.end}
-                    onChange={(e) => updateFilter('dateRange', {
-                      ...filters.dateRange,
-                      end: e.target.value
-                    })}
-                    className="w-full px-3 py-2 rounded-lg border border-neutral-300 bg-background text-foreground text-sm focus:ring-2 focus:ring-secondary/50 focus:border-secondary focus:outline-none"
+                    onChange={(e) =>
+                      updateFilter('dateRange', {
+                        ...filters.dateRange,
+                        end: e.target.value,
+                      })
+                    }
+                    className="bg-background text-foreground focus:ring-secondary/50 focus:border-secondary w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm focus:ring-2 focus:outline-none"
                   />
                 </div>
               </div>

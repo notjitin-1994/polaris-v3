@@ -92,7 +92,9 @@ export function TargetAudienceInfographic({
               {/* Custom Horizontal Bar Chart for Departments */}
               <div className="space-y-3">
                 {demographics.department_distribution.map((dept, index) => {
-                  const isLargest = Math.max(...demographics.department_distribution.map(d => d.percentage)) === dept.percentage;
+                  const isLargest =
+                    Math.max(...demographics.department_distribution.map((d) => d.percentage)) ===
+                    dept.percentage;
 
                   return (
                     <motion.div
@@ -102,7 +104,7 @@ export function TargetAudienceInfographic({
                       transition={{ delay: index * 0.1, duration: 0.6 }}
                       className="group"
                     >
-                      <div className="glass-strong hover:glass-strong overflow-hidden rounded-xl border border-white/10 transition-all hover:border-primary/20 hover:shadow-lg">
+                      <div className="glass-strong hover:glass-strong hover:border-primary/20 overflow-hidden rounded-xl border border-white/10 transition-all hover:shadow-lg">
                         <div className="flex items-center justify-between p-4">
                           {/* Department Info */}
                           <div className="flex items-center gap-3">
@@ -115,7 +117,7 @@ export function TargetAudienceInfographic({
                               style={{
                                 backgroundColor: isLargest
                                   ? 'rgba(167, 218, 219, 0.2)'
-                                  : 'rgba(13, 27, 42, 0.4)'
+                                  : 'rgba(13, 27, 42, 0.4)',
                               }}
                             >
                               <div
@@ -124,9 +126,11 @@ export function TargetAudienceInfographic({
                               />
                             </div>
                             <div>
-                              <div className={`font-medium transition-colors ${
-                                isLargest ? 'text-primary' : 'text-foreground'
-                              }`}>
+                              <div
+                                className={`font-medium transition-colors ${
+                                  isLargest ? 'text-primary' : 'text-foreground'
+                                }`}
+                              >
                                 {dept.department}
                               </div>
                               <div className="text-text-secondary text-xs">
@@ -136,11 +140,13 @@ export function TargetAudienceInfographic({
                           </div>
 
                           {/* Percentage Badge */}
-                          <div className={`rounded-full px-3 py-1 text-sm font-bold transition-all ${
-                            isLargest
-                              ? 'bg-primary/20 text-primary border border-primary/30'
-                              : 'bg-surface text-text-secondary'
-                          }`}>
+                          <div
+                            className={`rounded-full px-3 py-1 text-sm font-bold transition-all ${
+                              isLargest
+                                ? 'bg-primary/20 text-primary border-primary/30 border'
+                                : 'bg-surface text-text-secondary'
+                            }`}
+                          >
                             {dept.percentage}%
                           </div>
                         </div>
@@ -154,14 +160,14 @@ export function TargetAudienceInfographic({
                                 backgroundColor: COLORS[index % COLORS.length],
                                 boxShadow: isLargest
                                   ? `0 0 20px ${COLORS[index % COLORS.length]}40`
-                                  : 'none'
+                                  : 'none',
                               }}
                               initial={{ width: 0 }}
                               animate={{ width: `${dept.percentage}%` }}
                               transition={{
                                 delay: index * 0.1 + 0.3,
                                 duration: 1.2,
-                                ease: 'easeOut'
+                                ease: 'easeOut',
                               }}
                             />
                           </div>
@@ -198,13 +204,19 @@ export function TargetAudienceInfographic({
               >
                 <div className="glass-card rounded-lg p-3 text-center">
                   <div className="text-primary text-lg font-bold">
-                    {Math.max(...demographics.department_distribution.map(d => d.percentage))}%
+                    {Math.max(...demographics.department_distribution.map((d) => d.percentage))}%
                   </div>
                   <div className="text-text-secondary text-xs">Largest Dept</div>
                 </div>
                 <div className="glass-card rounded-lg p-3 text-center">
                   <div className="text-primary text-lg font-bold">
-                    {Math.round(demographics.department_distribution.reduce((sum, d) => sum + d.percentage, 0) / demographics.department_distribution.length)}%
+                    {Math.round(
+                      demographics.department_distribution.reduce(
+                        (sum, d) => sum + d.percentage,
+                        0
+                      ) / demographics.department_distribution.length
+                    )}
+                    %
                   </div>
                   <div className="text-text-secondary text-xs">Average</div>
                 </div>
@@ -233,7 +245,9 @@ export function TargetAudienceInfographic({
           <div className="space-y-4">
             {learning_preferences.modalities.map((modality, index) => {
               const Icon = getModalityIcon(modality.type);
-              const isHighest = Math.max(...learning_preferences.modalities.map(m => m.percentage)) === modality.percentage;
+              const isHighest =
+                Math.max(...learning_preferences.modalities.map((m) => m.percentage)) ===
+                modality.percentage;
 
               return (
                 <motion.div
@@ -243,21 +257,25 @@ export function TargetAudienceInfographic({
                   transition={{ delay: index * 0.1, duration: 0.6 }}
                   className="group"
                 >
-                  <div className="glass-strong hover:glass-strong mb-3 overflow-hidden rounded-xl border border-white/10 transition-all hover:border-primary/20 hover:shadow-lg">
+                  <div className="glass-strong hover:glass-strong hover:border-primary/20 mb-3 overflow-hidden rounded-xl border border-white/10 transition-all hover:shadow-lg">
                     <div className="flex items-center justify-between p-4">
                       {/* Modality Info */}
                       <div className="flex items-center gap-3">
-                        <div className={`flex h-10 w-10 items-center justify-center rounded-lg transition-all group-hover:scale-110 ${
-                          isHighest
-                            ? 'bg-primary/20 text-primary'
-                            : 'bg-surface text-text-secondary'
-                        }`}>
+                        <div
+                          className={`flex h-10 w-10 items-center justify-center rounded-lg transition-all group-hover:scale-110 ${
+                            isHighest
+                              ? 'bg-primary/20 text-primary'
+                              : 'bg-surface text-text-secondary'
+                          }`}
+                        >
                           <Icon className="h-5 w-5" />
                         </div>
                         <div>
-                          <div className={`font-medium transition-colors ${
-                            isHighest ? 'text-primary' : 'text-foreground'
-                          }`}>
+                          <div
+                            className={`font-medium transition-colors ${
+                              isHighest ? 'text-primary' : 'text-foreground'
+                            }`}
+                          >
                             {modality.type}
                           </div>
                           <div className="text-text-secondary text-xs">
@@ -267,11 +285,13 @@ export function TargetAudienceInfographic({
                       </div>
 
                       {/* Percentage Badge */}
-                      <div className={`rounded-full px-3 py-1 text-sm font-bold transition-all ${
-                        isHighest
-                          ? 'bg-primary/20 text-primary border border-primary/30'
-                          : 'bg-surface text-text-secondary'
-                      }`}>
+                      <div
+                        className={`rounded-full px-3 py-1 text-sm font-bold transition-all ${
+                          isHighest
+                            ? 'bg-primary/20 text-primary border-primary/30 border'
+                            : 'bg-surface text-text-secondary'
+                        }`}
+                      >
                         {modality.percentage}%
                       </div>
                     </div>
@@ -282,20 +302,18 @@ export function TargetAudienceInfographic({
                         <motion.div
                           className={`h-full rounded-full transition-all duration-1000 ease-out ${
                             isHighest
-                              ? 'bg-gradient-to-r from-primary/60 via-primary to-primary/80'
-                              : 'bg-gradient-to-r from-primary/40 to-primary/60'
+                              ? 'from-primary/60 via-primary to-primary/80 bg-gradient-to-r'
+                              : 'from-primary/40 to-primary/60 bg-gradient-to-r'
                           }`}
                           initial={{ width: 0 }}
                           animate={{ width: `${modality.percentage}%` }}
                           transition={{
                             delay: index * 0.1 + 0.3,
                             duration: 1.2,
-                            ease: 'easeOut'
+                            ease: 'easeOut',
                           }}
                           style={{
-                            boxShadow: isHighest
-                              ? '0 0 20px rgba(167, 218, 219, 0.3)'
-                              : 'none'
+                            boxShadow: isHighest ? '0 0 20px rgba(167, 218, 219, 0.3)' : 'none',
                           }}
                         />
                       </div>
@@ -332,13 +350,17 @@ export function TargetAudienceInfographic({
           >
             <div className="glass-card rounded-lg p-4 text-center">
               <div className="text-primary text-xl font-bold">
-                {Math.max(...learning_preferences.modalities.map(m => m.percentage))}%
+                {Math.max(...learning_preferences.modalities.map((m) => m.percentage))}%
               </div>
               <div className="text-text-secondary text-xs">Highest Preference</div>
             </div>
             <div className="glass-card rounded-lg p-4 text-center">
               <div className="text-primary text-xl font-bold">
-                {Math.round(learning_preferences.modalities.reduce((sum, m) => sum + m.percentage, 0) / learning_preferences.modalities.length)}%
+                {Math.round(
+                  learning_preferences.modalities.reduce((sum, m) => sum + m.percentage, 0) /
+                    learning_preferences.modalities.length
+                )}
+                %
               </div>
               <div className="text-text-secondary text-xs">Average</div>
             </div>

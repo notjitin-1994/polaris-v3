@@ -94,7 +94,7 @@ export function Sidebar({ user, onSignOut }: SidebarProps) {
 
   return (
     <aside
-      className={`hidden flex-col md:flex h-full min-h-0 ${sidebarCollapsed ? 'md:w-16 lg:w-16' : 'md:w-72 lg:w-80'} bg-surface shadow-sm backdrop-blur-xl transition-all duration-300 ease-out`}
+      className={`hidden h-full min-h-0 flex-col md:flex ${sidebarCollapsed ? 'md:w-16 lg:w-16' : 'md:w-72 lg:w-80'} bg-surface shadow-sm backdrop-blur-xl transition-all duration-300 ease-out`}
       aria-label="Main navigation"
       role="navigation"
     >
@@ -123,7 +123,10 @@ export function Sidebar({ user, onSignOut }: SidebarProps) {
       {/* Navigation Content */}
       {!sidebarCollapsed && (
         // Expanded View: Full Navigation
-        <nav className="flex-1 space-y-6 overflow-y-auto px-4 py-4 min-h-0" aria-label="Primary navigation">
+        <nav
+          className="min-h-0 flex-1 space-y-6 overflow-y-auto px-4 py-4"
+          aria-label="Primary navigation"
+        >
           {/* Quick Access Section */}
           <div className="space-y-1.5">
             <h2 className="text-primary mb-2 px-3 text-[5px] font-bold tracking-wider uppercase">
@@ -199,10 +202,10 @@ export function Sidebar({ user, onSignOut }: SidebarProps) {
       )}
 
       {/* Footer Section */}
-      <div className="bg-surface/50 mt-auto w-full backdrop-blur-sm flex-shrink-0">
+      <div className="bg-surface/50 mt-auto w-full flex-shrink-0 backdrop-blur-sm">
         {sidebarCollapsed ? (
           // Collapsed Footer - Subscribe and Logout Buttons
-          <div className="flex flex-col items-center px-2 py-3 space-y-2">
+          <div className="flex flex-col items-center space-y-2 px-2 py-3">
             {/* Subscribe Button - Collapsed */}
             <button
               type="button"
@@ -228,9 +231,9 @@ export function Sidebar({ user, onSignOut }: SidebarProps) {
               onClick={onSignOut}
               title="Sign out"
               aria-label="Sign out"
-              className="group hover:shadow-red-500/25 focus-visible:ring-red-500/50 bg-red-600 hover:bg-red-700 relative flex h-8 w-8 items-center justify-center rounded-lg transition-all duration-200 focus-visible:ring-2 focus-visible:ring-offset-2 active:scale-95"
+              className="group relative flex h-8 w-8 items-center justify-center rounded-lg bg-red-600 transition-all duration-200 hover:bg-red-700 hover:shadow-red-500/25 focus-visible:ring-2 focus-visible:ring-red-500/50 focus-visible:ring-offset-2 active:scale-95"
             >
-              <IconLogout className="text-white h-4 w-4" />
+              <IconLogout className="h-4 w-4 text-white" />
             </button>
           </div>
         ) : (

@@ -15,12 +15,12 @@
  * Based on common device sizes and optimal reading/viewing experiences
  */
 export const BREAKPOINTS = {
-  xs: '320px',   // Small phones (iPhone SE, etc.)
-  sm: '640px',   // Standard phones (iPhone 12/13, etc.)
-  md: '768px',   // Tablets (iPad Mini, etc.)
-  lg: '1024px',  // Small laptops (MacBook Air 13", etc.)
-  xl: '1280px',  // Desktops (MacBook Pro 16", etc.)
-  '2xl': '1536px' // Large screens (4K displays, etc.)
+  xs: '320px', // Small phones (iPhone SE, etc.)
+  sm: '640px', // Standard phones (iPhone 12/13, etc.)
+  md: '768px', // Tablets (iPad Mini, etc.)
+  lg: '1024px', // Small laptops (MacBook Air 13", etc.)
+  xl: '1280px', // Desktops (MacBook Pro 16", etc.)
+  '2xl': '1536px', // Large screens (4K displays, etc.)
 } as const;
 
 /**
@@ -37,13 +37,18 @@ export const BREAKPOINT_VALUES = {
   md: 768,
   lg: 1024,
   xl: 1280,
-  '2xl': 1536
+  '2xl': 1536,
 } as const;
 
 /**
  * Device classification based on breakpoints
  */
-export type DeviceType = 'mobile-compact' | 'mobile-expanded' | 'tablet' | 'desktop' | 'large-desktop';
+export type DeviceType =
+  | 'mobile-compact'
+  | 'mobile-expanded'
+  | 'tablet'
+  | 'desktop'
+  | 'large-desktop';
 
 /**
  * Responsive breakpoint ranges for media queries
@@ -54,7 +59,7 @@ export const BREAKPOINT_RANGES = {
   md: '(min-width: 768px)',
   lg: '(min-width: 1024px)',
   xl: '(min-width: 1280px)',
-  '2xl': '(min-width: 1536px)'
+  '2xl': '(min-width: 1536px)',
 } as const;
 
 // ========================================
@@ -79,9 +84,9 @@ export function getOptimalColumnCount(deviceType: DeviceType): number {
   const columnMap = {
     'mobile-compact': 1,
     'mobile-expanded': 2,
-    'tablet': 2,
-    'desktop': 3,
-    'large-desktop': 4
+    tablet: 2,
+    desktop: 3,
+    'large-desktop': 4,
   };
 
   return columnMap[deviceType];
@@ -99,28 +104,28 @@ export function getOptimalSpacing(deviceType: DeviceType): {
     'mobile-compact': {
       component: 'space-y-3',
       section: 'space-y-4',
-      content: 'space-y-2'
+      content: 'space-y-2',
     },
     'mobile-expanded': {
       component: 'space-y-4',
       section: 'space-y-6',
-      content: 'space-y-3'
+      content: 'space-y-3',
     },
-    'tablet': {
+    tablet: {
       component: 'space-y-5',
       section: 'space-y-8',
-      content: 'space-y-4'
+      content: 'space-y-4',
     },
-    'desktop': {
+    desktop: {
       component: 'space-y-6',
       section: 'space-y-10',
-      content: 'space-y-5'
+      content: 'space-y-5',
     },
     'large-desktop': {
       component: 'space-y-8',
       section: 'space-y-12',
-      content: 'space-y-6'
-    }
+      content: 'space-y-6',
+    },
   };
 
   return spacingMap[deviceType];
@@ -236,7 +241,7 @@ export const responsiveClasses = {
     /**
      * Large display text for hero sections
      */
-    hero: 'text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl'
+    hero: 'text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl',
   },
 
   // ========================================
@@ -272,7 +277,7 @@ export const responsiveClasses = {
     /**
      * Desktop-enhanced spacing
      */
-    desktop: 'py-6 sm:py-8 lg:py-12'
+    desktop: 'py-6 sm:py-8 lg:py-12',
   },
 
   // ========================================
@@ -311,7 +316,7 @@ export const responsiveClasses = {
     /**
      * Mobile-friendly button group
      */
-    buttonGroup: 'flex flex-col sm:flex-row gap-2 sm:gap-3'
+    buttonGroup: 'flex flex-col sm:flex-row gap-2 sm:gap-3',
   },
 
   // ========================================
@@ -340,7 +345,7 @@ export const responsiveClasses = {
     /**
      * Mobile-friendly card with reduced padding
      */
-    mobile: 'rounded-lg p-3'
+    mobile: 'rounded-lg p-3',
   },
 
   /**
@@ -360,7 +365,7 @@ export const responsiveClasses = {
     /**
      * Mobile drawer/sheet pattern
      */
-    drawer: 'w-80 sm:w-96 max-w-[85vw]'
+    drawer: 'w-80 sm:w-96 max-w-[85vw]',
   },
 
   // ========================================
@@ -389,8 +394,8 @@ export const responsiveClasses = {
     /**
      * Mobile-optimized transforms
      */
-    mobileTransform: 'will-change-transform'
-  }
+    mobileTransform: 'will-change-transform',
+  },
 } as const;
 
 // ========================================
@@ -469,7 +474,7 @@ export function createResponsiveCSSVariables(): Record<string, string> {
     '--container-md': '100%',
     '--container-lg': '1024px',
     '--container-xl': '1280px',
-    '--container-2xl': '1536px'
+    '--container-2xl': '1536px',
   };
 }
 
@@ -510,7 +515,9 @@ export function validateBreakpoints(config: BreakpointConfig): boolean {
     const previous = parseInt(values[i - 1]);
 
     if (current <= previous) {
-      console.warn(`Breakpoint ${Object.keys(config)[i]} (${current}px) should be larger than ${Object.keys(config)[i - 1]} (${previous}px)`);
+      console.warn(
+        `Breakpoint ${Object.keys(config)[i]} (${current}px) should be larger than ${Object.keys(config)[i - 1]} (${previous}px)`
+      );
       return false;
     }
   }
@@ -532,7 +539,7 @@ export function useResponsive(): ResponsiveConfig {
     deviceType: 'desktop',
     optimalColumns: 3,
     spacing: responsiveClasses.spacing,
-    typography: responsiveClasses.textResponsive
+    typography: responsiveClasses.textResponsive,
   };
 }
 
@@ -547,7 +554,7 @@ export function useDeviceClassification(): DeviceClassification {
     height: 1080,
     orientation: 'landscape',
     pixelRatio: 2,
-    touchCapable: false
+    touchCapable: false,
   };
 }
 
@@ -569,5 +576,5 @@ export default {
   createResponsiveCSSVariables,
   validateBreakpoints,
   useResponsive,
-  useDeviceClassification
+  useDeviceClassification,
 };

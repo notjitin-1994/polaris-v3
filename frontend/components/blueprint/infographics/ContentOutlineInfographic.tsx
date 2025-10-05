@@ -164,7 +164,7 @@ export function ContentOutlineInfographic({
               whileHover={{ scale: 1.2 }}
               className="bg-primary absolute top-6 left-0 z-10 flex h-12 w-12 items-center justify-center rounded-full"
             >
-              <span className="text-lg font-bold text-primary-foreground">{index + 1}</span>
+              <span className="text-primary-foreground text-lg font-bold">{index + 1}</span>
             </motion.div>
 
             {/* Module Card */}
@@ -187,10 +187,10 @@ export function ContentOutlineInfographic({
                     </div>
                     <p className="text-text-secondary text-sm">{module.description}</p>
                     {module.delivery_method && (
-                        <div className="mt-2 flex items-center gap-2">
-                          <PlayCircle className="text-primary h-4 w-4" />
-                          <span className="text-primary text-xs">{module.delivery_method}</span>
-                        </div>
+                      <div className="mt-2 flex items-center gap-2">
+                        <PlayCircle className="text-primary h-4 w-4" />
+                        <span className="text-primary text-xs">{module.delivery_method}</span>
+                      </div>
                     )}
                   </div>
                   <motion.div

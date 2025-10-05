@@ -15,19 +15,14 @@ interface FooterLinkProps {
 
 const FooterLink = ({ href, children, external = false }: FooterLinkProps) => {
   const linkClass = cn(
-    'text-white/60 hover:text-white transition-colors duration-200',
+    'text-white/60 transition-colors duration-200 hover:text-white',
     'text-sm font-medium',
     'block py-1'
   );
 
   if (external) {
     return (
-      <a
-        href={href}
-        target="_blank"
-        rel="noopener noreferrer"
-        className={linkClass}
-      >
+      <a href={href} target="_blank" rel="noopener noreferrer" className={linkClass}>
         {children}
       </a>
     );
@@ -54,7 +49,7 @@ const SocialIcon = ({ href, icon, label }: SocialIconProps) => (
     className={cn(
       'flex h-10 w-10 items-center justify-center',
       'rounded-lg border border-white/10',
-      'text-white/60 hover:text-white hover:border-white/20',
+      'text-white/60 hover:border-white/20 hover:text-white',
       'bg-white/5 hover:bg-white/10',
       'transition-all duration-200',
       'touch-target-sm'
@@ -77,7 +72,7 @@ export function Footer(): React.JSX.Element {
           {/* Company Info */}
           <div className="lg:col-span-1">
             <div className="mb-6">
-              <Link href="/" className="inline-block hover:opacity-90 transition-opacity">
+              <Link href="/" className="inline-block transition-opacity hover:opacity-90">
                 <Image
                   src="/logo.png"
                   alt="SmartSlate Logo"
@@ -90,8 +85,9 @@ export function Footer(): React.JSX.Element {
               </Link>
             </div>
 
-            <p className="text-white/60 text-sm leading-relaxed mb-6">
-              Revolutionizing the way the world learns through innovative educational technology and AI-powered personalized learning experiences.
+            <p className="mb-6 text-sm leading-relaxed text-white/60">
+              Revolutionizing the way the world learns through innovative educational technology and
+              AI-powered personalized learning experiences.
             </p>
 
             {/* Social Media */}
@@ -121,7 +117,7 @@ export function Footer(): React.JSX.Element {
 
           {/* Product Links */}
           <div>
-            <h3 className="text-white font-semibold text-sm uppercase tracking-wider mb-4">
+            <h3 className="mb-4 text-sm font-semibold tracking-wider text-white uppercase">
               Product
             </h3>
             <nav className="space-y-1">
@@ -135,7 +131,7 @@ export function Footer(): React.JSX.Element {
 
           {/* Resources */}
           <div>
-            <h3 className="text-white font-semibold text-sm uppercase tracking-wider mb-4">
+            <h3 className="mb-4 text-sm font-semibold tracking-wider text-white uppercase">
               Resources
             </h3>
             <nav className="space-y-1">
@@ -149,7 +145,7 @@ export function Footer(): React.JSX.Element {
 
           {/* Company */}
           <div>
-            <h3 className="text-white font-semibold text-sm uppercase tracking-wider mb-4">
+            <h3 className="mb-4 text-sm font-semibold tracking-wider text-white uppercase">
               Company
             </h3>
             <nav className="space-y-1">
@@ -163,7 +159,7 @@ export function Footer(): React.JSX.Element {
 
           {/* Legal */}
           <div>
-            <h3 className="text-white font-semibold text-sm uppercase tracking-wider mb-4">
+            <h3 className="mb-4 text-sm font-semibold tracking-wider text-white uppercase">
               Legal
             </h3>
             <nav className="space-y-1">
@@ -177,7 +173,7 @@ export function Footer(): React.JSX.Element {
         </div>
 
         {/* Bottom Section */}
-        <div className="mt-12 pt-8 border-t border-white/10">
+        <div className="mt-12 border-t border-white/10 pt-8">
           <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
             <div className="flex items-center gap-2 text-sm text-white/60">
               <span>© {currentYear} SmartSlate. All rights reserved.</span>
@@ -185,7 +181,7 @@ export function Footer(): React.JSX.Element {
 
             <div className="flex items-center gap-1 text-sm text-white/60">
               <span>Made with</span>
-              <Heart className="h-4 w-4 text-red-400 fill-current" />
+              <Heart className="h-4 w-4 fill-current text-red-400" />
               <span>for better education</span>
             </div>
           </div>

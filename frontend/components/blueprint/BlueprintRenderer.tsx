@@ -441,7 +441,7 @@ export function BlueprintRenderer({
                               initial={{ opacity: 0, scale: 0.95, y: -10 }}
                               animate={{ opacity: 1, scale: 1, y: 0 }}
                               exit={{ opacity: 0, scale: 0.95, y: -10 }}
-                              className="fixed right-6 top-auto bottom-auto z-50 max-h-96 w-72 overflow-y-auto shadow-2xl"
+                              className="fixed top-auto right-6 bottom-auto z-50 max-h-96 w-72 overflow-y-auto shadow-2xl"
                               style={{
                                 top: '50%',
                                 transform: 'translateY(-50%)',
@@ -494,7 +494,9 @@ export function BlueprintRenderer({
                     className="mb-6 flex items-center gap-3 border-b border-white/10 pb-4"
                   >
                     <div className="bg-primary flex h-10 w-10 items-center justify-center rounded-xl">
-                      <span className="text-lg font-bold text-primary-foreground">{currentPage + 1}</span>
+                      <span className="text-primary-foreground text-lg font-bold">
+                        {currentPage + 1}
+                      </span>
                     </div>
                     <div>
                       <h2 className="text-2xl font-bold text-white">{currentSection.title}</h2>

@@ -22,11 +22,11 @@ import {
 import { ExportData, ExportOptions, ExportResult } from './types';
 import { isFullBlueprint } from '@/lib/ollama/schema';
 
-  /**
-   * Word Document Generator with Premium Brand Design & Industry-Standard Layout
-   * Features: Professional typography, sophisticated color scheme, structured layout,
-   * brand-compliant styling, and executive-level presentation quality
-   */
+/**
+ * Word Document Generator with Premium Brand Design & Industry-Standard Layout
+ * Features: Professional typography, sophisticated color scheme, structured layout,
+ * brand-compliant styling, and executive-level presentation quality
+ */
 export class WordGenerator {
   // SmartSlate Brand Colors (from globals.css) - Enhanced Palette
   private readonly brandTeal = 'A7DADB'; // Primary accent #a7dadb
@@ -1198,33 +1198,48 @@ export class WordGenerator {
    */
   private createBrandedHeading(
     text: string,
-    level: typeof HeadingLevel.HEADING_1 | typeof HeadingLevel.HEADING_2 | typeof HeadingLevel.HEADING_3 = HeadingLevel.HEADING_1,
+    level:
+      | typeof HeadingLevel.HEADING_1
+      | typeof HeadingLevel.HEADING_2
+      | typeof HeadingLevel.HEADING_3 = HeadingLevel.HEADING_1,
     pageBreakBefore: boolean = false
   ): Paragraph {
     const getSize = (lvl: string): number => {
       switch (lvl) {
-        case HeadingLevel.HEADING_1: return 40;
-        case HeadingLevel.HEADING_2: return 32;
-        case HeadingLevel.HEADING_3: return 26;
-        default: return 24;
+        case HeadingLevel.HEADING_1:
+          return 40;
+        case HeadingLevel.HEADING_2:
+          return 32;
+        case HeadingLevel.HEADING_3:
+          return 26;
+        default:
+          return 24;
       }
     };
 
     const getColor = (lvl: string): string => {
       switch (lvl) {
-        case HeadingLevel.HEADING_1: return this.brandTeal;
-        case HeadingLevel.HEADING_2: return this.brandTealLight;
-        case HeadingLevel.HEADING_3: return this.brandIndigo;
-        default: return this.brandTeal;
+        case HeadingLevel.HEADING_1:
+          return this.brandTeal;
+        case HeadingLevel.HEADING_2:
+          return this.brandTealLight;
+        case HeadingLevel.HEADING_3:
+          return this.brandIndigo;
+        default:
+          return this.brandTeal;
       }
     };
 
     const getBackgroundColor = (lvl: string): string => {
       switch (lvl) {
-        case HeadingLevel.HEADING_1: return this.darkBg;
-        case HeadingLevel.HEADING_2: return this.paperBg;
-        case HeadingLevel.HEADING_3: return this.surfaceBg;
-        default: return this.darkBg;
+        case HeadingLevel.HEADING_1:
+          return this.darkBg;
+        case HeadingLevel.HEADING_2:
+          return this.paperBg;
+        case HeadingLevel.HEADING_3:
+          return this.surfaceBg;
+        default:
+          return this.darkBg;
       }
     };
 
@@ -1598,7 +1613,10 @@ export class WordGenerator {
                         new Paragraph({
                           children: [
                             new TextRun({
-                              text: obj.baseline && obj.target ? `${obj.baseline} → ${obj.target}` : (obj.baseline || obj.target || 'Not specified'),
+                              text:
+                                obj.baseline && obj.target
+                                  ? `${obj.baseline} → ${obj.target}`
+                                  : obj.baseline || obj.target || 'Not specified',
                               size: 20,
                               color: this.textPrimary,
                             }),
@@ -1639,7 +1657,7 @@ export class WordGenerator {
                 new Paragraph({
                   children: [
                     new TextRun({
-                      text: `Progress: ${obj.baseline && obj.target ? `${obj.baseline} → ${obj.target}` : (obj.baseline || obj.target || 'Not specified')}`,
+                      text: `Progress: ${obj.baseline && obj.target ? `${obj.baseline} → ${obj.target}` : obj.baseline || obj.target || 'Not specified'}`,
                       size: 18,
                       color: this.textPrimary,
                     }),
@@ -1824,7 +1842,9 @@ export class WordGenerator {
 
     // Instructional Strategy
     if (blueprint.instructional_strategy) {
-      paragraphs.push(this.createBrandedHeading('Instructional Strategy', HeadingLevel.HEADING_1, true));
+      paragraphs.push(
+        this.createBrandedHeading('Instructional Strategy', HeadingLevel.HEADING_1, true)
+      );
       paragraphs.push(
         new Paragraph({
           children: [
@@ -2003,22 +2023,24 @@ export class WordGenerator {
             spacing: { before: 300, after: 100 },
           })
         );
-        blueprint.instructional_strategy.accessibility_considerations.forEach((consideration: string) => {
-          paragraphs.push(
-            new Paragraph({
-              children: [
-                new TextRun({
-                  text: `✓ ${consideration}`,
-                  size: 16,
-                  color: this.textPrimary,
-                  font: 'Lato',
-                }),
-              ],
-              spacing: { before: 25, after: 75 },
-              indent: { left: 360 },
-            })
-          );
-        });
+        blueprint.instructional_strategy.accessibility_considerations.forEach(
+          (consideration: string) => {
+            paragraphs.push(
+              new Paragraph({
+                children: [
+                  new TextRun({
+                    text: `✓ ${consideration}`,
+                    size: 16,
+                    color: this.textPrimary,
+                    font: 'Lato',
+                  }),
+                ],
+                spacing: { before: 25, after: 75 },
+                indent: { left: 360 },
+              })
+            );
+          }
+        );
       }
     }
 

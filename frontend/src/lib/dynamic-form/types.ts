@@ -249,10 +249,4 @@ export interface UseFormValidationReturn {
 }
 
 // Re-export types from schema for convenience
-export type {
-  FormSchema,
-  Question,
-  Section,
-  ValidationResult,
-  InputType,
-} from './schema';
+export type { FormSchema, Question, Section, ValidationResult, InputType } from './schema';

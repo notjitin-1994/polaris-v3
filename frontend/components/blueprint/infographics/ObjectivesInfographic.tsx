@@ -34,7 +34,7 @@ export function ObjectivesInfographic({
   objectives,
 }: ObjectivesInfographicProps): React.JSX.Element {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
       {objectives.map((obj, index) => {
         const baselineValue = extractNumericalValue(String(obj.baseline));
         const targetValue = extractNumericalValue(String(obj.target));
@@ -48,7 +48,7 @@ export function ObjectivesInfographic({
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: index * 0.1, duration: 0.5 }}
             whileHover={{ scale: 1.02, y: -2 }}
-            className="glass-strong rounded-xl p-5 transition-all hover:shadow-lg relative group flex flex-col h-full"
+            className="glass-strong group relative flex h-full flex-col rounded-xl p-5 transition-all hover:shadow-lg"
           >
             {/* Header */}
             <div className="mb-4 flex items-start justify-between">
@@ -64,10 +64,14 @@ export function ObjectivesInfographic({
             </div>
 
             {/* Content Area - Flexible Height */}
-            <div className="flex-grow mb-4">
-              <h3 className="text-heading text-foreground mb-2 font-semibold line-clamp-2 min-h-[3rem]">{obj.title}</h3>
+            <div className="mb-4 flex-grow">
+              <h3 className="text-heading text-foreground mb-2 line-clamp-2 min-h-[3rem] font-semibold">
+                {obj.title}
+              </h3>
 
-              <p className="text-body text-text-secondary mb-4 line-clamp-2 text-sm min-h-[2.5rem]">{obj.description}</p>
+              <p className="text-body text-text-secondary mb-4 line-clamp-2 min-h-[2.5rem] text-sm">
+                {obj.description}
+              </p>
 
               {/* Metric Badge */}
               <div className="bg-primary/10 text-primary mb-4 inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs">
@@ -78,28 +82,28 @@ export function ObjectivesInfographic({
               {/* Compact Baseline/Target Display */}
               <div className="grid grid-cols-2 gap-3">
                 {/* Baseline */}
-                <div className="relative group/baseline">
-                  <div className="text-xs text-text-secondary mb-1">Baseline</div>
-                  <div className="text-lg font-semibold text-foreground">{baselineValue}</div>
+                <div className="group/baseline relative">
+                  <div className="text-text-secondary mb-1 text-xs">Baseline</div>
+                  <div className="text-foreground text-lg font-semibold">{baselineValue}</div>
                   {baselineDescription !== baselineValue && (
-                    <div className="absolute bottom-full left-0 mb-2 hidden group-hover/baseline:block z-10">
-                      <div className="bg-foreground text-background text-xs px-2 py-1 rounded-md shadow-lg whitespace-nowrap">
+                    <div className="absolute bottom-full left-0 z-10 mb-2 hidden group-hover/baseline:block">
+                      <div className="bg-foreground text-background rounded-md px-2 py-1 text-xs whitespace-nowrap shadow-lg">
                         {baselineDescription}
-                        <div className="absolute top-full left-2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-foreground"></div>
+                        <div className="border-t-foreground absolute top-full left-2 h-0 w-0 border-t-4 border-r-4 border-l-4 border-transparent"></div>
                       </div>
                     </div>
                   )}
                 </div>
 
                 {/* Target */}
-                <div className="relative group/target">
-                  <div className="text-xs text-text-secondary mb-1">Target</div>
-                  <div className="text-lg font-bold text-primary">{targetValue}</div>
+                <div className="group/target relative">
+                  <div className="text-text-secondary mb-1 text-xs">Target</div>
+                  <div className="text-primary text-lg font-bold">{targetValue}</div>
                   {targetDescription !== targetValue && (
-                    <div className="absolute bottom-full right-0 mb-2 hidden group-hover/target:block z-10">
-                      <div className="bg-foreground text-background text-xs px-2 py-1 rounded-md shadow-lg whitespace-nowrap">
+                    <div className="absolute right-0 bottom-full z-10 mb-2 hidden group-hover/target:block">
+                      <div className="bg-foreground text-background rounded-md px-2 py-1 text-xs whitespace-nowrap shadow-lg">
                         {targetDescription}
-                        <div className="absolute top-full right-2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-foreground"></div>
+                        <div className="border-t-foreground absolute top-full right-2 h-0 w-0 border-t-4 border-r-4 border-l-4 border-transparent"></div>
                       </div>
                     </div>
                   )}
@@ -111,7 +115,9 @@ export function ObjectivesInfographic({
             <div className="mt-auto">
               <div className="text-text-secondary mb-2 flex justify-between text-xs">
                 <span>Progress to Target</span>
-                <span className="font-medium">{calculateProgress(obj.baseline, obj.target).toFixed(0)}%</span>
+                <span className="font-medium">
+                  {calculateProgress(obj.baseline, obj.target).toFixed(0)}%
+                </span>
               </div>
               <div className="bg-surface h-2 overflow-hidden rounded-full">
                 <motion.div

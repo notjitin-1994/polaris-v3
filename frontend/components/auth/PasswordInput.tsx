@@ -10,6 +10,8 @@ type Props = {
   placeholder?: string;
   autoComplete?: string;
   name?: string;
+  onFocus?: () => void;
+  onBlur?: () => void;
 };
 
 function IconEye({ className = '' }: { className?: string }): React.JSX.Element {
@@ -59,6 +61,8 @@ export function PasswordInput({
   placeholder,
   autoComplete,
   name,
+  onFocus,
+  onBlur,
 }: Props): React.JSX.Element {
   const [visible, setVisible] = useState(false);
 
@@ -72,6 +76,8 @@ export function PasswordInput({
           placeholder={placeholder}
           value={value}
           onChange={(e) => onChange(e.target.value)}
+          onFocus={onFocus}
+          onBlur={onBlur}
           autoComplete={autoComplete}
           name={name}
         />

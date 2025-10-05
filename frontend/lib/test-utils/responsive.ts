@@ -33,43 +33,43 @@ export function getBreakpointTestConfigs(): BreakpointTestConfig[] {
       width: BREAKPOINT_VALUES.xs,
       height: 896, // iPhone SE height
       deviceType: 'mobile-compact',
-      name: 'Mobile XS (320px)'
+      name: 'Mobile XS (320px)',
     },
     {
       breakpoint: 'sm',
       width: BREAKPOINT_VALUES.sm,
       height: 896, // iPhone 12/13 height
       deviceType: 'mobile-expanded',
-      name: 'Mobile SM (640px)'
+      name: 'Mobile SM (640px)',
     },
     {
       breakpoint: 'md',
       width: BREAKPOINT_VALUES.md,
       height: 1024, // iPad Mini height
       deviceType: 'tablet',
-      name: 'Tablet MD (768px)'
+      name: 'Tablet MD (768px)',
     },
     {
       breakpoint: 'lg',
       width: BREAKPOINT_VALUES.lg,
       height: 768, // MacBook Air 13" height
       deviceType: 'desktop',
-      name: 'Desktop LG (1024px)'
+      name: 'Desktop LG (1024px)',
     },
     {
       breakpoint: 'xl',
       width: BREAKPOINT_VALUES.xl,
       height: 900, // MacBook Pro 16" height
       deviceType: 'desktop',
-      name: 'Desktop XL (1280px)'
+      name: 'Desktop XL (1280px)',
     },
     {
       breakpoint: '2xl',
       width: BREAKPOINT_VALUES['2xl'],
       height: 1080, // 4K display height
       deviceType: 'large-desktop',
-      name: 'Large Desktop 2XL (1536px)'
-    }
+      name: 'Large Desktop 2XL (1536px)',
+    },
   ];
 }
 
@@ -77,8 +77,8 @@ export function getBreakpointTestConfigs(): BreakpointTestConfig[] {
  * Get mobile-specific breakpoint configurations
  */
 export function getMobileBreakpointConfigs(): BreakpointTestConfig[] {
-  return getBreakpointTestConfigs().filter(config =>
-    config.deviceType === 'mobile-compact' || config.deviceType === 'mobile-expanded'
+  return getBreakpointTestConfigs().filter(
+    (config) => config.deviceType === 'mobile-compact' || config.deviceType === 'mobile-expanded'
   );
 }
 
@@ -86,17 +86,15 @@ export function getMobileBreakpointConfigs(): BreakpointTestConfig[] {
  * Get tablet-specific breakpoint configurations
  */
 export function getTabletBreakpointConfigs(): BreakpointTestConfig[] {
-  return getBreakpointTestConfigs().filter(config =>
-    config.deviceType === 'tablet'
-  );
+  return getBreakpointTestConfigs().filter((config) => config.deviceType === 'tablet');
 }
 
 /**
  * Get desktop-specific breakpoint configurations
  */
 export function getDesktopBreakpointConfigs(): BreakpointTestConfig[] {
-  return getBreakpointTestConfigs().filter(config =>
-    config.deviceType === 'desktop' || config.deviceType === 'large-desktop'
+  return getBreakpointTestConfigs().filter(
+    (config) => config.deviceType === 'desktop' || config.deviceType === 'large-desktop'
   );
 }
 
@@ -115,7 +113,7 @@ export function createViewportTest(testFn: (config: BreakpointTestConfig) => voi
       // Set viewport for this breakpoint
       await page.setViewportSize({
         width: config.width,
-        height: config.height
+        height: config.height,
       });
 
       // Wait for layout to stabilize
@@ -130,14 +128,16 @@ export function createViewportTest(testFn: (config: BreakpointTestConfig) => voi
 /**
  * Create mobile-specific viewport test
  */
-export function createMobileViewportTest(testFn: (config: BreakpointTestConfig) => void | Promise<void>) {
+export function createMobileViewportTest(
+  testFn: (config: BreakpointTestConfig) => void | Promise<void>
+) {
   return async (page: any) => {
     const configs = getMobileBreakpointConfigs();
 
     for (const config of configs) {
       await page.setViewportSize({
         width: config.width,
-        height: config.height
+        height: config.height,
       });
 
       await page.waitForTimeout(100);
@@ -149,14 +149,16 @@ export function createMobileViewportTest(testFn: (config: BreakpointTestConfig) 
 /**
  * Create tablet-specific viewport test
  */
-export function createTabletViewportTest(testFn: (config: BreakpointTestConfig) => void | Promise<void>) {
+export function createTabletViewportTest(
+  testFn: (config: BreakpointTestConfig) => void | Promise<void>
+) {
   return async (page: any) => {
     const configs = getTabletBreakpointConfigs();
 
     for (const config of configs) {
       await page.setViewportSize({
         width: config.width,
-        height: config.height
+        height: config.height,
       });
 
       await page.waitForTimeout(100);
@@ -172,8 +174,12 @@ export function createTabletViewportTest(testFn: (config: BreakpointTestConfig) 
 /**
  * Assert that an element is visible at a specific breakpoint
  */
-export async function assertVisibleAtBreakpoint(page: any, selector: string, breakpoint: BreakpointKey) {
-  const config = getBreakpointTestConfigs().find(c => c.breakpoint === breakpoint);
+export async function assertVisibleAtBreakpoint(
+  page: any,
+  selector: string,
+  breakpoint: BreakpointKey
+) {
+  const config = getBreakpointTestConfigs().find((c) => c.breakpoint === breakpoint);
   if (!config) {
     throw new Error(`Breakpoint ${breakpoint} not found in test configurations`);
   }
@@ -185,7 +191,9 @@ export async function assertVisibleAtBreakpoint(page: any, selector: string, bre
   const isVisible = await element.isVisible();
 
   if (!isVisible) {
-    throw new Error(`Element ${selector} should be visible at breakpoint ${breakpoint} (${config.width}px)`);
+    throw new Error(
+      `Element ${selector} should be visible at breakpoint ${breakpoint} (${config.width}px)`
+    );
   }
 }
 
@@ -198,7 +206,7 @@ export async function assertResponsiveStyles(
   breakpoint: BreakpointKey,
   expectedStyles: Record<string, string>
 ) {
-  const config = getBreakpointTestConfigs().find(c => c.breakpoint === breakpoint);
+  const config = getBreakpointTestConfigs().find((c) => c.breakpoint === breakpoint);
   if (!config) {
     throw new Error(`Breakpoint ${breakpoint} not found in test configurations`);
   }
@@ -230,7 +238,7 @@ export async function assertGridColumns(
   breakpoint: BreakpointKey,
   expectedColumns: number
 ) {
-  const config = getBreakpointTestConfigs().find(c => c.breakpoint === breakpoint);
+  const config = getBreakpointTestConfigs().find((c) => c.breakpoint === breakpoint);
   if (!config) {
     throw new Error(`Breakpoint ${breakpoint} not found in test configurations`);
   }
@@ -277,7 +285,7 @@ export function getPerformanceTestConfigs(): PerformanceTestConfig[] {
     { breakpoint: 'md', maxLCP: 2.5, maxCLS: 0.1, maxFID: 100 },
     { breakpoint: 'lg', maxLCP: 2.5, maxCLS: 0.1, maxFID: 100 },
     { breakpoint: 'xl', maxLCP: 2.5, maxCLS: 0.1, maxFID: 100 },
-    { breakpoint: '2xl', maxLCP: 2.5, maxCLS: 0.1, maxFID: 100 }
+    { breakpoint: '2xl', maxLCP: 2.5, maxCLS: 0.1, maxFID: 100 },
   ];
 }
 
@@ -289,7 +297,7 @@ export async function assertPerformanceMetrics(
   breakpoint: BreakpointKey,
   metrics: { lcp?: number; cls?: number; fid?: number }
 ) {
-  const config = getPerformanceTestConfigs().find(c => c.breakpoint === breakpoint);
+  const config = getPerformanceTestConfigs().find((c) => c.breakpoint === breakpoint);
   if (!config) {
     throw new Error(`Performance config for breakpoint ${breakpoint} not found`);
   }
@@ -308,7 +316,7 @@ export async function assertPerformanceMetrics(
     return {
       lcp,
       loadTime: navigation.loadEventEnd - navigation.fetchStart,
-      domContentLoaded: navigation.domContentLoadedEventEnd - navigation.fetchStart
+      domContentLoaded: navigation.domContentLoadedEventEnd - navigation.fetchStart,
     };
   });
 
@@ -346,12 +354,42 @@ export interface AccessibilityTestConfig {
  */
 export function getAccessibilityTestConfigs(): AccessibilityTestConfig[] {
   return [
-    { breakpoint: 'xs', minTouchTargetSize: 44, maxColorContrast: 4.5, checkKeyboardNavigation: false },
-    { breakpoint: 'sm', minTouchTargetSize: 44, maxColorContrast: 4.5, checkKeyboardNavigation: false },
-    { breakpoint: 'md', minTouchTargetSize: 44, maxColorContrast: 4.5, checkKeyboardNavigation: true },
-    { breakpoint: 'lg', minTouchTargetSize: 44, maxColorContrast: 4.5, checkKeyboardNavigation: true },
-    { breakpoint: 'xl', minTouchTargetSize: 44, maxColorContrast: 4.5, checkKeyboardNavigation: true },
-    { breakpoint: '2xl', minTouchTargetSize: 44, maxColorContrast: 4.5, checkKeyboardNavigation: true }
+    {
+      breakpoint: 'xs',
+      minTouchTargetSize: 44,
+      maxColorContrast: 4.5,
+      checkKeyboardNavigation: false,
+    },
+    {
+      breakpoint: 'sm',
+      minTouchTargetSize: 44,
+      maxColorContrast: 4.5,
+      checkKeyboardNavigation: false,
+    },
+    {
+      breakpoint: 'md',
+      minTouchTargetSize: 44,
+      maxColorContrast: 4.5,
+      checkKeyboardNavigation: true,
+    },
+    {
+      breakpoint: 'lg',
+      minTouchTargetSize: 44,
+      maxColorContrast: 4.5,
+      checkKeyboardNavigation: true,
+    },
+    {
+      breakpoint: 'xl',
+      minTouchTargetSize: 44,
+      maxColorContrast: 4.5,
+      checkKeyboardNavigation: true,
+    },
+    {
+      breakpoint: '2xl',
+      minTouchTargetSize: 44,
+      maxColorContrast: 4.5,
+      checkKeyboardNavigation: true,
+    },
   ];
 }
 
@@ -359,19 +397,21 @@ export function getAccessibilityTestConfigs(): AccessibilityTestConfig[] {
  * Assert touch target sizes at a breakpoint
  */
 export async function assertTouchTargets(page: any, breakpoint: BreakpointKey, minSize = 44) {
-  const config = getAccessibilityTestConfigs().find(c => c.breakpoint === breakpoint);
+  const config = getAccessibilityTestConfigs().find((c) => c.breakpoint === breakpoint);
   if (!config) {
     throw new Error(`Accessibility config for breakpoint ${breakpoint} not found`);
   }
 
   await page.setViewportSize({
     width: BREAKPOINT_VALUES[breakpoint],
-    height: 800
+    height: 800,
   });
   await page.waitForTimeout(100);
 
   // Find all interactive elements
-  const interactiveElements = await page.locator('button, a, input, select, textarea, [role="button"], [tabindex="0"]').all();
+  const interactiveElements = await page
+    .locator('button, a, input, select, textarea, [role="button"], [tabindex="0"]')
+    .all();
 
   for (const element of interactiveElements) {
     const boundingBox = await element.boundingBox();
@@ -381,7 +421,7 @@ export async function assertTouchTargets(page: any, breakpoint: BreakpointKey, m
       const minDimension = Math.min(width, height);
 
       if (minDimension < minSize) {
-        const tagName = await element.evaluate(el => el.tagName.toLowerCase());
+        const tagName = await element.evaluate((el) => el.tagName.toLowerCase());
         throw new Error(
           `Touch target ${tagName} at breakpoint ${breakpoint} has minimum dimension ${minDimension}px, should be ≥ ${minSize}px`
         );
@@ -414,7 +454,7 @@ export function getVisualRegressionConfigs(): VisualRegressionConfig[] {
     { breakpoint: 'md', threshold: 0.1, includeAntiAliasing: true },
     { breakpoint: 'lg', threshold: 0.05, includeAntiAliasing: true },
     { breakpoint: 'xl', threshold: 0.05, includeAntiAliasing: true },
-    { breakpoint: '2xl', threshold: 0.05, includeAntiAliasing: true }
+    { breakpoint: '2xl', threshold: 0.05, includeAntiAliasing: true },
   ];
 }
 
@@ -448,7 +488,7 @@ export const responsiveTestFixtures = {
 
     desktopMenuVisible: async (page: any) => {
       await assertVisibleAtBreakpoint(page, '[data-testid="desktop-menu"]', 'lg');
-    }
+    },
   },
 
   /**
@@ -465,21 +505,31 @@ export const responsiveTestFixtures = {
 
     fourColumnsDesktop: async (page: any) => {
       await assertGridColumns(page, '[data-testid="card-grid"]', 'xl', 4);
-    }
+    },
   },
 
   /**
    * Typography test fixture
    */
   typography: {
-    responsiveFontSize: async (page: any, selector: string, breakpoint: BreakpointKey, expectedSize: string) => {
+    responsiveFontSize: async (
+      page: any,
+      selector: string,
+      breakpoint: BreakpointKey,
+      expectedSize: string
+    ) => {
       await assertResponsiveStyles(page, selector, breakpoint, { fontSize: expectedSize });
     },
 
-    lineHeightConsistency: async (page: any, selector: string, breakpoint: BreakpointKey, expectedLineHeight: string) => {
+    lineHeightConsistency: async (
+      page: any,
+      selector: string,
+      breakpoint: BreakpointKey,
+      expectedLineHeight: string
+    ) => {
       await assertResponsiveStyles(page, selector, breakpoint, { lineHeight: expectedLineHeight });
-    }
-  }
+    },
+  },
 };
 
 // ========================================
@@ -494,7 +544,7 @@ export async function waitForResponsiveLayout(page: any, timeout = 500) {
 
   // Wait for any layout shifts to complete
   await page.evaluate(() => {
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       let lastHeight = document.body.scrollHeight;
       const checkHeight = () => {
         const currentHeight = document.body.scrollHeight;
@@ -535,7 +585,7 @@ export async function testResponsiveBehavior(
   for (const config of configs) {
     await page.setViewportSize({
       width: config.width,
-      height: config.height
+      height: config.height,
     });
 
     await waitForResponsiveLayout(page);
@@ -564,20 +614,24 @@ export const responsiveMatchers = {
     // Implementation would check computed styles at breakpoint
     return {
       pass: true, // Placeholder
-      message: () => `Expected element to be visible at breakpoint ${breakpoint}`
+      message: () => `Expected element to be visible at breakpoint ${breakpoint}`,
     };
   },
 
   /**
    * Matcher for testing responsive styles
    */
-  toHaveResponsiveStyles: (element: any, breakpoint: BreakpointKey, expectedStyles: Record<string, string>) => {
+  toHaveResponsiveStyles: (
+    element: any,
+    breakpoint: BreakpointKey,
+    expectedStyles: Record<string, string>
+  ) => {
     // Implementation would check computed styles match expected values
     return {
       pass: true, // Placeholder
-      message: () => `Expected element to have responsive styles at breakpoint ${breakpoint}`
+      message: () => `Expected element to have responsive styles at breakpoint ${breakpoint}`,
     };
-  }
+  },
 };
 
 // ========================================
@@ -608,5 +662,5 @@ export default {
   waitForResponsiveLayout,
   getCurrentBreakpoint,
   testResponsiveBehavior,
-  responsiveMatchers
+  responsiveMatchers,
 };

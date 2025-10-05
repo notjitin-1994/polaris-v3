@@ -35,7 +35,7 @@ function StaticWizardContent(): React.JSX.Element {
               transition={{ duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94] }}
               className="mb-8"
             >
-              <h1 className="font-heading text-7xl font-bold tracking-tight text-white sm:text-8xl md:text-9xl lg:text-10xl">
+              <h1 className="font-heading lg:text-10xl text-7xl font-bold tracking-tight text-white sm:text-8xl md:text-9xl">
                 <span>Starmap </span>
                 <span className="bg-gradient-to-r from-[#a7dadb] to-[#7bc4c4] bg-clip-text text-transparent">
                   Navigator
@@ -52,12 +52,13 @@ function StaticWizardContent(): React.JSX.Element {
             >
               <p className="text-xl leading-relaxed text-white/70 sm:text-2xl lg:text-3xl">
                 Begin your journey by defining your{' '}
-                <span className="text-[#a7dadb] font-medium">learning destination</span>{' '}
-                and{' '}
-                <span className="text-[#a7dadb] font-medium">mission scope</span>. We'll use this to{' '}
-                <span className="text-[#a7dadb] font-medium drop-shadow-[0_0_8px_rgba(167,218,219,0.8)] filter brightness-110">illuminate the path</span>{' '}
+                <span className="font-medium text-[#a7dadb]">learning destination</span> and{' '}
+                <span className="font-medium text-[#a7dadb]">mission scope</span>. We'll use this to{' '}
+                <span className="font-medium text-[#a7dadb] brightness-110 drop-shadow-[0_0_8px_rgba(167,218,219,0.8)] filter">
+                  illuminate the path
+                </span>{' '}
                 ahead with{' '}
-                <span className="text-[#a7dadb] font-medium">personalized questions</span>
+                <span className="font-medium text-[#a7dadb]">personalized questions</span>
               </p>
             </motion.div>
 

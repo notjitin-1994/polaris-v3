@@ -47,7 +47,6 @@ function DynamicWizardContent({ id }: { id: string }): React.JSX.Element {
         Array.isArray(data.dynamic_questions) ? data.dynamic_questions.length : 'not an array'
       );
 
-
       setBlueprint(data);
     } catch (error) {
       console.error('Error loading blueprint:', error);
@@ -249,7 +248,7 @@ function DynamicWizardContent({ id }: { id: string }): React.JSX.Element {
               transition={{ duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94] }}
               className="mb-8"
             >
-              <h1 className="font-heading text-7xl font-bold tracking-tight text-white sm:text-8xl md:text-9xl lg:text-10xl">
+              <h1 className="font-heading lg:text-10xl text-7xl font-bold tracking-tight text-white sm:text-8xl md:text-9xl">
                 <span>Starmap </span>
                 <span className="bg-gradient-to-r from-[#a7dadb] to-[#7bc4c4] bg-clip-text text-transparent">
                   Cartographer
@@ -266,12 +265,14 @@ function DynamicWizardContent({ id }: { id: string }): React.JSX.Element {
             >
               <p className="text-xl leading-relaxed text-white/70 sm:text-2xl lg:text-3xl">
                 Chart your course with{' '}
-                <span className="text-[#a7dadb] font-medium">personalized questions</span>{' '}
-                derived from your{' '}
-                <span className="text-[#a7dadb] font-medium">mission parameters</span>. We'll use these{' '}
-                <span className="text-[#a7dadb] font-medium drop-shadow-[0_0_8px_rgba(167,218,219,0.8)] brightness-110">coordinates</span>{' '}
+                <span className="font-medium text-[#a7dadb]">personalized questions</span> derived
+                from your <span className="font-medium text-[#a7dadb]">mission parameters</span>.
+                We'll use these{' '}
+                <span className="font-medium text-[#a7dadb] brightness-110 drop-shadow-[0_0_8px_rgba(167,218,219,0.8)]">
+                  coordinates
+                </span>{' '}
                 to craft your{' '}
-                <span className="text-[#a7dadb] font-medium">complete learning trajectory</span>
+                <span className="font-medium text-[#a7dadb]">complete learning trajectory</span>
               </p>
             </motion.div>
 
@@ -290,7 +291,6 @@ function DynamicWizardContent({ id }: { id: string }): React.JSX.Element {
       {/* Main Content */}
       <main className="w-full px-4 py-8 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-6xl">
-
           <DynamicFormRenderer
             formSchema={{
               id: `dynamic-${blueprint.id}`,

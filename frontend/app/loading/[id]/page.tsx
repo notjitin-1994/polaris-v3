@@ -166,7 +166,7 @@ function LoadingContent({ id }: { id: string }): React.JSX.Element {
   }, [router, id, user?.id]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#020C1B] via-[#0A1B2A] to-[#020C1B] relative overflow-hidden">
+    <div className="relative min-h-screen overflow-hidden bg-gradient-to-br from-[#020C1B] via-[#0A1B2A] to-[#020C1B]">
       {/* Animated Background Elements */}
       <div className="pointer-events-none absolute inset-0 z-0">
         {/* Primary gradient overlay */}
@@ -174,38 +174,38 @@ function LoadingContent({ id }: { id: string }): React.JSX.Element {
 
         {/* Floating orbital elements */}
         <motion.div
-          className="absolute top-1/4 left-1/4 h-32 w-32 rounded-full border border-primary/10"
+          className="border-primary/10 absolute top-1/4 left-1/4 h-32 w-32 rounded-full border"
           animate={{
             rotate: 360,
             scale: [1, 1.1, 1],
           }}
           transition={{
-            rotate: { duration: 20, repeat: Infinity, ease: "linear" },
-            scale: { duration: 4, repeat: Infinity, ease: "easeInOut" }
+            rotate: { duration: 20, repeat: Infinity, ease: 'linear' },
+            scale: { duration: 4, repeat: Infinity, ease: 'easeInOut' },
           }}
         >
-          <div className="absolute top-0 left-1/2 h-2 w-2 -translate-x-1 -translate-y-1 rounded-full bg-primary/60" />
+          <div className="bg-primary/60 absolute top-0 left-1/2 h-2 w-2 -translate-x-1 -translate-y-1 rounded-full" />
         </motion.div>
 
         <motion.div
-          className="absolute bottom-1/3 right-1/4 h-24 w-24 rounded-full border border-secondary/10"
+          className="border-secondary/10 absolute right-1/4 bottom-1/3 h-24 w-24 rounded-full border"
           animate={{
             rotate: -360,
             scale: [1.2, 1, 1.2],
           }}
           transition={{
-            rotate: { duration: 15, repeat: Infinity, ease: "linear" },
-            scale: { duration: 3, repeat: Infinity, ease: "easeInOut" }
+            rotate: { duration: 15, repeat: Infinity, ease: 'linear' },
+            scale: { duration: 3, repeat: Infinity, ease: 'easeInOut' },
           }}
         >
-          <div className="absolute top-1/2 left-0 h-1 w-1 -translate-x-0.5 -translate-y-0.5 rounded-full bg-secondary/60" />
+          <div className="bg-secondary/60 absolute top-1/2 left-0 h-1 w-1 -translate-x-0.5 -translate-y-0.5 rounded-full" />
         </motion.div>
 
         {/* Sparkle effects */}
         {[...Array(6)].map((_, i) => (
           <motion.div
             key={i}
-            className="absolute h-1 w-1 rounded-full bg-primary/40"
+            className="bg-primary/40 absolute h-1 w-1 rounded-full"
             style={{
               top: `${20 + i * 15}%`,
               left: `${10 + (i % 3) * 30}%`,
@@ -252,7 +252,7 @@ function LoadingContent({ id }: { id: string }): React.JSX.Element {
                     <motion.div
                       initial={{ scale: 0 }}
                       animate={{ scale: 1 }}
-                      className="bg-error/10 flex h-24 w-24 items-center justify-center rounded-full ring-2 ring-error/20"
+                      className="bg-error/10 ring-error/20 flex h-24 w-24 items-center justify-center rounded-full ring-2"
                     >
                       <AlertCircle className="text-error h-12 w-12" />
                     </motion.div>
@@ -261,14 +261,14 @@ function LoadingContent({ id }: { id: string }): React.JSX.Element {
                       initial={{ scale: 0 }}
                       animate={{ scale: 1 }}
                       transition={{ type: 'spring', duration: 0.6, bounce: 0.4 }}
-                      className="bg-success/10 flex h-24 w-24 items-center justify-center rounded-full ring-2 ring-success/20"
+                      className="bg-success/10 ring-success/20 flex h-24 w-24 items-center justify-center rounded-full ring-2"
                     >
                       <CheckCircle className="text-success h-12 w-12" />
                     </motion.div>
                   ) : (
                     <div className="relative">
                       <motion.div
-                        className="bg-primary/10 flex h-24 w-24 items-center justify-center rounded-full ring-2 ring-primary/20"
+                        className="bg-primary/10 ring-primary/20 flex h-24 w-24 items-center justify-center rounded-full ring-2"
                         animate={{
                           boxShadow: [
                             '0 0 0 0 rgba(59, 130, 246, 0.2)',
@@ -278,7 +278,7 @@ function LoadingContent({ id }: { id: string }): React.JSX.Element {
                         transition={{
                           duration: 2,
                           repeat: Infinity,
-                          ease: "easeInOut",
+                          ease: 'easeInOut',
                         }}
                       >
                         <Telescope className="text-primary h-12 w-12" />
@@ -286,7 +286,7 @@ function LoadingContent({ id }: { id: string }): React.JSX.Element {
 
                       {/* Pulsing rings */}
                       <motion.div
-                        className="absolute inset-0 rounded-full border-2 border-primary/30"
+                        className="border-primary/30 absolute inset-0 rounded-full border-2"
                         animate={{
                           scale: [1, 1.2, 1],
                           opacity: [0.6, 0, 0.6],
@@ -294,7 +294,7 @@ function LoadingContent({ id }: { id: string }): React.JSX.Element {
                         transition={{
                           duration: 2,
                           repeat: Infinity,
-                          ease: "easeInOut",
+                          ease: 'easeInOut',
                         }}
                       />
                     </div>
@@ -323,7 +323,7 @@ function LoadingContent({ id }: { id: string }): React.JSX.Element {
                 <motion.p
                   className="text-body text-text-secondary"
                   animate={{ opacity: [0.7, 1, 0.7] }}
-                  transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                  transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
                 >
                   {error || status}
                 </motion.p>
@@ -339,10 +339,10 @@ function LoadingContent({ id }: { id: string }): React.JSX.Element {
                     </div>
                     <div className="bg-surface/50 h-3 overflow-hidden rounded-full backdrop-blur-sm">
                       <motion.div
-                        className="bg-[var(--primary-accent)] h-full rounded-full"
+                        className="h-full rounded-full bg-[var(--primary-accent)]"
                         initial={{ width: '0%' }}
                         animate={{ width: `${progress}%` }}
-                        transition={{ duration: 0.5, ease: "easeOut" }}
+                        transition={{ duration: 0.5, ease: 'easeOut' }}
                       />
                     </div>
                   </div>
@@ -398,7 +398,7 @@ function LoadingContent({ id }: { id: string }): React.JSX.Element {
               >
                 <div className="glass-strong rounded-full px-6 py-3 text-sm backdrop-blur-md">
                   <span className="text-text-secondary">Powered by </span>
-                  <span className="font-semibold text-yellow-400 drop-shadow-[0_0_8px_rgba(250,204,21,0.8)] brightness-110">
+                  <span className="font-semibold text-yellow-400 brightness-110 drop-shadow-[0_0_8px_rgba(250,204,21,0.8)]">
                     Solara
                   </span>
                   <Sparkles className="ml-1 inline h-3 w-3 text-yellow-400" />
@@ -415,13 +415,13 @@ function LoadingContent({ id }: { id: string }): React.JSX.Element {
                 >
                   <button
                     onClick={() => router.push('/')}
-                    className="bg-surface text-foreground hover:bg-surface/80 rounded-xl px-6 py-3 text-sm font-medium transition-all duration-200 focus-visible:ring-2 focus-visible:ring-surface/50"
+                    className="bg-surface text-foreground hover:bg-surface/80 focus-visible:ring-surface/50 rounded-xl px-6 py-3 text-sm font-medium transition-all duration-200 focus-visible:ring-2"
                   >
                     Back to Dashboard
                   </button>
                   <button
                     onClick={() => router.refresh()}
-                    className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-xl px-6 py-3 text-sm font-medium transition-all duration-200 focus-visible:ring-2 focus-visible:ring-primary/50"
+                    className="bg-primary text-primary-foreground hover:bg-primary/90 focus-visible:ring-primary/50 rounded-xl px-6 py-3 text-sm font-medium transition-all duration-200 focus-visible:ring-2"
                   >
                     Try Again
                   </button>
@@ -474,17 +474,19 @@ function LoadingContent({ id }: { id: string }): React.JSX.Element {
                           </motion.div>
                         ) : isCurrent ? (
                           <motion.div
-                            className="h-4 w-4 rounded-full border-2 border-primary border-t-transparent"
+                            className="border-primary h-4 w-4 rounded-full border-2 border-t-transparent"
                             animate={{ rotate: 360 }}
-                            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                            transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
                           />
                         ) : (
-                          <div className="h-4 w-4 rounded-full border-2 border-surface" />
+                          <div className="border-surface h-4 w-4 rounded-full border-2" />
                         )}
                       </div>
-                      <span className={`text-sm ${
-                        isFuture ? 'text-text-disabled' : 'text-text-secondary'
-                      }`}>
+                      <span
+                        className={`text-sm ${
+                          isFuture ? 'text-text-disabled' : 'text-text-secondary'
+                        }`}
+                      >
                         {stepText}
                       </span>
                     </motion.div>

@@ -36,94 +36,141 @@ export default function LoginPageClient(): React.JSX.Element {
               <div className="flex h-full w-full max-w-xl flex-col p-2 text-left sm:p-3 md:p-4 lg:max-w-none">
                 <div className="mb-6">
                   <div className="inline-flex items-center gap-2">
-                    <Image
-                      src="/logo.png"
-                      alt="Smartslate"
-                      width={180}
-                      height={38}
-                      className="h-9 w-auto select-none md:h-10 lg:h-12"
-                      priority
-                    />
-                    <h1 className="font-heading text-[0.9px] leading-none font-bold text-white md:text-[1px] lg:text-[1.1px]">
-                      Polaris
-                    </h1>
+                    <div className="relative">
+                      <Image
+                        src="/logo.png"
+                        alt="Smartslate"
+                        width={180}
+                        height={38}
+                        className="h-8 w-auto select-none md:h-9 lg:h-10"
+                        priority
+                      />
+                      <span className="font-heading absolute -top-1 -right-8 text-xs font-medium text-white md:-right-10 md:text-sm">
+                        Polaris
+                      </span>
+                    </div>
                   </div>
-                  <p className="mt-3 max-w-2xl text-base text-white/70">
-                    Turn customer insight into a clear, prioritized roadmap. Align faster. Build
+                  <p className="mt-3 max-w-2xl text-sm text-white/70 md:text-base">
+                    Welcome back to Polaris Starmaps. Access your insights and continue building
                     smarter.
                   </p>
                 </div>
 
-                {/* Public report mockup */}
-                <div className="mt-6 hidden min-h-[460px] flex-1 overflow-hidden rounded-2xl border border-white/10 bg-white/5 shadow-[0_10px_40px_rgba(0,0,0,0.35)] backdrop-blur-xl sm:block md:min-h-[520px] lg:min-h-[600px]">
+                {/* Public report mockup - smaller for login page */}
+                <div className="mt-4 hidden min-h-[320px] flex-1 overflow-hidden rounded-2xl border border-white/10 bg-white/5 shadow-[0_10px_40px_rgba(0,0,0,0.35)] backdrop-blur-xl sm:block md:min-h-[380px] lg:min-h-[420px]">
                   {/* Mock header */}
-                  <div className="relative min-h-[34px] overflow-hidden border-b border-white/10 bg-[rgb(2,12,27)]/60 backdrop-blur-xl md:min-h-[40px]">
+                  <div className="relative min-h-[30px] overflow-hidden border-b border-white/10 bg-[rgb(2,12,27)]/60 backdrop-blur-xl md:min-h-[36px]">
                     <HeaderSwirlBackground />
-                    <div className="relative z-10 flex items-center justify-between px-[0.5rem] py-[0.4rem] md:px-[0.6rem] md:py-[0.5rem]">
+                    <div className="relative z-10 flex items-center justify-between px-[0.4rem] py-[0.3rem] md:px-[0.5rem] md:py-[0.4rem]">
                       <div className="flex flex-col items-start">
                         <Image
                           src="/logo.png"
                           alt="SmartSlate"
-                          width={64}
-                          height={64}
-                          className="h-[0.2rem] w-auto md:h-[0.225rem]"
+                          width={96}
+                          height={96}
+                          className="h-3 w-auto md:h-4 lg:h-5"
                           quality={100}
                           priority
                           unoptimized
                         />
-                        <span className="text-primary mt-1 font-['Lato'] text-[0.35rem] font-semibold md:text-[0.4rem]">
+                        <span className="mt-0.5 font-['Lato'] text-[10px] font-medium text-white md:text-[11px]">
                           Polaris Starmaps
                         </span>
                       </div>
-                      <div className="hidden items-center gap-3 md:flex">
-                        <span className="bg-secondary h-[14px] w-[14px] rounded-full border border-white/10" />
-                        <span className="h-[14px] w-[14px] rounded-full border border-white/10 bg-white/5" />
+                      <div className="hidden items-center gap-2 md:flex">
+                        <span className="bg-primary h-[10px] w-[10px] rounded-full border border-white/10" />
+                        <span className="bg-primary/30 h-[10px] w-[10px] rounded-full border border-white/10" />
                       </div>
                     </div>
                   </div>
 
-                  {/* Mock report card */}
-                  <div className="block h-full p-4 md:p-6">
-                    <div className="h-full overflow-hidden rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl">
-                      <div className="flex h-full flex-col p-4 md:p-6">
-                        {/* Mock report title */}
-                        <div className="mb-3 h-3 w-40 rounded-full bg-white/30" />
-
-                        {/* Quick stats row (4 small cards) */}
-                        <div className="mb-3 grid grid-cols-4 gap-2">
-                          <div className="h-8 rounded-lg border border-white/10 bg-white/5" />
-                          <div className="h-8 rounded-lg border border-white/10 bg-white/5" />
-                          <div className="h-8 rounded-lg border border-white/10 bg-white/5" />
-                          <div className="h-8 rounded-lg border border-white/10 bg-white/5" />
-                        </div>
-
-                        {/* Confidence level bar */}
-                        <div className="mb-5">
-                          <div className="h-2 overflow-hidden rounded-full bg-white/10">
-                            <div className="bg-primary h-full w-[72%]" />
+                  {/* Mock blueprint sections - detailed like signup but smaller */}
+                  <div className="block h-full p-2 md:p-3">
+                    <div className="h-full overflow-hidden rounded-xl border border-white/10 bg-white/5 backdrop-blur-xl">
+                      <div className="flex h-full flex-col p-2 md:p-3">
+                        {/* Executive Summary Section */}
+                        <div className="mb-3 rounded-lg border border-white/10 bg-white/5 p-2 md:p-3">
+                          <div className="mb-2 h-3 w-24 rounded-full bg-white/30" />
+                          <div className="space-y-1">
+                            <div className="h-1.5 w-full rounded-full bg-white/15" />
+                            <div className="h-1.5 w-4/5 rounded-full bg-white/10" />
+                            <div className="h-1.5 w-3/4 rounded-full bg-white/10" />
                           </div>
-                          <div className="mt-1 h-2 w-20 rounded-full bg-white/15" />
                         </div>
 
-                        {/* Section header */}
-                        <div className="mb-2 h-3 w-28 rounded-full bg-white/20" />
-
-                        {/* Main content skeleton */}
-                        <div className="grid flex-1 grid-cols-3 items-stretch gap-3">
-                          <div className="col-span-2 flex h-full flex-col space-y-2">
-                            <div className="h-2 w-4/5 rounded-full bg-white/15" />
-                            <div className="h-2 w-3/4 rounded-full bg-white/10" />
-                            <div className="bg-primary/15 min-h-[160px] flex-1 rounded-xl border border-white/10 md:min-h-[200px] lg:min-h-[240px]" />
-                            <div className="grid grid-cols-2 gap-2">
-                              <div className="h-10 rounded-lg border border-white/10 bg-white/5" />
-                              <div className="h-10 rounded-lg border border-white/10 bg-white/5" />
+                        {/* Learning Objectives Section */}
+                        <div className="mb-3 rounded-lg border border-white/10 bg-white/5 p-2 md:p-3">
+                          <div className="mb-2 h-3 w-32 rounded-full bg-white/30" />
+                          <div className="grid grid-cols-2 gap-2">
+                            <div className="space-y-1">
+                              <div className="h-1.5 w-3/4 rounded-full bg-white/15" />
+                              <div className="h-6 rounded border border-white/10 bg-white/5" />
+                            </div>
+                            <div className="space-y-1">
+                              <div className="h-1.5 w-2/3 rounded-full bg-white/15" />
+                              <div className="h-6 rounded border border-white/10 bg-white/5" />
                             </div>
                           </div>
-                          <div className="col-span-1 flex h-full flex-col space-y-2">
-                            <div className="h-2 w-3/4 rounded-full bg-white/15" />
-                            <div className="h-2 w-2/3 rounded-full bg-white/10" />
-                            <div className="min-h-[120px] flex-1 rounded-xl border border-white/10 bg-white/5" />
-                            <div className="min-h-[120px] flex-1 rounded-xl border border-white/10 bg-white/5" />
+                        </div>
+
+                        {/* Target Audience Section */}
+                        <div className="mb-3 rounded-lg border border-white/10 bg-white/5 p-2 md:p-3">
+                          <div className="mb-2 h-3 w-28 rounded-full bg-white/30" />
+                          <div className="grid grid-cols-3 gap-1">
+                            <div className="h-8 rounded border border-white/10 bg-white/5" />
+                            <div className="h-8 rounded border border-white/10 bg-white/5" />
+                            <div className="h-8 rounded border border-white/10 bg-white/5" />
+                          </div>
+                        </div>
+
+                        {/* Content Outline Section (Timeline) */}
+                        <div className="mb-3 rounded-lg border border-white/10 bg-white/5 p-2 md:p-3">
+                          <div className="mb-2 h-3 w-24 rounded-full bg-white/30" />
+                          <div className="space-y-2">
+                            <div className="flex items-center gap-2">
+                              <div className="bg-primary h-2 w-2 rounded-full" />
+                              <div className="h-1.5 flex-1 rounded-full bg-white/15" />
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <div className="h-2 w-2 rounded-full bg-white/20" />
+                              <div className="h-1.5 flex-1 rounded-full bg-white/10" />
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <div className="h-2 w-2 rounded-full bg-white/20" />
+                              <div className="h-1.5 flex-1 rounded-full bg-white/10" />
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Assessment Strategy Section */}
+                        <div className="mb-3 rounded-lg border border-white/10 bg-white/5 p-2 md:p-3">
+                          <div className="mb-2 h-3 w-32 rounded-full bg-white/30" />
+                          <div className="grid grid-cols-2 gap-2">
+                            <div className="space-y-1">
+                              <div className="h-1.5 w-3/4 rounded-full bg-white/15" />
+                              <div className="h-6 rounded border border-white/10 bg-white/5" />
+                            </div>
+                            <div className="space-y-1">
+                              <div className="h-1.5 w-2/3 rounded-full bg-white/15" />
+                              <div className="h-6 rounded border border-white/10 bg-white/5" />
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Resources Section (Table-like) */}
+                        <div className="rounded-lg border border-white/10 bg-white/5 p-2 md:p-3">
+                          <div className="mb-2 h-3 w-20 rounded-full bg-white/30" />
+                          <div className="space-y-1">
+                            <div className="grid grid-cols-3 gap-1">
+                              <div className="h-4 rounded border border-white/10 bg-white/5" />
+                              <div className="h-4 rounded border border-white/10 bg-white/5" />
+                              <div className="h-4 rounded border border-white/10 bg-white/5" />
+                            </div>
+                            <div className="grid grid-cols-3 gap-1">
+                              <div className="h-4 rounded border border-white/10 bg-white/5" />
+                              <div className="h-4 rounded border border-white/10 bg-white/5" />
+                              <div className="h-4 rounded border border-white/10 bg-white/5" />
+                            </div>
                           </div>
                         </div>
                       </div>

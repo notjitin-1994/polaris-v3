@@ -1,48 +1,48 @@
-"use client"
+'use client';
 
-import { BreakpointConfig } from "./hooks/useResponsiveContent"
+import { BreakpointConfig } from './hooks/useResponsiveContent';
 
-export type ChartType = 'line' | 'bar' | 'pie' | 'area' | 'scatter' | 'radar'
+export type ChartType = 'line' | 'bar' | 'pie' | 'area' | 'scatter' | 'radar';
 
 export interface ChartResponsiveConfig {
-  height: number
-  width?: number
+  height: number;
+  width?: number;
   margin: {
-    top: number
-    right: number
-    bottom: number
-    left: number
-  }
+    top: number;
+    right: number;
+    bottom: number;
+    left: number;
+  };
   legend: {
-    enabled: boolean
-    position: 'top' | 'right' | 'bottom' | 'left' | 'none'
-    maxWidth?: number
-  }
+    enabled: boolean;
+    position: 'top' | 'right' | 'bottom' | 'left' | 'none';
+    maxWidth?: number;
+  };
   axes: {
-    showLabels: boolean
-    labelAngle?: number
-    tickCount?: number
-    fontSize: number
-  }
+    showLabels: boolean;
+    labelAngle?: number;
+    tickCount?: number;
+    fontSize: number;
+  };
   tooltip: {
-    enabled: boolean
-    fontSize: number
-  }
+    enabled: boolean;
+    fontSize: number;
+  };
   animation: {
-    duration: number
-    easing: string
-  }
+    duration: number;
+    easing: string;
+  };
   dataDensity: {
-    maxPoints?: number
-    aggregation?: 'sum' | 'average' | 'max' | 'min'
-  }
+    maxPoints?: number;
+    aggregation?: 'sum' | 'average' | 'max' | 'min';
+  };
 }
 
 export interface ResponsiveChartOptions {
-  chartType: ChartType
-  breakpoint: string
-  dataLength?: number
-  customConfig?: Partial<ChartResponsiveConfig>
+  chartType: ChartType;
+  breakpoint: string;
+  dataLength?: number;
+  customConfig?: Partial<ChartResponsiveConfig>;
 }
 
 /**
@@ -269,24 +269,26 @@ const CHART_CONFIGS: Record<ChartType, Record<string, ChartResponsiveConfig>> = 
       animation: { duration: 600, easing: 'ease-out' },
     },
   },
-}
+};
 
 /**
  * Get responsive chart configuration for a specific breakpoint and chart type
  */
 export function getResponsiveChartConfig(options: ResponsiveChartOptions): ChartResponsiveConfig {
-  const { chartType, breakpoint, customConfig } = options
+  const { chartType, breakpoint, customConfig } = options;
 
-  const baseConfig = CHART_CONFIGS[chartType]?.[breakpoint] || CHART_CONFIGS[chartType]?.desktop
+  const baseConfig = CHART_CONFIGS[chartType]?.[breakpoint] || CHART_CONFIGS[chartType]?.desktop;
 
   if (!baseConfig) {
-    throw new Error(`No configuration found for chart type "${chartType}" and breakpoint "${breakpoint}"`)
+    throw new Error(
+      `No configuration found for chart type "${chartType}" and breakpoint "${breakpoint}"`
+    );
   }
 
   return {
     ...baseConfig,
     ...customConfig,
-  }
+  };
 }
 
 /**
@@ -298,63 +300,69 @@ export function optimizeDataForBreakpoint(
   aggregation?: 'sum' | 'average' | 'max' | 'min'
 ): any[] {
   if (!config.dataDensity?.maxPoints || data.length <= config.dataDensity.maxPoints) {
-    return data
+    return data;
   }
 
-  const method = aggregation || config.dataDensity.aggregation || 'average'
-  const bucketSize = Math.ceil(data.length / config.dataDensity.maxPoints)
-  const buckets: any[][] = []
+  const method = aggregation || config.dataDensity.aggregation || 'average';
+  const bucketSize = Math.ceil(data.length / config.dataDensity.maxPoints);
+  const buckets: any[][] = [];
 
   // Group data into buckets
   for (let i = 0; i < data.length; i += bucketSize) {
-    buckets.push(data.slice(i, i + bucketSize))
+    buckets.push(data.slice(i, i + bucketSize));
   }
 
   // Aggregate each bucket
-  return buckets.map(bucket => {
+  return buckets.map((bucket) => {
     switch (method) {
       case 'sum':
         return bucket.reduce((acc, item) => {
-          const numericValue = typeof item === 'number' ? item : parseFloat(item?.value || item?.y || '0')
-          return acc + numericValue
-        }, 0)
+          const numericValue =
+            typeof item === 'number' ? item : parseFloat(item?.value || item?.y || '0');
+          return acc + numericValue;
+        }, 0);
       case 'max':
-        return Math.max(...bucket.map(item =>
-          typeof item === 'number' ? item : parseFloat(item?.value || item?.y || '0')
-        ))
+        return Math.max(
+          ...bucket.map((item) =>
+            typeof item === 'number' ? item : parseFloat(item?.value || item?.y || '0')
+          )
+        );
       case 'min':
-        return Math.min(...bucket.map(item =>
-          typeof item === 'number' ? item : parseFloat(item?.value || item?.y || '0')
-        ))
+        return Math.min(
+          ...bucket.map((item) =>
+            typeof item === 'number' ? item : parseFloat(item?.value || item?.y || '0')
+          )
+        );
       case 'average':
       default:
         const sum = bucket.reduce((acc, item) => {
-          const numericValue = typeof item === 'number' ? item : parseFloat(item?.value || item?.y || '0')
-          return acc + numericValue
-        }, 0)
-        return sum / bucket.length
+          const numericValue =
+            typeof item === 'number' ? item : parseFloat(item?.value || item?.y || '0');
+          return acc + numericValue;
+        }, 0);
+        return sum / bucket.length;
     }
-  })
+  });
 }
 
 /**
  * Get responsive font sizes for chart elements
  */
 export function getResponsiveChartFontSizes(breakpoint: string): {
-  title: number
-  label: number
-  tick: number
-  legend: number
+  title: number;
+  label: number;
+  tick: number;
+  legend: number;
 } {
   switch (breakpoint) {
     case 'mobile-compact':
-      return { title: 14, label: 10, tick: 9, legend: 10 }
+      return { title: 14, label: 10, tick: 9, legend: 10 };
     case 'mobile-expanded':
-      return { title: 16, label: 11, tick: 10, legend: 11 }
+      return { title: 16, label: 11, tick: 10, legend: 11 };
     case 'tablet':
-      return { title: 18, label: 12, tick: 11, legend: 12 }
+      return { title: 18, label: 12, tick: 11, legend: 12 };
     case 'desktop':
     default:
-      return { title: 20, label: 13, tick: 12, legend: 13 }
+      return { title: 20, label: 13, tick: 12, legend: 13 };
   }
 }

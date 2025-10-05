@@ -227,7 +227,8 @@ export async function POST(req: NextRequest): Promise<NextResponse<GenerateBluep
     const markdown = convertBlueprintToMarkdown(result.blueprint);
 
     // Extract title from generated blueprint metadata
-    const generatedTitle = result.blueprint.metadata?.title || `Blueprint ${blueprintId.slice(0, 8)}`;
+    const generatedTitle =
+      result.blueprint.metadata?.title || `Blueprint ${blueprintId.slice(0, 8)}`;
 
     // Save to database
     const { error: saveError } = await supabase

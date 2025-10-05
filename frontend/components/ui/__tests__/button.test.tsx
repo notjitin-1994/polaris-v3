@@ -17,17 +17,17 @@ vi.mock('@/lib/touch-targets', () => ({
     minimum: 'min-h-[44px] min-w-[44px]',
     small: 'min-h-[36px] min-w-[36px]',
     large: 'min-h-[48px] min-w-[48px]',
-    'extra-large': 'min-h-[56px] min-w-[56px]'
+    'extra-large': 'min-h-[56px] min-w-[56px]',
   },
   TOUCH_STATES: {
     hover: 'hover:scale-[1.02] hover:shadow-lg',
     focus: 'focus-visible:ring-2 focus-visible:ring-secondary/50 focus-visible:ring-offset-2',
     active: 'active:scale-[0.98] active:shadow-sm',
     disabled: 'opacity-50 cursor-not-allowed pointer-events-none',
-    default: ''
+    default: '',
   },
   validateTouchTarget: vi.fn(),
-  getRecommendedTouchSize: vi.fn().mockReturnValue('medium')
+  getRecommendedTouchSize: vi.fn().mockReturnValue('medium'),
 }));
 
 describe('Button Component - Touch Target Validation', () => {
@@ -195,7 +195,11 @@ describe('Button Component - Variants', () => {
 describe('Button Component - Touch-Optimized Features', () => {
   it('should apply touch context data attributes for auto-sizing', () => {
     render(
-      <Button data-touch-context="primary" data-available-space-width={200} data-available-space-height={200}>
+      <Button
+        data-touch-context="primary"
+        data-available-space-width={200}
+        data-available-space-height={200}
+      >
         Smart Button
       </Button>
     );
@@ -301,7 +305,11 @@ describe('LoadingButton Component', () => {
   });
 
   it('should show custom loading text when provided', () => {
-    render(<LoadingButton loading loadingText="Processing...">Submit</LoadingButton>);
+    render(
+      <LoadingButton loading loadingText="Processing...">
+        Submit
+      </LoadingButton>
+    );
 
     expect(screen.getByText('Processing...')).toBeInTheDocument();
   });
@@ -373,7 +381,7 @@ describe('Touch Target Compliance', () => {
     mockValidateTouchTarget.mockReturnValue({
       isValid: true,
       actualSize: 44,
-      requiredSize: 44
+      requiredSize: 44,
     });
 
     // The validation would happen in a real component test
@@ -386,8 +394,8 @@ describe('Touch Target Compliance', () => {
     const sizes = ['small', 'medium', 'large', 'extra-large', 'icon'];
 
     // Test each combination individually to avoid multiple button conflicts
-    variants.forEach(variant => {
-      sizes.forEach(size => {
+    variants.forEach((variant) => {
+      sizes.forEach((size) => {
         const { unmount } = render(
           <Button variant={variant as any} size={size as any} data-testid={`${variant}-${size}`}>
             Test

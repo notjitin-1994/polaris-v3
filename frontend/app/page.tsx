@@ -235,7 +235,7 @@ function DashboardContent() {
         return;
       }
 
-      const blueprint = blueprints.find(bp => bp.id === blueprintId);
+      const blueprint = blueprints.find((bp) => bp.id === blueprintId);
       if (!blueprint) {
         console.error('Blueprint not found');
         return;
@@ -246,7 +246,7 @@ function DashboardContent() {
         isOpen: true,
         type: 'single',
         blueprintId,
-        blueprintName: blueprint.title || `Blueprint #${blueprintId.slice(0, 8)}`
+        blueprintName: blueprint.title || `Blueprint #${blueprintId.slice(0, 8)}`,
       });
     },
     [user?.id, blueprints]
@@ -334,7 +334,7 @@ function DashboardContent() {
     // Open confirmation dialog for bulk deletion
     setDeletionDialog({
       isOpen: true,
-      type: 'bulk'
+      type: 'bulk',
     });
   }, [user?.id, selectedBlueprints]);
 
@@ -390,7 +390,7 @@ function DashboardContent() {
   const dashboardTitle = 'Dashboard';
 
   return (
-    <div className="relative min-h-screen w-full bg-[#020C1B] text-[rgb(224,224,224)] flex flex-col">
+    <div className="relative flex min-h-screen w-full flex-col bg-[#020C1B] text-[rgb(224,224,224)]">
       {/* Header */}
       <StandardHeader
         title={dashboardTitle}
@@ -407,315 +407,316 @@ function DashboardContent() {
         {/* Hero Section */}
         <section className="relative overflow-hidden">
           <div className="relative mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 lg:py-12">
-          <div className="max-w-6xl text-left">
-            {/* Welcome Message */}
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94] }}
-              className="mb-8"
-            >
-              <h1 className="font-heading text-7xl font-bold tracking-tight text-white sm:text-8xl md:text-9xl lg:text-10xl">
-                <span>Welcome back, </span>
-                <span style={{ color: '#a7dadb' }}>
-                  {getFirstName()}
-                </span>
-                <span className="text-white/80">.</span>
-              </h1>
-            </motion.div>
+            <div className="max-w-6xl text-left">
+              {/* Welcome Message */}
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94] }}
+                className="mb-8"
+              >
+                <h1 className="font-heading lg:text-10xl text-7xl font-bold tracking-tight text-white sm:text-8xl md:text-9xl">
+                  <span>Welcome back, </span>
+                  <span className="text-primary">{getFirstName()}</span>
+                  <span className="text-white/80">.</span>
+                </h1>
+              </motion.div>
 
-            {/* Subtitle */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.2, ease: [0.25, 0.46, 0.45, 0.94] }}
-              className="mb-12"
-            >
-              <p className="text-xl leading-relaxed text-white/70 sm:text-2xl lg:text-3xl">
-                Your mission control —{' '}
-                <span style={{ color: '#a7dadb' }} className="font-medium">chart</span>{' '}
-                learning starmaps,{' '}
-                <span style={{ color: '#a7dadb' }} className="font-medium">orchestrate</span>{' '}
-                your constellations,
-                <br />
-                and{' '}
-                <span style={{ color: '#a7dadb' }} className="font-medium">discover</span>{' '}
-                insights that illuminate your training universe.
-              </p>
-            </motion.div>
+              {/* Subtitle */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.2, ease: [0.25, 0.46, 0.45, 0.94] }}
+                className="mb-12"
+              >
+                <p className="text-xl leading-relaxed text-white/70 sm:text-2xl lg:text-3xl">
+                  Your mission control — <span className="text-primary font-medium">chart</span>{' '}
+                  learning starmaps, <span className="text-primary font-medium">orchestrate</span>{' '}
+                  your constellations,
+                  <br />
+                  and <span className="text-primary font-medium">discover</span> insights that
+                  illuminate your training universe.
+                </p>
+              </motion.div>
 
-
-            {/* Decorative Line */}
-            <motion.div
-              initial={{ scaleX: 0 }}
-              animate={{ scaleX: 1 }}
-              transition={{ duration: 1, delay: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
-              className="mt-16 h-px w-24"
-              style={{ background: 'linear-gradient(to right, transparent, #a7dadb, transparent)' }}
-            />
+              {/* Decorative Line */}
+              <motion.div
+                initial={{ scaleX: 0 }}
+                animate={{ scaleX: 1 }}
+                transition={{ duration: 1, delay: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
+                className="mt-16 h-px w-24"
+                style={{
+                  background: 'linear-gradient(to right, transparent, #a7dadb, transparent)',
+                }}
+              />
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      <div className="page-enter animate-fade-in-up animate-delay-75 relative z-10 mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8 pb-32">
+        <div className="page-enter animate-fade-in-up animate-delay-75 relative z-10 mx-auto max-w-7xl px-4 py-6 pb-32 sm:px-6 lg:px-8">
+          {/* Blueprint List */}
+          <section id="blueprints" className="mb-16 space-y-6">
+            <div className="flex flex-col gap-6 lg:flex-row">
+              {/* Left side - Blueprint list */}
+              <div className="flex-1 space-y-6">
+                <div className="flex items-center justify-between">
+                  <h2 className="font-heading text-xl font-bold text-white">Your Blueprints</h2>
+                  <div className="flex items-center gap-3">
+                    <BlueprintFilters
+                      blueprints={blueprints}
+                      onFilteredBlueprintsChange={setFilteredBlueprints}
+                      variant="header"
+                    />
 
-        {/* Blueprint List */}
-        <section id="blueprints" className="space-y-6 mb-16">
-          <div className="flex flex-col lg:flex-row gap-6">
-            {/* Left side - Blueprint list */}
-            <div className="flex-1 space-y-6">
-              <div className="flex items-center justify-between">
-                <h2 className="font-heading text-xl font-bold text-white">Your Blueprints</h2>
-                <div className="flex items-center gap-3">
-                  <BlueprintFilters
-                    blueprints={blueprints}
-                    onFilteredBlueprintsChange={setFilteredBlueprints}
-                    variant="header"
-                  />
+                    {/* Selection mode buttons */}
+                    {isSelectionMode ? (
+                      <>
+                        <motion.button
+                          onClick={handleSelectAll}
+                          className="btn-secondary pressable flex min-w-[140px] items-center gap-2 rounded-xl px-5 py-2.5"
+                          whileHover={{ scale: 1.02 }}
+                          whileTap={{ scale: 0.98 }}
+                        >
+                          <CheckSquare className="h-4 w-4" />
+                          <span>
+                            {selectedBlueprints.size === filteredBlueprints.length
+                              ? 'Deselect All'
+                              : 'Select All'}
+                          </span>
+                        </motion.button>
 
-                  {/* Selection mode buttons */}
-                  {isSelectionMode ? (
-                    <>
+                        {selectedBlueprints.size > 0 && (
+                          <motion.button
+                            onClick={handleBulkDelete}
+                            className="btn-secondary pressable bg-error/10 text-error hover:bg-error/20 border-error/30 flex items-center gap-2 rounded-xl px-5 py-2.5"
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                            <span>Delete ({selectedBlueprints.size})</span>
+                          </motion.button>
+                        )}
+
+                        <motion.button
+                          onClick={handleToggleSelectionMode}
+                          className="btn-secondary pressable flex min-w-[140px] items-center gap-2 rounded-xl px-5 py-2.5"
+                          whileHover={{ scale: 1.02 }}
+                          whileTap={{ scale: 0.98 }}
+                        >
+                          <span>Cancel</span>
+                        </motion.button>
+                      </>
+                    ) : (
                       <motion.button
-                        onClick={handleSelectAll}
-                        className="btn-secondary pressable flex items-center gap-2 px-5 py-2.5 rounded-xl min-w-[140px]"
+                        onClick={handleToggleSelectionMode}
+                        className="btn-secondary pressable flex min-w-[140px] items-center gap-2 rounded-xl px-5 py-2.5"
                         whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}
                       >
                         <CheckSquare className="h-4 w-4" />
-                        <span>{selectedBlueprints.size === filteredBlueprints.length ? 'Deselect All' : 'Select All'}</span>
+                        <span>Select & Delete</span>
                       </motion.button>
+                    )}
 
-                      {selectedBlueprints.size > 0 && (
-                        <motion.button
-                          onClick={handleBulkDelete}
-                          className="btn-secondary pressable flex items-center gap-2 px-5 py-2.5 rounded-xl bg-error/10 text-error hover:bg-error/20 border-error/30"
-                          whileHover={{ scale: 1.02 }}
-                          whileTap={{ scale: 0.98 }}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                          <span>Delete ({selectedBlueprints.size})</span>
-                        </motion.button>
-                      )}
-
-                      <motion.button
-                        onClick={handleToggleSelectionMode}
-                        className="btn-secondary pressable flex items-center gap-2 px-5 py-2.5 rounded-xl min-w-[140px]"
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
-                      >
-                        <span>Cancel</span>
-                      </motion.button>
-                    </>
-                  ) : (
-                    <motion.button
-                      onClick={handleToggleSelectionMode}
-                      className="btn-secondary pressable flex items-center gap-2 px-5 py-2.5 rounded-xl min-w-[140px]"
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
+                    <Button
+                      onClick={handleCreateBlueprint}
+                      disabled={creating}
+                      className="btn-primary pressable"
                     >
-                      <CheckSquare className="h-4 w-4" />
-                      <span>Select & Delete</span>
-                    </motion.button>
-                  )}
-
-                  <Button
-                    onClick={handleCreateBlueprint}
-                    disabled={creating}
-                    className="btn-primary pressable"
-                  >
-                    <Plus className="h-4 w-4" aria-hidden="true" />
-                    <span>{creating ? 'Creating…' : 'New Blueprint'}</span>
-                  </Button>
-                </div>
-              </div>
-
-          {loading ? (
-            <div className="space-y-4">
-              {[1, 2, 3].map((i) => (
-                <div
-                  key={i}
-                  className="glass-card animate-fade-in-up p-6"
-                  style={{ animationDelay: `${i * 75}ms` }}
-                >
-                  <div className="space-y-3">
-                    <div className="skeleton-brand h-5 w-1/3 rounded"></div>
-                    <div className="skeleton-brand h-4 w-1/2 rounded"></div>
-                    <div className="skeleton-brand h-4 w-2/3 rounded"></div>
+                      <Plus className="h-4 w-4" aria-hidden="true" />
+                      <span>{creating ? 'Creating…' : 'New Blueprint'}</span>
+                    </Button>
                   </div>
                 </div>
-              ))}
-            </div>
-          ) : blueprints.length === 0 ? (
-            <div className="glass-card animate-fade-in-up p-12 text-center">
-              <div className="mb-6 inline-flex h-16 w-16 items-center justify-center rounded-2xl border border-white/10 bg-white/5">
-                <FileText className="h-8 w-8 text-white/60" />
-              </div>
-              <h3 className="font-heading mb-3 text-lg font-bold text-white">No blueprints yet</h3>
-              <p className="mx-auto mb-8 max-w-md text-sm text-[rgb(176,197,198)]">
-                Get started by creating your first personalized learning blueprint with our
-                intelligent wizard.
-              </p>
-              <button
-                onClick={handleCreateBlueprint}
-                disabled={creating}
-                className="btn-primary pressable elevate inline-flex items-center gap-2"
-              >
-                <Plus className="h-5 w-5" />
-                <span>{creating ? 'Creating…' : 'Create Your First Blueprint'}</span>
-              </button>
-            </div>
-          ) : (
-            <>
-              <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-                {paginatedBlueprints.map((blueprint, idx) => (
-                  <BlueprintCard
-                    key={blueprint.id}
-                    blueprint={blueprint}
-                    index={idx}
-                    onRename={(bp) => {
-                      console.log('Rename button clicked for blueprint:', bp.id);
-                      setRenamingBlueprint(bp);
-                    }}
-                    onResume={handleResumeBlueprint}
-                    onDelete={handleDeleteBlueprint}
-                    questionnaireComplete={!!questionnaireCompletion[blueprint.id]}
-                    isResuming={resumingBlueprintId === blueprint.id}
-                    isSelectionMode={isSelectionMode}
-                    isSelected={selectedBlueprints.has(blueprint.id)}
-                    onSelect={handleSelectBlueprint}
-                  />
-                ))}
-              </div>
 
-              {/* Pagination */}
-              {totalPages > 1 && (
-                <div className="mt-8 flex items-center justify-center gap-2 border-t border-white/10 pt-6">
-                  {/* Previous Button */}
-                  <button
-                    type="button"
-                    onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                    disabled={currentPage === 1}
-                    className="pressable flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 bg-white/5 text-white/70 transition hover:bg-white/10 hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
-                    aria-label="Previous page"
-                  >
-                    <ChevronLeft className="h-5 w-5" />
-                  </button>
+                {loading ? (
+                  <div className="space-y-4">
+                    {[1, 2, 3].map((i) => (
+                      <div
+                        key={i}
+                        className="glass-card animate-fade-in-up p-6"
+                        style={{ animationDelay: `${i * 75}ms` }}
+                      >
+                        <div className="space-y-3">
+                          <div className="skeleton-brand h-5 w-1/3 rounded"></div>
+                          <div className="skeleton-brand h-4 w-1/2 rounded"></div>
+                          <div className="skeleton-brand h-4 w-2/3 rounded"></div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : blueprints.length === 0 ? (
+                  <div className="glass-card animate-fade-in-up p-12 text-center">
+                    <div className="mb-6 inline-flex h-16 w-16 items-center justify-center rounded-2xl border border-white/10 bg-white/5">
+                      <FileText className="h-8 w-8 text-white/60" />
+                    </div>
+                    <h3 className="font-heading mb-3 text-lg font-bold text-white">
+                      No blueprints yet
+                    </h3>
+                    <p className="mx-auto mb-8 max-w-md text-sm text-[rgb(176,197,198)]">
+                      Get started by creating your first personalized learning blueprint with our
+                      intelligent wizard.
+                    </p>
+                    <Button
+                      onClick={handleCreateBlueprint}
+                      disabled={creating}
+                      className="btn-primary pressable"
+                    >
+                      <Plus className="h-4 w-4" aria-hidden="true" />
+                      <span>{creating ? 'Creating…' : 'Create Your First Blueprint'}</span>
+                    </Button>
+                  </div>
+                ) : (
+                  <>
+                    <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+                      {paginatedBlueprints.map((blueprint, idx) => (
+                        <BlueprintCard
+                          key={blueprint.id}
+                          blueprint={blueprint}
+                          index={idx}
+                          onRename={(bp) => {
+                            console.log('Rename button clicked for blueprint:', bp.id);
+                            setRenamingBlueprint(bp);
+                          }}
+                          onResume={handleResumeBlueprint}
+                          onDelete={handleDeleteBlueprint}
+                          questionnaireComplete={!!questionnaireCompletion[blueprint.id]}
+                          isResuming={resumingBlueprintId === blueprint.id}
+                          isSelectionMode={isSelectionMode}
+                          isSelected={selectedBlueprints.has(blueprint.id)}
+                          onSelect={handleSelectBlueprint}
+                        />
+                      ))}
+                    </div>
 
-                  {/* Page Numbers (max 3 visible) */}
-                  <div className="flex items-center gap-1">
-                    {(() => {
-                      const maxVisible = 3;
-                      let startPage = Math.max(1, currentPage - Math.floor(maxVisible / 2));
-                      const endPage = Math.min(totalPages, startPage + maxVisible - 1);
-
-                      if (endPage - startPage + 1 < maxVisible) {
-                        startPage = Math.max(1, endPage - maxVisible + 1);
-                      }
-
-                      return Array.from(
-                        { length: endPage - startPage + 1 },
-                        (_, i) => startPage + i
-                      ).map((pageNum) => (
+                    {/* Pagination */}
+                    {totalPages > 1 && (
+                      <div className="mt-8 flex items-center justify-center gap-2 border-t border-white/10 pt-6">
+                        {/* Previous Button */}
                         <button
-                          key={pageNum}
                           type="button"
-                          onClick={() => setCurrentPage(pageNum)}
-                          className={`pressable h-10 w-10 rounded-lg text-sm font-medium transition ${
-                            currentPage === pageNum
-                              ? 'bg-secondary text-white'
-                              : 'text-white/70 hover:bg-white/10 hover:text-white'
-                          }`}
-                          aria-label={`Go to page ${pageNum}`}
-                          aria-current={currentPage === pageNum ? 'page' : undefined}
+                          onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                          disabled={currentPage === 1}
+                          className="pressable flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 bg-white/5 text-white/70 transition hover:bg-white/10 hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
+                          aria-label="Previous page"
                         >
-                          {pageNum}
+                          <ChevronLeft className="h-5 w-5" />
                         </button>
-                      ));
-                    })()}
-                  </div>
 
-                  {/* Page Input */}
-                  <input
-                    type="text"
-                    inputMode="numeric"
-                    pattern="[0-9]*"
-                    value={pageInput}
-                    onChange={(e) => setPageInput(e.target.value.replace(/\D/g, ''))}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter') {
-                        const targetPage = parseInt(pageInput, 10);
-                        if (!isNaN(targetPage)) {
-                          if (targetPage >= 1 && targetPage <= totalPages) {
-                            setCurrentPage(targetPage);
-                          } else {
-                            setCurrentPage(totalPages);
-                          }
-                          setPageInput('');
-                        }
-                      }
-                    }}
-                    onBlur={() => {
-                      const targetPage = parseInt(pageInput, 10);
-                      if (!isNaN(targetPage)) {
-                        if (targetPage >= 1 && targetPage <= totalPages) {
-                          setCurrentPage(targetPage);
-                        } else if (targetPage > totalPages) {
-                          setCurrentPage(totalPages);
-                        }
-                        setPageInput('');
-                      } else if (pageInput) {
-                        setPageInput('');
-                      }
-                    }}
-                    placeholder={`${currentPage}`}
-                    className="focus:border-primary focus:ring-primary/50 h-10 w-16 rounded-lg border border-white/10 bg-white/5 px-3 text-center text-sm font-medium text-white placeholder:text-white/40 focus:ring-2 focus:outline-none"
-                    aria-label="Go to page number"
-                  />
+                        {/* Page Numbers (max 3 visible) */}
+                        <div className="flex items-center gap-1">
+                          {(() => {
+                            const maxVisible = 3;
+                            let startPage = Math.max(1, currentPage - Math.floor(maxVisible / 2));
+                            const endPage = Math.min(totalPages, startPage + maxVisible - 1);
 
-                  {/* Next Button */}
-                  <button
-                    type="button"
-                    onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-                    disabled={currentPage === totalPages}
-                    className="pressable flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 bg-white/5 text-white/70 transition hover:bg-white/10 hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
-                    aria-label="Next page"
-                  >
-                    <ChevronRight className="h-5 w-5" />
-                  </button>
-                </div>
-              )}
-            </>
-          )}
-        </div>
-      </div>
-    </section>
+                            if (endPage - startPage + 1 < maxVisible) {
+                              startPage = Math.max(1, endPage - maxVisible + 1);
+                            }
 
-        {/* Rename Dialog */}
-        <RenameDialog
-          isOpen={!!renamingBlueprint}
-          onClose={() => setRenamingBlueprint(null)}
-          onConfirm={handleRenameBlueprint}
-          currentName={
-            renamingBlueprint?.title || `Blueprint #${renamingBlueprint?.id.slice(0, 8)}`
-          }
-          title="Rename Blueprint"
-          description="Enter a new name for your blueprint"
-          placeholder="Starmap for Professional Development and Career Growth Path"
-          maxLength={80}
-        />
+                            return Array.from(
+                              { length: endPage - startPage + 1 },
+                              (_, i) => startPage + i
+                            ).map((pageNum) => (
+                              <button
+                                key={pageNum}
+                                type="button"
+                                onClick={() => setCurrentPage(pageNum)}
+                                className={`pressable h-10 w-10 rounded-lg text-sm font-medium transition ${
+                                  currentPage === pageNum
+                                    ? 'bg-secondary text-white'
+                                    : 'text-white/70 hover:bg-white/10 hover:text-white'
+                                }`}
+                                aria-label={`Go to page ${pageNum}`}
+                                aria-current={currentPage === pageNum ? 'page' : undefined}
+                              >
+                                {pageNum}
+                              </button>
+                            ));
+                          })()}
+                        </div>
 
-        {/* Confirmation Dialog */}
-        <ConfirmationDialog
-          isOpen={deletionDialog.isOpen}
-          onClose={() => setDeletionDialog({ isOpen: false, type: 'single' })}
-          onConfirm={handleConfirmDelete}
-          title="Confirm Deletion"
-          description="This action cannot be undone."
-          variant="destructive"
-          itemName="blueprint"
-          itemCount={deletionDialog.type === 'bulk' ? selectedBlueprints.size : 1}
-        />
+                        {/* Page Input */}
+                        <input
+                          type="text"
+                          inputMode="numeric"
+                          pattern="[0-9]*"
+                          value={pageInput}
+                          onChange={(e) => setPageInput(e.target.value.replace(/\D/g, ''))}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter') {
+                              const targetPage = parseInt(pageInput, 10);
+                              if (!isNaN(targetPage)) {
+                                if (targetPage >= 1 && targetPage <= totalPages) {
+                                  setCurrentPage(targetPage);
+                                } else {
+                                  setCurrentPage(totalPages);
+                                }
+                                setPageInput('');
+                              }
+                            }
+                          }}
+                          onBlur={() => {
+                            const targetPage = parseInt(pageInput, 10);
+                            if (!isNaN(targetPage)) {
+                              if (targetPage >= 1 && targetPage <= totalPages) {
+                                setCurrentPage(targetPage);
+                              } else if (targetPage > totalPages) {
+                                setCurrentPage(totalPages);
+                              }
+                              setPageInput('');
+                            } else if (pageInput) {
+                              setPageInput('');
+                            }
+                          }}
+                          placeholder={`${currentPage}`}
+                          className="focus:border-primary focus:ring-primary/50 h-10 w-16 rounded-lg border border-white/10 bg-white/5 px-3 text-center text-sm font-medium text-white placeholder:text-white/40 focus:ring-2 focus:outline-none"
+                          aria-label="Go to page number"
+                        />
+
+                        {/* Next Button */}
+                        <button
+                          type="button"
+                          onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                          disabled={currentPage === totalPages}
+                          className="pressable flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 bg-white/5 text-white/70 transition hover:bg-white/10 hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
+                          aria-label="Next page"
+                        >
+                          <ChevronRight className="h-5 w-5" />
+                        </button>
+                      </div>
+                    )}
+                  </>
+                )}
+              </div>
+            </div>
+          </section>
+
+          {/* Rename Dialog */}
+          <RenameDialog
+            isOpen={!!renamingBlueprint}
+            onClose={() => setRenamingBlueprint(null)}
+            onConfirm={handleRenameBlueprint}
+            currentName={
+              renamingBlueprint?.title || `Blueprint #${renamingBlueprint?.id.slice(0, 8)}`
+            }
+            title="Rename Blueprint"
+            description="Enter a new name for your blueprint"
+            placeholder="Starmap for Professional Development and Career Growth Path"
+            maxLength={80}
+          />
+
+          {/* Confirmation Dialog */}
+          <ConfirmationDialog
+            isOpen={deletionDialog.isOpen}
+            onClose={() => setDeletionDialog({ isOpen: false, type: 'single' })}
+            onConfirm={handleConfirmDelete}
+            title="Confirm Deletion"
+            description="This action cannot be undone."
+            variant="destructive"
+            itemName="blueprint"
+            itemCount={deletionDialog.type === 'bulk' ? selectedBlueprints.size : 1}
+          />
         </div>
       </div>
     </div>

@@ -95,10 +95,10 @@ export function LabeledSlider({
                 '[&::-webkit-slider-thumb]:shadow-[0_0_0_3px_rgba(167,218,219,0.2),0_2px_8px_rgba(0,0,0,0.2)]',
                 '[&::-webkit-slider-thumb]:transition-all [&::-webkit-slider-thumb]:duration-200',
                 '[&::-webkit-slider-thumb]:hover:scale-110 [&::-webkit-slider-thumb]:active:scale-95',
-                '[&::-webkit-slider-track]:bg-transparent [&::-webkit-slider-track]:h-full',
+                '[&::-webkit-slider-track]:h-full [&::-webkit-slider-track]:bg-transparent',
                 '[&::-moz-range-thumb]:h-5 [&::-moz-range-thumb]:w-5 [&::-moz-range-thumb]:rounded-full',
                 '[&::-moz-range-thumb]:bg-primary-accent [&::-moz-range-thumb]:border-0',
-                '[&::-moz-range-track]:bg-transparent [&::-moz-range-track]:h-full',
+                '[&::-moz-range-track]:h-full [&::-moz-range-track]:bg-transparent',
                 disabled && 'cursor-not-allowed opacity-50'
               )}
             />
@@ -106,7 +106,7 @@ export function LabeledSlider({
 
           {/* Markers */}
           {markers && (
-            <div className="mt-3 relative">
+            <div className="relative mt-3">
               {markers.map((marker, index) => {
                 const markerPercentage = ((marker.value - min) / (max - min)) * 100;
                 return (
@@ -114,11 +114,11 @@ export function LabeledSlider({
                     key={`marker-${marker.value}-${index}`}
                     type="button"
                     onClick={() => !disabled && onChange(marker.value)}
-                    className="absolute text-text-disabled hover:text-foreground text-[11px] font-medium transition-colors"
+                    className="text-text-disabled hover:text-foreground absolute text-[11px] font-medium transition-colors"
                     disabled={disabled}
                     style={{
                       left: `${markerPercentage}%`,
-                      transform: 'translateX(-50%)'
+                      transform: 'translateX(-50%)',
                     }}
                   >
                     {marker.label}

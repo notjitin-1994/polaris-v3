@@ -419,7 +419,9 @@ export class BlueprintService {
     // Get current user if not provided (for backward compatibility)
     if (!userId) {
       try {
-        const { data: { user } } = await this.supabase.auth.getUser();
+        const {
+          data: { user },
+        } = await this.supabase.auth.getUser();
         if (user) {
           userId = user.id;
         }

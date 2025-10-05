@@ -1,62 +1,62 @@
-"use client"
+'use client';
 
-import { useCallback, useEffect, useMemo, useState } from "react"
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 export interface ViewportState {
   /**
    * Current viewport width in pixels
    */
-  width: number
+  width: number;
 
   /**
    * Current viewport height in pixels
    */
-  height: number
+  height: number;
 
   /**
    * Device pixel ratio
    */
-  devicePixelRatio: number
+  devicePixelRatio: number;
 
   /**
    * Current orientation
    */
-  orientation: 'portrait' | 'landscape'
+  orientation: 'portrait' | 'landscape';
 
   /**
    * Whether the device is mobile
    */
-  isMobile: boolean
+  isMobile: boolean;
 
   /**
    * Whether the device is tablet
    */
-  isTablet: boolean
+  isTablet: boolean;
 
   /**
    * Whether the device is desktop
    */
-  isDesktop: boolean
+  isDesktop: boolean;
 
   /**
    * Safe area insets for notched devices
    */
   safeAreaInsets: {
-    top: number
-    right: number
-    bottom: number
-    left: number
-  }
+    top: number;
+    right: number;
+    bottom: number;
+    left: number;
+  };
 
   /**
    * Visual viewport API support
    */
-  visualViewportSupported: boolean
+  visualViewportSupported: boolean;
 
   /**
    * Touch support detection
    */
-  isTouchDevice: boolean
+  isTouchDevice: boolean;
 }
 
 export interface UseViewportManagerOptions {
@@ -64,28 +64,28 @@ export interface UseViewportManagerOptions {
    * Debounce delay for resize events (ms)
    * @default 150
    */
-  debounceDelay?: number
+  debounceDelay?: number;
 
   /**
    * Breakpoint definitions for device classification
    */
   breakpoints?: {
-    mobile: number
-    tablet: number
-    desktop: number
-  }
+    mobile: number;
+    tablet: number;
+    desktop: number;
+  };
 
   /**
    * Whether to listen for orientation changes
    * @default true
    */
-  listenToOrientation?: boolean
+  listenToOrientation?: boolean;
 
   /**
    * Whether to listen for visual viewport changes (if supported)
    * @default true
    */
-  listenToVisualViewport?: boolean
+  listenToVisualViewport?: boolean;
 }
 
 /**
@@ -95,7 +95,7 @@ const DEFAULT_BREAKPOINTS = {
   mobile: 768,
   tablet: 1024,
   desktop: 1200,
-}
+};
 
 /**
  * Custom hook for comprehensive viewport management with device classification and orientation detection
@@ -121,10 +121,10 @@ export function useViewportManager(options: UseViewportManagerOptions = {}): Vie
     breakpoints = DEFAULT_BREAKPOINTS,
     listenToOrientation = true,
     listenToVisualViewport = true,
-  } = options
+  } = options;
 
   const [viewportState, setViewportState] = useState(() => {
-    if (typeof window === "undefined") {
+    if (typeof window === 'undefined') {
       return {
         width: 1024,
         height: 768,
@@ -136,17 +136,17 @@ export function useViewportManager(options: UseViewportManagerOptions = {}): Vie
         safeAreaInsets: { top: 0, right: 0, bottom: 0, left: 0 },
         visualViewportSupported: false,
         isTouchDevice: false,
-      }
+      };
     }
 
-    const width = window.innerWidth
-    const height = window.innerHeight
-    const orientation = width >= height ? 'landscape' : 'portrait'
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+    const orientation = width >= height ? 'landscape' : 'portrait';
 
     // Device classification based on width
-    const isMobile = width < breakpoints.mobile
-    const isTablet = width >= breakpoints.mobile && width < breakpoints.desktop
-    const isDesktop = width >= breakpoints.desktop
+    const isMobile = width < breakpoints.mobile;
+    const isTablet = width >= breakpoints.mobile && width < breakpoints.desktop;
+    const isDesktop = width >= breakpoints.desktop;
 
     return {
       width,
@@ -159,27 +159,27 @@ export function useViewportManager(options: UseViewportManagerOptions = {}): Vie
       safeAreaInsets: { top: 0, right: 0, bottom: 0, left: 0 }, // Will be updated by useSafeAreaInsets
       visualViewportSupported: 'visualViewport' in window,
       isTouchDevice: 'ontouchstart' in window || navigator.maxTouchPoints > 0,
-    }
-  })
+    };
+  });
 
   // Debounced resize handler
   const debouncedResizeHandler = useMemo(() => {
-    let timeoutId: NodeJS.Timeout
+    let timeoutId: NodeJS.Timeout;
 
     return () => {
-      clearTimeout(timeoutId)
+      clearTimeout(timeoutId);
       timeoutId = setTimeout(() => {
-        if (typeof window !== "undefined") {
-          const width = window.innerWidth
-          const height = window.innerHeight
-          const orientation = width >= height ? 'landscape' : 'portrait'
+        if (typeof window !== 'undefined') {
+          const width = window.innerWidth;
+          const height = window.innerHeight;
+          const orientation = width >= height ? 'landscape' : 'portrait';
 
           // Device classification based on width
-          const isMobile = width < breakpoints.mobile
-          const isTablet = width >= breakpoints.mobile && width < breakpoints.desktop
-          const isDesktop = width >= breakpoints.desktop
+          const isMobile = width < breakpoints.mobile;
+          const isTablet = width >= breakpoints.mobile && width < breakpoints.desktop;
+          const isDesktop = width >= breakpoints.desktop;
 
-          setViewportState(prev => ({
+          setViewportState((prev) => ({
             ...prev,
             width,
             height,
@@ -187,25 +187,25 @@ export function useViewportManager(options: UseViewportManagerOptions = {}): Vie
             isMobile,
             isTablet,
             isDesktop,
-          }))
+          }));
         }
-      }, debounceDelay)
-    }
-  }, [debounceDelay, breakpoints])
+      }, debounceDelay);
+    };
+  }, [debounceDelay, breakpoints]);
 
   // Handle orientation changes
   const handleOrientationChange = useCallback(() => {
-    if (typeof window !== "undefined") {
-      const width = window.innerWidth
-      const height = window.innerHeight
-      const orientation = width >= height ? 'landscape' : 'portrait'
+    if (typeof window !== 'undefined') {
+      const width = window.innerWidth;
+      const height = window.innerHeight;
+      const orientation = width >= height ? 'landscape' : 'portrait';
 
       // Device classification based on width
-      const isMobile = width < breakpoints.mobile
-      const isTablet = width >= breakpoints.mobile && width < breakpoints.desktop
-      const isDesktop = width >= breakpoints.desktop
+      const isMobile = width < breakpoints.mobile;
+      const isTablet = width >= breakpoints.mobile && width < breakpoints.desktop;
+      const isDesktop = width >= breakpoints.desktop;
 
-      setViewportState(prev => ({
+      setViewportState((prev) => ({
         ...prev,
         width,
         height,
@@ -213,25 +213,25 @@ export function useViewportManager(options: UseViewportManagerOptions = {}): Vie
         isMobile,
         isTablet,
         isDesktop,
-      }))
+      }));
     }
-  }, [breakpoints])
+  }, [breakpoints]);
 
   // Handle visual viewport changes (if supported)
   const handleVisualViewportChange = useCallback(() => {
-    if (typeof window !== "undefined" && 'visualViewport' in window) {
-      const visualViewport = window.visualViewport
+    if (typeof window !== 'undefined' && 'visualViewport' in window) {
+      const visualViewport = window.visualViewport;
       if (visualViewport) {
-        const width = visualViewport.width
-        const height = visualViewport.height
-        const orientation = width >= height ? 'landscape' : 'portrait'
+        const width = visualViewport.width;
+        const height = visualViewport.height;
+        const orientation = width >= height ? 'landscape' : 'portrait';
 
         // Device classification based on visual viewport width
-        const isMobile = width < breakpoints.mobile
-        const isTablet = width >= breakpoints.mobile && width < breakpoints.desktop
-        const isDesktop = width >= breakpoints.desktop
+        const isMobile = width < breakpoints.mobile;
+        const isTablet = width >= breakpoints.mobile && width < breakpoints.desktop;
+        const isDesktop = width >= breakpoints.desktop;
 
-        setViewportState(prev => ({
+        setViewportState((prev) => ({
           ...prev,
           width,
           height,
@@ -239,123 +239,129 @@ export function useViewportManager(options: UseViewportManagerOptions = {}): Vie
           isMobile,
           isTablet,
           isDesktop,
-        }))
+        }));
       }
     }
-  }, [breakpoints])
+  }, [breakpoints]);
 
   // Setup event listeners
   useEffect(() => {
-    if (typeof window === "undefined") return
+    if (typeof window === 'undefined') return;
 
-    window.addEventListener("resize", debouncedResizeHandler)
+    window.addEventListener('resize', debouncedResizeHandler);
     if (listenToOrientation) {
-      window.addEventListener("orientationchange", handleOrientationChange)
+      window.addEventListener('orientationchange', handleOrientationChange);
     }
 
     // Visual viewport API support (Chrome 61+, Safari 13+)
     if (listenToVisualViewport && 'visualViewport' in window) {
-      const visualViewport = window.visualViewport
+      const visualViewport = window.visualViewport;
       if (visualViewport) {
-        visualViewport.addEventListener("resize", handleVisualViewportChange)
+        visualViewport.addEventListener('resize', handleVisualViewportChange);
       }
     }
 
     return () => {
-      window.removeEventListener("resize", debouncedResizeHandler)
+      window.removeEventListener('resize', debouncedResizeHandler);
       if (listenToOrientation) {
-        window.removeEventListener("orientationchange", handleOrientationChange)
+        window.removeEventListener('orientationchange', handleOrientationChange);
       }
 
       if (listenToVisualViewport && 'visualViewport' in window) {
-        const visualViewport = window.visualViewport
+        const visualViewport = window.visualViewport;
         if (visualViewport) {
-          visualViewport.removeEventListener("resize", handleVisualViewportChange)
+          visualViewport.removeEventListener('resize', handleVisualViewportChange);
         }
       }
-    }
-  }, [debouncedResizeHandler, handleOrientationChange, handleVisualViewportChange, listenToOrientation, listenToVisualViewport])
+    };
+  }, [
+    debouncedResizeHandler,
+    handleOrientationChange,
+    handleVisualViewportChange,
+    listenToOrientation,
+    listenToVisualViewport,
+  ]);
 
   // Update safe area insets
   useEffect(() => {
-    if (typeof window === "undefined") return
+    if (typeof window === 'undefined') return;
 
     const updateSafeAreaInsets = () => {
-      const computedStyle = getComputedStyle(document.documentElement)
+      const computedStyle = getComputedStyle(document.documentElement);
 
       const safeAreaInsets = {
         top: parseInt(computedStyle.getPropertyValue('env(safe-area-inset-top)') || '0'),
         right: parseInt(computedStyle.getPropertyValue('env(safe-area-inset-right)') || '0'),
         bottom: parseInt(computedStyle.getPropertyValue('env(safe-area-inset-bottom)') || '0'),
         left: parseInt(computedStyle.getPropertyValue('env(safe-area-inset-left)') || '0'),
-      }
+      };
 
-      setViewportState(prev => ({
+      setViewportState((prev) => ({
         ...prev,
         safeAreaInsets,
-      }))
-    }
+      }));
+    };
 
-    updateSafeAreaInsets()
+    updateSafeAreaInsets();
 
     // Listen for safe area changes (though this is rare)
-    const observer = new MutationObserver(updateSafeAreaInsets)
+    const observer = new MutationObserver(updateSafeAreaInsets);
     observer.observe(document.documentElement, {
       attributes: true,
       attributeFilter: ['style'],
-    })
+    });
 
-    return () => observer.disconnect()
-  }, [])
+    return () => observer.disconnect();
+  }, []);
 
-  return viewportState
+  return viewportState;
 }
 
 /**
  * Hook for safe area inset handling
  */
 export function useSafeAreaInsets() {
-  const { safeAreaInsets } = useViewportManager()
+  const { safeAreaInsets } = useViewportManager();
 
-  return safeAreaInsets
+  return safeAreaInsets;
 }
 
 /**
  * Hook for device type detection
  */
 export function useDeviceType() {
-  const { isMobile, isTablet, isDesktop } = useViewportManager()
+  const { isMobile, isTablet, isDesktop } = useViewportManager();
 
   return {
     isMobile,
     isTablet,
     isDesktop,
     deviceType: isMobile ? 'mobile' : isTablet ? 'tablet' : 'desktop',
-  }
+  };
 }
 
 /**
  * Hook for orientation detection
  */
 export function useOrientation() {
-  const { orientation, width, height } = useViewportManager()
+  const { orientation, width, height } = useViewportManager();
 
   return {
     orientation,
     isPortrait: orientation === 'portrait',
     isLandscape: orientation === 'landscape',
     aspectRatio: width / height,
-  }
+  };
 }
 
 /**
  * Hook for touch device detection
  */
 export function useTouchDevice() {
-  const { isTouchDevice } = useViewportManager()
+  const { isTouchDevice } = useViewportManager();
 
   return {
     isTouchDevice,
     hasTouchSupport: isTouchDevice,
-  }
+  };
 }

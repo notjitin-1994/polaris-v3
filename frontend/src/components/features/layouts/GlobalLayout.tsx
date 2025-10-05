@@ -89,13 +89,13 @@ export const GlobalLayout = memo(function GlobalLayout({
 
   return (
     <>
-      <div className={`bg-background text-foreground h-screen w-full flex flex-col ${className}`}>
+      <div className={`bg-background text-foreground flex h-screen w-full flex-col ${className}`}>
         {/* Desktop Sidebar and Main Content */}
-        <div className="flex flex-1 min-h-0">
+        <div className="flex min-h-0 flex-1">
           <Sidebar user={user} onSignOut={signOut} />
 
           {/* Main Content Area */}
-          <main className="min-w-0 flex-1 flex flex-col min-h-0">
+          <main className="flex min-h-0 min-w-0 flex-1 flex-col">
             {/* Only show Header on pages that don't have their own */}
             {shouldShowHeader && (
               <Header
@@ -107,7 +107,7 @@ export const GlobalLayout = memo(function GlobalLayout({
             )}
 
             {/* Page Content */}
-            <div className="flex-1 overflow-y-auto min-h-0">{children}</div>
+            <div className="min-h-0 flex-1 overflow-y-auto">{children}</div>
           </main>
         </div>
 
@@ -119,10 +119,7 @@ export const GlobalLayout = memo(function GlobalLayout({
       {mobileMenuOpen && (
         <div className="fixed inset-0 z-50 md:hidden" role="dialog" aria-modal="true">
           {/* Backdrop */}
-          <div
-            className="absolute inset-0 bg-black/50"
-            onClick={() => setMobileMenuOpen(false)}
-          />
+          <div className="absolute inset-0 bg-black/50" onClick={() => setMobileMenuOpen(false)} />
 
           {/* Mobile Menu Panel */}
           <motion.div

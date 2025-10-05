@@ -1,34 +1,34 @@
-"use client"
+'use client';
 
-import * as React from "react"
-import { cn } from "@/lib/utils"
-import { useResponsiveContent } from "@/lib/hooks/useResponsiveContent"
+import * as React from 'react';
+import { cn } from '@/lib/utils';
+import { useResponsiveContent } from '@/lib/hooks/useResponsiveContent';
 
 export interface DashboardGridProps {
   /**
    * Grid items to render
    */
-  children: React.ReactNode
+  children: React.ReactNode;
 
   /**
    * Custom gap between grid items
    */
-  gap?: 'tight' | 'normal' | 'loose'
+  gap?: 'tight' | 'normal' | 'loose';
 
   /**
    * Minimum column width for auto-fit grids
    */
-  minColumnWidth?: number
+  minColumnWidth?: number;
 
   /**
    * Additional CSS classes
    */
-  className?: string
+  className?: string;
 
   /**
    * Test ID for testing purposes
    */
-  "data-testid"?: string
+  'data-testid'?: string;
 }
 
 /**
@@ -39,31 +39,28 @@ export function DashboardGrid({
   gap,
   minColumnWidth = 280,
   className,
-  "data-testid": testId = "dashboard-grid",
+  'data-testid': testId = 'dashboard-grid',
 }: DashboardGridProps) {
-  const responsive = useResponsiveContent()
+  const responsive = useResponsiveContent();
 
   // Determine grid configuration based on current breakpoint
   const gridConfig = React.useMemo(() => {
-    const baseColumns = responsive.layout.columns
+    const baseColumns = responsive.layout.columns;
 
     // Calculate responsive gap
-    const gapValue = gap || responsive.layout.spacing
-    const gapSize = gapValue === 'tight' ? '8px' : gapValue === 'normal' ? '16px' : '24px'
+    const gapValue = gap || responsive.layout.spacing;
+    const gapSize = gapValue === 'tight' ? '8px' : gapValue === 'normal' ? '16px' : '24px';
 
     return {
       columns: baseColumns,
       gap: gapSize,
       minColumnWidth: `${minColumnWidth}px`,
-    }
-  }, [responsive.layout.columns, responsive.layout.spacing, gap, minColumnWidth])
+    };
+  }, [responsive.layout.columns, responsive.layout.spacing, gap, minColumnWidth]);
 
   return (
     <div
-      className={cn(
-        "grid w-full",
-        className
-      )}
+      className={cn('grid w-full', className)}
       style={{
         gridTemplateColumns: `repeat(${gridConfig.columns}, minmax(${gridConfig.minColumnWidth}, 1fr))`,
         gap: gridConfig.gap,
@@ -72,44 +69,44 @@ export function DashboardGrid({
     >
       {children}
     </div>
-  )
+  );
 }
 
 export interface DashboardCardProps {
   /**
    * Card content
    */
-  children: React.ReactNode
+  children: React.ReactNode;
 
   /**
    * Card title
    */
-  title?: string
+  title?: string;
 
   /**
    * Card description
    */
-  description?: string
+  description?: string;
 
   /**
    * Whether to show hover effects
    */
-  hoverable?: boolean
+  hoverable?: boolean;
 
   /**
    * Custom padding
    */
-  padding?: 'none' | 'tight' | 'normal' | 'loose'
+  padding?: 'none' | 'tight' | 'normal' | 'loose';
 
   /**
    * Additional CSS classes
    */
-  className?: string
+  className?: string;
 
   /**
    * Test ID for testing purposes
    */
-  "data-testid"?: string
+  'data-testid'?: string;
 }
 
 /**
@@ -122,29 +119,29 @@ export function DashboardCard({
   hoverable = true,
   padding = 'normal',
   className,
-  "data-testid": testId = "dashboard-card",
+  'data-testid': testId = 'dashboard-card',
 }: DashboardCardProps) {
-  const responsive = useResponsiveContent()
+  const responsive = useResponsiveContent();
 
   // Responsive padding based on breakpoint and setting
   const cardPadding = React.useMemo(() => {
-    if (padding === 'none') return ''
+    if (padding === 'none') return '';
 
-    const basePadding = padding === 'tight' ? 'p-3' : padding === 'normal' ? 'p-4' : 'p-6'
+    const basePadding = padding === 'tight' ? 'p-3' : padding === 'normal' ? 'p-4' : 'p-6';
 
     // Adjust padding for mobile compact screens
     if (responsive.breakpoint === 'mobile-compact') {
-      return padding === 'tight' ? 'p-2' : 'p-3'
+      return padding === 'tight' ? 'p-2' : 'p-3';
     }
 
-    return basePadding
-  }, [padding, responsive.breakpoint])
+    return basePadding;
+  }, [padding, responsive.breakpoint]);
 
   return (
     <div
       className={cn(
-        "bg-background border border-neutral-200 rounded-lg shadow-sm",
-        hoverable && "hover:shadow-md transition-shadow duration-200",
+        'bg-background rounded-lg border border-neutral-200 shadow-sm',
+        hoverable && 'transition-shadow duration-200 hover:shadow-md',
         cardPadding,
         className
       )}
@@ -155,7 +152,7 @@ export function DashboardCard({
           {title && (
             <h3
               className={cn(
-                "font-semibold text-foreground mb-1",
+                'text-foreground mb-1 font-semibold',
                 responsive.breakpoint === 'mobile-compact' ? 'text-sm' : 'text-base'
               )}
               data-testid={`${testId}-title`}
@@ -166,7 +163,7 @@ export function DashboardCard({
           {description && (
             <p
               className={cn(
-                "text-text-secondary",
+                'text-text-secondary',
                 responsive.breakpoint === 'mobile-compact' ? 'text-xs' : 'text-sm'
               )}
               data-testid={`${testId}-description`}
@@ -178,39 +175,39 @@ export function DashboardCard({
       )}
       {children}
     </div>
-  )
+  );
 }
 
 export interface DashboardSectionProps {
   /**
    * Section title
    */
-  title: string
+  title: string;
 
   /**
    * Section description
    */
-  description?: string
+  description?: string;
 
   /**
    * Section content
    */
-  children: React.ReactNode
+  children: React.ReactNode;
 
   /**
    * Whether this section should be collapsible on mobile
    */
-  collapsible?: boolean
+  collapsible?: boolean;
 
   /**
    * Additional CSS classes
    */
-  className?: string
+  className?: string;
 
   /**
    * Test ID for testing purposes
    */
-  "data-testid"?: string
+  'data-testid'?: string;
 }
 
 /**
@@ -222,33 +219,33 @@ export function DashboardSection({
   children,
   collapsible = false,
   className,
-  "data-testid": testId = "dashboard-section",
+  'data-testid': testId = 'dashboard-section',
 }: DashboardSectionProps) {
-  const responsive = useResponsiveContent()
-  const [isCollapsed, setIsCollapsed] = React.useState(false)
+  const responsive = useResponsiveContent();
+  const [isCollapsed, setIsCollapsed] = React.useState(false);
 
   // Auto-collapse on mobile compact if enabled
   React.useEffect(() => {
     if (collapsible && responsive.breakpoint === 'mobile-compact') {
-      setIsCollapsed(true)
+      setIsCollapsed(true);
     } else {
-      setIsCollapsed(false)
+      setIsCollapsed(false);
     }
-  }, [collapsible, responsive.breakpoint])
+  }, [collapsible, responsive.breakpoint]);
 
   const toggleCollapsed = React.useCallback(() => {
     if (collapsible) {
-      setIsCollapsed(!isCollapsed)
+      setIsCollapsed(!isCollapsed);
     }
-  }, [collapsible, isCollapsed])
+  }, [collapsible, isCollapsed]);
 
   return (
-    <div className={cn("space-y-4", className)} data-testid={testId}>
+    <div className={cn('space-y-4', className)} data-testid={testId}>
       <div className="flex items-center justify-between">
         <div>
           <h2
             className={cn(
-              "font-semibold text-foreground",
+              'text-foreground font-semibold',
               responsive.breakpoint === 'mobile-compact' ? 'text-base' : 'text-lg'
             )}
             data-testid={`${testId}-title`}
@@ -258,7 +255,7 @@ export function DashboardSection({
           {description && (
             <p
               className={cn(
-                "text-text-secondary mt-1",
+                'text-text-secondary mt-1',
                 responsive.breakpoint === 'mobile-compact' ? 'text-xs' : 'text-sm'
               )}
               data-testid={`${testId}-description`}
@@ -270,14 +267,14 @@ export function DashboardSection({
         {collapsible && responsive.isMobile && (
           <button
             onClick={toggleCollapsed}
-            className="p-1 text-text-secondary hover:text-foreground transition-colors"
+            className="text-text-secondary hover:text-foreground p-1 transition-colors"
             data-testid={`${testId}-toggle`}
             aria-label={isCollapsed ? `Expand ${title}` : `Collapse ${title}`}
           >
             <svg
               className={cn(
-                "w-4 h-4 transition-transform duration-200",
-                isCollapsed && "rotate-180"
+                'h-4 w-4 transition-transform duration-200',
+                isCollapsed && 'rotate-180'
               )}
               fill="none"
               stroke="currentColor"
@@ -297,8 +294,8 @@ export function DashboardSection({
       {(!collapsible || !isCollapsed) && (
         <div
           className={cn(
-            "transition-all duration-300",
-            isCollapsed && "opacity-0 max-h-0 overflow-hidden"
+            'transition-all duration-300',
+            isCollapsed && 'max-h-0 overflow-hidden opacity-0'
           )}
           data-testid={`${testId}-content`}
         >
@@ -306,5 +303,5 @@ export function DashboardSection({
         </div>
       )}
     </div>
-  )
+  );
 }

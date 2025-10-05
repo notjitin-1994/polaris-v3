@@ -20,7 +20,7 @@ import {
   validateTouchCompliance,
   getRecommendedTouchSize,
   type TouchTargetSize,
-  type TouchSpacing
+  type TouchSpacing,
 } from '../touch-targets';
 
 describe('Touch Target Constants', () => {
@@ -129,7 +129,7 @@ describe('Touch Target Utility Functions', () => {
     it('should handle asymmetric dimensions correctly', () => {
       const result = calculateTouchPadding(40, 30, 'minimum');
       expect(result.horizontal).toBe(2); // (44 - 40) / 2 = 2
-      expect(result.vertical).toBe(7);  // (44 - 30) / 2 = 7
+      expect(result.vertical).toBe(7); // (44 - 30) / 2 = 7
     });
   });
 
@@ -177,7 +177,7 @@ describe('Touch Target Utility Functions', () => {
       const config = {
         size: 'minimum' as TouchTargetSize,
         spacing: 'standard' as TouchSpacing,
-        elementType: 'primary' as const
+        elementType: 'primary' as const,
       };
       const result = generateTouchClasses(config);
       expect(result).toContain('min-h-[44px]');
@@ -189,7 +189,7 @@ describe('Touch Target Utility Functions', () => {
         size: 'minimum' as TouchTargetSize,
         spacing: 'standard' as TouchSpacing,
         elementType: 'primary' as const,
-        screenWidth: 320
+        screenWidth: 320,
       };
       const result = generateTouchClasses(config);
       expect(result).toContain('min-h-[36px]'); // Downgraded for small screen
@@ -229,13 +229,13 @@ describe('Touch Compliance Validation', () => {
     // Create a mock HTML element for testing
     const mockElement = {
       getBoundingClientRect: () => ({ width: 44, height: 44 }),
-      style: { margin: '8px' }
+      style: { margin: '8px' },
     };
 
     // Mock getComputedStyle for JSDOM
     const originalGetComputedStyle = global.getComputedStyle;
     global.getComputedStyle = vi.fn().mockReturnValue({
-      margin: '8px'
+      margin: '8px',
     }) as any;
 
     const result = validateTouchCompliance(mockElement as any);
@@ -249,13 +249,13 @@ describe('Touch Compliance Validation', () => {
   it('should detect non-compliant touch targets', () => {
     const mockElement = {
       getBoundingClientRect: () => ({ width: 30, height: 30 }),
-      style: { margin: '4px' }
+      style: { margin: '4px' },
     };
 
     // Mock getComputedStyle for JSDOM
     const originalGetComputedStyle = global.getComputedStyle;
     global.getComputedStyle = vi.fn().mockReturnValue({
-      margin: '4px'
+      margin: '4px',
     }) as any;
 
     const result = validateTouchCompliance(mockElement as any);

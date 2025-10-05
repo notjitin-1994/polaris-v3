@@ -139,7 +139,9 @@ export function StandardHeader({
                   className={`transition-transform group-hover:-translate-x-0.5 ${isCompact || isIconOnly ? 'h-3.5 w-3.5' : 'h-4 w-4'}`}
                   aria-hidden="true"
                 />
-                {!isCompact && !isIconOnly && <span className="text-sm font-medium">{backLabel}</span>}
+                {!isCompact && !isIconOnly && (
+                  <span className="text-sm font-medium">{backLabel}</span>
+                )}
               </Link>
             )}
 

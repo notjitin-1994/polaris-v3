@@ -21,7 +21,7 @@ function DemoContent(): React.JSX.Element {
   const demoUser = user || {
     id: 'demo-user',
     email: 'demo@smartslate.com',
-    user_metadata: { name: 'Demo User' }
+    user_metadata: { name: 'Demo User' },
   };
   const [progress, setProgress] = useState(45); // Demo progress
   const [currentStep, setCurrentStep] = useState(2);
@@ -46,7 +46,7 @@ function DemoContent(): React.JSX.Element {
       ],
       stepCount: 4,
       badge: 'Perplexity Research',
-      infoTitle: "Trajectory Computation",
+      infoTitle: 'Trajectory Computation',
       primaryColor: 'primary',
     },
     'blueprint-generation': {
@@ -60,7 +60,7 @@ function DemoContent(): React.JSX.Element {
       ],
       stepCount: 6,
       badge: 'Claude Sonnet 4',
-      infoTitle: "Mission Status",
+      infoTitle: 'Mission Status',
       primaryColor: 'primary',
     },
   };
@@ -73,7 +73,7 @@ function DemoContent(): React.JSX.Element {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#020C1B] via-[#0A1B2A] to-[#020C1B] relative overflow-hidden">
+    <div className="relative min-h-screen overflow-hidden bg-gradient-to-br from-[#020C1B] via-[#0A1B2A] to-[#020C1B]">
       {/* Animated Background Elements */}
       <div className="pointer-events-none absolute inset-0 z-0">
         {/* Primary gradient overlay */}
@@ -81,38 +81,38 @@ function DemoContent(): React.JSX.Element {
 
         {/* Floating orbital elements */}
         <motion.div
-          className="absolute top-1/4 left-1/4 h-32 w-32 rounded-full border border-primary/10"
+          className="border-primary/10 absolute top-1/4 left-1/4 h-32 w-32 rounded-full border"
           animate={{
             rotate: 360,
             scale: [1, 1.1, 1],
           }}
           transition={{
-            rotate: { duration: 20, repeat: Infinity, ease: "linear" },
-            scale: { duration: 4, repeat: Infinity, ease: "easeInOut" }
+            rotate: { duration: 20, repeat: Infinity, ease: 'linear' },
+            scale: { duration: 4, repeat: Infinity, ease: 'easeInOut' },
           }}
         >
-          <div className="absolute top-0 left-1/2 h-2 w-2 -translate-x-1 -translate-y-1 rounded-full bg-primary/60" />
+          <div className="bg-primary/60 absolute top-0 left-1/2 h-2 w-2 -translate-x-1 -translate-y-1 rounded-full" />
         </motion.div>
 
         <motion.div
-          className="absolute bottom-1/3 right-1/4 h-24 w-24 rounded-full border border-secondary/10"
+          className="border-secondary/10 absolute right-1/4 bottom-1/3 h-24 w-24 rounded-full border"
           animate={{
             rotate: -360,
             scale: [1.2, 1, 1.2],
           }}
           transition={{
-            rotate: { duration: 15, repeat: Infinity, ease: "linear" },
-            scale: { duration: 3, repeat: Infinity, ease: "easeInOut" }
+            rotate: { duration: 15, repeat: Infinity, ease: 'linear' },
+            scale: { duration: 3, repeat: Infinity, ease: 'easeInOut' },
           }}
         >
-          <div className="absolute top-1/2 left-0 h-1 w-1 -translate-x-0.5 -translate-y-0.5 rounded-full bg-secondary/60" />
+          <div className="bg-secondary/60 absolute top-1/2 left-0 h-1 w-1 -translate-x-0.5 -translate-y-0.5 rounded-full" />
         </motion.div>
 
         {/* Sparkle effects */}
         {[...Array(6)].map((_, i) => (
           <motion.div
             key={i}
-            className="absolute h-1 w-1 rounded-full bg-primary/40"
+            className="bg-primary/40 absolute h-1 w-1 rounded-full"
             style={{
               top: `${20 + i * 15}%`,
               left: `${10 + (i % 3) * 30}%`,
@@ -131,7 +131,7 @@ function DemoContent(): React.JSX.Element {
       </div>
 
       {/* Header with Tabbed Interface */}
-      <header className="glass relative overflow-hidden border-b border-neutral-200/50 sticky top-0 z-50">
+      <header className="glass relative sticky top-0 z-50 overflow-hidden border-b border-neutral-200/50">
         {/* Subtle background effects */}
         <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
           <div className="bg-primary/[0.02] absolute inset-0" />
@@ -144,7 +144,7 @@ function DemoContent(): React.JSX.Element {
             <div className="flex items-center">
               <Link
                 href="/"
-                className="group text-text-secondary hover:text-foreground focus-visible:ring-primary/50 inline-flex items-center justify-center transition-all duration-200 focus-visible:rounded focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none active:scale-[0.98] h-9 w-9 shrink-0 rounded-md border border-white/10 bg-white/5 hover:bg-white/10"
+                className="group text-text-secondary hover:text-foreground focus-visible:ring-primary/50 inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-md border border-white/10 bg-white/5 transition-all duration-200 hover:bg-white/10 focus-visible:rounded focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none active:scale-[0.98]"
                 aria-label="Back to Dashboard"
               >
                 <ArrowLeft className="h-3.5 w-3.5 transition-transform group-hover:-translate-x-0.5" />
@@ -152,8 +152,8 @@ function DemoContent(): React.JSX.Element {
             </div>
 
             {/* Center: Tabbed Interface */}
-            <div className="flex-1 flex justify-center">
-              <div className="flex items-center gap-2 p-1 glass-strong rounded-xl">
+            <div className="flex flex-1 justify-center">
+              <div className="glass-strong flex items-center gap-2 rounded-xl p-1">
                 <button
                   onClick={() => switchDemo('dynamic-questions')}
                   className={`flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-all ${
@@ -200,7 +200,7 @@ function DemoContent(): React.JSX.Element {
               <div className="flex items-center">
                 <Link
                   href="/"
-                  className="group text-text-secondary hover:text-foreground focus-visible:ring-primary/50 inline-flex items-center justify-center transition-all duration-200 focus-visible:rounded focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none active:scale-[0.98] h-9 w-9 shrink-0 rounded-md border border-white/10 bg-white/5 hover:bg-white/10"
+                  className="group text-text-secondary hover:text-foreground focus-visible:ring-primary/50 inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-md border border-white/10 bg-white/5 transition-all duration-200 hover:bg-white/10 focus-visible:rounded focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none active:scale-[0.98]"
                   aria-label="Back to Dashboard"
                 >
                   <ArrowLeft className="h-3.5 w-3.5 transition-transform group-hover:-translate-x-0.5" />
@@ -213,7 +213,7 @@ function DemoContent(): React.JSX.Element {
                 <div className="flex-1 text-center">
                   <h1 className="font-heading text-4xl font-bold tracking-tight text-white sm:text-5xl md:text-6xl lg:text-7xl">
                     <span>Analyzing </span>
-                    <span className="bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent">
+                    <span className="from-primary to-primary/80 bg-gradient-to-r bg-clip-text text-transparent">
                       Mission Data
                     </span>
                   </h1>
@@ -242,7 +242,7 @@ function DemoContent(): React.JSX.Element {
               <div className="flex items-center">
                 <Link
                   href="/"
-                  className="group text-text-secondary hover:text-foreground focus-visible:ring-primary/50 inline-flex items-center justify-center transition-all duration-200 focus-visible:rounded focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none active:scale-[0.98] h-9 w-9 shrink-0 rounded-md border border-white/10 bg-white/5 hover:bg-white/10"
+                  className="group text-text-secondary hover:text-foreground focus-visible:ring-primary/50 inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-md border border-white/10 bg-white/5 transition-all duration-200 hover:bg-white/10 focus-visible:rounded focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none active:scale-[0.98]"
                   aria-label="Back to Dashboard"
                 >
                   <ArrowLeft className="h-3.5 w-3.5 transition-transform group-hover:-translate-x-0.5" />
@@ -255,7 +255,7 @@ function DemoContent(): React.JSX.Element {
                 <div className="flex-1 text-center">
                   <h1 className="font-heading text-4xl font-bold tracking-tight text-white sm:text-5xl md:text-6xl lg:text-7xl">
                     <span>Constructing </span>
-                    <span className="bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent">
+                    <span className="from-primary to-primary/80 bg-gradient-to-r bg-clip-text text-transparent">
                       Your Starmap
                     </span>
                   </h1>
@@ -283,7 +283,7 @@ function DemoContent(): React.JSX.Element {
               <div className="relative mb-8 flex justify-center">
                 <div className="relative">
                   <motion.div
-                    className="bg-primary/10 flex h-24 w-24 items-center justify-center rounded-full ring-2 ring-primary/20"
+                    className="bg-primary/10 ring-primary/20 flex h-24 w-24 items-center justify-center rounded-full ring-2"
                     animate={{
                       boxShadow: [
                         '0 0 0 0 rgba(59, 130, 246, 0.2)',
@@ -293,17 +293,17 @@ function DemoContent(): React.JSX.Element {
                     transition={{
                       duration: 2,
                       repeat: Infinity,
-                      ease: "easeInOut",
+                      ease: 'easeInOut',
                     }}
                   >
                     {React.createElement(getDemoIcon(), {
-                      className: `text-primary h-12 w-12`
+                      className: `text-primary h-12 w-12`,
                     })}
                   </motion.div>
 
                   {/* Pulsing rings */}
                   <motion.div
-                    className="absolute inset-0 rounded-full border-2 border-primary/30"
+                    className="border-primary/30 absolute inset-0 rounded-full border-2"
                     animate={{
                       scale: [1, 1.2, 1],
                       opacity: [0.6, 0, 0.6],
@@ -311,7 +311,7 @@ function DemoContent(): React.JSX.Element {
                     transition={{
                       duration: 2,
                       repeat: Infinity,
-                      ease: "easeInOut",
+                      ease: 'easeInOut',
                     }}
                   />
                 </div>
@@ -336,7 +336,7 @@ function DemoContent(): React.JSX.Element {
                 <motion.p
                   className="text-body text-text-secondary"
                   animate={{ opacity: [0.7, 1, 0.7] }}
-                  transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                  transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
                 >
                   {config.statusMessage}
                 </motion.p>
@@ -351,10 +351,10 @@ function DemoContent(): React.JSX.Element {
                   </div>
                   <div className="bg-surface/50 h-3 overflow-hidden rounded-full backdrop-blur-sm">
                     <motion.div
-                      className="bg-[var(--primary-accent)] h-full rounded-full"
+                      className="h-full rounded-full bg-[var(--primary-accent)]"
                       initial={{ width: '0%' }}
                       animate={{ width: `${progress}%` }}
-                      transition={{ duration: 0.5, ease: "easeOut" }}
+                      transition={{ duration: 0.5, ease: 'easeOut' }}
                     />
                   </div>
                 </div>
@@ -412,7 +412,7 @@ function DemoContent(): React.JSX.Element {
               >
                 <div className="glass-strong rounded-full px-6 py-3 text-sm backdrop-blur-md">
                   <span className="text-text-secondary">Powered by </span>
-                  <span className="font-semibold text-yellow-400 drop-shadow-[0_0_8px_rgba(250,204,21,0.8)] brightness-110">
+                  <span className="font-semibold text-yellow-400 brightness-110 drop-shadow-[0_0_8px_rgba(250,204,21,0.8)]">
                     Solara
                   </span>
                 </div>
@@ -456,17 +456,19 @@ function DemoContent(): React.JSX.Element {
                           </motion.div>
                         ) : isCurrent ? (
                           <motion.div
-                            className="h-4 w-4 rounded-full border-2 border-primary border-t-transparent"
+                            className="border-primary h-4 w-4 rounded-full border-2 border-t-transparent"
                             animate={{ rotate: 360 }}
-                            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                            transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
                           />
                         ) : (
-                          <div className="h-4 w-4 rounded-full border-2 border-surface" />
+                          <div className="border-surface h-4 w-4 rounded-full border-2" />
                         )}
                       </div>
-                      <span className={`text-sm ${
-                        isFuture ? 'text-text-disabled' : 'text-text-secondary'
-                      }`}>
+                      <span
+                        className={`text-sm ${
+                          isFuture ? 'text-text-disabled' : 'text-text-secondary'
+                        }`}
+                      >
                         {step}
                       </span>
                     </motion.div>
@@ -531,9 +533,7 @@ function DemoContent(): React.JSX.Element {
                 </div>
                 <div>
                   <span className="font-semibold">Redirect:</span>{' '}
-                  {activeDemo === 'dynamic-questions'
-                    ? '/dynamic-wizard/[id]'
-                    : '/blueprint/[id]'}
+                  {activeDemo === 'dynamic-questions' ? '/dynamic-wizard/[id]' : '/blueprint/[id]'}
                 </div>
               </div>
             </div>

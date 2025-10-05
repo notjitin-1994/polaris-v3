@@ -353,10 +353,7 @@ export function InteractiveBlueprintDashboard({
       )}
 
       {/* Enhanced Stats Grid - Desktop layout on all screen sizes */}
-      <motion.div
-        variants={containerVariants}
-        className="grid grid-cols-4 gap-6"
-      >
+      <motion.div variants={containerVariants} className="grid grid-cols-4 gap-6">
         <StatCard
           icon={Clock}
           label="Total Duration"
@@ -419,7 +416,9 @@ export function InteractiveBlueprintDashboard({
             section={sections.find((s) => s.id === 'objectives')!}
             isExpanded={expandedSections.has('objectives')}
             onToggle={() => toggleSection('objectives')}
-            ref={(el) => { sectionRefs.current['objectives'] = el; }}
+            ref={(el) => {
+              sectionRefs.current['objectives'] = el;
+            }}
             isPublicView={isPublicView}
           >
             <ObjectivesInfographic
@@ -435,7 +434,9 @@ export function InteractiveBlueprintDashboard({
             section={sections.find((s) => s.id === 'target_audience')!}
             isExpanded={expandedSections.has('target_audience')}
             onToggle={() => toggleSection('target_audience')}
-            ref={(el) => { sectionRefs.current['target_audience'] = el; }}
+            ref={(el) => {
+              sectionRefs.current['target_audience'] = el;
+            }}
             isPublicView={isPublicView}
           >
             <TargetAudienceInfographic data={blueprint.target_audience} />
@@ -448,7 +449,9 @@ export function InteractiveBlueprintDashboard({
             section={sections.find((s) => s.id === 'content_outline')!}
             isExpanded={expandedSections.has('content_outline')}
             onToggle={() => toggleSection('content_outline')}
-            ref={(el) => { sectionRefs.current['content_outline'] = el; }}
+            ref={(el) => {
+              sectionRefs.current['content_outline'] = el;
+            }}
             isPublicView={isPublicView}
           >
             <ContentOutlineInfographic modules={modules} />
@@ -461,7 +464,9 @@ export function InteractiveBlueprintDashboard({
             section={sections.find((s) => s.id === 'resources')!}
             isExpanded={expandedSections.has('resources')}
             onToggle={() => toggleSection('resources')}
-            ref={(el) => { sectionRefs.current['resources'] = el; }}
+            ref={(el) => {
+              sectionRefs.current['resources'] = el;
+            }}
             isPublicView={isPublicView}
           >
             <BudgetResourcesInfographic
@@ -478,7 +483,9 @@ export function InteractiveBlueprintDashboard({
             section={sections.find((s) => s.id === 'assessment')!}
             isExpanded={expandedSections.has('assessment')}
             onToggle={() => toggleSection('assessment')}
-            ref={(el) => { sectionRefs.current['assessment'] = el; }}
+            ref={(el) => {
+              sectionRefs.current['assessment'] = el;
+            }}
             isPublicView={isPublicView}
           >
             <AssessmentStrategyInfographic
@@ -496,7 +503,9 @@ export function InteractiveBlueprintDashboard({
             section={sections.find((s) => s.id === 'timeline')!}
             isExpanded={expandedSections.has('timeline')}
             onToggle={() => toggleSection('timeline')}
-            ref={(el) => { sectionRefs.current['timeline'] = el; }}
+            ref={(el) => {
+              sectionRefs.current['timeline'] = el;
+            }}
             isPublicView={isPublicView}
           >
             <TimelineInfographic
@@ -512,7 +521,9 @@ export function InteractiveBlueprintDashboard({
             section={sections.find((s) => s.id === 'risks')!}
             isExpanded={expandedSections.has('risks')}
             onToggle={() => toggleSection('risks')}
-            ref={(el) => { sectionRefs.current['risks'] = el; }}
+            ref={(el) => {
+              sectionRefs.current['risks'] = el;
+            }}
             isPublicView={isPublicView}
           >
             <RiskMitigationInfographic
@@ -528,7 +539,9 @@ export function InteractiveBlueprintDashboard({
             section={sections.find((s) => s.id === 'metrics')!}
             isExpanded={expandedSections.has('metrics')}
             onToggle={() => toggleSection('metrics')}
-            ref={(el) => { sectionRefs.current['metrics'] = el; }}
+            ref={(el) => {
+              sectionRefs.current['metrics'] = el;
+            }}
             isPublicView={isPublicView}
           >
             <SuccessMetricsInfographic
@@ -544,7 +557,9 @@ export function InteractiveBlueprintDashboard({
             section={sections.find((s) => s.id === 'strategy')!}
             isExpanded={expandedSections.has('strategy')}
             onToggle={() => toggleSection('strategy')}
-            ref={(el) => { sectionRefs.current['strategy'] = el; }}
+            ref={(el) => {
+              sectionRefs.current['strategy'] = el;
+            }}
             isPublicView={isPublicView}
           >
             <InstructionalStrategyInfographic
@@ -564,7 +579,9 @@ export function InteractiveBlueprintDashboard({
             section={sections.find((s) => s.id === 'sustainability')!}
             isExpanded={expandedSections.has('sustainability')}
             onToggle={() => toggleSection('sustainability')}
-            ref={(el) => { sectionRefs.current['sustainability'] = el; }}
+            ref={(el) => {
+              sectionRefs.current['sustainability'] = el;
+            }}
             isPublicView={isPublicView}
           >
             <SustainabilityPlanInfographic
