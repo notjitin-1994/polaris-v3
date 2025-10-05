@@ -374,6 +374,7 @@ export function StepWizard(): React.JSX.Element {
         </div>
       </div>
     );
+  }
 
   return (
     <div className="glass-card animate-scale-in p-6 md:p-8">
@@ -404,6 +405,7 @@ export function StepWizard(): React.JSX.Element {
               </div>
             )}
             {saveState === 'saved' && (
+              <div className="animate-fade-in text-success flex items-center gap-2">
               <div className="animate-fade-in text-success flex items-center gap-2">
                 <div className="bg-success flex h-3 w-3 items-center justify-center rounded-full">
                   <svg className="h-2 w-2 text-white" fill="currentColor" viewBox="0 0 20 20">
