@@ -443,7 +443,7 @@ export default function BlueprintPage({ params }: PageProps): React.JSX.Element 
               transition={{ delay: 0.5 }}
               className="mb-8"
             >
-              <div className="glass-card from-primary/5 to-secondary/5 rounded-2xl border border-white/10 bg-gradient-to-br via-transparent p-6">
+              <div className="glass-card rounded-2xl border border-neutral-300 bg-background p-6">
                 <div className="grid grid-cols-2 gap-6 md:grid-cols-4">
                   {isFullBlueprint(blueprintData) && blueprintData.metadata.organization && (
                     <div className="flex flex-col items-center justify-center space-y-2">

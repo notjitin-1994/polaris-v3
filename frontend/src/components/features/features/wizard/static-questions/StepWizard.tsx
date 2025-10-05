@@ -198,13 +198,13 @@ export function StepWizard(): React.JSX.Element {
           .update({ title: desired })
           .eq('id', blueprintId)
           .eq('user_id', user.id);
-      } catch (_e) {
+      } catch {
         // ignore non-fatal rename errors
       }
     };
     void maybeRename();
     // run when blueprintId or org changes
-  }, [user?.id, blueprintId, (values as any).organization]);
+  }, [user?.id, user?.user_metadata?.name, blueprintId, values]);
 
   const goNext = async () => {
     // For V2, we need to validate based on step index, not field names
@@ -220,7 +220,7 @@ export function StepWizard(): React.JSX.Element {
           'organization.name',
           'organization.industry',
           'organization.size',
-        ] as any);
+        ] as const);
         break;
       case 2: // Learner Profile
         isValid = await methods.trigger([
@@ -230,7 +230,7 @@ export function StepWizard(): React.JSX.Element {
           'learnerProfile.environment',
           'learnerProfile.devices',
           'learnerProfile.timeAvailable',
-        ] as any);
+        ] as const);
         break;
       case 3: // Learning Gap
         isValid = await methods.trigger([
@@ -241,7 +241,7 @@ export function StepWizard(): React.JSX.Element {
           'learningGap.impactAreas',
           'learningGap.bloomsLevel',
           'learningGap.objectives',
-        ] as any);
+        ] as const);
         break;
       case 4: // Resources
         isValid = await methods.trigger([
@@ -257,14 +257,14 @@ export function StepWizard(): React.JSX.Element {
           'resources.team.experienceLevel',
           'resources.technology.lms',
           'resources.contentStrategy.source',
-        ] as any);
+        ] as const);
         break;
       case 5: // Delivery Strategy
         isValid = await methods.trigger([
           'deliveryStrategy.modality',
           'deliveryStrategy.interactivityLevel',
           'deliveryStrategy.reinforcement',
-        ] as any);
+        ] as const);
         break;
       case 6: // Constraints
         isValid = await methods.trigger('constraints');
@@ -276,7 +276,7 @@ export function StepWizard(): React.JSX.Element {
           'evaluation.level2.assessmentMethods',
           'evaluation.level2.passingRequired',
           'evaluation.certification',
-        ] as any);
+        ] as const);
         break;
       default:
         isValid = true;
@@ -369,18 +369,11 @@ export function StepWizard(): React.JSX.Element {
     return (
       <div className="glass-card p-6 md:p-8">
         <div className="animate-fade-in flex flex-col items-center justify-center py-12">
-          <div
-            className="mb-4 h-12 w-12 animate-spin rounded-full border-2"
-            style={{
-              borderColor: 'rgba(167, 218, 219, 0.3)',
-              borderTopColor: '#a7dadb',
-            }}
-          />
+          <div className="mb-4 h-12 w-12 animate-spin rounded-full border-2 border-primary/30 border-t-primary">
           <p className="text-sm text-white/70">Loading your existing blueprint...</p>
         </div>
       </div>
     );
-  }
 
   return (
     <div className="glass-card animate-scale-in p-6 md:p-8">
@@ -405,14 +398,8 @@ export function StepWizard(): React.JSX.Element {
           {/* Save Status */}
           <div className="flex items-center justify-start py-2">
             {saveState === 'saving' && (
-              <div className="animate-fade-in flex items-center gap-2" style={{ color: '#d0edf0' }}>
-                <div
-                  className="h-3 w-3 animate-spin rounded-full border-2"
-                  style={{
-                    borderColor: 'rgba(167, 218, 219, 0.3)',
-                    borderTopColor: '#a7dadb',
-                  }}
-                />
+              <div className="animate-fade-in flex items-center gap-2 text-primary/80">
+                <div className="h-3 w-3 animate-spin rounded-full border-2 border-primary/30 border-t-primary">
                 <span className="text-xs font-medium">Saving...</span>
               </div>
             )}
@@ -431,7 +418,7 @@ export function StepWizard(): React.JSX.Element {
               </div>
             )}
             {saveState === 'error' && (
-              <div className="animate-fade-in flex items-center gap-2 text-red-400">
+              <div className="animate-fade-in flex items-center gap-2 text-error">
                 <svg className="h-3 w-3" fill="currentColor" viewBox="0 0 20 20">
                   <path
                     fillRule="evenodd"

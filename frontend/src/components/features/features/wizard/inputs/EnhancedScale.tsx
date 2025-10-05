@@ -86,11 +86,10 @@ export function EnhancedScale({
                 'focus-visible:ring-secondary/50 border-[1.5px] focus-visible:ring-2',
                 disabled && 'cursor-not-allowed opacity-50',
                 isSelected
-                  ? 'border-primary bg-primary/15 shadow-md'
+                  ? 'border-primary bg-primary/15 shadow-lg'
                   : 'border-neutral-200 bg-white/5 hover:border-neutral-300 hover:bg-white/10',
                 hasError && 'border-error/50'
               )}
-              style={isSelected ? { boxShadow: '0 4px 12px rgba(167, 218, 219, 0.25)' } : undefined}
               aria-pressed={isSelected}
               title={explanations?.[index]}
             >
