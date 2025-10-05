@@ -80,7 +80,7 @@ export function PasswordInput({
           aria-label={visible ? 'Hide password' : 'Show password'}
           aria-pressed={visible}
           onClick={() => setVisible((v) => !v)}
-          className="pressable absolute inset-y-0 right-2 my-auto inline-flex h-8 w-8 items-center justify-center rounded-md text-white/60 transition-colors hover:text-white"
+          className="pressable absolute top-1/2 right-3 inline-flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-md text-white/60 transition-colors hover:text-white"
           title={visible ? 'Hide password' : 'Show password'}
         >
           <span
