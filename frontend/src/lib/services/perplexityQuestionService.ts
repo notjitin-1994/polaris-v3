@@ -14,8 +14,8 @@ const PERPLEXITY_CONFIG = {
   baseUrl: process.env.PERPLEXITY_BASE_URL || 'https://api.perplexity.ai',
   model: 'sonar-pro',
   temperature: 0.1,
-  maxTokens: 8700,
-  timeout: 75000, // 75 seconds
+  maxTokens: 16000, // Increased for 10 sections (50-70 questions)
+  timeout: 840000, // 14 minutes - avg generation time is ~13 minutes (779.7s)
   retries: 2,
 } as const;
 
@@ -201,7 +201,7 @@ ${userPrompts.join('\n')}
 ║                         YOUR MISSION & TASK                                   ║
 ╚══════════════════════════════════════════════════════════════════════════════╝
 
-Generate a sophisticated, research-backed dynamic questionnaire with 5 sections containing 7 questions each (35 total questions). Use your web research capability to find current ${org.industry || 'L&D'} industry best practices from 2024-2025.
+Generate a sophisticated, research-backed dynamic questionnaire with 10 sections containing 5-7 questions each (50-70 total questions). Use your web research capability to find current ${org.industry || 'L&D'} industry best practices from 2024-2025.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 🎨 INPUT TYPE SELECTION GUIDE (CRITICAL - READ CAREFULLY)

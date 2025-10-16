@@ -46,7 +46,7 @@ export function getClaudeConfig(): ClaudeConfig {
     version,
     maxTokens: 12000,
     temperature: 0.2,
-    timeout: 120000, // 120 seconds
+    timeout: 840000, // 14 minutes - avg generation time is ~13 minutes (779.7s)
     retries: 2,
   };
 }

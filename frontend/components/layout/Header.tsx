@@ -16,6 +16,8 @@ interface HeaderProps {
   showMobileMenu?: boolean;
   onMobileMenuToggle?: () => void;
   className?: string;
+  sticky?: boolean;
+  variant?: 'floating' | 'solid';
 }
 
 export const Header = memo(function Header({
@@ -24,6 +26,8 @@ export const Header = memo(function Header({
   showMobileMenu = false,
   onMobileMenuToggle,
   className = '',
+  sticky = true,
+  variant = 'floating',
 }: HeaderProps) {
   const pathname = usePathname();
   const { user, signOut } = useAuth();
@@ -80,9 +84,16 @@ export const Header = memo(function Header({
     }
   }
 
+  const headerClasses = [
+    variant === 'floating' ? 'glass' : 'bg-background',
+    'border-b border-neutral-200',
+    sticky ? 'sticky top-0 z-50' : '',
+    className,
+  ].filter(Boolean).join(' ');
+
   return (
     <motion.header
-      className={`glass sticky top-0 z-50 border-b border-neutral-200/50 ${className}`}
+      className={headerClasses}
       initial={{ y: -20, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.4, ease: [0.25, 0.1, 0.25, 1] }}

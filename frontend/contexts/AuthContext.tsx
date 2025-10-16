@@ -39,13 +39,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }): React
 
     // Subscribe to auth changes
     const { data: sub } = supabase.auth.onAuthStateChange((_event, newSession) => {
-      const previousSession = session;
+      if (!isMounted) return;
       setSession(newSession);
       setUser(newSession?.user ?? null);
       setAuth(newSession?.user ?? null, newSession ?? null);
 
       // Redirect to home after successful login
-      if (newSession && !previousSession && typeof window !== 'undefined') {
+      if (newSession && typeof window !== 'undefined') {
         // Check if we're on login/signup page and redirect to home
         if (window.location.pathname === '/login' || window.location.pathname === '/signup') {
           router.push('/');
@@ -57,7 +57,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }): React
       isMounted = false;
       sub.subscription.unsubscribe();
     };
-  }, [supabase, router, session, setAuth]);
+  }, [supabase, router, setAuth]);
 
   const value = useMemo<AuthContextValue>(
     () => ({

@@ -3,7 +3,7 @@
 
 export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[];
 
-export type BlueprintStatus = 'draft' | 'generating' | 'completed' | 'error';
+export type BlueprintStatus = 'draft' | 'generating' | 'answering' | 'completed' | 'error';
 
 export interface Database {
   public: {
@@ -16,6 +16,11 @@ export interface Database {
           last_name: string | null;
           avatar_url: string | null;
           preferences: Json;
+          blueprint_creation_count: number;
+          blueprint_saving_count: number;
+          blueprint_creation_limit: number;
+          blueprint_saving_limit: number;
+          blueprint_usage_metadata: Json;
           created_at: string;
           updated_at: string;
         };
@@ -26,6 +31,11 @@ export interface Database {
           last_name?: string | null;
           avatar_url?: string | null;
           preferences?: Json;
+          blueprint_creation_count?: number;
+          blueprint_saving_count?: number;
+          blueprint_creation_limit?: number;
+          blueprint_saving_limit?: number;
+          blueprint_usage_metadata?: Json;
           created_at?: string;
           updated_at?: string;
         };
@@ -35,6 +45,11 @@ export interface Database {
           last_name?: string | null;
           avatar_url?: string | null;
           preferences?: Json;
+          blueprint_creation_count?: number;
+          blueprint_saving_count?: number;
+          blueprint_creation_limit?: number;
+          blueprint_saving_limit?: number;
+          blueprint_usage_metadata?: Json;
           updated_at?: string;
         };
         Relationships: [

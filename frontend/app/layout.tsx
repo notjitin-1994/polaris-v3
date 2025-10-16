@@ -5,6 +5,7 @@ import { QueryProvider } from '@/lib/stores/QueryProvider';
 import { ThemeProvider } from '@/components/theme';
 import { AuthProvider } from '@/contexts/AuthContext';
 import { GlobalLayout } from '@/components/layout';
+import { GlobalErrorBoundary } from '@/components/error/GlobalErrorBoundary';
 
 const quicksand = Quicksand({
   variable: '--font-quicksand',
@@ -68,14 +69,16 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className={`${quicksand.variable} ${lato.variable} antialiased`}>
-        <ThemeProvider defaultTheme="dark">
-          <AuthProvider>
-            <QueryProvider>
-              <GlobalLayout>{children}</GlobalLayout>
-            </QueryProvider>
-          </AuthProvider>
-        </ThemeProvider>
+      <body className={`${quicksand.variable} ${lato.variable} antialiased`} suppressHydrationWarning>
+        <GlobalErrorBoundary>
+          <ThemeProvider defaultTheme="dark">
+            <AuthProvider>
+              <QueryProvider>
+                <GlobalLayout>{children}</GlobalLayout>
+              </QueryProvider>
+            </AuthProvider>
+          </ThemeProvider>
+        </GlobalErrorBoundary>
       </body>
     </html>
   );

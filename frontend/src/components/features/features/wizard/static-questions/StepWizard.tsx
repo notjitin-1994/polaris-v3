@@ -21,8 +21,8 @@ import {
   ConstraintsStep,
   EvaluationStep,
 } from '@/components/wizard/static-questions/steps';
-import { _QuestionnaireLayout } from '@/components/wizard/static-questions/QuestionnaireLayout';
-import { _QuestionnaireCard } from '@/components/wizard/static-questions/QuestionnaireCard';
+import { QuestionnaireLayout } from '@/components/wizard/static-questions/QuestionnaireLayout';
+import { QuestionnaireCard } from '@/components/wizard/static-questions/QuestionnaireCard';
 import { QuestionnaireProgress } from '@/components/wizard/static-questions/QuestionnaireProgress';
 import { QuestionnaireButton } from '@/components/wizard/static-questions/QuestionnaireButton';
 import { useSession } from '@/hooks/useSession';
@@ -369,7 +369,7 @@ export function StepWizard(): React.JSX.Element {
     return (
       <div className="glass-card p-6 md:p-8">
         <div className="animate-fade-in flex flex-col items-center justify-center py-12">
-          <div className="mb-4 h-12 w-12 animate-spin rounded-full border-2 border-primary/30 border-t-primary">
+          <div className="mb-4 h-12 w-12 animate-spin rounded-full border-2 border-primary/30 border-t-primary"></div>
           <p className="text-sm text-white/70">Loading your existing blueprint...</p>
         </div>
       </div>
@@ -400,12 +400,11 @@ export function StepWizard(): React.JSX.Element {
           <div className="flex items-center justify-start py-2">
             {saveState === 'saving' && (
               <div className="animate-fade-in flex items-center gap-2 text-primary/80">
-                <div className="h-3 w-3 animate-spin rounded-full border-2 border-primary/30 border-t-primary">
+                <div className="h-3 w-3 animate-spin rounded-full border-2 border-primary/30 border-t-primary"></div>
                 <span className="text-xs font-medium">Saving...</span>
               </div>
             )}
             {saveState === 'saved' && (
-              <div className="animate-fade-in text-success flex items-center gap-2">
               <div className="animate-fade-in text-success flex items-center gap-2">
                 <div className="bg-success flex h-3 w-3 items-center justify-center rounded-full">
                   <svg className="h-2 w-2 text-white" fill="currentColor" viewBox="0 0 20 20">

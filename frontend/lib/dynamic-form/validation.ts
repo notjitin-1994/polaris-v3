@@ -173,6 +173,27 @@ export class ValidationEngine {
         }
         break;
 
+      case 'minSelections':
+        if (Array.isArray(value) && value.length < (rule.value as number)) {
+          return rule.message || `Select at least ${rule.value} option${(rule.value as number) > 1 ? 's' : ''}`;
+        }
+        break;
+
+      case 'maxSelections':
+        if (Array.isArray(value) && value.length > (rule.value as number)) {
+          return rule.message || `Select at most ${rule.value} option${(rule.value as number) > 1 ? 's' : ''}`;
+        }
+        break;
+
+      case 'range':
+        if (typeof value === 'number' && Array.isArray(rule.value)) {
+          const [min, max] = rule.value;
+          if (value < min || value > max) {
+            return rule.message || `Value must be between ${min} and ${max}`;
+          }
+        }
+        break;
+
       case 'custom':
         if (rule.customValidator) {
           // This would be implemented with a custom validator registry
@@ -242,6 +263,8 @@ export class ValidationEngine {
         break;
 
       case 'number':
+      case 'currency':
+      case 'number_spinner':
         if (typeof value === 'number') {
           if ('min' in question && question.min !== undefined && value < question.min) {
             return `Minimum value is ${question.min}`;

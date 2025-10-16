@@ -216,7 +216,7 @@ export async function generateWithPerplexity(context: any) {
       model: 'sonar-pro',
       blueprintId: context.blueprintId,
       temperature: 0.1,
-      maxTokens: 8700,
+      maxTokens: 16000, // Updated for 10 sections
     });
 
     const response = await perplexityAPI.generate(context);

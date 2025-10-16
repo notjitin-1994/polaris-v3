@@ -122,6 +122,21 @@ export function MarkdownSection({ sectionKey, data }: MarkdownSectionProps): Rea
  * Extract markdown content from various data structures
  */
 function extractMarkdownContent(data: any): string {
+  // If data is just a string
+  if (typeof data === 'string') {
+    return data;
+  }
+
+  // Handle instructional_strategy with modalities
+  if (data.modalities && Array.isArray(data.modalities)) {
+    return convertInstructionalStrategyToMarkdown(data);
+  }
+
+  // Handle sustainability_plan with maintenance_schedule
+  if (data.content && (data.maintenance_schedule || data.scaling_considerations)) {
+    return convertSustainabilityPlanToMarkdown(data);
+  }
+
   // Direct content field
   if (data.content && typeof data.content === 'string') {
     return data.content;
@@ -132,13 +147,85 @@ function extractMarkdownContent(data: any): string {
     return data.overview;
   }
 
-  // If data is just a string
-  if (typeof data === 'string') {
-    return data;
-  }
-
   // Convert object to markdown
   return convertObjectToMarkdown(data);
+}
+
+/**
+ * Convert instructional strategy to markdown
+ */
+function convertInstructionalStrategyToMarkdown(data: any): string {
+  let md = '';
+
+  if (data.overview) {
+    md += `${data.overview}\n\n`;
+  }
+
+  if (data.modalities && data.modalities.length > 0) {
+    md += `### Learning Modalities\n\n`;
+    data.modalities.forEach((modality: any) => {
+      md += `#### ${modality.type}`;
+      if (modality.allocation_percent) {
+        md += ` (${modality.allocation_percent}%)`;
+      }
+      md += `\n\n`;
+      if (modality.rationale) {
+        md += `${modality.rationale}\n\n`;
+      }
+      if (modality.tools && modality.tools.length > 0) {
+        md += `**Tools:** ${modality.tools.join(', ')}\n\n`;
+      }
+    });
+  }
+
+  if (data.cohort_model) {
+    md += `### Cohort Model\n\n${data.cohort_model}\n\n`;
+  }
+
+  if (data.accessibility_considerations && data.accessibility_considerations.length > 0) {
+    md += `### Accessibility Considerations\n\n`;
+    data.accessibility_considerations.forEach((consideration: string) => {
+      md += `- ${consideration}\n`;
+    });
+    md += '\n';
+  }
+
+  return md || 'No content available.';
+}
+
+/**
+ * Convert sustainability plan to markdown
+ */
+function convertSustainabilityPlanToMarkdown(data: any): string {
+  let md = '';
+
+  if (data.content) {
+    md += `${data.content}\n\n`;
+  }
+
+  if (data.maintenance_schedule) {
+    md += `### Maintenance Schedule\n\n`;
+    if (data.maintenance_schedule.review_frequency) {
+      md += `**Review Frequency:** ${data.maintenance_schedule.review_frequency}\n\n`;
+    }
+    if (data.maintenance_schedule.update_triggers && data.maintenance_schedule.update_triggers.length > 0) {
+      md += `**Update Triggers:**\n`;
+      data.maintenance_schedule.update_triggers.forEach((trigger: string) => {
+        md += `- ${trigger}\n`;
+      });
+      md += '\n';
+    }
+  }
+
+  if (data.scaling_considerations && data.scaling_considerations.length > 0) {
+    md += `### Scaling Considerations\n\n`;
+    data.scaling_considerations.forEach((consideration: string) => {
+      md += `- ${consideration}\n`;
+    });
+    md += '\n';
+  }
+
+  return md || 'No content available.';
 }
 
 /**

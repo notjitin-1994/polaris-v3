@@ -727,14 +727,18 @@ export function BlueprintCard({
             )}
 
             {blueprint.status === 'generating' && (
-              <div className="bg-secondary/10 border-secondary/30 flex flex-1 items-center justify-center gap-2 rounded-lg border px-4 py-2">
-                <motion.div
-                  animate={{ rotate: 360 }}
-                  transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
-                >
-                  <Sparkles className="text-secondary h-4 w-4" />
-                </motion.div>
-                <span className="text-secondary text-sm font-medium">Processing...</span>
+              <div
+                className={cn(
+                  'flex items-center justify-center',
+                  'h-10 w-10 rounded-lg',
+                  'border border-secondary/30 bg-secondary/10',
+                  'text-secondary',
+                  'transition-all duration-200'
+                )}
+                title="Processing..."
+                aria-label="Blueprint is processing"
+              >
+                <Sparkles className="h-4 w-4" />
               </div>
             )}
           </div>

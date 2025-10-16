@@ -11,7 +11,7 @@ async function testOllama() {
     baseUrl: process.env.OLLAMA_BASE_URL || 'http://localhost:11434',
     model: process.env.OLLAMA_MODEL || 'qwen3:30b-a3b',
     timeoutMs: 300000,
-    maxTokens: 8192,
+    maxTokens: 16384, // Increased for 10 sections
   });
 
   // Check health

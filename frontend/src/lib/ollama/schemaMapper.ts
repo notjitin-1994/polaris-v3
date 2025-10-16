@@ -1,13 +1,18 @@
 import type { DynamicQuestions } from './schema';
 import type { FormSchema, Section, Question } from '@/lib/dynamic-form/schema';
 
-// Default semantic section titles used when padding to 5 sections
+// Default semantic section titles used when padding to 10 sections
 const DEFAULT_SECTION_TITLES: string[] = [
   'Learning Objectives & Outcomes',
-  'Learner Profile & Audience Context',
-  'Resources, Tools, & Support Systems',
-  'Timeline, Constraints, & Delivery Conditions',
-  'Evaluation, Success Metrics & Long-Term Impact',
+  'Target Audience Analysis',
+  'Content Scope & Structure',
+  'Instructional Strategy & Methods',
+  'Learning Activities & Interactions',
+  'Assessment & Evaluation',
+  'Resources & Technology',
+  'Implementation Timeline',
+  'Support & Scaffolding',
+  'Success Metrics & Long-Term Impact',
 ];
 
 /**
@@ -94,17 +99,20 @@ export function mapOllamaToFormSchema(ollamaQuestions: DynamicQuestions): FormSc
             mappedType === 'checkbox_cards' ||
             mappedType === 'toggle_switch')
         ) {
-          q.options = question.options.map((option: any) => {
+          q.options = question.options.map((option: any, index: number) => {
             if (typeof option === 'string') {
+              // For string options, create a consistent value that won't cause validation issues
+              // Use the option itself as both value and label, just trimmed
               return {
-                value: option.toLowerCase().replace(/\s+/g, '_'),
-                label: option,
+                value: option.trim(),
+                label: option.trim(),
                 disabled: false,
               };
             }
+            // For object options, ensure we have both value and label
             return {
-              value: option.value || option.label?.toLowerCase().replace(/\s+/g, '_') || '',
-              label: option.label || option.value || '',
+              value: option.value || option.label || `option_${index + 1}`,
+              label: option.label || option.value || `Option ${index + 1}`,
               description: option.description,
               icon: option.icon,
               disabled: option.disabled || false,
@@ -173,8 +181,8 @@ export function mapOllamaToFormSchema(ollamaQuestions: DynamicQuestions): FormSc
     })
   );
 
-  // Guarantee exactly 5 sections by trimming or padding with placeholders
-  const MAX_SECTIONS = 5;
+  // Guarantee exactly 10 sections by trimming or padding with placeholders
+  const MAX_SECTIONS = 10;
   const normalizedSections = sections.slice(0, MAX_SECTIONS);
   if (normalizedSections.length < MAX_SECTIONS) {
     for (let i = normalizedSections.length; i < MAX_SECTIONS; i++) {

@@ -81,11 +81,105 @@ function LoadingContent({ id }: { id: string }): React.JSX.Element {
       const startTime = Date.now();
 
       try {
-        startProgress();
+        // ========================================================================
+        // DECISION TREE: Check if dynamic questionnaire exists and is complete
+        // ========================================================================
+        // Path 1: Questionnaire EXISTS and is COMPLETE → Load existing (fast)
+        // Path 2: Questionnaire EXISTS but is INCOMPLETE → Regenerate
+        // Path 3: Questionnaire DOES NOT EXIST → Generate new
+        // ========================================================================
 
-        logger.info('dynamic_questions.generation.start', 'Starting question generation from UI', {
+        logger.info('dynamic_questions.check.start', 'Checking for existing dynamic questions', {
           blueprintId: id,
         });
+
+        const checkResponse = await fetch(`/api/dynamic-questions/${id}`);
+        
+        if (checkResponse.ok) {
+          const existingData = await checkResponse.json();
+          
+          // Validate questionnaire completeness
+          const isQuestionnaireComplete = (data: any): boolean => {
+            // Must have sections
+            if (!data.sections || !Array.isArray(data.sections) || data.sections.length === 0) {
+              return false;
+            }
+
+            // Each section must have questions
+            for (const section of data.sections) {
+              if (!section.questions || !Array.isArray(section.questions) || section.questions.length === 0) {
+                return false;
+              }
+
+              // Each question must have required fields
+              for (const question of section.questions) {
+                if (!question.id || !question.label || !question.type) {
+                  return false;
+                }
+              }
+            }
+
+            // Must have a reasonable number of sections (typically 10)
+            if (data.sections.length < 5) {
+              logger.warn('dynamic_questions.incomplete', 'Too few sections, considering incomplete', {
+                blueprintId: id,
+                sectionCount: data.sections.length,
+              });
+              return false;
+            }
+
+            return true;
+          };
+
+          // ========================================================================
+          // PATH 1: Questionnaire EXISTS and is COMPLETE → Load existing
+          // ========================================================================
+          if (isQuestionnaireComplete(existingData)) {
+            const totalQuestions = existingData.sections.reduce(
+              (sum: number, section: any) => sum + (section.questions?.length || 0),
+              0
+            );
+            
+            logger.info('dynamic_questions.exists_and_complete', '✓ Path 1: Complete questionnaire found, loading existing', {
+              blueprintId: id,
+              sectionCount: existingData.sections.length,
+              totalQuestions,
+              hasExistingAnswers: !!existingData.existingAnswers && Object.keys(existingData.existingAnswers).length > 0,
+            });
+
+            completed = true;
+            stopIntervals();
+            setProgress(100);
+            setStatus('Loading existing questionnaire...');
+
+            // Redirect immediately to the questionnaire
+            setTimeout(() => {
+              router.push(`/dynamic-questionnaire/${id}`);
+            }, 500);
+            return; // Exit early, skip generation
+          } else {
+            // ========================================================================
+            // PATH 2: Questionnaire EXISTS but is INCOMPLETE → Regenerate
+            // ========================================================================
+            logger.warn('dynamic_questions.incomplete', '⚠ Path 2: Incomplete questionnaire detected, regenerating', {
+              blueprintId: id,
+              hasSections: !!existingData.sections,
+              sectionCount: existingData.sections?.length || 0,
+            });
+            // Will fall through to generation logic below
+          }
+        }
+
+        // ========================================================================
+        // PATH 3: Questionnaire DOES NOT EXIST → Generate new
+        // PATH 2 (continued): Or questionnaire was incomplete → Regenerate
+        // ========================================================================
+        logger.info('dynamic_questions.generation.start', '→ Generating dynamic questions', {
+          blueprintId: id,
+          reason: checkResponse.ok ? 'incomplete_existing' : 'no_existing',
+        });
+
+        startProgress();
 
         // Call the NEW Perplexity-powered API
         const response = await fetch('/api/dynamic-questions', {
@@ -134,9 +228,9 @@ function LoadingContent({ id }: { id: string }): React.JSX.Element {
         setProgress(100);
         setStatus('Questions generated successfully!');
 
-        // Redirect to dynamic wizard
+        // Redirect to dynamic questionnaire
         setTimeout(() => {
-          router.push(`/dynamic-wizard/${id}`);
+          router.push(`/dynamic-questionnaire/${id}`);
         }, 1500);
       } catch (err) {
         console.error('Error generating dynamic questions:', err);

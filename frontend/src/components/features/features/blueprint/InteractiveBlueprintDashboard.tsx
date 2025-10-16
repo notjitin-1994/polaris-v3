@@ -60,6 +60,7 @@ export function InteractiveBlueprintDashboard({
   const ref = React.useRef(null);
   const isInView = useInView(ref, { once: true, margin: '-100px' });
   const [mounted, setMounted] = useState(false);
+  const [hasAnimated, setHasAnimated] = useState(false);
   const [expandedSections, setExpandedSections] = useState<Set<string>>(
     new Set() // All sections collapsed by default
   );
@@ -69,6 +70,13 @@ export function InteractiveBlueprintDashboard({
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  // Track animation state once to prevent flickering
+  useEffect(() => {
+    if (isInView && !hasAnimated) {
+      setHasAnimated(true);
+    }
+  }, [isInView, hasAnimated]);
 
   // Extract data from blueprint
   const modules = blueprint.content_outline?.modules || [];
@@ -97,7 +105,7 @@ export function InteractiveBlueprintDashboard({
 
   if (blueprint.learning_objectives) {
     sections.push({
-      id: 'objectives',
+      id: 'learning_objectives',
       title: 'Learning Objectives',
       icon: Target,
       gradient: 'bg-success/20',
@@ -142,7 +150,7 @@ export function InteractiveBlueprintDashboard({
 
   if (blueprint.assessment_strategy) {
     sections.push({
-      id: 'assessment',
+      id: 'assessment_strategy',
       title: 'Assessment Strategy',
       icon: BarChart3,
       gradient: 'bg-primary/20',
@@ -153,7 +161,7 @@ export function InteractiveBlueprintDashboard({
 
   if (blueprint.implementation_timeline) {
     sections.push({
-      id: 'timeline',
+      id: 'implementation_timeline',
       title: 'Implementation Timeline',
       icon: Calendar,
       gradient: 'bg-secondary/20',
@@ -164,7 +172,7 @@ export function InteractiveBlueprintDashboard({
 
   if (blueprint.risk_mitigation) {
     sections.push({
-      id: 'risks',
+      id: 'risk_mitigation',
       title: 'Risk Mitigation',
       icon: Shield,
       gradient: 'bg-warning/20',
@@ -175,7 +183,7 @@ export function InteractiveBlueprintDashboard({
 
   if (blueprint.success_metrics) {
     sections.push({
-      id: 'metrics',
+      id: 'success_metrics',
       title: 'Success Metrics',
       icon: TrendingUp,
       gradient: 'bg-success/20',
@@ -186,7 +194,7 @@ export function InteractiveBlueprintDashboard({
 
   if (blueprint.instructional_strategy) {
     sections.push({
-      id: 'strategy',
+      id: 'instructional_strategy',
       title: 'Instructional Strategy',
       icon: FileText,
       gradient: 'bg-primary/20',
@@ -197,7 +205,7 @@ export function InteractiveBlueprintDashboard({
 
   if (blueprint.sustainability_plan) {
     sections.push({
-      id: 'sustainability',
+      id: 'sustainability_plan',
       title: 'Sustainability Plan',
       icon: Leaf,
       gradient: 'bg-success/20',
@@ -260,7 +268,7 @@ export function InteractiveBlueprintDashboard({
     },
   };
 
-  const StatCard = ({
+  const StatCard = React.useMemo(() => React.memo(({
     icon: Icon,
     label,
     value,
@@ -288,7 +296,9 @@ export function InteractiveBlueprintDashboard({
 
     return (
       <motion.div
-        variants={itemVariants}
+        initial={{ opacity: 0, y: 20 }}
+        animate={hasAnimated ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+        transition={{ duration: 0.5, delay }}
         whileHover={shouldReduceAnimations ? undefined : { scale: 1.02, y: -5 }}
         className="group glass-card hover:border-primary/30 hover:shadow-primary/10 relative overflow-hidden rounded-2xl border border-white/10 p-6 transition-all duration-300 hover:shadow-2xl"
       >
@@ -306,7 +316,7 @@ export function InteractiveBlueprintDashboard({
           <div className="space-y-2">
             <p className="text-text-secondary text-sm font-medium">{label}</p>
             <div className="flex items-baseline gap-1">
-              {mounted && isInView ? (
+              {mounted && hasAnimated ? (
                 shouldReduceAnimations ? (
                   <span className="text-4xl font-bold text-white">
                     {suffix === 'hrs' ? value.toFixed(1) : value.toLocaleString()}
@@ -331,13 +341,13 @@ export function InteractiveBlueprintDashboard({
         </div>
       </motion.div>
     );
-  };
+  }), [hasAnimated, mounted, shouldReduceAnimations]);
 
   return (
     <motion.div
       ref={ref}
       initial={shouldReduceAnimations ? false : 'hidden'}
-      animate={shouldReduceAnimations ? false : isInView ? 'visible' : 'hidden'}
+      animate={shouldReduceAnimations ? false : hasAnimated ? 'visible' : 'hidden'}
       variants={shouldReduceAnimations ? undefined : containerVariants}
       className="relative space-y-8"
     >
@@ -386,6 +396,58 @@ export function InteractiveBlueprintDashboard({
           gradient="from-warning to-warning/80"
           delay={0.3}
         />
+      </motion.div>
+
+      {/* Section Navigator */}
+      <motion.div variants={itemVariants}>
+        <div className="relative rounded-lg border border-neutral-200 bg-background">
+          {/* All Sections Grid */}
+          <div className="px-4 py-3">
+            <div className="text-xs font-medium text-primary mb-3">Quick Navigation</div>
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2">
+              {sections.map((section, index) => {
+                const isExpanded = expandedSections.has(section.id);
+                return (
+                  <motion.button
+                    key={section.id}
+                    onClick={() => scrollToSection(section.id)}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    className={`relative flex items-center justify-center rounded-md px-3 py-2 text-center transition-all duration-150 ${
+                      isExpanded
+                        ? 'bg-primary/15 text-primary border border-primary/20'
+                        : 'text-text-secondary/70 hover:text-text-secondary hover:bg-foreground/5'
+                    }`}
+                  >
+                    <span className={`text-xs leading-tight ${isExpanded ? 'font-medium' : 'font-normal'}`}>
+                      {section.title}
+                    </span>
+                  </motion.button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Progress Bar */}
+          <div className="border-t border-white/5 px-4 py-2.5">
+            <div className="flex items-center justify-between text-xs text-text-secondary/80">
+              <span>{expandedSections.size} sections expanded</span>
+              <span className="font-medium text-primary/80">
+                {sections.length > 0 ? Math.round((expandedSections.size / sections.length) * 100) : 0}% explored
+              </span>
+            </div>
+            <div className="mt-2 h-1 overflow-hidden rounded-full bg-white/8">
+              <motion.div
+                initial={{ width: 0 }}
+                animate={{ 
+                  width: sections.length > 0 ? `${(expandedSections.size / sections.length) * 100}%` : '0%' 
+                }}
+                transition={{ duration: 0.5, ease: 'easeOut' }}
+                className="bg-gradient-to-r from-primary to-primary/80 h-full rounded-full"
+              />
+            </div>
+          </div>
+        </div>
       </motion.div>
 
       {/* Control Bar */}

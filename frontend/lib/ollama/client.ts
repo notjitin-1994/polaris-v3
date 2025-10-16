@@ -41,7 +41,7 @@ export class OllamaClient {
       maxTokens: options.maxTokens ?? DEFAULT_MODEL_CONFIG.maxTokens,
     };
     this.fallbackModel = options.fallbackModel || 'qwen3:14b'; // Default fallback to 14B model
-    this.timeoutMs = options.timeoutMs ?? 120000; // Increased to 2 minutes for complex question generation
+    this.timeoutMs = options.timeoutMs ?? 840000; // 14 minutes - avg generation time is ~13 minutes (779.7s)
     this.fetchImpl = options.fetchImpl || fetch;
   }
 

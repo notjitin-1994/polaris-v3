@@ -153,7 +153,7 @@ export async function generateWithOllama(
       model: 'qwen3:30b-a3b',
       fallbackModel: 'qwen3:14b',
       temperature: 0.2,
-      maxTokens: 8192,
+      maxTokens: 16384, // Increased for 10 sections (50-70 questions)
     });
 
     // Check Ollama health

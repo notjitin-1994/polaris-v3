@@ -339,21 +339,24 @@ export function InteractiveBlueprintDashboard({
       initial={shouldReduceAnimations ? false : 'hidden'}
       animate={shouldReduceAnimations ? false : isInView ? 'visible' : 'hidden'}
       variants={shouldReduceAnimations ? undefined : containerVariants}
-      className="relative space-y-8"
+      className="relative"
     >
-      {/* Executive Summary - Non-Collapsible */}
-      {blueprint.executive_summary && (
-        <motion.div variants={itemVariants} className="space-y-4">
-          <ExecutiveSummaryInfographic
-            content={blueprint.executive_summary.content}
-            metadata={blueprint.metadata}
-            isPublicView={isPublicView}
-          />
-        </motion.div>
-      )}
+      {/* Glassmorphic background card */}
+      <div className="glass-card rounded-3xl border border-white/10 p-8 shadow-2xl backdrop-blur-xl">
+        <div className="space-y-8">
+          {/* Executive Summary - Non-Collapsible */}
+          {blueprint.executive_summary && (
+            <motion.div variants={itemVariants} className="space-y-4">
+              <ExecutiveSummaryInfographic
+                content={blueprint.executive_summary.content}
+                metadata={blueprint.metadata}
+                isPublicView={isPublicView}
+              />
+            </motion.div>
+          )}
 
-      {/* Enhanced Stats Grid - Desktop layout on all screen sizes */}
-      <motion.div variants={containerVariants} className="grid grid-cols-4 gap-6">
+          {/* Enhanced Stats Grid - Desktop layout on all screen sizes */}
+          <motion.div variants={containerVariants} className="grid grid-cols-4 gap-6">
         <StatCard
           icon={Clock}
           label="Total Duration"
@@ -591,6 +594,8 @@ export function InteractiveBlueprintDashboard({
             />
           </ExpandableSection>
         )}
+      </div>
+        </div>
       </div>
     </motion.div>
   );

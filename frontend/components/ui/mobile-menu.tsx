@@ -152,16 +152,31 @@ export function MobileMenu({
       />
 
       <Sheet open={open} onOpenChange={onOpenChange}>
-        <SheetTrigger
-          asChild
-          data-testid={`${testId}-trigger`}
-          ref={triggerRef}
-          aria-expanded={open}
-          aria-haspopup="dialog"
-          aria-label={`${title} navigation`}
-        >
-          {trigger}
-        </SheetTrigger>
+        {(() => {
+          const canUseAsChild = React.isValidElement(trigger) && trigger.type !== React.Fragment;
+          return canUseAsChild ? (
+            <SheetTrigger
+              asChild
+              data-testid={`${testId}-trigger`}
+              ref={triggerRef}
+              aria-expanded={open}
+              aria-haspopup="dialog"
+              aria-label={`${title} navigation`}
+            >
+              {trigger}
+            </SheetTrigger>
+          ) : (
+            <SheetTrigger
+              data-testid={`${testId}-trigger`}
+              ref={triggerRef}
+              aria-expanded={open}
+              aria-haspopup="dialog"
+              aria-label={`${title} navigation`}
+            >
+              {trigger}
+            </SheetTrigger>
+          );
+        })()}
         <SheetContent
           side="left"
           className={cn('w-80 sm:w-96', className)}
@@ -256,7 +271,7 @@ export interface MobileMenuItemProps {
   'data-testid'?: string;
 }
 
-export function MobileMenuItem({
+export const MobileMenuItem = React.forwardRef<HTMLButtonElement, MobileMenuItemProps>(function MobileMenuItemInternal({
   children,
   onClick,
   disabled = false,
@@ -265,7 +280,7 @@ export function MobileMenuItem({
   icon,
   className,
   'data-testid': testId = 'mobile-menu-item',
-}: MobileMenuItemProps) {
+}, forwardedRef) {
   const [isPressed, setIsPressed] = React.useState(false);
   const haptic = useHapticFeedback({
     config: {
@@ -318,6 +333,7 @@ export function MobileMenuItem({
           transform: isPressed ? 'scale(0.98)' : undefined,
           transition: 'transform 0.1s ease-out',
         }}
+        ref={forwardedRef}
       >
         {/* Ripple effect */}
         {isPressed && !disabled && (
@@ -353,4 +369,4 @@ export function MobileMenuItem({
       </Button>
     </SheetClose>
   );
-}
+});

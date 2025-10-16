@@ -11,6 +11,8 @@ import { ObjectivesInfographic } from './infographics/ObjectivesInfographic';
 import { TargetAudienceInfographic } from './infographics/TargetAudienceInfographic';
 import { AssessmentStrategyInfographic } from './infographics/AssessmentStrategyInfographic';
 import { SuccessMetricsInfographic } from './infographics/SuccessMetricsInfographic';
+import { InstructionalStrategyInfographic } from './infographics/InstructionalStrategyInfographic';
+import { SustainabilityPlanInfographic } from './infographics/SustainabilityPlanInfographic';
 import { formatSectionTitle } from './utils';
 import type { BlueprintSectionProps } from './types';
 
@@ -52,10 +54,32 @@ export function InfographicSection({
         />
       )}
 
-      {/* Fallback for unknown infographic structures */}
-      {!data.objectives && !data.demographics && !data.kpis && !data.metrics && (
-        <GenericInfographic data={data} sectionKey={sectionKey} />
+      {data.modalities && (
+        <InstructionalStrategyInfographic
+          overview={data.overview}
+          modalities={data.modalities}
+          cohort_model={data.cohort_model}
+          accessibility_considerations={data.accessibility_considerations}
+        />
       )}
+
+      {data.content && (data.maintenance_schedule || data.scaling_considerations) && (
+        <SustainabilityPlanInfographic
+          content={data.content}
+          maintenance_schedule={data.maintenance_schedule}
+          scaling_considerations={data.scaling_considerations}
+        />
+      )}
+
+      {/* Fallback for unknown infographic structures */}
+      {!data.objectives &&
+        !data.demographics &&
+        !data.kpis &&
+        !data.metrics &&
+        !data.modalities &&
+        !(data.content && (data.maintenance_schedule || data.scaling_considerations)) && (
+          <GenericInfographic data={data} sectionKey={sectionKey} />
+        )}
     </motion.div>
   );
 }

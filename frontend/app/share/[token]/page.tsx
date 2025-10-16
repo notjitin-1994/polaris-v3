@@ -6,8 +6,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Sparkles, Clock, AlertCircle, ExternalLink, BarChart3, TrendingUp } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { InteractiveBlueprintDashboard } from '@/components/blueprint/InteractiveBlueprintDashboard';
-import { BlueprintDashboard } from '@/components/blueprint/BlueprintDashboard';
+import { InteractiveBlueprintDashboard } from '@/src/components/features/blueprint/InteractiveBlueprintDashboard';
 import { parseAndValidateBlueprintJSON } from '@/lib/ollama/blueprintValidation';
 import type { BlueprintJSON } from '@/components/blueprint/types';
 
@@ -425,18 +424,7 @@ export default function SharedBlueprintPage({ params }: PageProps): React.JSX.El
 
           {/* Analytics Dashboard */}
           {blueprintData ? (
-            <>
-              {isComprehensiveBlueprint(blueprintData) ? (
-                normalizeBlueprint(blueprintData) ? (
-                  <InteractiveBlueprintDashboard
-                    blueprint={normalizeBlueprint(blueprintData)!}
-                    isPublicView={true}
-                  />
-                ) : null
-              ) : (
-                <BlueprintDashboard blueprint={blueprintData} isPublicView={true} />
-              )}
-            </>
+            <InteractiveBlueprintDashboard blueprint={blueprintData} isPublicView={true} />
           ) : (
             <div className="py-16 text-center">
               <AlertCircle className="text-text-secondary mx-auto mb-4 h-12 w-12" />

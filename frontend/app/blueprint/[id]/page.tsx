@@ -9,11 +9,13 @@ import {
   ExternalLink,
   CheckCircle,
   Loader2,
+  Presentation,
 } from 'lucide-react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { StandardHeader } from '@/components/layout/StandardHeader';
 import { BlueprintRenderer } from '@/components/blueprint/BlueprintRenderer';
+import { BlueprintViewer } from '@/components/blueprint/viewer';
 import { RenameDialog } from '@/components/ui/RenameDialog';
 import { getSupabaseBrowserClient } from '@/lib/supabase/client';
 import { createBrowserBlueprintService } from '@/lib/db/blueprints.client';
@@ -42,7 +44,16 @@ export default function BlueprintPage({ params }: PageProps): React.JSX.Element 
   const [renamingBlueprint, setRenamingBlueprint] = useState(false);
   const [isEditingMarkdown, setIsEditingMarkdown] = useState(false);
   const [isGeneratingShare, setIsGeneratingShare] = useState(false);
-  const viewMode = 'presentation' as const; // Always use presentation mode
+  const [isPresentationMode, setIsPresentationMode] = useState(false);
+
+  // Set presentation mode in store when entering presentation
+  useEffect(() => {
+    if (isPresentationMode && data) {
+      const { useBlueprintStore } = require('@/store/blueprintStore');
+      const store = useBlueprintStore.getState();
+      store.setViewMode('presentation');
+    }
+  }, [isPresentationMode, data]);
   const [showSuccessToast, setShowSuccessToast] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
   const [isExporting, setIsExporting] = useState(false);
@@ -351,6 +362,22 @@ export default function BlueprintPage({ params }: PageProps): React.JSX.Element 
   // Compact action buttons
   const rightActions = (
     <div className="flex items-center gap-1.5">
+      {/* Presentation Mode Button */}
+      <motion.button
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
+        type="button"
+        className="pressable inline-flex h-8 items-center gap-1.5 rounded-lg border border-primary/30 bg-primary/10 px-3 text-primary transition-all hover:bg-primary/20 hover:border-primary/50"
+        onClick={() => setIsPresentationMode(!isPresentationMode)}
+        title={isPresentationMode ? "Exit presentation mode" : "Enter presentation mode"}
+        aria-label={isPresentationMode ? "Exit presentation mode" : "Enter presentation mode"}
+      >
+        <Presentation className="h-3.5 w-3.5" aria-hidden="true" />
+        <span className="text-xs font-medium hidden sm:inline">
+          {isPresentationMode ? 'Exit' : 'Present'}
+        </span>
+      </motion.button>
+
       {/* Rename/Edit */}
       <motion.button
         whileHover={{ scale: 1.05 }}
@@ -398,6 +425,22 @@ export default function BlueprintPage({ params }: PageProps): React.JSX.Element 
     </div>
   );
 
+  // If in presentation mode, use BlueprintViewer
+  if (isPresentationMode && blueprintData) {
+    return (
+      <BlueprintViewer
+        blueprintId={blueprintId}
+        blueprintData={blueprintData}
+        markdown={markdown}
+        isPublicView={false}
+        userId={user?.id}
+        initialViewMode="presentation"
+        ignoreSavedPrefs
+        onExitPresentation={() => setIsPresentationMode(false)}
+      />
+    );
+  }
+
   return (
     <main className="bg-background relative min-h-screen w-full overflow-hidden">
       {/* Animated Background Pattern */}
@@ -424,16 +467,14 @@ export default function BlueprintPage({ params }: PageProps): React.JSX.Element 
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.2 }}
-        className={`relative z-10 ${
-          viewMode === 'presentation' ? 'mx-auto max-w-7xl' : 'mx-auto max-w-6xl'
-        } px-8 py-12`}
+        className="relative z-10 mx-auto max-w-6xl px-8 py-12"
       >
         {/* Main Content Card */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
-          className={`glass-card overflow-hidden ${viewMode === 'presentation' ? 'p-16' : 'p-12'}`}
+          className="glass-card overflow-hidden p-12"
         >
           {/* Blueprint Metadata Section */}
           {isFullBlueprint(blueprintData) && blueprintData?.metadata && (

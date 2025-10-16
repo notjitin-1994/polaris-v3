@@ -1,0 +1,1478 @@
+<context>
+# Overview
+The Dynamic Questionnaire System is a sophisticated two-phase learning needs assessment tool that generates personalized learning blueprints. The system consists of a static questionnaire (3 comprehensive sections capturing role, organization, and learning gap details) followed by an AI-generated dynamic questionnaire (10 sections, 50-70 questions) that adapts based on user responses.
+
+**Current State:** The static questionnaire (V2.0) and dynamic question generation service are implemented with multi-provider LLM support (Anthropic, OpenAI, Perplexity, Ollama). The generated dynamic questions are stored in the database but the completion flow (rendering, answer collection, submission, routing) is incomplete.
+
+**Problem:** Users complete the static questionnaire but cannot proceed to answer the generated dynamic questions or receive their final learning blueprint. Critical UX flows, error handling, and production features are missing.
+
+**Goal:** Complete the end-to-end user journey from static questionnaire → dynamic questionnaire → answer submission → blueprint generation, with production-ready error handling, mobile optimization, and monitoring.
+
+# Core Features
+
+## 1. Static Questionnaire (V2.0) - COMPLETED
+**What it does:** Collects comprehensive user context through 3 sections:
+- Section 1: Role & Experience Intelligence (role, years, industries, team size, budget, skills)
+- Section 2: Organization Context & Compliance (company details, compliance requirements, security levels)
+- Section 3: Learning Gap & Audience (gap description, learner profiles, resources, timeline)
+
+**Why it's important:** Provides rich context for AI to generate highly personalized dynamic questions.
+
+**Status:** ✅ Fully implemented with auto-save, validation, and database persistence.
+
+## 2. Dynamic Question Generation - COMPLETED
+**What it does:** Uses LLM providers to generate 10 sections with 50-70 personalized questions based on static answers.
+
+**Why it's important:** Creates tailored questionnaires that deeply probe specific learning needs.
+
+**Status:** ✅ Multi-provider support (Anthropic/OpenAI/Perplexity/Ollama) with retry logic and fallback chains.
+
+## 3. Dynamic Question Renderer - PARTIALLY COMPLETED
+**What it does:** Renders 13 different input types (radio_pills, checkbox_cards, scales, sliders, etc.) for dynamic questions.
+
+**Why it's important:** Provides modern, engaging UX for answering complex questionnaires.
+
+**Status:** ⚠️ Component exists but not integrated into production flow. Missing: section navigation, progress tracking, answer persistence, validation.
+
+## 4. Answer Collection & Submission - NOT IMPLEMENTED
+**What it does:** Captures user responses to dynamic questions, validates answers, persists to database.
+
+**Why it's important:** Core functionality to complete the questionnaire and enable blueprint generation.
+
+**Status:** ❌ Missing API endpoint, form state management, validation, and submission flow.
+
+## 5. Blueprint Generation Integration - NOT IMPLEMENTED
+**What it does:** Triggers blueprint generation after dynamic questionnaire completion using collected answers.
+
+**Why it's important:** Final deliverable that users expect after completing both questionnaires.
+
+**Status:** ❌ Not integrated with dynamic questionnaire flow. Blueprint generation exists but only callable separately.
+
+## 6. Error Handling & Recovery - PARTIALLY IMPLEMENTED
+**What it does:** Handles LLM failures, network errors, validation issues with user-friendly messages and retry options.
+
+**Why it's important:** Production reliability and user trust.
+
+**Status:** ⚠️ Server-side retry logic exists. Missing: client-side error UI, retry buttons, progress recovery, offline handling.
+
+## 7. Mobile Optimization - NOT VALIDATED
+**What it does:** Ensures responsive design, touch-friendly inputs, optimized performance on mobile devices.
+
+**Why it's important:** Many users will complete questionnaires on tablets/phones.
+
+**Status:** ❌ Not tested or optimized for mobile. Touch targets, slider usability, and keyboard handling need validation.
+
+## 8. Monitoring & Observability - PARTIALLY IMPLEMENTED
+**What it does:** Logs generation events, errors, performance metrics; provides admin dashboard for debugging.
+
+**Why it's important:** Essential for production debugging and system health monitoring.
+
+**Status:** ⚠️ Server-side logging exists. Missing: `/logs` API endpoint, admin UI, client-side error tracking.
+
+# User Experience
+
+## User Personas
+
+### Primary: Learning & Development Manager
+- **Role:** Manages L&D programs for 50-500 employees
+- **Goal:** Quickly create comprehensive learning blueprint for new training initiative
+- **Pain Points:** Limited time, needs expert guidance, wants data-driven recommendations
+- **Technical Comfort:** Moderate (comfortable with web apps, not developer)
+
+### Secondary: Instructional Designer
+- **Role:** Designs and develops learning content
+- **Goal:** Detailed implementation guidance with specific tool recommendations
+- **Pain Points:** Needs to balance pedagogical best practices with organizational constraints
+- **Technical Comfort:** High (familiar with LMS, authoring tools, SCORM)
+
+### Tertiary: HR Director / CLO
+- **Role:** Strategic learning leader
+- **Goal:** High-level blueprint to present to executives with ROI projections
+- **Pain Points:** Limited technical knowledge, needs business-focused outputs
+- **Technical Comfort:** Low to Moderate
+
+## Key User Flows
+
+### Flow 1: First-Time User - Complete Journey
+1. **Landing:** User arrives at dashboard, sees "Create New Blueprint" CTA
+2. **Static Questionnaire:** Completes 3 sections (~10 minutes)
+   - Auto-save after each section
+   - Progress indicator shows 3 steps
+   - "Why this matters" help text available
+3. **Generation Wait:** Sees loading screen with status updates (30-90 seconds)
+   - "Analyzing your responses..."
+   - "Generating personalized questions..."
+   - "Finalizing questionnaire..."
+4. **Dynamic Questionnaire:** Answers 10 sections of AI-generated questions (~20 minutes)
+   - Section-by-section navigation
+   - Progress bar shows 10 sections
+   - Auto-save every 30 seconds
+   - Can resume if interrupted
+5. **Blueprint Generation:** Sees loading screen (60-120 seconds)
+   - "Creating your learning blueprint..."
+   - "Generating visualizations..."
+6. **Blueprint View:** Views comprehensive blueprint with:
+   - Infographic dashboard
+   - Downloadable markdown/PDF
+   - Share link generation
+7. **Iteration:** Can regenerate sections or create new blueprint
+
+### Flow 2: Returning User - Resume Incomplete
+1. **Dashboard:** Sees incomplete blueprints with "Resume" option
+2. **Resume Point:** Continues from last saved section
+3. **Completion:** Follows standard flow from resume point
+
+### Flow 3: Error Recovery
+1. **Generation Failure:** User sees friendly error message
+2. **Retry Option:** "Try Again" button with provider switching
+3. **Manual Fallback:** Option to skip dynamic questionnaire and use static answers only
+4. **Support Contact:** Clear path to get help if repeated failures
+
+## UI/UX Considerations
+
+### Visual Design
+- **Theme:** Dark mode with teal primary (#A7DADB) and professional aesthetic
+- **Typography:** Geist Sans for UI, clear hierarchy, generous spacing
+- **Input Types:** Prefer visual selections (pills, cards) over dropdowns
+- **Feedback:** Immediate validation, clear error messages, success confirmations
+- **Loading States:** Animated loaders with descriptive status text
+
+### Accessibility
+- **WCAG AA Compliance:** All text meets contrast requirements
+- **Keyboard Navigation:** Full questionnaire completable without mouse
+- **Screen Reader Support:** Proper ARIA labels and semantic HTML
+- **Touch Targets:** Minimum 44px for mobile interactions
+- **Motion:** Respect `prefers-reduced-motion` for animations
+
+### Performance
+- **Target Load Time:** <2s for page loads, <10s for question generation
+- **Bundle Size:** Code split by route to minimize initial load
+- **Auto-save Debounce:** 500ms to prevent excessive API calls
+- **Optimistic UI:** Show immediate feedback before server confirmation
+
+### Error States
+- **Network Errors:** "Connection lost. Your progress is saved. Retry when ready."
+- **Validation Errors:** Inline field-level errors with correction guidance
+- **Generation Failures:** "Generation failed. Trying alternate provider..."
+- **Server Errors:** "Something went wrong. Our team has been notified. [Retry]"
+</context>
+
+<PRD>
+# Technical Architecture
+
+## System Components
+
+### Frontend Components
+
+#### 1. Static Questionnaire (V2.0)
+**Location:** `/app/demo-v2-questionnaire/page.tsx` (demo), `/app/(auth)/static-wizard/page.tsx` (production)
+**Status:** ✅ Complete
+**Tech Stack:** React 19, React Hook Form, Zod validation, Framer Motion
+**Features:**
+- 3-section form with 30+ fields
+- Auto-save to `/api/questionnaire/save`
+- Section-level validation
+- Progress indicator
+- "Why this matters" help sections
+
+#### 2. Dynamic Question Renderer
+**Location:** `/components/demo-dynamicv2/DynamicQuestionRenderer.tsx`
+**Status:** ⚠️ Component complete, integration needed
+**Supported Input Types:** 13 types (radio_pills, checkbox_pills, radio_cards, checkbox_cards, toggle_switch, scale, enhanced_scale, labeled_slider, textarea, text, currency, number_spinner, date)
+**Required:** Full page integration, form state management, navigation, validation
+
+#### 3. Loading/Progress Components
+**Location:** Various demo components
+**Status:** ⚠️ Exists but not standardized
+**Required:** Unified loading screens for generation, submission, blueprint creation
+
+#### 4. Error Boundary Components
+**Location:** Not implemented
+**Status:** ❌ Missing
+**Required:** Error boundaries, retry UI, fallback states, offline detection
+
+### Backend Services
+
+#### 1. Question Generation Service
+**Location:** `/src/lib/services/dynamicQuestionGenerationV2.ts`
+**Status:** ✅ Complete
+**Providers:** Anthropic Claude (primary), OpenAI GPT-4o, Perplexity Sonar Pro, Ollama (fallback)
+**Features:**
+- Multi-provider support with automatic fallback
+- Retry logic (2 attempts, exponential backoff)
+- JSON validation and schema checking
+- Comprehensive logging
+
+#### 2. Answer Submission Service
+**Location:** Not implemented
+**Status:** ❌ Missing
+**Required:** Answer validation, database persistence, conflict resolution
+
+#### 3. Blueprint Generation Service
+**Location:** Exists but not integrated
+**Status:** ⚠️ Needs integration
+**Required:** Trigger from dynamic questionnaire completion, progress tracking
+
+### API Endpoints
+
+#### Existing Endpoints
+1. **POST `/api/questionnaire/save`** ✅
+   - Saves static questionnaire answers
+   - Creates/updates blueprint record
+   - Returns blueprintId
+
+2. **POST `/api/generate-dynamic-questions`** ✅
+   - Generates dynamic questions from static answers
+   - Supports V1, V2, V2.0 schema versions
+   - Saves to `dynamic_questions` and `dynamic_questions_raw`
+
+#### Required New Endpoints
+3. **GET `/api/dynamic-questions/:blueprintId`** ❌
+   - Fetches generated dynamic questions for rendering
+   - Returns sections, questions, existing answers (if resuming)
+   - Authentication required
+
+4. **POST `/api/dynamic-answers/submit`** ❌
+   - Accepts dynamic questionnaire answers
+   - Validates against question schema
+   - Saves to `dynamic_answers` field
+   - Returns success + triggers blueprint generation
+
+5. **POST `/api/dynamic-answers/save`** ❌
+   - Auto-save endpoint for incremental progress
+   - Partial answer validation
+   - Upserts to `dynamic_answers` field
+
+6. **GET `/api/logs`** ❌
+   - Admin-only endpoint for debugging
+   - Filter by level, service, user, blueprint
+   - Pagination support
+   - Export functionality
+
+7. **POST `/api/blueprints/regenerate`** ❌
+   - Regenerate specific blueprint sections
+   - Useful for iterative refinement
+   - Preserves other sections
+
+## Data Models
+
+### Database Schema (Supabase)
+
+#### `blueprint_generator` Table
+```sql
+id                      UUID PRIMARY KEY
+user_id                 UUID NOT NULL (FK to auth.users)
+version                 INTEGER DEFAULT 1
+static_answers          JSONB NOT NULL DEFAULT '{}'
+dynamic_questions       JSONB NOT NULL DEFAULT '[]'  -- Form schema for UI
+dynamic_questions_raw   JSONB NOT NULL DEFAULT '[]'  -- Raw LLM response
+dynamic_answers         JSONB NOT NULL DEFAULT '{}'  -- User responses
+blueprint_json          JSONB NOT NULL DEFAULT '{}'  -- Final blueprint
+blueprint_markdown      TEXT NULL                     -- Markdown export
+status                  TEXT NOT NULL DEFAULT 'draft' 
+                        CHECK (status IN ('draft','generating','answering','completed','error'))
+title                   TEXT NULL
+created_at              TIMESTAMPTZ NOT NULL DEFAULT NOW()
+updated_at              TIMESTAMPTZ NOT NULL DEFAULT NOW()
+```
+
+**New Status Values Required:**
+- `generating` - Dynamic questions being generated
+- `answering` - User actively completing dynamic questionnaire
+- `completed` - Full blueprint generated
+
+#### Static Answers Schema (V2.0)
+```typescript
+{
+  section_1_role_experience: {
+    current_role: string
+    custom_role?: string
+    years_in_role: number
+    industry_experience: string[]
+    team_size: enum
+    budget_responsibility: number
+    technical_skills?: string[]
+  },
+  section_2_organization: {
+    organization_name: string
+    industry_sector: enum
+    organization_size: enum
+    geographic_regions: string[]
+    compliance_requirements: string[]
+    data_sharing_policies: enum
+    security_clearance?: enum
+    legal_restrictions?: string
+  },
+  section_3_learning_gap: {
+    learning_gap_description: string
+    total_learners_range: enum
+    current_knowledge_level: number
+    motivation_factors: string[]
+    learning_location: string[]
+    devices_used: string[]
+    hours_per_week: enum
+    learning_deadline?: string
+    budget_responsibility?: number
+    budget_available?: { currency: string }
+  }
+}
+```
+
+#### Dynamic Questions Schema
+```typescript
+{
+  sections: [
+    {
+      id: string              // s1, s2, ..., s10
+      title: string
+      description: string
+      order: number
+      questions: [
+        {
+          id: string          // s1_q1, s1_q2, etc.
+          label: string
+          type: string        // radio_pills, checkbox_cards, etc.
+          required: boolean
+          helpText?: string
+          placeholder?: string
+          options?: [
+            {
+              value: string
+              label: string
+              description?: string
+              icon?: string
+            }
+          ]
+          scaleConfig?: {
+            min: number
+            max: number
+            minLabel?: string
+            maxLabel?: string
+            labels?: string[]
+            step?: number
+          }
+          sliderConfig?: {
+            min: number
+            max: number
+            step: number
+            unit: string
+            markers?: number[]
+          }
+          validation?: [
+            {
+              rule: string    // required, minSelections, maxSelections, etc.
+              value?: any
+              message: string
+            }
+          ]
+          metadata?: {
+            contextSource: string
+            complianceCheck: string
+          }
+        }
+      ]
+    }
+  ],
+  metadata: {
+    generatedAt: string
+    model: string
+    provider: string
+    duration: number
+  }
+}
+```
+
+#### Dynamic Answers Schema
+```typescript
+{
+  [questionId: string]: unknown  // s1_q1: "value", s2_q3: ["array", "values"], etc.
+}
+```
+
+## APIs and Integrations
+
+### External LLM Providers
+
+#### 1. Anthropic Claude
+- **Endpoint:** `https://api.anthropic.com/v1/messages`
+- **Model:** `claude-3-5-sonnet-latest`
+- **Auth:** API Key in header `x-api-key`
+- **Rate Limits:** Tier-dependent (typically 50 requests/minute)
+- **Timeout:** 90 seconds
+- **Cost:** ~$0.003 per 1K input tokens, ~$0.015 per 1K output tokens
+
+#### 2. OpenAI
+- **Endpoint:** `https://api.openai.com/v1/chat/completions`
+- **Model:** `gpt-4o`
+- **Auth:** Bearer token
+- **Rate Limits:** Tier-dependent
+- **Timeout:** 90 seconds
+- **Cost:** ~$0.0025 per 1K input tokens, ~$0.01 per 1K output tokens
+
+#### 3. Perplexity
+- **Endpoint:** `https://api.perplexity.ai/chat/completions`
+- **Model:** `sonar-pro`
+- **Auth:** Bearer token
+- **Note:** No system prompt support (combine system + user)
+- **Timeout:** 90 seconds
+- **Cost:** ~$0.001 per 1K tokens
+
+#### 4. Ollama (Local Fallback)
+- **Endpoint:** `http://localhost:11434/api`
+- **Model:** Configurable (default: `qwen3:30b-a3b`)
+- **Auth:** None (local)
+- **Timeout:** 120 seconds
+- **Cost:** Free (local compute)
+
+### Provider Selection Logic
+```
+1. Try Anthropic Claude (primary) - 2 retries
+2. If fails, try OpenAI GPT-4o - 2 retries
+3. If fails, try Perplexity Sonar Pro - 2 retries
+4. If fails, try Ollama (local) - 1 attempt
+5. If all fail, show error with manual retry option
+```
+
+### Supabase Integration
+- **Database:** PostgreSQL via Supabase
+- **Auth:** Supabase Auth (email/password, OAuth)
+- **RLS:** Row-level security enforced (user_id matching)
+- **Storage:** Not currently used (future: file uploads)
+- **Edge Functions:** Not currently used (future: webhook handlers)
+
+## Infrastructure Requirements
+
+### Development Environment
+- **Node.js:** v18+ (v20 recommended)
+- **Package Manager:** npm
+- **Next.js:** v15 (App Router)
+- **React:** v19
+- **TypeScript:** v5.7
+- **Supabase CLI:** For local development
+- **Ollama:** Optional for local LLM testing
+
+### Production Environment
+- **Hosting:** Vercel (configured via `vercel.json`)
+- **Database:** Supabase (hosted PostgreSQL)
+- **CDN:** Vercel Edge Network
+- **Monitoring:** Not configured (required)
+- **Error Tracking:** Not configured (required)
+
+### Environment Variables
+```env
+# Required for all environments
+ANTHROPIC_API_KEY=sk-ant-...
+OPENAI_API_KEY=sk-...
+PERPLEXITY_API_KEY=pplx-...
+NEXT_PUBLIC_SUPABASE_URL=https://xxx.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbG...
+SUPABASE_SERVICE_ROLE_KEY=eyJhbG...
+
+# Optional
+OLLAMA_BASE_URL=http://localhost:11434/api
+LLM_PROVIDER=anthropic  # anthropic|openai|perplexity|ollama
+ANTHROPIC_BASE_URL=https://api.anthropic.com  # Override for testing
+NEXT_PUBLIC_LOG_LEVEL=info  # debug|info|warn|error
+```
+
+### Performance Targets
+- **Page Load:** <2 seconds (first contentful paint)
+- **Question Generation:** <90 seconds (with retries)
+- **Auto-save:** <500ms (debounced)
+- **Blueprint Generation:** <120 seconds
+- **API Response Time:** <300ms (non-LLM endpoints)
+- **Database Queries:** <100ms (with indexes)
+
+### Security Requirements
+- **Authentication:** Required for all questionnaire endpoints
+- **RLS:** User isolation enforced at database level
+- **API Keys:** Server-side only, never exposed to client
+- **Input Validation:** Zod schemas on all inputs
+- **CORS:** Restricted to application domain
+- **Rate Limiting:** Required on LLM generation endpoints (not implemented)
+- **SQL Injection:** Protected via parameterized queries (Supabase client)
+
+# Development Roadmap
+
+## Phase 1: Complete Dynamic Questionnaire Flow (MVP)
+**Goal:** Users can complete static → dynamic → blueprint end-to-end
+
+### 1.1 Dynamic Questionnaire Page
+**Deliverable:** `/app/(auth)/dynamic-questionnaire/[blueprintId]/page.tsx`
+- Fetch dynamic questions from database
+- Section-by-section navigation (1 of 10)
+- Render questions using `DynamicQuestionRenderer`
+- Form state management with React Hook Form
+- Progress bar showing completion (0-100%)
+- Auto-save every 30 seconds
+- "Save & Continue" and "Previous" buttons
+- "Submit Questionnaire" on final section
+
+### 1.2 Dynamic Answer Persistence
+**Deliverable:** API endpoints for answer saving
+- **GET `/api/dynamic-questions/:blueprintId`**
+  - Authenticate user
+  - Fetch dynamic_questions and dynamic_answers from DB
+  - Return structured data for form initialization
+  - Handle not found errors
+
+- **POST `/api/dynamic-answers/save`**
+  - Accept partial answers (auto-save)
+  - Merge with existing dynamic_answers
+  - Update updated_at timestamp
+  - Return success confirmation
+
+- **POST `/api/dynamic-answers/submit`**
+  - Accept complete answers
+  - Validate all required fields
+  - Update status to 'completed'
+  - Trigger blueprint generation
+  - Return blueprintId for redirect
+
+### 1.3 Routing Integration
+**Deliverable:** Connected navigation flow
+- After static questionnaire submit → Show loading screen → Redirect to `/dynamic-questionnaire/:blueprintId`
+- After dynamic questionnaire submit → Show loading screen → Redirect to `/blueprint/:blueprintId`
+- Dashboard shows blueprint status (draft/generating/answering/completed)
+- Resume functionality for incomplete questionnaires
+
+### 1.4 Form State Management
+**Deliverable:** Robust form handling
+- Initialize form with existing answers (if resuming)
+- Section-level validation before navigation
+- Question-level validation on blur/submit
+- Unsaved changes warning on navigation
+- Optimistic UI updates
+- Error state recovery
+
+## Phase 2: Error Handling & User Experience
+**Goal:** Production-grade reliability and user feedback
+
+### 2.1 Loading States
+**Deliverable:** Unified loading components
+- **GeneratingQuestionsLoader:** Shows during LLM generation
+  - Status text updates ("Analyzing...", "Generating...", "Finalizing...")
+  - Progress animation
+  - Estimated time remaining
+  - Cancel option (if generation takes >2 minutes)
+
+- **SavingLoader:** Shows during auto-save
+  - Subtle save indicator
+  - Success confirmation
+  - Error retry
+
+- **GeneratingBlueprintLoader:** Shows during blueprint creation
+  - Detailed progress steps
+  - 60-120 second expected duration
+  - Cannot cancel (final step)
+
+### 2.2 Error UI Components
+**Deliverable:** User-friendly error handling
+- **ErrorBoundary:** Catches React errors, shows fallback UI
+- **GenerationErrorCard:** Shows when question generation fails
+  - Friendly error message
+  - "Try Again" button (switches provider automatically)
+  - "Skip Dynamic Questions" option (uses static answers only)
+  - Support contact link
+
+- **NetworkErrorToast:** Shows on connection loss
+  - "Connection lost. Your progress is saved."
+  - Auto-retry when connection restored
+
+- **ValidationErrorInline:** Field-level errors
+  - Red border on invalid inputs
+  - Error message below field
+  - Icon indicator
+  - Scroll to first error on submit
+
+### 2.3 Retry Logic & Fallbacks
+**Deliverable:** Resilient failure handling
+- Client-side retry for network errors (3 attempts)
+- Provider switching on LLM failures
+- Resume from last saved state on page reload
+- Offline detection and queuing
+- Manual retry buttons with clear actions
+
+### 2.4 Success Feedback
+**Deliverable:** Positive reinforcement
+- Section completion checkmarks
+- Progress celebrations (confetti on final submission)
+- Auto-save success indicators
+- "Blueprint ready!" notification
+- Share prompt after blueprint generation
+
+## Phase 3: Mobile Optimization & Accessibility
+**Goal:** Excellent experience on all devices and for all users
+
+### 3.1 Responsive Design
+**Deliverable:** Mobile-optimized layouts
+- Single-column layout on mobile (<768px)
+- Touch-friendly input sizes (44px minimum)
+- Horizontal scrolling for pill selections
+- Collapsible sections for long forms
+- Fixed bottom navigation bar
+- Sticky progress indicator
+- Optimized keyboard handling
+
+### 3.2 Touch Interactions
+**Deliverable:** Native-feeling mobile UX
+- Slider optimization for touch (larger thumb)
+- Swipe gestures for section navigation
+- Pull-to-refresh for resuming
+- Haptic feedback on selections (if supported)
+- Double-tap to zoom on complex cards
+- Sticky header with progress
+
+### 3.3 Accessibility Improvements
+**Deliverable:** WCAG AA compliant
+- **Keyboard Navigation:**
+  - Tab order follows logical flow
+  - Enter/Space to select options
+  - Arrow keys for radio/scale navigation
+  - Escape to close modals
+
+- **Screen Reader Support:**
+  - ARIA labels on all inputs
+  - Live regions for dynamic content
+  - Descriptive button labels
+  - Section landmarks
+
+- **Visual:**
+  - 4.5:1 contrast minimum (AA)
+  - Focus indicators (2px outline)
+  - No color-only information
+  - Scalable text (respects user preferences)
+
+- **Motion:**
+  - Respect `prefers-reduced-motion`
+  - Disable animations for sensitive users
+  - Provide static alternatives
+
+### 3.4 Performance Optimization
+**Deliverable:** Fast, smooth experience
+- Code splitting by route
+- Lazy load question renderer components
+- Debounce auto-save (500ms)
+- Throttle scroll listeners
+- Optimize re-renders with React.memo
+- Bundle analysis and reduction (<500KB initial)
+
+## Phase 4: Monitoring, Logging & Admin Tools
+**Goal:** Production observability and debugging
+
+### 4.1 Server-Side Logging Enhancement
+**Deliverable:** Comprehensive logging
+- Log all LLM requests/responses (with token counts)
+- Log all database operations
+- Log validation failures
+- Log provider fallbacks
+- Log generation durations
+- Log error stack traces
+- Redact sensitive data (API keys, PII)
+
+### 4.2 Logs API Endpoint
+**Deliverable:** Admin debugging interface
+- **GET `/api/logs`** (admin only)
+  - Query parameters:
+    - `level` - debug|info|warn|error
+    - `service` - dynamic-questions|blueprint-generation|auth
+    - `userId` - filter by user
+    - `blueprintId` - filter by blueprint
+    - `startDate`, `endDate` - time range
+    - `limit`, `offset` - pagination
+  - Returns: JSON array of log entries
+  - Export to JSON/CSV
+
+### 4.3 Admin Dashboard
+**Deliverable:** `/admin/logs` page (protected)
+- Real-time log viewer (SSE or polling)
+- Filter controls (dropdowns, date pickers)
+- Search functionality
+- Color-coded log levels
+- Expandable log details
+- Export button
+- Refresh button
+- Auto-scroll toggle
+
+### 4.4 Client-Side Error Tracking
+**Deliverable:** Capture client errors
+- Integrate Sentry or similar (optional)
+- Log to `/api/logs/client` endpoint
+- Capture:
+  - JavaScript errors
+  - Network failures
+  - User actions leading to error
+  - Browser/device info
+  - User ID (if authenticated)
+- Privacy-safe (no PII capture)
+
+### 4.5 Analytics & Metrics
+**Deliverable:** Usage insights
+- Track questionnaire completion rates
+- Track average time per section
+- Track generation success/failure rates
+- Track provider usage distribution
+- Track most common errors
+- Track user drop-off points
+- Dashboard with charts (optional)
+
+## Phase 5: Code Quality & Testing
+**Goal:** Maintainable, reliable codebase
+
+### 5.1 Code Consolidation
+**Deliverable:** Remove duplication
+- **Consolidate StepWizard implementations:**
+  - `/components/wizard/static-questions/StepWizard.tsx` (canonical)
+  - Remove `/src/components/features/wizard/static-questions/StepWizard.tsx` (duplicate)
+  - Remove `/src/components/features/features/wizard/static-questions/StepWizard.tsx` (duplicate)
+
+- **Consolidate demo components:**
+  - Merge demo components into `/components/demo/` directory
+  - Remove standalone demo pages or clearly mark as examples
+  - Document which components are production vs demo
+
+- **Centralize configuration:**
+  - Move prompts to `/lib/prompts/` directory
+  - Create LLM config service in `/lib/llm/config.ts`
+  - Centralize constants (input types, validation rules)
+
+### 5.2 Unit Tests
+**Deliverable:** Test coverage for critical logic
+- **Test Files:**
+  - `dynamicQuestionGenerationV2.test.ts` - LLM service logic
+  - `DynamicQuestionRenderer.test.tsx` - Input rendering
+  - `questionValidation.test.ts` - Validation rules
+  - `schemaMapper.test.ts` - Schema transformations
+  - `promptBuilder.test.ts` - Template variable substitution
+
+- **Coverage Target:** 80%+ for business logic
+- **Test Framework:** Vitest (already configured)
+- **Mocking:** Mock LLM API calls, database operations
+
+### 5.3 Integration Tests
+**Deliverable:** Test full user flows
+- **Test Scenarios:**
+  - Complete static questionnaire → Generates questions
+  - Complete dynamic questionnaire → Submits answers
+  - Resume incomplete questionnaire → Loads saved state
+  - Generation failure → Shows error and retry
+  - Network error → Auto-saves and retries
+  - Provider fallback → Switches to backup LLM
+
+- **Test Tools:** Playwright or Cypress
+- **Environment:** Test database, mock LLM APIs
+
+### 5.4 API Tests
+**Deliverable:** Endpoint validation
+- Test all API endpoints with Supertest or similar
+- Test authentication/authorization
+- Test validation rules
+- Test error responses
+- Test rate limiting (when implemented)
+- Test database operations
+- Document in OpenAPI/Swagger (optional)
+
+### 5.5 Documentation
+**Deliverable:** Developer documentation
+- **Code Comments:**
+  - JSDoc for all exported functions
+  - Complex logic explanations
+  - Type definitions with descriptions
+
+- **README Updates:**
+  - Setup instructions
+  - Environment variables guide
+  - Testing instructions
+  - Deployment guide
+  - Troubleshooting common issues
+
+- **Architecture Docs:**
+  - Data flow diagrams
+  - Component hierarchy
+  - API endpoint reference
+  - Database schema documentation
+
+# Logical Dependency Chain
+
+## Foundation Layer (Must Build First)
+**Why:** Core infrastructure needed for everything else
+
+1. **Database Schema Validation**
+   - Verify `dynamic_answers` field structure
+   - Add `answering` status value
+   - Test JSONB indexing performance
+   - Validate RLS policies work correctly
+
+2. **API Endpoints for Answer Persistence**
+   - Build `GET /api/dynamic-questions/:blueprintId`
+   - Build `POST /api/dynamic-answers/save` (auto-save)
+   - Build `POST /api/dynamic-answers/submit` (final submit)
+   - Test authentication and authorization
+
+3. **Form State Management Architecture**
+   - Design state structure for 50-70 questions
+   - Plan section navigation logic
+   - Design validation strategy
+   - Plan auto-save mechanism
+
+## Feature Layer (Build on Foundation)
+**Why:** User-facing features that complete the flow
+
+4. **Dynamic Questionnaire Page (Core)**
+   - Create page route `/app/(auth)/dynamic-questionnaire/[blueprintId]/page.tsx`
+   - Implement section navigation (1 of 10)
+   - Integrate `DynamicQuestionRenderer`
+   - Add progress indicator
+   - Wire up form submission
+
+5. **Auto-Save Implementation**
+   - Debounce form changes (500ms)
+   - Call save API on debounce trigger
+   - Show save status indicator
+   - Handle save errors gracefully
+   - Test with network throttling
+
+6. **Validation & Error Handling**
+   - Implement field-level validation
+   - Implement section-level validation
+   - Show inline error messages
+   - Prevent navigation with errors
+   - Test all validation rules
+
+7. **Routing Integration**
+   - Connect static → dynamic flow
+   - Connect dynamic → blueprint flow
+   - Add loading screens
+   - Handle authentication
+   - Test navigation edge cases
+
+## Polish Layer (Enhance Experience)
+**Why:** Makes the feature production-ready
+
+8. **Loading States & Feedback**
+   - Build loading components
+   - Add progress animations
+   - Show estimated time
+   - Add success confirmations
+   - Test perceived performance
+
+9. **Error Recovery UI**
+   - Build error boundary
+   - Add retry buttons
+   - Show helpful error messages
+   - Add fallback options
+   - Test all error scenarios
+
+10. **Mobile Optimization**
+    - Test on real devices
+    - Fix touch interaction issues
+    - Optimize for small screens
+    - Test keyboard behavior
+    - Validate accessibility
+
+11. **Performance Optimization**
+    - Code split routes
+    - Optimize re-renders
+    - Lazy load components
+    - Bundle analysis
+    - Test load times
+
+## Operational Layer (Production Support)
+**Why:** Enables debugging and monitoring
+
+12. **Logging Infrastructure**
+    - Enhance server logging
+    - Build logs API endpoint
+    - Add client error tracking
+    - Test log filtering
+    - Verify PII redaction
+
+13. **Admin Tools**
+    - Build admin dashboard
+    - Add log viewer
+    - Add user impersonation (debugging)
+    - Add manual intervention tools
+    - Protect admin routes
+
+14. **Monitoring & Alerts**
+    - Set up error tracking
+    - Add performance monitoring
+    - Configure alerting
+    - Create dashboards
+    - Test alert notifications
+
+## Quality Layer (Ensure Reliability)
+**Why:** Prevents regressions and ensures quality
+
+15. **Code Consolidation**
+    - Remove duplicate files
+    - Organize directory structure
+    - Extract reusable utilities
+    - Update imports
+    - Update documentation
+
+16. **Testing Suite**
+    - Write unit tests
+    - Write integration tests
+    - Write E2E tests
+    - Set up CI/CD testing
+    - Achieve coverage targets
+
+17. **Documentation**
+    - Document APIs
+    - Document components
+    - Update README
+    - Write troubleshooting guide
+    - Document deployment process
+
+## Recommended Build Order (Getting to Usable Fast)
+
+### Sprint 1: Complete the Core Flow (Week 1)
+**Goal:** Users can complete end-to-end journey (even if rough)
+1. API endpoints (GET dynamic questions, POST save, POST submit)
+2. Dynamic questionnaire page (basic, single section view)
+3. Form state management
+4. Section navigation
+5. Basic validation
+6. Submit functionality
+7. Routing integration
+
+**Deliverable:** Working but unpolished flow from static → dynamic → blueprint
+
+### Sprint 2: Error Handling & Feedback (Week 2)
+**Goal:** Handle failures gracefully, user never loses data
+1. Loading components
+2. Error boundaries
+3. Retry logic
+4. Auto-save implementation
+5. Save indicators
+6. Error messages
+7. Resume functionality
+
+**Deliverable:** Reliable flow with good error recovery
+
+### Sprint 3: Polish & Mobile (Week 3)
+**Goal:** Production-ready UX on all devices
+1. Mobile testing and fixes
+2. Touch optimization
+3. Accessibility audit and fixes
+4. Performance optimization
+5. Visual polish
+6. Animation refinement
+
+**Deliverable:** High-quality UX on desktop and mobile
+
+### Sprint 4: Observability & Quality (Week 4)
+**Goal:** Production monitoring and code quality
+1. Enhanced logging
+2. Admin dashboard
+3. Code consolidation
+4. Unit tests
+5. Integration tests
+6. Documentation
+
+**Deliverable:** Production-ready, maintainable codebase
+
+# Risks and Mitigations
+
+## Technical Risks
+
+### Risk 1: LLM Generation Reliability
+**Impact:** High - Users cannot complete questionnaires if generation fails
+**Probability:** Medium - External API dependencies, network issues
+**Mitigation:**
+- Multi-provider fallback chain (4 providers)
+- Retry logic with exponential backoff
+- Clear error messages with manual retry
+- Option to skip dynamic questions (use static only)
+- Monitor provider success rates
+- Switch primary provider if needed
+
+### Risk 2: Form State Complexity
+**Impact:** High - Data loss or corruption from 50-70 question form
+**Probability:** Medium - Complex state management, validation, navigation
+**Mitigation:**
+- Use proven form library (React Hook Form)
+- Implement aggressive auto-save (30s)
+- Store form state in sessionStorage as backup
+- Test extensively with edge cases
+- Implement unsaved changes warning
+- Version form schema to handle migrations
+
+### Risk 3: Mobile Performance
+**Impact:** Medium - Poor experience on majority of devices
+**Probability:** Medium - Large bundle size, many components
+**Mitigation:**
+- Code splitting by route
+- Lazy loading for question renderer
+- Performance budgets (500KB initial bundle)
+- Real device testing
+- Lighthouse audits
+- Progressive enhancement approach
+
+### Risk 4: Database JSONB Performance
+**Impact:** Medium - Slow queries with large question sets
+**Probability:** Low - PostgreSQL JSONB is performant
+**Mitigation:**
+- GIN indexes on JSONB fields (already implemented)
+- Query optimization
+- Limit question sets to 70 questions max
+- Monitor query performance
+- Consider denormalization if needed
+
+### Risk 5: Validation Complexity
+**Impact:** Medium - User frustration, data quality issues
+**Probability:** Medium - 13 input types, varying validation rules
+**Mitigation:**
+- Centralized validation logic
+- Extensive test coverage
+- Clear error messages
+- Progressive validation (on blur, not on type)
+- Allow partial saves (don't block on validation)
+
+## Product Risks
+
+### Risk 6: User Drop-Off During Long Form
+**Impact:** High - Users abandon before completion
+**Probability:** High - 70 questions is substantial time investment
+**Mitigation:**
+- Clear progress indicator
+- Section-by-section approach (manageable chunks)
+- Auto-save with resume capability
+- Motivation prompts ("You're 60% done!")
+- Show preview of blueprint value
+- Allow skipping sections (optional questions)
+- Time estimate upfront
+
+### Risk 7: Question Quality Variability
+**Impact:** Medium - Generic or irrelevant questions frustrate users
+**Probability:** Medium - LLM outputs can be inconsistent
+**Mitigation:**
+- Detailed prompt engineering (1100+ lines)
+- Context-aware question generation
+- Validation of LLM outputs
+- Feedback mechanism for users
+- A/B test different prompts
+- Manual question curation for common scenarios
+
+### Risk 8: Mobile UX Inadequacy
+**Impact:** Medium - Many users on mobile devices
+**Probability:** High - Not yet tested on mobile
+**Mitigation:**
+- Prioritize mobile testing in Sprint 3
+- Use mobile-first design principles
+- Test on real devices (iOS, Android)
+- Optimize touch interactions
+- Consider progressive web app features
+- Support offline mode
+
+## Scope Risks
+
+### Risk 9: Feature Creep
+**Impact:** Medium - Delayed launch, increased complexity
+**Probability:** Medium - Many "nice to have" features possible
+**Mitigation:**
+- Strict MVP definition (Phase 1 only)
+- Defer non-critical features to Phase 2-5
+- Use feature flags for experiments
+- Regular scope reviews
+- Focus on core user journey first
+
+### Risk 10: Testing Burden
+**Impact:** Low - Incomplete testing, production bugs
+**Probability:** High - Large test surface area
+**Mitigation:**
+- Prioritize critical path testing
+- Use risk-based testing approach
+- Automate regression tests
+- Manual testing for UX/mobile
+- Staged rollout (10% → 50% → 100%)
+
+## Figuring Out the MVP
+
+### Must Have (Phase 1 Only)
+- Dynamic questionnaire page with section navigation
+- Answer persistence (auto-save + submit)
+- Basic validation and error messages
+- Routing integration (static → dynamic → blueprint)
+- Loading states
+
+### Should Have (Phase 2, Quick Wins)
+- Retry logic and error recovery
+- Resume functionality
+- Save indicators
+- Better loading animations
+- Mobile testing
+
+### Could Have (Phase 3-4, If Time Allows)
+- Advanced accessibility features
+- Admin dashboard
+- Analytics
+- Performance optimizations
+- Comprehensive testing
+
+### Won't Have (Defer to Future)
+- Question branching/conditional logic
+- Collaborative questionnaires
+- Templates/presets
+- Advanced export formats
+- Third-party integrations
+
+# Appendix
+
+## A. Input Type Reference
+
+### Visual Selection Types
+| Type | Description | Use Case | Options Required |
+|------|-------------|----------|------------------|
+| `radio_pills` | Single-select pill buttons | 2-6 short options | Yes (2-6) |
+| `checkbox_pills` | Multi-select pill buttons | 2-8 short options | Yes (2-8) |
+| `radio_cards` | Single-select with descriptions | 2-4 detailed options | Yes (2-4) |
+| `checkbox_cards` | Multi-select with descriptions | 2-6 detailed options | Yes (2-6) |
+| `toggle_switch` | Binary on/off | Yes/No questions | Yes (exactly 2) |
+
+### Scale/Slider Types
+| Type | Description | Use Case | Config Required |
+|------|-------------|----------|-----------------|
+| `scale` | Numeric slider | 1-10 ratings | scaleConfig (min, max, labels) |
+| `enhanced_scale` | Slider with emoji labels | Satisfaction ratings | scaleConfig + labels array |
+| `labeled_slider` | Continuous slider with units | Percentage, hours, etc. | sliderConfig (min, max, unit, markers) |
+
+### Text Input Types
+| Type | Description | Use Case | Validation |
+|------|-------------|----------|------------|
+| `text` | Single-line input | Short answers | maxLength |
+| `textarea` | Multi-line input | Long descriptions | maxLength, rows |
+| `email` | Email input | Contact info | Email format |
+| `url` | URL input | Website links | URL format |
+
+### Numeric Input Types
+| Type | Description | Use Case | Config |
+|------|-------------|----------|--------|
+| `currency` | Money input with $ | Budget amounts | currencySymbol, min, max |
+| `number_spinner` | Stepper input | Counts | numberConfig (min, max, step) |
+
+### Date/Time Types
+| Type | Description | Use Case | Config |
+|------|-------------|----------|--------|
+| `date` | Date picker | Deadlines | None |
+
+## B. Validation Rules Reference
+
+### Available Validation Types
+```typescript
+{
+  rule: "required",
+  message: "This field is required"
+}
+
+{
+  rule: "minSelections",
+  value: 2,
+  message: "Select at least 2 options"
+}
+
+{
+  rule: "maxSelections",
+  value: 5,
+  message: "Select no more than 5 options"
+}
+
+{
+  rule: "minLength",
+  value: 10,
+  message: "Enter at least 10 characters"
+}
+
+{
+  rule: "maxLength",
+  value: 500,
+  message: "Enter no more than 500 characters"
+}
+
+{
+  rule: "min",
+  value: 0,
+  message: "Value must be at least 0"
+}
+
+{
+  rule: "max",
+  value: 100,
+  message: "Value must be at most 100"
+}
+
+{
+  rule: "pattern",
+  value: "/^[a-zA-Z]+$/",
+  message: "Only letters allowed"
+}
+
+{
+  rule: "email",
+  message: "Enter a valid email address"
+}
+
+{
+  rule: "url",
+  message: "Enter a valid URL"
+}
+```
+
+## C. Example Dynamic Question
+```json
+{
+  "id": "s1_q3",
+  "label": "As Learning & Development Manager at TechCorp in Healthcare, how will you measure the success of this 100-person training initiative addressing HIPAA compliance gaps?",
+  "type": "checkbox_cards",
+  "required": true,
+  "helpText": "Select all measurement approaches that align with your $150,000 budget and 6-month timeline. Consider HIPAA audit trail requirements.",
+  "options": [
+    {
+      "value": "completion_tracking",
+      "label": "Completion Tracking",
+      "description": "Monitor course completion rates and time-to-complete metrics via LMS analytics"
+    },
+    {
+      "value": "knowledge_assessment",
+      "label": "Knowledge Assessments",
+      "description": "Pre/post tests to measure knowledge gain on HIPAA regulations and best practices"
+    },
+    {
+      "value": "behavior_observation",
+      "label": "On-the-Job Behavior",
+      "description": "Manager observations and audits of HIPAA compliance in daily work (3 months post-training)"
+    },
+    {
+      "value": "incident_reduction",
+      "label": "Incident Reduction",
+      "description": "Track reduction in HIPAA violations, near-misses, and audit findings over 6-12 months"
+    }
+  ],
+  "validation": [
+    {
+      "rule": "minSelections",
+      "value": 1,
+      "message": "Select at least one measurement approach"
+    }
+  ],
+  "metadata": {
+    "contextSource": "role=L&D Manager, org=TechCorp, industry=Healthcare, learners=100, budget=$150,000, gap=HIPAA compliance",
+    "complianceCheck": "Verified HIPAA requirements addressed in options"
+  }
+}
+```
+
+## D. API Response Examples
+
+### GET `/api/dynamic-questions/:blueprintId`
+```json
+{
+  "success": true,
+  "blueprintId": "550e8400-e29b-41d4-a716-446655440000",
+  "sections": [
+    {
+      "id": "s1",
+      "title": "Learning Objectives & Outcomes",
+      "description": "Define specific, measurable learning outcomes...",
+      "order": 1,
+      "questions": [...]
+    }
+  ],
+  "existingAnswers": {
+    "s1_q1": ["value1", "value2"],
+    "s2_q3": "text response"
+  },
+  "metadata": {
+    "generatedAt": "2025-10-06T10:30:00Z",
+    "provider": "anthropic",
+    "model": "claude-3-5-sonnet-latest",
+    "totalQuestions": 65
+  }
+}
+```
+
+### POST `/api/dynamic-answers/submit`
+```json
+{
+  "success": true,
+  "blueprintId": "550e8400-e29b-41d4-a716-446655440000",
+  "message": "Answers submitted successfully",
+  "blueprintGenerationStarted": true,
+  "estimatedCompletionTime": 90
+}
+```
+
+## E. File Location Reference
+
+### Production Files (Use These)
+- **Static Questionnaire:** `/app/(auth)/static-wizard/page.tsx`
+- **Dynamic Question Service:** `/src/lib/services/dynamicQuestionGenerationV2.ts`
+- **Generation API:** `/app/api/generate-dynamic-questions/route.ts`
+- **Save API:** `/app/api/questionnaire/save/route.ts`
+- **System Prompt:** `/systempromptv2.txt`
+- **User Prompt Template:** `/dyngen_userpromptv2.txt`
+
+### Demo Files (Reference Only)
+- **V2.0 Demo:** `/app/demo-v2-questionnaire/page.tsx`
+- **Renderer Demo:** `/components/demo-dynamicv2/DynamicQuestionRenderer.tsx`
+
+### Components (Reusable)
+- **Question Renderer:** `/components/demo-dynamicv2/DynamicQuestionRenderer.tsx` (move to `/components/dynamic-form/`)
+- **Progress Indicator:** `/components/demo-v2-questionnaire/QuestionnaireProgress.tsx`
+- **Buttons:** `/components/demo-v2-questionnaire/QuestionnaireButton.tsx`
+
+### Files to Remove (Duplicates)
+- `/src/components/features/wizard/static-questions/StepWizard.tsx`
+- `/src/components/features/features/wizard/static-questions/StepWizard.tsx`
+
+## F. Environment Setup Checklist
+
+### Local Development
+- [ ] Node.js v18+ installed
+- [ ] npm installed
+- [ ] Supabase CLI installed
+- [ ] `.env.local` file created with all required keys
+- [ ] Supabase local instance running (or remote connection configured)
+- [ ] Database migrations applied
+- [ ] Ollama installed (optional, for local LLM testing)
+- [ ] `npm install` completed
+- [ ] `npm run dev` starts successfully
+
+### Required Environment Variables
+```bash
+# Database
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_ANON_KEY=
+SUPABASE_SERVICE_ROLE_KEY=
+
+# LLM Providers (at least one required)
+ANTHROPIC_API_KEY=
+OPENAI_API_KEY=
+PERPLEXITY_API_KEY=
+
+# Optional
+OLLAMA_BASE_URL=http://localhost:11434/api
+LLM_PROVIDER=anthropic
+NEXT_PUBLIC_LOG_LEVEL=info
+```
+
+### Testing Environment Variables
+```bash
+# Use test API keys or mock services
+ANTHROPIC_API_KEY=test-key
+NEXT_PUBLIC_SUPABASE_URL=http://localhost:54321
+# ... etc
+```
+
+## G. Success Criteria
+
+### Phase 1 Success (MVP Complete)
+- [ ] User can complete static questionnaire (existing ✅)
+- [ ] Dynamic questions generate successfully (existing ✅)
+- [ ] User can navigate through all 10 dynamic sections
+- [ ] Answers auto-save every 30 seconds
+- [ ] User can submit complete dynamic questionnaire
+- [ ] Blueprint generation triggers automatically
+- [ ] User redirected to blueprint view after completion
+- [ ] Resume works for incomplete questionnaires
+- [ ] Basic error handling prevents data loss
+
+### Phase 2 Success (Production Ready)
+- [ ] All error scenarios have graceful recovery
+- [ ] Loading states provide clear feedback
+- [ ] Network errors handled with retry
+- [ ] Provider fallback works automatically
+- [ ] Users never lose data (aggressive auto-save)
+- [ ] Error messages are helpful and actionable
+
+### Phase 3 Success (Universal Access)
+- [ ] Works on iOS Safari, Android Chrome
+- [ ] Touch interactions feel native
+- [ ] Keyboard navigation works completely
+- [ ] Screen reader announces all content
+- [ ] Meets WCAG AA standards
+- [ ] Load time <2s on 3G
+- [ ] Bundle size <500KB initial
+
+### Phase 4 Success (Observable)
+- [ ] All LLM requests logged with details
+- [ ] Admin can view logs with filtering
+- [ ] Client errors tracked and reportable
+- [ ] Provider success rates monitored
+- [ ] Completion funnel tracked
+- [ ] Performance metrics collected
+
+### Phase 5 Success (Maintainable)
+- [ ] No duplicate code
+- [ ] 80%+ test coverage on critical paths
+- [ ] All APIs documented
+- [ ] README complete with setup instructions
+- [ ] CI/CD pipeline runs tests
+- [ ] Code review process established
+
+## H. Open Questions for Product Team
+
+1. **Question Regeneration:** Should users be able to regenerate dynamic questions if unsatisfied? Or is it one-shot?
+2. **Partial Completion:** Can users submit partial dynamic questionnaires (skip sections) or is completion mandatory?
+3. **Question Editing:** Should we allow users to modify generated questions before answering?
+4. **Multi-Blueprint:** Can users create multiple blueprints concurrently or only one at a time?
+5. **Blueprint Iterations:** After initial blueprint, can users refine (answer more questions) or must create new?
+6. **Public Sharing:** Should generated blueprints be shareable publicly or only to authenticated users?
+7. **Data Retention:** How long do we keep draft blueprints? Auto-delete after X days?
+8. **Provider Selection:** Should users choose LLM provider or always automatic?
+9. **Questionnaire Templates:** Do we want pre-built question sets for common scenarios?
+10. **Export Formats:** Priority order: PDF, DOCX, Markdown, JSON?
+
+## I. Deployment Checklist
+
+### Pre-Deployment
+- [ ] All Phase 1 features tested in staging
+- [ ] Database migrations tested and reversible
+- [ ] Environment variables configured in Vercel
+- [ ] API keys rotated to production keys
+- [ ] Rate limiting configured
+- [ ] Error tracking enabled (Sentry/Rollbar)
+- [ ] Performance monitoring enabled
+- [ ] Backup strategy confirmed
+- [ ] Rollback plan documented
+
+### Deployment
+- [ ] Deploy to production (Vercel)
+- [ ] Run database migrations
+- [ ] Verify all endpoints respond
+- [ ] Test authentication flow
+- [ ] Test question generation (all providers)
+- [ ] Test complete user journey
+- [ ] Monitor error rates (first hour)
+- [ ] Check performance metrics
+
+### Post-Deployment
+- [ ] Announce to users
+- [ ] Monitor completion rates
+- [ ] Watch for error spikes
+- [ ] Collect user feedback
+- [ ] Triage bugs by severity
+- [ ] Plan Phase 2 based on learnings
+
+## J. Contact & Resources
+
+### Key Files for Taskmaster Parsing
+This PRD is structured for taskmaster-ai to generate tasks. Key sections for task generation:
+- **Development Roadmap** (Phases 1-5) - High-level features
+- **Logical Dependency Chain** - Build order and dependencies
+- **Appendix G: Success Criteria** - Acceptance criteria for tasks
+
+### Technical Context
+- **Next.js 15** with App Router
+- **React 19** with Server Components
+- **Supabase** for database and auth
+- **Anthropic Claude** (primary LLM)
+- **Vercel** for hosting
+
+### Existing Implementations to Reference
+- Static questionnaire: `/app/(auth)/static-wizard/page.tsx`
+- Question renderer: `/components/demo-dynamicv2/DynamicQuestionRenderer.tsx`
+- Generation service: `/src/lib/services/dynamicQuestionGenerationV2.ts`
+
+</PRD>
