@@ -11,7 +11,7 @@ export type ModelConfig = {
 export const DEFAULT_MODEL_CONFIG: ModelConfig = {
   model: process.env.OLLAMA_MODEL || 'qwen3:30b-a3b',
   temperature: 0.2,
-  maxTokens: 8192,
+  maxTokens: 16384, // Increased for 10 sections (50-70 questions)
 };
 
 let cachedSystemPrompt: string | null = null;
@@ -26,7 +26,7 @@ Your task is to generate sophisticated dynamic questionnaires that deeply unders
 
 OUTPUT REQUIREMENTS:
 1. Valid JSON only - no markdown, no preamble, no explanatory text
-2. Generate exactly 5 sections with 7 questions each (35 total questions)
+2. Generate exactly 10 sections with 5-7 questions each (50-70 total questions)
 3. Use modern visual input types (radio_pills, checkbox_cards, etc.) - AVOID select/multiselect
 4. Personalize questions based on user context
 5. Include validation for every question

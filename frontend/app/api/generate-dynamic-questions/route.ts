@@ -3,6 +3,7 @@ import { getSupabaseServerClient } from '@/lib/supabase/server';
 import { OllamaClient } from '@/lib/ollama/client';
 import { generationInputSchema } from '@/lib/ollama/schema';
 import { mapOllamaToFormSchema } from '@/lib/ollama/schemaMapper';
+import { generateDynamicQuestionsV2 } from '@/src/lib/services/dynamicQuestionGenerationV2';
 import { z } from 'zod';
 
 export const dynamic = 'force-dynamic';
@@ -90,6 +91,71 @@ export async function POST(request: NextRequest): Promise<Response> {
 
     console.log('[GenerateDynamicQuestions] Static answers:', JSON.stringify(sa, null, 2));
 
+    // Check if V2.0 schema (new 3-section format from PRD)
+    const isV20 =
+      sa.section_1_role_experience &&
+      sa.section_2_organization &&
+      sa.section_3_learning_gap &&
+      typeof sa.section_1_role_experience === 'object' &&
+      typeof sa.section_2_organization === 'object' &&
+      typeof sa.section_3_learning_gap === 'object';
+
+    if (isV20) {
+      // Use new V2.0 generation service with enhanced prompts
+      console.log('[GenerateDynamicQuestions] Using V2.0 schema with enhanced prompts');
+
+      try {
+        const result = await generateDynamicQuestionsV2(blueprintId, sa);
+
+        // CRITICAL: Normalize all option values to ensure consistency
+        const { normalizeSectionQuestions } = await import('@/lib/validation/dynamicQuestionSchemas');
+        const normalizedSections = normalizeSectionQuestions(result.sections || []);
+
+        console.log('[GenerateDynamicQuestions V2.0] Normalized questions:', {
+          sectionsCount: normalizedSections.length,
+          sampleOptions: normalizedSections[0]?.questions?.[0]?.options?.slice(0, 3).map(opt => ({
+            value: opt.value,
+            label: opt.label,
+          })),
+        });
+
+        // Update the blueprint with generated dynamic questions
+        const { error: updateError } = await supabase
+          .from('blueprint_generator')
+          .update({
+            dynamic_questions: normalizedSections,
+            dynamic_questions_raw: result.sections,
+            status: 'draft',
+          })
+          .eq('id', blueprintId)
+          .select()
+          .single();
+
+        if (updateError) {
+          console.error('Error updating blueprint with dynamic questions:', updateError);
+          return NextResponse.json({ error: 'Failed to save dynamic questions' }, { status: 500 });
+        }
+
+        return NextResponse.json({
+          success: true,
+          dynamicQuestions: normalizedSections,
+          message: 'Dynamic questions generated successfully (V2.0)',
+          metadata: result.metadata,
+        });
+      } catch (error) {
+        console.error('Error generating dynamic questions with V2.0 service:', error);
+        // Reset status so the user can retry generation
+        await supabase.from('blueprint_generator').update({ status: 'draft' }).eq('id', blueprintId);
+        return NextResponse.json(
+          {
+            error: 'Failed to generate dynamic questions. Please try again.',
+            details: error instanceof Error ? error.message : String(error),
+          },
+          { status: 502 }
+        );
+      }
+    }
+
     const asString = (v: unknown): string => {
       if (typeof v === 'string') return v;
       if (Array.isArray(v)) return v.filter((item) => typeof item === 'string').join(', ');
@@ -103,7 +169,7 @@ export async function POST(request: NextRequest): Promise<Response> {
       return '';
     };
 
-    // Check if V2 schema (has version field and nested objects)
+    // Check if V2 schema (legacy - has version field and nested objects)
     const isV2 = sa.version === 2 && typeof sa.organization === 'object';
 
     let canonicalInput;
@@ -232,16 +298,35 @@ export async function POST(request: NextRequest): Promise<Response> {
     // Map Ollama questions to form schema
     const formSchema = mapOllamaToFormSchema(dynamicQuestions);
 
+    // CRITICAL: Normalize all option values to ensure consistency
+    // This prevents validation failures due to mismatched option formats
+    const { normalizeSectionQuestions } = await import('@/lib/validation/dynamicQuestionSchemas');
+    const normalizedSections = normalizeSectionQuestions(formSchema.sections || []);
+
     // Debug logging
-    console.log('Generated dynamic questions:', dynamicQuestions);
-    console.log('Mapped form schema:', formSchema);
-    console.log('Sections length:', formSchema.sections?.length);
+    console.log('[GenerateDynamicQuestions] Generated questions:', {
+      sectionsCount: normalizedSections.length,
+      sampleSection: normalizedSections[0] ? {
+        id: normalizedSections[0].id,
+        title: normalizedSections[0].title,
+        questionsCount: normalizedSections[0].questions?.length,
+        sampleQuestion: normalizedSections[0].questions?.[0] ? {
+          id: normalizedSections[0].questions[0].id,
+          type: normalizedSections[0].questions[0].type,
+          optionsCount: normalizedSections[0].questions[0].options?.length,
+          sampleOptions: normalizedSections[0].questions[0].options?.slice(0, 3).map(opt => ({
+            value: opt.value,
+            label: opt.label,
+          })),
+        } : null,
+      } : null,
+    });
 
     // Update the blueprint with generated dynamic questions (store both formats)
     const { error: updateError } = await supabase
       .from('blueprint_generator')
       .update({
-        dynamic_questions: formSchema.sections, // Store in form schema format for UI
+        dynamic_questions: normalizedSections, // Store normalized sections for UI
         dynamic_questions_raw:
           (dynamicQuestions as { sections?: unknown[] }).sections ?? dynamicQuestions, // tolerate legacy
         status: 'draft',

@@ -14,8 +14,8 @@ const PERPLEXITY_CONFIG = {
   baseUrl: process.env.PERPLEXITY_BASE_URL || 'https://api.perplexity.ai',
   model: 'sonar-pro',
   temperature: 0.1,
-  maxTokens: 8700,
-  timeout: 75000, // 75 seconds
+  maxTokens: 16000, // Increased for 10 sections (50-70 questions)
+  timeout: 840000, // 14 minutes - avg generation time is ~13 minutes (779.7s)
   retries: 2,
 } as const;
 
@@ -69,14 +69,78 @@ interface PerplexityAPIResponse {
 function buildPerplexityPrompt(context: QuestionGenerationContext): string {
   const { staticAnswers, userPrompts = [] } = context;
 
-  // Extract V2 schema data with safe defaults
-  const org = staticAnswers.organization || {};
-  const learner = staticAnswers.learnerProfile || {};
-  const gap = staticAnswers.learningGap || {};
-  const resources = staticAnswers.resources || {};
-  const delivery = staticAnswers.deliveryStrategy || {};
-  const evaluation = staticAnswers.evaluation || {};
-  const constraints = staticAnswers.constraints || [];
+  // Check if V2.0 format (3-section from current PRD implementation)
+  const isV20 = staticAnswers.section_1_role_experience && 
+                staticAnswers.section_2_organization && 
+                staticAnswers.section_3_learning_gap;
+
+  let org: any, learner: any, gap: any, resources: any, delivery: any, evaluation: any, constraints: any[], role: string;
+
+  if (isV20) {
+    // V2.0 (3-section) format - map to expected structure
+    const roleData = staticAnswers.section_1_role_experience as any || {};
+    const orgData = staticAnswers.section_2_organization as any || {};
+    const learningData = staticAnswers.section_3_learning_gap as any || {};
+
+    role = roleData.current_role || roleData.custom_role || 'Not specified';
+
+    org = {
+      name: orgData.organization_name,
+      industry: orgData.industry_sector,
+      size: orgData.organization_size,
+      regions: orgData.geographic_regions || [],
+    };
+
+    learner = {
+      audienceSize: learningData.total_learners_range,
+      priorKnowledge: learningData.current_knowledge_level,
+      motivation: learningData.motivation_factors || [],
+      environment: learningData.learning_location || [],
+      devices: learningData.devices_used || [],
+      timeAvailable: learningData.hours_per_week,
+      accessibility: [],
+    };
+
+    gap = {
+      description: learningData.learning_gap_description,
+      gapType: 'Not specified',
+      urgency: 'Not specified',
+      impact: 'Not specified',
+      impactAreas: [],
+      bloomsLevel: 'Not specified',
+      objectives: 'Not specified',
+    };
+
+    resources = {
+      budget: {
+        amount: learningData.budget_available?.amount || 0,
+        currency: learningData.budget_available?.currency || 'USD',
+        flexibility: 'Not specified',
+      },
+      timeline: {
+        targetDate: learningData.learning_deadline || 'Not specified',
+        duration: 'Not specified',
+        flexibility: 'Not specified',
+      },
+      team: {},
+      technology: {},
+      contentStrategy: {},
+    };
+
+    delivery = {};
+    evaluation = {};
+    constraints = [];
+  } else {
+    // Legacy V2 (8-section) format
+    role = staticAnswers.role || 'Not specified';
+    org = staticAnswers.organization || {};
+    learner = staticAnswers.learnerProfile || {};
+    gap = staticAnswers.learningGap || {};
+    resources = staticAnswers.resources || {};
+    delivery = staticAnswers.deliveryStrategy || {};
+    evaluation = staticAnswers.evaluation || {};
+    constraints = staticAnswers.constraints || [];
+  }
 
   return `You are an expert Learning Experience Designer with access to current web research. Generate a sophisticated dynamic questionnaire that deeply understands the following comprehensive project context.
 
@@ -89,9 +153,9 @@ function buildPerplexityPrompt(context: QuestionGenerationContext): string {
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 Organization:     ${org.name || 'Not specified'}
 Industry:         ${org.industry || 'Not specified'}
-Organization Size: ${org.size || 'Not specified'} employees
+Organization Size: ${org.size || 'Not specified'}
 Operating Regions: ${Array.isArray(org.regions) && org.regions.length > 0 ? org.regions.join(', ') : 'Not specified'}
-Requestor Role:   ${staticAnswers.role || 'Not specified'}
+Requestor Role:   ${role}
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 👥 LEARNER PROFILE & AUDIENCE ANALYSIS
@@ -201,7 +265,7 @@ ${userPrompts.join('\n')}
 ║                         YOUR MISSION & TASK                                   ║
 ╚══════════════════════════════════════════════════════════════════════════════╝
 
-Generate a sophisticated, research-backed dynamic questionnaire with 5 sections containing 7 questions each (35 total questions). Use your web research capability to find current ${org.industry || 'L&D'} industry best practices from 2024-2025.
+Generate a sophisticated, research-backed dynamic questionnaire with 10 sections containing 5-7 questions each (50-70 total questions). Use your web research capability to find current ${org.industry || 'L&D'} industry best practices from 2024-2025.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 🎨 INPUT TYPE SELECTION GUIDE (CRITICAL - READ CAREFULLY)
@@ -454,7 +518,7 @@ CRITICAL INSTRUCTIONS:
 10. Ensure question IDs follow format: q{number}_s{section number} (e.g., q1_s1, q7_s3)
 
 REMEMBER THE CONTEXT:
-You are designing questions for ${org.industry || 'a learning initiative'} with a ${gap.bloomsLevel || 'standard'} Bloom's level target, ${delivery.modality || 'standard delivery'} modality, and ${delivery.interactivityLevel || 3}/5 interactivity preference. Questions should extract insights that directly inform blueprint development.`;
+You are designing questions for ${org.industry || 'a learning initiative'} targeting ${learner.priorKnowledge || 3}/5 knowledge level learners. Focus on extracting insights that directly inform blueprint development for this specific organizational context and learning gap.`;
 }
 
 /**

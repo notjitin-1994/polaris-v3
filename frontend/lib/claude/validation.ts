@@ -124,8 +124,59 @@ export function validateBlueprintStructure(blueprint: any): void {
 }
 
 /**
- * Normalize blueprint by adding default displayType where missing
- * Returns normalized blueprint
+ * Infer appropriate displayType based on section content structure
+ * Returns the best matching display type
+ */
+function inferDisplayType(sectionKey: string, section: any): string {
+  // Check for specific data structures that indicate visualization types
+  
+  // Timeline: has phases, modules with dates, or similar temporal data
+  if (section.phases || section.modules || section.timeline) {
+    if (Array.isArray(section.phases) && section.phases[0]?.start_date) {
+      return 'timeline';
+    }
+    if (Array.isArray(section.modules) && section.modules[0]?.duration) {
+      return 'timeline';
+    }
+  }
+  
+  // Table: has structured lists of similar objects or budget/resource data
+  if (section.risks || section.human_resources || section.tools_and_platforms) {
+    if (Array.isArray(section.risks) || Array.isArray(section.human_resources)) {
+      return 'table';
+    }
+  }
+  
+  // Infographic: has rich data for visualization
+  if (section.objectives || section.kpis || section.metrics || section.demographics) {
+    return 'infographic';
+  }
+  
+  // Chart: has explicit chart configuration or quantitative data
+  if (section.chartConfig || section.chartType) {
+    return 'chart';
+  }
+  
+  // Check section key for hints
+  const keyLower = sectionKey.toLowerCase();
+  if (keyLower.includes('timeline') || keyLower.includes('schedule') || keyLower.includes('implementation')) {
+    return 'timeline';
+  }
+  if (keyLower.includes('resource') || keyLower.includes('budget') || keyLower.includes('risk')) {
+    return 'table';
+  }
+  if (keyLower.includes('metric') || keyLower.includes('kpi') || keyLower.includes('objective') || 
+      keyLower.includes('audience') || keyLower.includes('assessment')) {
+    return 'infographic';
+  }
+  
+  // Default to markdown for text-heavy content
+  return 'markdown';
+}
+
+/**
+ * Normalize blueprint by adding intelligent displayType where missing
+ * Returns normalized blueprint with inferred display types
  */
 export function normalizeBlueprintStructure(blueprint: any): any {
   if (!blueprint || typeof blueprint !== 'object') {
@@ -134,20 +185,40 @@ export function normalizeBlueprintStructure(blueprint: any): any {
 
   const normalized = { ...blueprint };
 
-  // Get all sections (excluding metadata)
-  const sections = Object.keys(normalized).filter((key) => key !== 'metadata');
+  // Get all sections (excluding metadata and internal fields)
+  const sections = Object.keys(normalized).filter(
+    (key) => key !== 'metadata' && !key.startsWith('_')
+  );
 
-  // Add default displayType to sections missing it
+  // Add intelligent displayType to sections missing it
   for (const sectionKey of sections) {
     const section = normalized[sectionKey];
 
-    if (section && typeof section === 'object' && !section.displayType) {
-      section.displayType = 'markdown'; // Default to markdown
+    if (section && typeof section === 'object') {
+      if (!section.displayType) {
+        // Infer appropriate displayType based on content
+        section.displayType = inferDisplayType(sectionKey, section);
 
-      logger.info('claude.validation.added_default_display_type', {
-        section: sectionKey,
-        displayType: 'markdown',
-      });
+        logger.info('claude.validation.inferred_display_type', {
+          section: sectionKey,
+          displayType: section.displayType,
+          hasObjectives: !!section.objectives,
+          hasPhases: !!section.phases,
+          hasModules: !!section.modules,
+          hasMetrics: !!section.metrics || !!section.kpis,
+        });
+      }
+      
+      // Validate displayType is a known value
+      const validTypes = ['infographic', 'timeline', 'chart', 'table', 'markdown'];
+      if (!validTypes.includes(section.displayType)) {
+        logger.warn('claude.validation.invalid_display_type', {
+          section: sectionKey,
+          invalidType: section.displayType,
+          defaultingTo: 'markdown',
+        });
+        section.displayType = 'markdown';
+      }
     }
   }
 

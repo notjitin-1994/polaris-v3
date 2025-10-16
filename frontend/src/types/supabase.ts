@@ -3,7 +3,7 @@
 
 export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[];
 
-export type BlueprintStatus = 'draft' | 'generating' | 'completed' | 'error';
+export type BlueprintStatus = 'draft' | 'generating' | 'answering' | 'completed' | 'error';
 
 export interface Database {
   public: {

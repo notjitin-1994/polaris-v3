@@ -1,262 +1,280 @@
-'use client';
+/**
+ * Blueprint Viewer State Management
+ * Zustand store for complex UI state
+ */
 
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
-import type { Database } from '@/types/supabase';
+import { persist, createJSONStorage } from 'zustand/middleware';
 
-type BlueprintRow = Database['public']['Tables']['blueprint_generator']['Row'];
-type BlueprintInsert = Database['public']['Tables']['blueprint_generator']['Insert'];
-type BlueprintUpdate = Database['public']['Tables']['blueprint_generator']['Update'];
-import type { Blueprint } from '@/lib/ollama/schema';
+export type ViewMode = 'dashboard' | 'document' | 'presentation' | 'focus';
+export type LayoutMode = 'comfortable' | 'compact' | 'spacious';
 
-export type BlueprintStatus = 'draft' | 'in_progress' | 'completed' | 'archived';
+export interface CustomReport {
+  id: string;
+  name: string;
+  description: string;
+  sections: string[];
+  layout: 'dashboard' | 'document' | 'presentation';
+  theme: ReportTheme;
+  createdAt: Date;
+  updatedAt: Date;
+}
 
-export interface BlueprintProgress {
-  staticQuestionsCompleted: boolean;
-  dynamicQuestionsCompleted: boolean;
-  blueprintGenerated: boolean;
-  currentStep: 'static' | 'dynamic' | 'generation' | 'review' | 'complete';
-  completionPercentage: number;
+export interface ReportTheme {
+  primaryColor: string;
+  accentColor: string;
+  fontFamily: string;
+  spacing: 'tight' | 'normal' | 'relaxed';
+}
+
+export interface Annotation {
+  id: string;
+  sectionId: string;
+  content: string;
+  author: string;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export interface BlueprintState {
-  // Current blueprint data
-  currentBlueprint: BlueprintRow | null;
-  blueprintData: Blueprint | null;
-
-  // Blueprint list and management
-  blueprints: BlueprintRow[];
-  selectedBlueprintId: string | null;
-
-  // Progress tracking
-  progress: BlueprintProgress;
-
-  // Generation state
-  isGenerating: boolean;
-  generationError: string | null;
-  lastGeneratedAt: Date | null;
-
-  // Auto-save state
-  autoSaveEnabled: boolean;
-  lastSavedAt: Date | null;
-  hasUnsavedChanges: boolean;
-
-  // Actions for current blueprint
-  setCurrentBlueprint: (blueprint: BlueprintRow | null) => void;
-  setBlueprintData: (data: Blueprint | null) => void;
-  updateBlueprintData: (updates: Partial<Blueprint>) => void;
-
-  // Actions for blueprint list
-  setBlueprints: (blueprints: BlueprintRow[]) => void;
-  addBlueprint: (blueprint: BlueprintRow) => void;
-  updateBlueprint: (id: string, updates: BlueprintUpdate) => void;
-  deleteBlueprint: (id: string) => void;
-  setSelectedBlueprintId: (id: string | null) => void;
-
-  // Progress actions
-  setProgress: (progress: Partial<BlueprintProgress>) => void;
-  updateCurrentStep: (step: BlueprintProgress['currentStep']) => void;
-  markStepCompleted: (
-    step: keyof Omit<BlueprintProgress, 'currentStep' | 'completionPercentage'>
-  ) => void;
-  calculateCompletionPercentage: () => void;
-
-  // Generation actions
-  setGenerating: (isGenerating: boolean) => void;
-  setGenerationError: (error: string | null) => void;
-  setLastGeneratedAt: (date: Date) => void;
-
-  // Auto-save actions
-  setAutoSaveEnabled: (enabled: boolean) => void;
-  setLastSavedAt: (date: Date) => void;
-  setHasUnsavedChanges: (hasChanges: boolean) => void;
-
-  // Utility actions
-  resetCurrentBlueprint: () => void;
-  resetProgress: () => void;
-  resetAll: () => void;
+  // View settings
+  viewMode: ViewMode;
+  layoutMode: LayoutMode;
+  showSidebar: boolean;
+  showMinimap: boolean;
+  showAnnotations: boolean;
+  showTableOfContents: boolean;
+  
+  // Navigation
+  searchQuery: string;
+  activeSection: string | null;
+  readingProgress: number;
+  
+  // Content management
+  pinnedSections: string[];
+  hiddenSections: string[];
+  collapsedSections: string[];
+  
+  // Reports
+  customReports: CustomReport[];
+  activeReportId: string | null;
+  
+  // Annotations
+  annotations: Record<string, Annotation[]>;
+  
+  // AI features
+  aiRecommendations: string[];
+  aiInsights: Record<string, string>;
+  
+  // Actions
+  setViewMode: (mode: ViewMode) => void;
+  setLayoutMode: (mode: LayoutMode) => void;
+  toggleSidebar: () => void;
+  toggleMinimap: () => void;
+  toggleAnnotations: () => void;
+  toggleTableOfContents: () => void;
+  
+  setSearchQuery: (query: string) => void;
+  setActiveSection: (sectionId: string | null) => void;
+  setReadingProgress: (progress: number) => void;
+  
+  togglePinSection: (sectionId: string) => void;
+  toggleHideSection: (sectionId: string) => void;
+  toggleCollapseSection: (sectionId: string) => void;
+  
+  addCustomReport: (report: Omit<CustomReport, 'id' | 'createdAt' | 'updatedAt'>) => void;
+  updateCustomReport: (reportId: string, updates: Partial<CustomReport>) => void;
+  deleteCustomReport: (reportId: string) => void;
+  setActiveReport: (reportId: string | null) => void;
+  
+  addAnnotation: (sectionId: string, annotation: Omit<Annotation, 'id' | 'createdAt' | 'updatedAt'>) => void;
+  updateAnnotation: (sectionId: string, annotationId: string, content: string) => void;
+  deleteAnnotation: (sectionId: string, annotationId: string) => void;
+  
+  setAiRecommendations: (recommendations: string[]) => void;
+  setAiInsight: (sectionId: string, insight: string) => void;
+  
+  resetState: () => void;
 }
 
-const defaultProgress: BlueprintProgress = {
-  staticQuestionsCompleted: false,
-  dynamicQuestionsCompleted: false,
-  blueprintGenerated: false,
-  currentStep: 'static',
-  completionPercentage: 0,
+const initialState = {
+  viewMode: 'dashboard' as ViewMode,
+  layoutMode: 'comfortable' as LayoutMode,
+  showSidebar: true,
+  showMinimap: false,
+  showAnnotations: false,
+  showTableOfContents: false,
+  
+  searchQuery: '',
+  activeSection: null,
+  readingProgress: 0,
+  
+  pinnedSections: [],
+  hiddenSections: [],
+  collapsedSections: [],
+  
+  customReports: [],
+  activeReportId: null,
+  
+  annotations: {},
+  
+  aiRecommendations: [],
+  aiInsights: {},
 };
 
 export const useBlueprintStore = create<BlueprintState>()(
   persist(
-    (set, get) => ({
-      // Current blueprint data
-      currentBlueprint: null,
-      blueprintData: null,
-
-      // Blueprint list and management
-      blueprints: [],
-      selectedBlueprintId: null,
-
-      // Progress tracking
-      progress: defaultProgress,
-
-      // Generation state
-      isGenerating: false,
-      generationError: null,
-      lastGeneratedAt: null,
-
-      // Auto-save state
-      autoSaveEnabled: true,
-      lastSavedAt: null,
-      hasUnsavedChanges: false,
-
-      // Actions for current blueprint
-      setCurrentBlueprint: (blueprint) => {
-        set({ currentBlueprint: blueprint });
-        if (blueprint?.blueprint_json) {
-          try {
-            const blueprintData = JSON.parse(blueprint.blueprint_json as string) as Blueprint;
-            set({ blueprintData });
-          } catch (error) {
-            console.error('Failed to parse blueprint JSON:', error);
-            set({ blueprintData: null });
-          }
+    (set) => ({
+      ...initialState,
+      
+      // View actions
+      setViewMode: (mode) => set({ viewMode: mode }),
+      setLayoutMode: (mode) => set({ layoutMode: mode }),
+      toggleSidebar: () => set((state) => ({ showSidebar: !state.showSidebar })),
+      toggleMinimap: () => set((state) => ({ showMinimap: !state.showMinimap })),
+      toggleAnnotations: () => set((state) => ({ showAnnotations: !state.showAnnotations })),
+      toggleTableOfContents: () => set((state) => ({ showTableOfContents: !state.showTableOfContents })),
+      
+      // Navigation actions
+      setSearchQuery: (query) => set({ searchQuery: query }),
+      setActiveSection: (sectionId) => set({ activeSection: sectionId }),
+      setReadingProgress: (progress) => set({ readingProgress: progress }),
+      
+      // Content management actions
+      togglePinSection: (sectionId) => set((state) => {
+        const index = state.pinnedSections.indexOf(sectionId);
+        const newPinned = [...state.pinnedSections];
+        if (index > -1) {
+          newPinned.splice(index, 1);
         } else {
-          set({ blueprintData: null });
+          newPinned.push(sectionId);
         }
-      },
-
-      setBlueprintData: (data) => set({ blueprintData: data }),
-
-      updateBlueprintData: (updates) => {
-        const currentData = get().blueprintData;
-        if (currentData) {
-          const updatedData = { ...currentData, ...updates };
-          set({
-            blueprintData: updatedData,
-            hasUnsavedChanges: true,
-          });
+        return { pinnedSections: newPinned };
+      }),
+      
+      toggleHideSection: (sectionId) => set((state) => {
+        const index = state.hiddenSections.indexOf(sectionId);
+        const newHidden = [...state.hiddenSections];
+        if (index > -1) {
+          newHidden.splice(index, 1);
+        } else {
+          newHidden.push(sectionId);
         }
-      },
-
-      // Actions for blueprint list
-      setBlueprints: (blueprints) => set({ blueprints }),
-
-      addBlueprint: (blueprint) => {
-        set((state) => ({
-          blueprints: [blueprint, ...state.blueprints],
-        }));
-      },
-
-      updateBlueprint: (id, updates) => {
-        set((state) => ({
-          blueprints: state.blueprints.map((bp) => (bp.id === id ? { ...bp, ...updates } : bp)),
-          currentBlueprint:
-            state.currentBlueprint?.id === id
-              ? { ...state.currentBlueprint, ...updates }
-              : state.currentBlueprint,
-        }));
-      },
-
-      deleteBlueprint: (id) => {
-        set((state) => ({
-          blueprints: state.blueprints.filter((bp) => bp.id !== id),
-          currentBlueprint: state.currentBlueprint?.id === id ? null : state.currentBlueprint,
-          selectedBlueprintId: state.selectedBlueprintId === id ? null : state.selectedBlueprintId,
-        }));
-      },
-
-      setSelectedBlueprintId: (id) => set({ selectedBlueprintId: id }),
-
-      // Progress actions
-      setProgress: (progress) => {
-        set((state) => ({
-          progress: { ...state.progress, ...progress },
-        }));
-        get().calculateCompletionPercentage();
-      },
-
-      updateCurrentStep: (step) => {
-        set((state) => ({
-          progress: { ...state.progress, currentStep: step },
-        }));
-        get().calculateCompletionPercentage();
-      },
-
-      markStepCompleted: (step) => {
-        set((state) => ({
-          progress: { ...state.progress, [step]: true },
-        }));
-        get().calculateCompletionPercentage();
-      },
-
-      calculateCompletionPercentage: () => {
-        const { progress } = get();
-        let completed = 0;
-        const total = 4; // static, dynamic, generation, review
-
-        if (progress.staticQuestionsCompleted) completed++;
-        if (progress.dynamicQuestionsCompleted) completed++;
-        if (progress.blueprintGenerated) completed++;
-        if (progress.currentStep === 'complete') completed++;
-
-        const percentage = Math.round((completed / total) * 100);
-        set((state) => ({
-          progress: { ...state.progress, completionPercentage: percentage },
-        }));
-      },
-
-      // Generation actions
-      setGenerating: (isGenerating) => set({ isGenerating }),
-
-      setGenerationError: (error) => set({ generationError: error }),
-
-      setLastGeneratedAt: (date) => set({ lastGeneratedAt: date }),
-
-      // Auto-save actions
-      setAutoSaveEnabled: (enabled) => set({ autoSaveEnabled: enabled }),
-
-      setLastSavedAt: (date) => set({ lastSavedAt: date }),
-
-      setHasUnsavedChanges: (hasChanges) => set({ hasUnsavedChanges: hasChanges }),
-
-      // Utility actions
-      resetCurrentBlueprint: () => {
-        set({
-          currentBlueprint: null,
-          blueprintData: null,
-          selectedBlueprintId: null,
-          hasUnsavedChanges: false,
-        });
-      },
-
-      resetProgress: () => {
-        set({ progress: defaultProgress });
-      },
-
-      resetAll: () => {
-        set({
-          currentBlueprint: null,
-          blueprintData: null,
-          blueprints: [],
-          selectedBlueprintId: null,
-          progress: defaultProgress,
-          isGenerating: false,
-          generationError: null,
-          lastGeneratedAt: null,
-          autoSaveEnabled: true,
-          lastSavedAt: null,
-          hasUnsavedChanges: false,
-        });
-      },
+        return { hiddenSections: newHidden };
+      }),
+      
+      toggleCollapseSection: (sectionId) => set((state) => {
+        const index = state.collapsedSections.indexOf(sectionId);
+        const newCollapsed = [...state.collapsedSections];
+        if (index > -1) {
+          newCollapsed.splice(index, 1);
+        } else {
+          newCollapsed.push(sectionId);
+        }
+        return { collapsedSections: newCollapsed };
+      }),
+      
+      // Report actions
+      addCustomReport: (report) => set((state) => {
+        const newReport: CustomReport = {
+          ...report,
+          id: `report-${Date.now()}`,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        };
+        return {
+          customReports: [...state.customReports, newReport],
+          activeReportId: newReport.id,
+        };
+      }),
+      
+      updateCustomReport: (reportId, updates) => set((state) => ({
+        customReports: state.customReports.map(r =>
+          r.id === reportId
+            ? { ...r, ...updates, updatedAt: new Date() }
+            : r
+        ),
+      })),
+      
+      deleteCustomReport: (reportId) => set((state) => ({
+        customReports: state.customReports.filter(r => r.id !== reportId),
+        activeReportId: state.activeReportId === reportId ? null : state.activeReportId,
+      })),
+      
+      setActiveReport: (reportId) => set({ activeReportId: reportId }),
+      
+      // Annotation actions
+      addAnnotation: (sectionId, annotation) => set((state) => {
+        const newAnnotation: Annotation = {
+          ...annotation,
+          id: `annotation-${Date.now()}`,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        };
+        
+        const currentAnnotations = state.annotations[sectionId] || [];
+        return {
+          annotations: {
+            ...state.annotations,
+            [sectionId]: [...currentAnnotations, newAnnotation],
+          },
+        };
+      }),
+      
+      updateAnnotation: (sectionId, annotationId, content) => set((state) => {
+        const annotations = state.annotations[sectionId];
+        if (!annotations) return {};
+        
+        return {
+          annotations: {
+            ...state.annotations,
+            [sectionId]: annotations.map(a =>
+              a.id === annotationId
+                ? { ...a, content, updatedAt: new Date() }
+                : a
+            ),
+          },
+        };
+      }),
+      
+      deleteAnnotation: (sectionId, annotationId) => set((state) => {
+        const annotations = state.annotations[sectionId];
+        if (!annotations) return {};
+        
+        return {
+          annotations: {
+            ...state.annotations,
+            [sectionId]: annotations.filter(a => a.id !== annotationId),
+          },
+        };
+      }),
+      
+      // AI actions
+      setAiRecommendations: (recommendations) => set({ aiRecommendations: recommendations }),
+      
+      setAiInsight: (sectionId, insight) => set((state) => ({
+        aiInsights: {
+          ...state.aiInsights,
+          [sectionId]: insight,
+        },
+      })),
+      
+      // Reset action
+      resetState: () => set(initialState),
     }),
     {
-      name: 'blueprint-storage',
+      name: 'blueprint-viewer-storage',
+      storage: createJSONStorage(() => localStorage),
       partialize: (state) => ({
-        blueprints: state.blueprints,
-        selectedBlueprintId: state.selectedBlueprintId,
-        progress: state.progress,
-        autoSaveEnabled: state.autoSaveEnabled,
-        lastSavedAt: state.lastSavedAt,
+        viewMode: state.viewMode,
+        layoutMode: state.layoutMode,
+        showSidebar: state.showSidebar,
+        showMinimap: state.showMinimap,
+        showAnnotations: state.showAnnotations,
+        pinnedSections: state.pinnedSections,
+        hiddenSections: state.hiddenSections,
+        customReports: state.customReports,
+        annotations: state.annotations,
       }),
     }
   )

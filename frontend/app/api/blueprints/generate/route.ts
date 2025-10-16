@@ -11,6 +11,7 @@ import { blueprintGenerationService } from '@/lib/services/blueprintGenerationSe
 import { extractLearningObjectives } from '@/lib/claude/prompts';
 import { convertBlueprintToMarkdown } from '@/lib/services/blueprintMarkdownConverter';
 import { createServiceLogger } from '@/lib/logging';
+import { BlueprintUsageService } from '@/lib/services/blueprintUsageService';
 
 const logger = createServiceLogger('api');
 
@@ -157,6 +158,33 @@ export async function POST(req: NextRequest): Promise<NextResponse<GenerateBluep
       });
     }
 
+    // Check blueprint saving limits before starting generation
+    try {
+      const canSave = await BlueprintUsageService.canSaveBlueprint(supabase, userId);
+
+      if (!canSave.canSave) {
+        logger.warn('blueprints.generate.limit_exceeded', 'Blueprint saving limit exceeded', {
+          blueprintId,
+          userId,
+        });
+
+        return NextResponse.json(
+          {
+            success: false,
+            error: canSave.reason || 'You cannot save more blueprints at this time.',
+          },
+          { status: 429 }
+        );
+      }
+    } catch (error) {
+      logger.error('blueprints.generate.limit_check_error', 'Error checking blueprint saving limits', {
+        blueprintId,
+        userId,
+        error: (error as Error).message,
+      });
+      // Continue with generation if we can't check limits (fallback behavior)
+    }
+
     // Update status to generating
     await supabase
       .from('blueprint_generator')
@@ -180,22 +208,68 @@ export async function POST(req: NextRequest): Promise<NextResponse<GenerateBluep
       return typeof current === 'string' ? current : '';
     };
 
+    // Check if V2.0 format (3-section)
+    const isV20 = staticAnswers.section_1_role_experience && 
+                  staticAnswers.section_2_organization && 
+                  staticAnswers.section_3_learning_gap;
+
+    let organization: string;
+    let role: string;
+    let industry: string;
+
+    if (isV20) {
+      // V2.0 (3-section) format
+      const roleData = staticAnswers.section_1_role_experience as Record<string, unknown>;
+      const orgData = staticAnswers.section_2_organization as Record<string, unknown>;
+
+      role = (roleData?.current_role as string) || (roleData?.custom_role as string) || 'Manager';
+      organization = (orgData?.organization_name as string) || 'Organization';
+      industry = (orgData?.industry_sector as string) || 'General';
+    } else {
+      // Legacy V2 (8-section) format
+      organization =
+        getNestedValue(staticAnswers, ['organization', 'name']) ||
+        (typeof staticAnswers?.organization === 'string' ? staticAnswers.organization : '') ||
+        'Organization';
+      role = (typeof staticAnswers?.role === 'string' ? staticAnswers.role : '') || 'Manager';
+      industry =
+        getNestedValue(staticAnswers, ['organization', 'industry']) ||
+        (typeof staticAnswers?.industry === 'string' ? staticAnswers.industry : '') ||
+        'General';
+    }
+
+    // Log the answer counts for debugging
+    logger.info('blueprints.generate.context_building', 'Building generation context', {
+      blueprintId,
+      staticAnswerKeys: Object.keys(staticAnswers).length,
+      dynamicAnswerKeys: Object.keys(dynamicAnswers).length,
+      staticAnswerSample: Object.keys(staticAnswers).slice(0, 5),
+      dynamicAnswerSample: Object.keys(dynamicAnswers).slice(0, 5),
+      isV20Format: isV20,
+    });
+
+    const learningObjectives = extractLearningObjectives(dynamicAnswers);
+    
     const context = {
       blueprintId,
       userId,
       staticAnswers,
       dynamicAnswers,
-      organization:
-        getNestedValue(staticAnswers, ['organization', 'name']) ||
-        (typeof staticAnswers?.organization === 'string' ? staticAnswers.organization : '') ||
-        'Organization',
-      role: (typeof staticAnswers?.role === 'string' ? staticAnswers.role : '') || 'Manager',
-      industry:
-        getNestedValue(staticAnswers, ['organization', 'industry']) ||
-        (typeof staticAnswers?.industry === 'string' ? staticAnswers.industry : '') ||
-        'General',
-      learningObjectives: extractLearningObjectives(dynamicAnswers),
+      organization,
+      role,
+      industry,
+      learningObjectives,
     };
+    
+    // Log extracted context
+    logger.info('blueprints.generate.context_ready', 'Context built successfully', {
+      blueprintId,
+      organization,
+      role,
+      industry,
+      learningObjectivesCount: learningObjectives.length,
+      learningObjectivesSample: learningObjectives.slice(0, 2),
+    });
 
     // Generate blueprint using orchestrator service
     const result = await blueprintGenerationService.generate(context);
@@ -260,6 +334,24 @@ export async function POST(req: NextRequest): Promise<NextResponse<GenerateBluep
         },
         { status: 500 }
       );
+    }
+
+    // Increment blueprint saving count after successful save
+    try {
+      const savingIncrementResult = await BlueprintUsageService.incrementSavingCount(supabase, userId);
+      logger.info('blueprints.generate.saving_count_incremented', 'Blueprint saving count incremented', {
+        blueprintId,
+        userId,
+        incrementResult: savingIncrementResult,
+      });
+      console.log('Saving count increment result:', savingIncrementResult, 'for user:', userId);
+    } catch (error) {
+      logger.error('blueprints.generate.saving_count_error', 'Error incrementing blueprint saving count', {
+        blueprintId,
+        userId,
+        error: (error as Error).message,
+      });
+      // Don't fail the generation if counting fails
     }
 
     const duration = Date.now() - startTime;

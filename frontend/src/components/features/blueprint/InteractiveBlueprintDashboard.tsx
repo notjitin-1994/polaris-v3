@@ -60,6 +60,7 @@ export function InteractiveBlueprintDashboard({
   const ref = React.useRef(null);
   const isInView = useInView(ref, { once: true, margin: '-100px' });
   const [mounted, setMounted] = useState(false);
+  const [hasAnimated, setHasAnimated] = useState(false);
   const [expandedSections, setExpandedSections] = useState<Set<string>>(
     new Set() // All sections collapsed by default
   );
@@ -69,6 +70,13 @@ export function InteractiveBlueprintDashboard({
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  // Track animation state once to prevent flickering
+  useEffect(() => {
+    if (isInView && !hasAnimated) {
+      setHasAnimated(true);
+    }
+  }, [isInView, hasAnimated]);
 
   // Extract data from blueprint
   const modules = blueprint.content_outline?.modules || [];
@@ -97,112 +105,145 @@ export function InteractiveBlueprintDashboard({
 
   if (blueprint.learning_objectives) {
     sections.push({
-      id: 'objectives',
+      id: 'learning_objectives',
       title: 'Learning Objectives',
       icon: Target,
       gradient: 'bg-success/20',
       iconColor: 'text-success',
-      description: `${objectives.length} measurable objectives`,
+      description: `${objectives.length} objectives to achieve • Target completion rates and KPIs defined`,
       defaultExpanded: true,
     });
   }
 
   if (blueprint.target_audience) {
+    const demographics = blueprint.target_audience.demographics;
+    const rolesCount = demographics?.roles?.length || 0;
+    const learningPrefs = blueprint.target_audience.learning_preferences;
+    const modalitiesCount = learningPrefs?.modalities?.length || 0;
+    
     sections.push({
       id: 'target_audience',
       title: 'Target Audience',
       icon: Users,
       gradient: 'bg-secondary/20',
       iconColor: 'text-secondary',
-      description: 'Demographics and learning preferences',
+      description: `${rolesCount} target roles • ${modalitiesCount} learning modalities • Demographics and preferences analyzed`,
     });
   }
 
   if (blueprint.content_outline) {
+    const totalActivities = modules.reduce((sum, m) => sum + (m.learning_activities?.length || 0), 0);
+    const totalTopics = modules.reduce((sum, m) => sum + (m.topics?.length || 0), 0);
+    
     sections.push({
       id: 'content_outline',
       title: 'Content Outline',
       icon: BookOpen,
       gradient: 'bg-primary/20',
       iconColor: 'text-primary',
-      description: `${modules.length} comprehensive learning modules`,
+      description: `${modules.length} comprehensive learning modules • ${totalActivities} activities • ${totalTopics} topics covered`,
     });
   }
 
   if (blueprint.resources) {
+    const budget = blueprint.resources.budget;
+    const budgetTotal = budget?.total || 0;
+    const humanResources = blueprint.resources.human_resources || [];
+    const tools = blueprint.resources.tools_and_platforms || [];
+    
     sections.push({
       id: 'resources',
       title: 'Resources & Budget',
       icon: DollarSign,
       gradient: 'bg-success/20',
       iconColor: 'text-success',
-      description: 'Team, tools, and financial allocation',
+      description: `${budgetTotal > 0 ? `${budget?.currency || 'USD'} ${budgetTotal.toLocaleString()} budget` : 'Budget analysis'} • ${humanResources.length} team roles • ${tools.length} platforms`,
     });
   }
 
   if (blueprint.assessment_strategy) {
+    const kpis = blueprint.assessment_strategy.kpis || [];
+    const evalMethods = blueprint.assessment_strategy.evaluation_methods || [];
+    
     sections.push({
-      id: 'assessment',
+      id: 'assessment_strategy',
       title: 'Assessment Strategy',
       icon: BarChart3,
       gradient: 'bg-primary/20',
       iconColor: 'text-primary',
-      description: 'Evaluation methods and KPIs',
+      description: `${kpis.length} KPIs defined • ${evalMethods.length} evaluation methods • Comprehensive measurement framework`,
     });
   }
 
   if (blueprint.implementation_timeline) {
+    const phases = blueprint.implementation_timeline.phases || [];
+    const totalMilestones = phases.reduce((sum, p) => sum + (p.milestones?.length || 0), 0);
+    const criticalPath = blueprint.implementation_timeline.critical_path || [];
+    
     sections.push({
-      id: 'timeline',
+      id: 'implementation_timeline',
       title: 'Implementation Timeline',
       icon: Calendar,
       gradient: 'bg-secondary/20',
       iconColor: 'text-secondary',
-      description: `${blueprint.implementation_timeline.phases.length} phases`,
+      description: `${phases.length} phases from start to finish • ${totalMilestones} milestones • ${criticalPath.length} critical path items`,
     });
   }
 
   if (blueprint.risk_mitigation) {
+    const risks = blueprint.risk_mitigation.risks || [];
+    const contingencyPlans = blueprint.risk_mitigation.contingency_plans || [];
+    const highImpactRisks = risks.filter(r => r.impact?.toLowerCase() === 'high').length;
+    
     sections.push({
-      id: 'risks',
+      id: 'risk_mitigation',
       title: 'Risk Mitigation',
       icon: Shield,
       gradient: 'bg-warning/20',
       iconColor: 'text-warning',
-      description: `${blueprint.risk_mitigation.risks.length} risks addressed`,
+      description: `${risks.length} risks identified and addressed • ${highImpactRisks} high-impact • ${contingencyPlans.length} contingency plans`,
     });
   }
 
   if (blueprint.success_metrics) {
+    const metrics = blueprint.success_metrics.metrics || [];
+    const reportingCadence = blueprint.success_metrics.reporting_cadence || 'Not specified';
+    
     sections.push({
-      id: 'metrics',
+      id: 'success_metrics',
       title: 'Success Metrics',
       icon: TrendingUp,
       gradient: 'bg-success/20',
       iconColor: 'text-success',
-      description: 'Performance indicators and tracking',
+      description: `${metrics.length} success metrics tracked • ${reportingCadence} reporting • Performance dashboard requirements`,
     });
   }
 
   if (blueprint.instructional_strategy) {
+    const modalities = blueprint.instructional_strategy.modalities || [];
+    const accessibilityCount = blueprint.instructional_strategy.accessibility_considerations?.length || 0;
+    
     sections.push({
-      id: 'strategy',
+      id: 'instructional_strategy',
       title: 'Instructional Strategy',
       icon: FileText,
       gradient: 'bg-primary/20',
       iconColor: 'text-primary',
-      description: 'Learning approach and methodology',
+      description: `${modalities.length} delivery modalities • ${accessibilityCount} accessibility considerations • Cohort model defined`,
     });
   }
 
   if (blueprint.sustainability_plan) {
+    const maintenanceSchedule = blueprint.sustainability_plan.maintenance_schedule;
+    const scalingConsiderations = blueprint.sustainability_plan.scaling_considerations || [];
+    
     sections.push({
-      id: 'sustainability',
+      id: 'sustainability_plan',
       title: 'Sustainability Plan',
       icon: Leaf,
       gradient: 'bg-success/20',
       iconColor: 'text-success',
-      description: 'Long-term maintenance and scaling',
+      description: `${maintenanceSchedule?.review_frequency || 'Regular'} reviews • ${scalingConsiderations.length} scaling strategies • Long-term viability ensured`,
     });
   }
 
@@ -260,7 +301,7 @@ export function InteractiveBlueprintDashboard({
     },
   };
 
-  const StatCard = ({
+  const StatCard = React.useMemo(() => React.memo(({
     icon: Icon,
     label,
     value,
@@ -288,7 +329,9 @@ export function InteractiveBlueprintDashboard({
 
     return (
       <motion.div
-        variants={itemVariants}
+        initial={{ opacity: 0, y: 20 }}
+        animate={hasAnimated ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+        transition={{ duration: 0.5, delay }}
         whileHover={shouldReduceAnimations ? undefined : { scale: 1.02, y: -5 }}
         className="group glass-card hover:border-primary/30 hover:shadow-primary/10 relative overflow-hidden rounded-2xl border border-white/10 p-6 transition-all duration-300 hover:shadow-2xl"
       >
@@ -306,7 +349,7 @@ export function InteractiveBlueprintDashboard({
           <div className="space-y-2">
             <p className="text-text-secondary text-sm font-medium">{label}</p>
             <div className="flex items-baseline gap-1">
-              {mounted && isInView ? (
+              {mounted && hasAnimated ? (
                 shouldReduceAnimations ? (
                   <span className="text-4xl font-bold text-white">
                     {suffix === 'hrs' ? value.toFixed(1) : value.toLocaleString()}
@@ -331,13 +374,13 @@ export function InteractiveBlueprintDashboard({
         </div>
       </motion.div>
     );
-  };
+  }), [hasAnimated, mounted, shouldReduceAnimations]);
 
   return (
     <motion.div
       ref={ref}
       initial={shouldReduceAnimations ? false : 'hidden'}
-      animate={shouldReduceAnimations ? false : isInView ? 'visible' : 'hidden'}
+      animate={shouldReduceAnimations ? false : hasAnimated ? 'visible' : 'hidden'}
       variants={shouldReduceAnimations ? undefined : containerVariants}
       className="relative space-y-8"
     >
@@ -388,6 +431,58 @@ export function InteractiveBlueprintDashboard({
         />
       </motion.div>
 
+      {/* Section Navigator */}
+      <motion.div variants={itemVariants}>
+        <div className="relative rounded-lg border border-neutral-200 bg-background">
+          {/* All Sections Grid */}
+          <div className="px-4 py-3">
+            <div className="text-xs font-medium text-primary mb-3">Quick Navigation</div>
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2">
+              {sections.map((section, index) => {
+                const isExpanded = expandedSections.has(section.id);
+                return (
+                  <motion.button
+                    key={section.id}
+                    onClick={() => scrollToSection(section.id)}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    className={`relative flex items-center justify-center rounded-md px-3 py-2 text-center transition-all duration-150 ${
+                      isExpanded
+                        ? 'bg-primary/15 text-primary border border-primary/20'
+                        : 'text-text-secondary/70 hover:text-text-secondary hover:bg-foreground/5'
+                    }`}
+                  >
+                    <span className={`text-xs leading-tight ${isExpanded ? 'font-medium' : 'font-normal'}`}>
+                      {section.title}
+                    </span>
+                  </motion.button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Progress Bar */}
+          <div className="border-t border-white/5 px-4 py-2.5">
+            <div className="flex items-center justify-between text-xs text-text-secondary/80">
+              <span>{expandedSections.size} sections expanded</span>
+              <span className="font-medium text-primary/80">
+                {sections.length > 0 ? Math.round((expandedSections.size / sections.length) * 100) : 0}% explored
+              </span>
+            </div>
+            <div className="mt-2 h-1 overflow-hidden rounded-full bg-white/8">
+              <motion.div
+                initial={{ width: 0 }}
+                animate={{ 
+                  width: sections.length > 0 ? `${(expandedSections.size / sections.length) * 100}%` : '0%' 
+                }}
+                transition={{ duration: 0.5, ease: 'easeOut' }}
+                className="bg-gradient-to-r from-primary to-primary/80 h-full rounded-full"
+              />
+            </div>
+          </div>
+        </div>
+      </motion.div>
+
       {/* Control Bar */}
       <motion.div variants={itemVariants} className="mt-8 flex items-center justify-between">
         <div className="flex gap-2">
@@ -416,9 +511,9 @@ export function InteractiveBlueprintDashboard({
         {/* Learning Objectives */}
         {blueprint.learning_objectives && (
           <ExpandableSection
-            section={sections.find((s) => s.id === 'objectives')!}
-            isExpanded={expandedSections.has('objectives')}
-            onToggle={() => toggleSection('objectives')}
+            section={sections.find((s) => s.id === 'learning_objectives')!}
+            isExpanded={expandedSections.has('learning_objectives')}
+            onToggle={() => toggleSection('learning_objectives')}
             ref={(el) => {
               sectionRefs.current['objectives'] = el;
             }}
@@ -483,9 +578,9 @@ export function InteractiveBlueprintDashboard({
         {/* Assessment Strategy */}
         {blueprint.assessment_strategy && (
           <ExpandableSection
-            section={sections.find((s) => s.id === 'assessment')!}
-            isExpanded={expandedSections.has('assessment')}
-            onToggle={() => toggleSection('assessment')}
+            section={sections.find((s) => s.id === 'assessment_strategy')!}
+            isExpanded={expandedSections.has('assessment_strategy')}
+            onToggle={() => toggleSection('assessment_strategy')}
             ref={(el) => {
               sectionRefs.current['assessment'] = el;
             }}
@@ -503,9 +598,9 @@ export function InteractiveBlueprintDashboard({
         {/* Implementation Timeline */}
         {blueprint.implementation_timeline && (
           <ExpandableSection
-            section={sections.find((s) => s.id === 'timeline')!}
-            isExpanded={expandedSections.has('timeline')}
-            onToggle={() => toggleSection('timeline')}
+            section={sections.find((s) => s.id === 'implementation_timeline')!}
+            isExpanded={expandedSections.has('implementation_timeline')}
+            onToggle={() => toggleSection('implementation_timeline')}
             ref={(el) => {
               sectionRefs.current['timeline'] = el;
             }}
@@ -521,9 +616,9 @@ export function InteractiveBlueprintDashboard({
         {/* Risk Mitigation */}
         {blueprint.risk_mitigation && (
           <ExpandableSection
-            section={sections.find((s) => s.id === 'risks')!}
-            isExpanded={expandedSections.has('risks')}
-            onToggle={() => toggleSection('risks')}
+            section={sections.find((s) => s.id === 'risk_mitigation')!}
+            isExpanded={expandedSections.has('risk_mitigation')}
+            onToggle={() => toggleSection('risk_mitigation')}
             ref={(el) => {
               sectionRefs.current['risks'] = el;
             }}
@@ -539,9 +634,9 @@ export function InteractiveBlueprintDashboard({
         {/* Success Metrics */}
         {blueprint.success_metrics && (
           <ExpandableSection
-            section={sections.find((s) => s.id === 'metrics')!}
-            isExpanded={expandedSections.has('metrics')}
-            onToggle={() => toggleSection('metrics')}
+            section={sections.find((s) => s.id === 'success_metrics')!}
+            isExpanded={expandedSections.has('success_metrics')}
+            onToggle={() => toggleSection('success_metrics')}
             ref={(el) => {
               sectionRefs.current['metrics'] = el;
             }}
@@ -557,9 +652,9 @@ export function InteractiveBlueprintDashboard({
         {/* Instructional Strategy */}
         {blueprint.instructional_strategy && (
           <ExpandableSection
-            section={sections.find((s) => s.id === 'strategy')!}
-            isExpanded={expandedSections.has('strategy')}
-            onToggle={() => toggleSection('strategy')}
+            section={sections.find((s) => s.id === 'instructional_strategy')!}
+            isExpanded={expandedSections.has('instructional_strategy')}
+            onToggle={() => toggleSection('instructional_strategy')}
             ref={(el) => {
               sectionRefs.current['strategy'] = el;
             }}
@@ -579,9 +674,9 @@ export function InteractiveBlueprintDashboard({
         {/* Sustainability Plan */}
         {blueprint.sustainability_plan && (
           <ExpandableSection
-            section={sections.find((s) => s.id === 'sustainability')!}
-            isExpanded={expandedSections.has('sustainability')}
-            onToggle={() => toggleSection('sustainability')}
+            section={sections.find((s) => s.id === 'sustainability_plan')!}
+            isExpanded={expandedSections.has('sustainability_plan')}
+            onToggle={() => toggleSection('sustainability_plan')}
             ref={(el) => {
               sectionRefs.current['sustainability'] = el;
             }}

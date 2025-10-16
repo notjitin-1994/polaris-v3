@@ -63,7 +63,7 @@ export function QuestionnaireSelect({
           }}
         >
           {!value && (
-            <option value="" disabled className="bg-background-paper text-text-disabled">
+            <option value="" disabled className="bg-[rgba(13,27,42,0.9)] text-text-disabled backdrop-blur-sm rounded-lg border border-white/10">
               {placeholder}
             </option>
           )}
@@ -72,7 +72,7 @@ export function QuestionnaireSelect({
               key={`${option.value}-${index}`}
               value={option.value}
               disabled={option.disabled}
-              className="bg-background-paper text-foreground"
+              className="bg-[rgba(13,27,42,0.9)] text-foreground backdrop-blur-sm rounded-lg border border-white/10 hover:bg-[rgba(13,27,42,0.95)] hover:border-white/20 transition-colors"
             >
               {option.label}
             </option>

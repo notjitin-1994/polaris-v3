@@ -220,7 +220,7 @@ const generationInputSchemaNew = z.object({
   learningGap: z.string().min(1),
   resources: z.string().min(1),
   constraints: z.string().min(1),
-  numSections: z.number().int().min(1).max(6).default(5),
+  numSections: z.number().int().min(1).max(12).default(10),
   questionsPerSection: z.number().int().min(1).max(10).default(7),
 });
 

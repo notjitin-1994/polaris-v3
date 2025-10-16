@@ -8,6 +8,8 @@ const PUBLIC_PATHS = new Set([
   '/auth/callback',
   '/favicon.ico',
   '/demo-loading',
+  '/pricing',
+  '/',
 ]);
 // Auth pages that should redirect to home if user is logged in
 const AUTH_PATHS = new Set(['/login', '/signup']);

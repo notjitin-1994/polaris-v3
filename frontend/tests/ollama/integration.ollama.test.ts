@@ -10,7 +10,7 @@ describe.skipIf(!process.env.RUN_OLLAMA_INTEGRATION)('Ollama Integration (real s
       baseUrl: OLLAMA_BASE_URL,
       model: OLLAMA_MODEL,
       timeoutMs: 300000,
-      maxTokens: 8192,
+      maxTokens: 16384, // Increased for 10 sections
     });
     const healthy = await client.health();
     expect(healthy).toBe(true);

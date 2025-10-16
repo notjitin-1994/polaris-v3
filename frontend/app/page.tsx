@@ -25,6 +25,8 @@ import { StandardHeader } from '@/components/layout/StandardHeader';
 import { Footer } from '@/components/layout/Footer';
 import { BlueprintCard } from '@/components/dashboard/BlueprintCard';
 import { BlueprintFilters } from '@/components/dashboard/BlueprintFilters';
+import { BlueprintUsageDisplay } from '@/components/dashboard/BlueprintUsageDisplay';
+import { BlueprintUsageService } from '@/lib/services/blueprintUsageService';
 
 function DashboardContent() {
   const { user, signOut: _signOut } = useAuth();
@@ -117,6 +119,22 @@ function DashboardContent() {
 
     console.log('Authenticated user ID:', currentUser.id);
 
+    // Check blueprint creation limits
+    try {
+      const supabase = getSupabaseBrowserClient();
+      const canCreate = await BlueprintUsageService.canCreateBlueprint(supabase, currentUser.id);
+      console.log('Creation check result:', canCreate);
+
+      if (!canCreate.canCreate) {
+        alert(canCreate.reason || 'You cannot create more blueprints at this time.');
+        setCreating(false);
+        return;
+      }
+    } catch (error) {
+      console.error('Error checking blueprint creation limits:', error);
+      // Continue with creation if we can't check limits (fallback behavior)
+    }
+
     try {
       // Compute a default index for naming based on user's existing blueprints count
       const { count, error: countError } = await supabase
@@ -164,6 +182,23 @@ function DashboardContent() {
         questionnaire_version: data.questionnaire_version,
         has_static_answers: !!data.static_answers,
       });
+
+      // Increment blueprint creation count
+      try {
+        const incrementResult = await BlueprintUsageService.incrementCreationCount(supabase, currentUser.id);
+        console.log('Blueprint creation count increment result:', incrementResult);
+        console.log('Current user ID for increment:', currentUser.id);
+
+        // Trigger refresh of usage display
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('blueprint_operation_completed', Date.now().toString());
+          window.dispatchEvent(new Event('storage'));
+          console.log('Triggered storage event for usage display refresh');
+        }
+      } catch (error) {
+        console.error('Error incrementing blueprint creation count:', error);
+        // Don't fail the creation if counting fails
+      }
 
       // Navigate to the static wizard with this blueprint ID
       // Form will load with empty fields and start saving to this blueprint
@@ -460,7 +495,10 @@ function DashboardContent() {
               {/* Left side - Blueprint list */}
               <div className="flex-1 space-y-6">
                 <div className="flex items-center justify-between">
-                  <h2 className="font-heading text-xl font-bold text-white">Your Blueprints</h2>
+                  <div className="flex items-center gap-6">
+                    <h2 className="font-heading text-xl font-bold text-white">Your Blueprints</h2>
+                    <BlueprintUsageDisplay />
+                  </div>
                   <div className="flex items-center gap-3">
                     <BlueprintFilters
                       blueprints={blueprints}

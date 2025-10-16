@@ -46,17 +46,23 @@ export function TargetAudienceInfographic({
           <div className="mb-6">
             <h4 className="text-text-secondary mb-3 text-sm font-medium">Target Roles</h4>
             <div className="flex flex-wrap gap-2">
-              {demographics.roles.map((role, index) => (
-                <motion.div
-                  key={role}
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: index * 0.05 }}
-                  className="glass-strong text-foreground rounded-lg px-4 py-2 text-sm"
-                >
-                  {role}
-                </motion.div>
-              ))}
+              {demographics.roles.map((role, index) => {
+                // Handle both string and object formats
+                const roleText = typeof role === 'string' ? role : role.role || role.name || String(role);
+                const roleKey = typeof role === 'string' ? role : role.role || role.name || `${index}-${roleText}`;
+
+                return (
+                  <motion.div
+                    key={roleKey}
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: index * 0.05 }}
+                    className="glass-strong text-foreground rounded-lg px-4 py-2 text-sm"
+                  >
+                    {roleText}
+                  </motion.div>
+                );
+              })}
             </div>
           </div>
         )}
@@ -66,17 +72,23 @@ export function TargetAudienceInfographic({
           <div className="mb-6">
             <h4 className="text-text-secondary mb-3 text-sm font-medium">Experience Levels</h4>
             <div className="flex flex-wrap gap-2">
-              {demographics.experience_levels.map((level, index) => (
-                <motion.div
-                  key={level}
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: index * 0.05 }}
-                  className="border-primary/30 bg-primary/5 text-primary rounded-lg border px-4 py-2 text-sm"
-                >
-                  {level}
-                </motion.div>
-              ))}
+              {demographics.experience_levels.map((level, index) => {
+                // Handle both string and object formats
+                const levelText = typeof level === 'string' ? level : level.level || level.name || String(level);
+                const levelKey = typeof level === 'string' ? level : level.level || level.name || `${index}-${levelText}`;
+
+                return (
+                  <motion.div
+                    key={levelKey}
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: index * 0.05 }}
+                    className="border-primary/30 bg-primary/5 text-primary rounded-lg border px-4 py-2 text-sm"
+                  >
+                    {levelText}
+                  </motion.div>
+                );
+              })}
             </div>
           </div>
         )}

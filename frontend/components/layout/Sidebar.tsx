@@ -13,6 +13,8 @@ import {
   IconLogout,
   IconSettings,
 } from '@/components/layout/icons';
+import { useBlueprintSidebar } from '@/contexts/BlueprintSidebarContext';
+import { BlueprintSidebarContent } from './BlueprintSidebarContent';
 
 interface SidebarProps {
   user: User | null;
@@ -24,6 +26,7 @@ export function Sidebar({ user, onSignOut }: SidebarProps) {
   const pathname = usePathname();
   const [sidebarCollapsed, setSidebarCollapsed] = useState<boolean>(false); // Default to expanded
   const [isMounted, setIsMounted] = useState(false);
+  const { isActiveBlueprintPage, blueprintData } = useBlueprintSidebar();
 
   // Load state from localStorage after mount to avoid hydration mismatch
   useEffect(() => {
@@ -122,11 +125,15 @@ export function Sidebar({ user, onSignOut }: SidebarProps) {
 
       {/* Navigation Content */}
       {!sidebarCollapsed && (
-        // Expanded View: Full Navigation
-        <nav
-          className="min-h-0 flex-1 space-y-6 overflow-y-auto px-4 py-4"
-          aria-label="Primary navigation"
-        >
+        // Conditional Content: Blueprint Tools or Normal Navigation
+        isActiveBlueprintPage && blueprintData ? (
+          <BlueprintSidebarContent {...blueprintData} />
+        ) : (
+          // Expanded View: Full Navigation
+          <nav
+            className="min-h-0 flex-1 space-y-6 overflow-y-auto px-4 py-4"
+            aria-label="Primary navigation"
+          >
           {/* Quick Access Section */}
           <div className="space-y-1.5">
             <h2 className="text-primary mb-2 px-3 text-[5px] font-bold tracking-wider uppercase">
@@ -199,6 +206,7 @@ export function Sidebar({ user, onSignOut }: SidebarProps) {
             })}
           </div>
         </nav>
+        )
       )}
 
       {/* Footer Section */}

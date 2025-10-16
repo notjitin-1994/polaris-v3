@@ -10,6 +10,8 @@ import { Brand } from './Brand';
 import { NavSection, type NavItem } from './NavSection';
 import { UserAvatar } from './UserAvatar';
 import { useAuth } from '@/contexts/AuthContext';
+import { OfflineIndicator } from '@/components/offline/OfflineIndicator';
+import { BlueprintSidebarProvider } from '@/contexts/BlueprintSidebarContext';
 
 interface GlobalLayoutProps {
   children: React.ReactNode;
@@ -28,10 +30,11 @@ export const GlobalLayout = memo(function GlobalLayout({
   const { user, signOut } = useAuth();
   const pathname = usePathname();
 
-  // Don't show global layout for auth pages and public share pages
+  // Don't show global layout for auth pages, public share pages, and pricing page
   const isAuthPage = pathname?.startsWith('/login') || pathname?.startsWith('/signup');
   const isPublicSharePage = pathname?.startsWith('/share/');
-  if (isAuthPage || isPublicSharePage) {
+  const isPricingPage = pathname === '/pricing';
+  if (isAuthPage || isPublicSharePage || isPricingPage) {
     return <>{children}</>;
   }
 
@@ -88,7 +91,10 @@ export const GlobalLayout = memo(function GlobalLayout({
   const shouldShowFooter = !pagesWithOwnHeaders.some((path) => pathname?.startsWith(path));
 
   return (
-    <>
+    <BlueprintSidebarProvider>
+      {/* Offline Status Indicator */}
+      <OfflineIndicator />
+      
       <div className={`bg-background text-foreground flex h-screen w-full flex-col ${className}`}>
         {/* Desktop Sidebar and Main Content */}
         <div className="flex min-h-0 flex-1">
@@ -103,6 +109,8 @@ export const GlobalLayout = memo(function GlobalLayout({
                 subtitle={currentHeaderSubtitle}
                 showMobileMenu={mobileMenuOpen}
                 onMobileMenuToggle={() => setMobileMenuOpen(true)}
+                sticky={pathname !== '/dashboard'}
+                variant={pathname === '/dashboard' ? 'solid' : 'floating'}
               />
             )}
 
@@ -172,6 +180,6 @@ export const GlobalLayout = memo(function GlobalLayout({
           </motion.div>
         </div>
       )}
-    </>
+    </BlueprintSidebarProvider>
   );
 });

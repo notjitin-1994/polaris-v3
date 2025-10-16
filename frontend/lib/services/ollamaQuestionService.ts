@@ -13,22 +13,46 @@ const logger = createServiceLogger('ollama');
 
 /**
  * Convert static answers to Ollama GenerationInput format
+ * Supports both V2.0 (3-section) and legacy V2 (8-section) formats
  */
 function convertToOllamaInput(context: QuestionGenerationContext): GenerationInput {
   const { staticAnswers } = context;
 
-  return {
-    role: staticAnswers.role || 'Unknown',
-    organization: staticAnswers.organization?.name || staticAnswers.organization || 'Unknown',
-    learningGap:
-      staticAnswers.learningGap?.description || staticAnswers.learningGap || 'Not specified',
-    resources: staticAnswers.resources ? JSON.stringify(staticAnswers.resources) : 'Not specified',
-    constraints: Array.isArray(staticAnswers.constraints)
-      ? staticAnswers.constraints.join(', ')
-      : staticAnswers.constraints || 'None',
-    numSections: 5,
-    questionsPerSection: 7,
-  };
+  // Check if V2.0 format (3-section)
+  const isV20 = staticAnswers.section_1_role_experience && 
+                staticAnswers.section_2_organization && 
+                staticAnswers.section_3_learning_gap;
+
+  if (isV20) {
+    // V2.0 (3-section) format
+    const roleData = staticAnswers.section_1_role_experience || {};
+    const orgData = staticAnswers.section_2_organization || {};
+    const learningData = staticAnswers.section_3_learning_gap || {};
+
+    return {
+      role: roleData.current_role || roleData.custom_role || 'Learning Professional',
+      organization: orgData.organization_name || 'Organization',
+      learningGap: learningData.learning_gap_description || 'Not specified',
+      resources: `Budget: ${learningData.budget_available?.currency || 'USD'} ${(learningData.budget_available?.amount || 0).toLocaleString()}, Time: ${learningData.hours_per_week || 'Not specified'}, Learners: ${learningData.total_learners_range || 'Not specified'}`,
+      constraints: `Compliance: ${Array.isArray(orgData.compliance_requirements) ? orgData.compliance_requirements.join(', ') : 'None'}, Deadline: ${learningData.learning_deadline || 'Flexible'}`,
+      numSections: 5,
+      questionsPerSection: 7,
+    };
+  } else {
+    // Legacy V2 (8-section) or V1 format
+    return {
+      role: staticAnswers.role || 'Unknown',
+      organization: staticAnswers.organization?.name || staticAnswers.organization || 'Unknown',
+      learningGap:
+        staticAnswers.learningGap?.description || staticAnswers.learningGap || 'Not specified',
+      resources: staticAnswers.resources ? JSON.stringify(staticAnswers.resources) : 'Not specified',
+      constraints: Array.isArray(staticAnswers.constraints)
+        ? staticAnswers.constraints.join(', ')
+        : staticAnswers.constraints || 'None',
+      numSections: 5,
+      questionsPerSection: 7,
+    };
+  }
 }
 
 /**
@@ -153,7 +177,7 @@ export async function generateWithOllama(
       model: 'qwen3:30b-a3b',
       fallbackModel: 'qwen3:14b',
       temperature: 0.2,
-      maxTokens: 8192,
+      maxTokens: 16384, // Increased for 10 sections (50-70 questions)
     });
 
     // Check Ollama health

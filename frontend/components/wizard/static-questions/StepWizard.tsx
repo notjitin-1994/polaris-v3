@@ -10,7 +10,7 @@ import {
   defaultValues,
   wizardSteps,
   type StaticQuestionsFormValues,
-} from '@/components/wizard/static-questions/types';
+} from './types';
 import {
   RoleStep,
   OrganizationStep,
@@ -20,13 +20,13 @@ import {
   DeliveryStrategyStep,
   ConstraintsStep,
   EvaluationStep,
-} from '@/components/wizard/static-questions/steps';
-import { QuestionnaireLayout } from '@/components/wizard/static-questions/QuestionnaireLayout';
-import { QuestionnaireCard } from '@/components/wizard/static-questions/QuestionnaireCard';
-import { QuestionnaireProgress } from '@/components/wizard/static-questions/QuestionnaireProgress';
-import { QuestionnaireButton } from '@/components/wizard/static-questions/QuestionnaireButton';
+} from './steps';
+import { QuestionnaireLayout } from './QuestionnaireLayout';
+import { QuestionnaireCard } from './QuestionnaireCard';
+import { QuestionnaireProgress } from './QuestionnaireProgress';
+import { QuestionnaireButton } from './QuestionnaireButton';
 import { useSession } from '@/hooks/useSession';
-import { useAutoSave } from '@/components/wizard/static-questions/hooks/useAutoSave';
+import { useAutoSave } from './hooks/useAutoSave';
 import { getSupabaseBrowserClient } from '@/lib/supabase/client';
 
 // V2: 8 steps - role → organization → learnerProfile → learningGap → resources → deliveryStrategy → constraints → evaluation

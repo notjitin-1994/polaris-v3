@@ -430,17 +430,11 @@ export const DynamicFormRenderer = React.forwardRef<DynamicFormRef, DynamicFormR
                     .map((section, sectionIndex) => {
                       // Skip undefined sections
                       if (!section || !section.id) {
-                        console.warn('Skipping undefined section at index:', sectionIndex);
                         return null;
                       }
 
                       const isHidden = currentSection !== section.id;
                       const className = cn('space-y-6', isHidden && 'hidden');
-
-                      // Debug: Log section visibility
-                      console.log(
-                        `Section ${section.id}: isHidden=${isHidden}, className=${className}`
-                      );
 
                       return (
                         <div
@@ -454,10 +448,6 @@ export const DynamicFormRenderer = React.forwardRef<DynamicFormRef, DynamicFormR
                                 .map((question, questionIndex) => {
                                   // Skip undefined questions
                                   if (!question || !question.id) {
-                                    console.warn(
-                                      'Skipping undefined question at index:',
-                                      questionIndex
-                                    );
                                     return null;
                                   }
 
@@ -489,7 +479,7 @@ export const DynamicFormRenderer = React.forwardRef<DynamicFormRef, DynamicFormR
                                                     });
                                                   }
                                                 } catch (e) {
-                                                  console.error('Realtime save failed:', e);
+                                                  // Save failed silently
                                                 }
                                               }}
                                               onBlur={() => {
