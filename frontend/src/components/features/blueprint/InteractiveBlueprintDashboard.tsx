@@ -16,6 +16,8 @@ import {
   ChevronDown,
   Users,
   DollarSign,
+  BarChart3,
+  Calendar,
 } from 'lucide-react';
 import { ObjectivesInfographic } from './infographics/ObjectivesInfographic';
 import { TargetAudienceInfographic } from './infographics/TargetAudienceInfographic';
