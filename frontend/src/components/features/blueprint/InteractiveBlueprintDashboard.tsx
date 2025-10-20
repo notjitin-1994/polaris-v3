@@ -13,6 +13,7 @@ import {
   FileText,
   Leaf,
   Wand2,
+  ChevronDown,
 } from 'lucide-react';
 import { ObjectivesInfographic } from './infographics/ObjectivesInfographic';
 import { TargetAudienceInfographic } from './infographics/TargetAudienceInfographic';
@@ -251,7 +252,7 @@ export function InteractiveBlueprintDashboard({
         next.add(sectionId);
       }
       return next;
-    }
+    });
   };
 
   const scrollToSection = (sectionId: string) => {
@@ -296,86 +297,123 @@ export function InteractiveBlueprintDashboard({
     },
   };
 
-  const StatCard = React.useMemo(
-    () => {
-      const MetricCard = React.memo(
-        ({
-          icon: Icon,
-          label,
-          value,
-          suffix = '',
-          gradient,
-          delay = 0,
-        }: {
-          icon: React.ElementType;
-          label: string;
-          value: number;
-          suffix?: string;
-          gradient: string;
-          delay?: number;
-        }) => {
-          // Derive icon color from gradient
-          const iconColor = gradient.includes('primary')
-            ? 'text-primary'
-            : gradient.includes('secondary')
-              ? 'text-secondary'
-              : gradient.includes('success')
-                ? 'text-success'
-                : gradient.includes('warning')
-                  ? 'text-warning'
-                  : 'text-primary';
+  const MetricCard = React.memo(
+    ({
+      icon: Icon,
+      label,
+      value,
+      suffix = '',
+      gradient,
+      delay = 0,
+    }: {
+      icon: React.ElementType;
+      label: string;
+      value: number;
+      suffix?: string;
+      gradient: string;
+      delay?: number;
+    }) => {
+      // Derive icon color from gradient
+      const iconColor = gradient.includes('primary')
+        ? 'text-primary'
+        : gradient.includes('secondary')
+          ? 'text-secondary'
+          : gradient.includes('success')
+            ? 'text-success'
+            : gradient.includes('warning')
+              ? 'text-warning'
+              : 'text-primary';
 
-          return (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={hasAnimated ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-              transition={{ duration: 0.5, delay }}
-              whileHover={shouldReduceAnimations ? undefined : { scale: 1.02, y: -5 }}
-              className="group glass-card hover:border-primary/30 hover:shadow-primary/10 relative overflow-hidden rounded-2xl border border-white/10 p-6 transition-all duration-300 hover:shadow-2xl"
-            >
+      return (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={hasAnimated ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+          transition={{ duration: 0.5, delay }}
+          whileHover={shouldReduceAnimations ? undefined : { scale: 1.02, y: -5 }}
+          className="group glass-card hover:border-primary/30 hover:shadow-primary/10 relative overflow-hidden rounded-2xl border border-white/10 p-6 transition-all duration-300 hover:shadow-2xl"
+        >
+          <div
+            className={`absolute inset-0 ${gradient} opacity-5 transition-opacity group-hover:opacity-10`}
+          />
+          <div className="relative z-10">
+            <div className="mb-4 flex items-start justify-between">
               <div
-                className={`absolute inset-0 ${gradient} opacity-5 transition-opacity group-hover:opacity-10`}
-              />
-              <div className="relative z-10">
-                <div className="mb-4 flex items-start justify-between">
-                  <div
-                    className={`rounded-xl p-3 ${gradient} bg-opacity-20 transition-transform group-hover:scale-110`}
-                  >
-                    <Icon className={`drop-shadow-glow h-6 w-6 ${iconColor}`} />
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <p className="text-text-secondary text-sm font-medium">{label}</p>
-                  <div className="flex items-baseline gap-1">
-                    {mounted && hasAnimated ? (
-                      shouldReduceAnimations ? (
-                        <span className="text-4xl font-bold text-white">
-                          {suffix === 'hrs' ? value.toFixed(1) : value.toLocaleString()}
-                        </span>
-                      ) : (
-                        <CountUp
-                          start={0}
-                          end={value}
-                          duration={2}
-                          delay={delay}
-                          decimals={suffix === 'hrs' ? 1 : 0}
-                          className="text-4xl font-bold text-white"
-                          separator=","
-                        />
-                      )
-                    ) : (
-                      <span className="text-4xl font-bold text-white">0</span>
-                    )}
-                    {suffix && <span className="text-primary text-xl font-medium">{suffix}</span>}
-                  </div>
-                </div>
+                className={`rounded-xl p-3 ${gradient} bg-opacity-20 transition-transform group-hover:scale-110`}
+              >
+                <Icon className={`drop-shadow-glow h-6 w-6 ${iconColor}`} />
               </div>
-            </motion.div>
-          );
-        }
-      }),
-    [hasAnimated, mounted, shouldReduceAnimations]
+            </div>
+            <div className="space-y-2">
+              <p className="text-text-secondary text-sm font-medium">{label}</p>
+              <div className="flex items-baseline gap-1">
+                {mounted && hasAnimated ? (
+                  shouldReduceAnimations ? (
+                    <span className="text-4xl font-bold text-white">
+                      {suffix === 'hrs' ? value.toFixed(1) : value.toLocaleString()}
+                    </span>
+                  ) : (
+                    <CountUp
+                      start={0}
+                      end={value}
+                      duration={2}
+                      delay={delay}
+                      decimals={suffix === 'hrs' ? 1 : 0}
+                      className="text-4xl font-bold text-white"
+                      separator=","
+                    />
+                  )
+                ) : (
+                  <span className="text-4xl font-bold text-white">0</span>
+                )}
+                {suffix && <span className="text-primary text-xl font-medium">{suffix}</span>}
+              </div>
+            </div>
+          </div>
+        </motion.div>
+      );
+    }
   );
+
+  MetricCard.displayName = 'MetricCard';
+
+  const StatCard = (_children: { children: React.ReactNode }) => {
+    return (
+      <motion.div
+        variants={containerVariants}
+        className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4"
+      >
+        <MetricCard
+          icon={Clock}
+          label="Total Duration"
+          value={totalDuration}
+          suffix="hrs"
+          gradient="bg-primary/20"
+          delay={0.1}
+        />
+        <MetricCard
+          icon={BookOpen}
+          label="Modules"
+          value={totalModules}
+          gradient="bg-secondary/20"
+          delay={0.2}
+        />
+        <MetricCard
+          icon={Target}
+          label="Learning Objectives"
+          value={totalObjectives}
+          gradient="bg-success/20"
+          delay={0.3}
+        />
+        <MetricCard
+          icon={Layers}
+          label="Activities"
+          value={totalActivities}
+          gradient="bg-warning/20"
+          delay={0.4}
+        />
+      </motion.div>
+    );
+  };
 
   return (
     <motion.div
@@ -394,49 +432,9 @@ export function InteractiveBlueprintDashboard({
             isPublicView={isPublicView}
           />
         </motion.div>
-      );
+      )}
 
-      MetricCard.displayName = 'MetricCard';
-
-      return MetricCard;
-    },
-    [hasAnimated, mounted, shouldReduceAnimations]
-  );
-
-  <motion.div
-    variants={containerVariants}
-    className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4"
-  >
-        <StatCard
-          icon={Clock}
-          label="Total Duration"
-          value={totalDuration}
-          suffix="hrs"
-          gradient="bg-primary/20"
-          delay={0}
-        />
-        <StatCard
-          icon={Layers}
-          label="Learning Modules"
-          value={modules.length}
-          gradient="from-secondary to-secondary/80"
-          delay={0.1}
-        />
-        <StatCard
-          icon={Target}
-          label="Learning Objectives"
-          value={objectives.length}
-          gradient="from-success to-success/80"
-          delay={0.2}
-        />
-        <StatCard
-          icon={BookOpen}
-          label="Total Activities"
-          value={modules.reduce((sum, m) => sum + (m.learning_activities?.length || 0), 0)}
-          gradient="from-warning to-warning/80"
-          delay={0.3}
-        />
-      </motion.div>
+      <StatCard />
 
       {/* Section Navigator */}
       <motion.div variants={itemVariants}>
@@ -491,7 +489,7 @@ export function InteractiveBlueprintDashboard({
                       : '0%',
                 }}
                 transition={{ duration: 0.5, ease: 'easeOut' }}
-                className="from-primary to-primary/80 h-full rounded-full bg-gradient-to-r"
+                className="bg-primary h-full rounded-full"
               />
             </div>
           </div>
@@ -781,7 +779,7 @@ const ExpandableSection = React.forwardRef<
                 if (e.key === 'Enter' || e.key === ' ') {
                   e.preventDefault();
                   e.stopPropagation();
-                  handleModify(e as any);
+                  handleModify(e as React.KeyboardEvent);
                 }
               }}
             >
@@ -816,7 +814,6 @@ const ExpandableSection = React.forwardRef<
       </AnimatePresence>
     </motion.div>
   );
-}
+});
 
 ExpandableSection.displayName = 'ExpandableSection';
-}

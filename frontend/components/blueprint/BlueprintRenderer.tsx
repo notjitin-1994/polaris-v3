@@ -21,7 +21,7 @@ import {
 import 'highlight.js/styles/tokyo-night-dark.css';
 import type { AnyBlueprint } from '@/lib/ollama/schema';
 import { BlueprintDashboard } from './BlueprintDashboard';
-import { InteractiveBlueprintDashboard } from './InteractiveBlueprintDashboard';
+import { InteractiveBlueprintDashboard } from '@/src/components/features/blueprint/InteractiveBlueprintDashboard';
 import type { BlueprintJSON } from './types';
 import { MarkdownEditor } from './MarkdownEditor';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -43,7 +43,7 @@ interface MarkdownSection {
 }
 
 // Helper to detect if blueprint has comprehensive structure (Claude or Ollama with FullBlueprint)
-function isComprehensiveBlueprint(blueprint: any): boolean {
+function isComprehensiveBlueprint(blueprint: unknown): boolean {
   if (!blueprint || typeof blueprint !== 'object') return false;
 
   // Check for Claude schema (comprehensive JSON structure)
@@ -70,14 +70,18 @@ function isComprehensiveBlueprint(blueprint: any): boolean {
 }
 
 // Normalize blueprint data to Claude schema format for consistent rendering
-function normalizeBlueprint(blueprint: any): BlueprintJSON {
+function normalizeBlueprint(blueprint: unknown): BlueprintJSON {
   // If it already has Claude schema structure, return as-is
-  if (blueprint.learning_objectives || blueprint.executive_summary) {
+  if (
+    blueprint &&
+    typeof blueprint === 'object' &&
+    ('learning_objectives' in blueprint || 'executive_summary' in blueprint)
+  ) {
     return blueprint as BlueprintJSON;
   }
 
   // Normalize Ollama FullBlueprint to Claude schema
-  const normalized: any = { ...blueprint };
+  const normalized: Partial<BlueprintJSON> = { ...(blueprint as Record<string, unknown>) };
 
   // Map objectives -> learning_objectives
   if (blueprint.objectives && !normalized.learning_objectives) {
@@ -441,15 +445,10 @@ export function BlueprintRenderer({
                               initial={{ opacity: 0, scale: 0.95, y: -10 }}
                               animate={{ opacity: 1, scale: 1, y: 0 }}
                               exit={{ opacity: 0, scale: 0.95, y: -10 }}
-                              className="fixed top-auto right-6 bottom-auto z-50 max-h-96 w-72 overflow-y-auto shadow-2xl"
+                              className="glass-strong fixed top-auto right-6 bottom-auto z-50 max-h-96 w-72 overflow-y-auto shadow-2xl"
                               style={{
                                 top: '50%',
                                 transform: 'translateY(-50%)',
-                                background: 'rgba(2, 12, 27, 0.95)',
-                                backdropFilter: 'blur(16px)',
-                                border: '1px solid rgba(167, 218, 219, 0.2)',
-                                borderRadius: '16px',
-                                boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
                               }}
                             >
                               <div className="p-2">
