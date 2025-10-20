@@ -5,23 +5,45 @@
 
 BEGIN;
 
--- Add blueprint usage tracking columns to user_profiles table
-ALTER TABLE user_profiles
-ADD COLUMN blueprint_creation_count INTEGER DEFAULT 0,
-ADD COLUMN blueprint_saving_count INTEGER DEFAULT 0,
-ADD COLUMN blueprint_creation_limit INTEGER DEFAULT 2,
-ADD COLUMN blueprint_saving_limit INTEGER DEFAULT 2,
-ADD COLUMN blueprint_usage_metadata JSONB DEFAULT '{
-  "creation_reset_date": null,
-  "saving_reset_date": null,
-  "exempt_from_limits": false,
-  "exemption_reason": null,
-  "last_blueprint_created": null,
-  "last_blueprint_saved": null
-}'::jsonb;
+-- Add blueprint usage tracking columns to user_profiles table (skip if exists)
+DO $$
+BEGIN
+  -- Check and add columns only if they don't exist
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'user_profiles' AND column_name = 'blueprint_creation_count') THEN
+    ALTER TABLE user_profiles ADD COLUMN blueprint_creation_count INTEGER DEFAULT 0;
+  END IF;
 
--- Create index on blueprint counts for performance
-CREATE INDEX idx_user_profiles_blueprint_counts ON user_profiles(blueprint_creation_count, blueprint_saving_count);
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'user_profiles' AND column_name = 'blueprint_saving_count') THEN
+    ALTER TABLE user_profiles ADD COLUMN blueprint_saving_count INTEGER DEFAULT 0;
+  END IF;
+
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'user_profiles' AND column_name = 'blueprint_creation_limit') THEN
+    ALTER TABLE user_profiles ADD COLUMN blueprint_creation_limit INTEGER DEFAULT 2;
+  END IF;
+
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'user_profiles' AND column_name = 'blueprint_saving_limit') THEN
+    ALTER TABLE user_profiles ADD COLUMN blueprint_saving_limit INTEGER DEFAULT 2;
+  END IF;
+
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'user_profiles' AND column_name = 'blueprint_usage_metadata') THEN
+    ALTER TABLE user_profiles ADD COLUMN blueprint_usage_metadata JSONB DEFAULT '{
+      "creation_reset_date": null,
+      "saving_reset_date": null,
+      "exempt_from_limits": false,
+      "exemption_reason": null,
+      "last_blueprint_created": null,
+      "last_blueprint_saved": null
+    }'::jsonb;
+  END IF;
+END $$;
+
+-- Create index on blueprint counts for performance (skip if exists)
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_indexes WHERE tablename = 'user_profiles' AND indexname = 'idx_user_profiles_blueprint_counts') THEN
+    CREATE INDEX idx_user_profiles_blueprint_counts ON user_profiles(blueprint_creation_count, blueprint_saving_count);
+  END IF;
+END $$;
 
 -- Create function to increment blueprint creation count
 CREATE OR REPLACE FUNCTION increment_blueprint_creation_count(p_user_id UUID)
@@ -200,12 +222,22 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
--- Apply the trigger to user_profiles
-DROP TRIGGER IF EXISTS trigger_auto_exempt_developer ON user_profiles;
-CREATE TRIGGER trigger_auto_exempt_developer
-  BEFORE INSERT ON user_profiles
-  FOR EACH ROW
-  EXECUTE FUNCTION auto_exempt_developer_user();
+-- Apply the trigger to user_profiles (skip if exists)
+DO $$
+BEGIN
+  -- Drop existing trigger if it exists
+  DROP TRIGGER IF EXISTS trigger_auto_exempt_developer ON user_profiles;
+
+  -- Create new trigger
+  CREATE TRIGGER trigger_auto_exempt_developer
+    BEFORE INSERT ON user_profiles
+    FOR EACH ROW
+    EXECUTE FUNCTION auto_exempt_developer_user();
+EXCEPTION
+  WHEN OTHERS THEN
+    -- If function doesn't exist, skip trigger creation
+    NULL;
+END $$;
 
 -- Initialize all user profiles with blueprint usage fields and proper defaults
 -- This ensures both new and existing users get the proper default values

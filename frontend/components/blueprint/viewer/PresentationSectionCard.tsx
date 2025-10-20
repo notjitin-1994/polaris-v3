@@ -75,31 +75,7 @@ export function PresentationSectionCard({
       </div>
 
       {/* Content Area - Matches ExpandableSection content area exactly */}
-      <div className="border-t border-white/10 px-8 pt-6 pb-8">
-        {children}
-      </div>
+      <div className="border-t border-white/10 px-8 pt-6 pb-8">{children}</div>
     </div>
   );
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

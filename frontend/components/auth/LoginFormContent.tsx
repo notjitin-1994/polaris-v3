@@ -32,17 +32,33 @@ export function LoginFormContent(): React.JSX.Element {
     try {
       const supabase = getSupabaseBrowserClient();
 
-      const { error: signInError } = await supabase.auth.signInWithPassword({
+      console.log('Attempting login for:', identifier.email);
+
+      const { data, error: signInError } = await supabase.auth.signInWithPassword({
         email: identifier.email,
         password,
       });
 
-      if (signInError) throw signInError;
+      console.log('Login result:', { success: !!data.session, error: signInError });
+
+      if (signInError) {
+        // Provide more helpful error messages
+        if (signInError.message.includes('Invalid login credentials')) {
+          throw new Error(
+            'Invalid email or password. Please check your credentials and try again.'
+          );
+        } else if (signInError.message.includes('Email not confirmed')) {
+          throw new Error('Please confirm your email address before signing in.');
+        } else {
+          throw signInError;
+        }
+      }
 
       // Force immediate redirect using window.location
       window.location.href = '/';
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Login failed');
+      console.error('Login error:', err);
+      setError(err instanceof Error ? err.message : 'Login failed. Please try again.');
       setLoading(false);
     }
   }

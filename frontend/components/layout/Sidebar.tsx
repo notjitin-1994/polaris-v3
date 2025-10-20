@@ -15,6 +15,8 @@ import {
 } from '@/components/layout/icons';
 import { useBlueprintSidebar } from '@/contexts/BlueprintSidebarContext';
 import { BlueprintSidebarContent } from './BlueprintSidebarContent';
+import { SettingsSidebarContent } from './SettingsSidebarContent';
+import { useUserProfile } from '@/lib/hooks/useUserProfile';
 
 interface SidebarProps {
   user: User | null;
@@ -27,6 +29,10 @@ export function Sidebar({ user, onSignOut }: SidebarProps) {
   const [sidebarCollapsed, setSidebarCollapsed] = useState<boolean>(false); // Default to expanded
   const [isMounted, setIsMounted] = useState(false);
   const { isActiveBlueprintPage, blueprintData } = useBlueprintSidebar();
+  const { profile, loading: profileLoading } = useUserProfile();
+
+  // Check if we're on the settings page
+  const isSettingsPage = pathname === '/settings';
 
   // Load state from localStorage after mount to avoid hydration mismatch
   useEffect(() => {
@@ -124,90 +130,91 @@ export function Sidebar({ user, onSignOut }: SidebarProps) {
       </div>
 
       {/* Navigation Content */}
-      {!sidebarCollapsed && (
-        // Conditional Content: Blueprint Tools or Normal Navigation
-        isActiveBlueprintPage && blueprintData ? (
+      {!sidebarCollapsed &&
+        // Conditional Content: Blueprint Tools, Settings, or Normal Navigation
+        (isActiveBlueprintPage && blueprintData ? (
           <BlueprintSidebarContent {...blueprintData} />
+        ) : isSettingsPage ? (
+          <SettingsSidebarContent />
         ) : (
           // Expanded View: Full Navigation
           <nav
             className="min-h-0 flex-1 space-y-6 overflow-y-auto px-4 py-4"
             aria-label="Primary navigation"
           >
-          {/* Quick Access Section */}
-          <div className="space-y-1.5">
-            <h2 className="text-primary mb-2 px-3 text-[5px] font-bold tracking-wider uppercase">
-              Quick Access
-            </h2>
-            {collapsedQuickItems.map(({ title, icon: Icon, path, badge, disabled }) => {
-              const isActive = pathname === path;
-              return (
-                <button
-                  key={title}
-                  type="button"
-                  onClick={() => !disabled && router.push(path)}
-                  disabled={disabled}
-                  className={`group focus-visible:ring-secondary/50 flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200 focus-visible:ring-2 focus-visible:ring-offset-2 ${
-                    isActive
-                      ? 'bg-primary/10 text-primary shadow-sm'
-                      : disabled
-                        ? 'text-text-disabled cursor-not-allowed'
-                        : 'text-text-secondary hover:text-foreground hover:bg-foreground/5 active:scale-[0.98]'
-                  } `}
-                >
-                  <Icon className="h-5 w-5 shrink-0" />
-                  <span className="flex-1 truncate text-left">{title}</span>
-                  {badge && (
-                    <span className="border-primary/40 bg-primary/10 text-primary shadow-primary/20 inline-flex shrink-0 items-center rounded-full border px-2.5 py-0.5 text-[10px] font-semibold tracking-wide uppercase shadow transition-all duration-200">
-                      {badge}
-                    </span>
-                  )}
-                  {isActive && !disabled && (
-                    <div className="bg-primary absolute top-1/2 right-0 h-8 w-1 -translate-y-1/2 rounded-l-full" />
-                  )}
-                </button>
-              );
-            })}
-          </div>
-
-          {/* Product Links */}
-          <div className="space-y-1">
-            <h2 className="text-primary mb-2 px-3 text-[5px] font-bold tracking-wider uppercase">
-              Explore Suite
-            </h2>
-            {productLinks.map(({ name, path, badge, badgeType }) => {
-              const isActive = pathname === path;
-              return (
-                <button
-                  key={name}
-                  type="button"
-                  onClick={() => router.push(path)}
-                  disabled={badgeType === 'soon'}
-                  className={`group flex w-full items-center justify-between gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200 ${
-                    isActive
-                      ? 'bg-primary/10 text-primary shadow-sm'
-                      : badgeType === 'soon'
-                        ? 'text-text-disabled cursor-not-allowed'
-                        : 'text-text-secondary hover:text-foreground hover:bg-foreground/5 focus-visible:ring-secondary/50 focus-visible:ring-2 focus-visible:ring-offset-2 active:scale-[0.98]'
-                  } `}
-                >
-                  <span className="flex-1 truncate text-left">{name}</span>
-                  <span
-                    className={`inline-flex shrink-0 items-center rounded-full border px-2.5 py-0.5 text-[10px] font-semibold tracking-wide uppercase transition-all duration-200 ${
-                      badgeType === 'soon'
-                        ? 'border-primary/40 bg-primary/10 text-primary shadow-primary/20 shadow'
-                        : 'text-text-disabled border-neutral-300 bg-neutral-100 dark:border-neutral-700 dark:bg-neutral-800'
+            {/* Quick Access Section */}
+            <div className="space-y-1.5">
+              <h2 className="text-primary mb-2 px-3 text-[5px] font-bold tracking-wider uppercase">
+                Quick Access
+              </h2>
+              {collapsedQuickItems.map(({ title, icon: Icon, path, badge, disabled }) => {
+                const isActive = pathname === path;
+                return (
+                  <button
+                    key={title}
+                    type="button"
+                    onClick={() => !disabled && router.push(path)}
+                    disabled={disabled}
+                    className={`group focus-visible:ring-secondary/50 flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200 focus-visible:ring-2 focus-visible:ring-offset-2 ${
+                      isActive
+                        ? 'bg-primary/10 text-primary shadow-sm'
+                        : disabled
+                          ? 'text-text-disabled cursor-not-allowed'
+                          : 'text-text-secondary hover:text-foreground hover:bg-foreground/5 active:scale-[0.98]'
                     } `}
                   >
-                    {badge}
-                  </span>
-                </button>
-              );
-            })}
-          </div>
-        </nav>
-        )
-      )}
+                    <Icon className="h-5 w-5 shrink-0" />
+                    <span className="flex-1 truncate text-left">{title}</span>
+                    {badge && (
+                      <span className="border-primary/40 bg-primary/10 text-primary shadow-primary/20 inline-flex shrink-0 items-center rounded-full border px-2.5 py-0.5 text-[10px] font-semibold tracking-wide uppercase shadow transition-all duration-200">
+                        {badge}
+                      </span>
+                    )}
+                    {isActive && !disabled && (
+                      <div className="bg-primary absolute top-1/2 right-0 h-8 w-1 -translate-y-1/2 rounded-l-full" />
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Product Links */}
+            <div className="space-y-1">
+              <h2 className="text-primary mb-2 px-3 text-[5px] font-bold tracking-wider uppercase">
+                Explore Suite
+              </h2>
+              {productLinks.map(({ name, path, badge, badgeType }) => {
+                const isActive = pathname === path;
+                return (
+                  <button
+                    key={name}
+                    type="button"
+                    onClick={() => router.push(path)}
+                    disabled={badgeType === 'soon'}
+                    className={`group flex w-full items-center justify-between gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200 ${
+                      isActive
+                        ? 'bg-primary/10 text-primary shadow-sm'
+                        : badgeType === 'soon'
+                          ? 'text-text-disabled cursor-not-allowed'
+                          : 'text-text-secondary hover:text-foreground hover:bg-foreground/5 focus-visible:ring-secondary/50 focus-visible:ring-2 focus-visible:ring-offset-2 active:scale-[0.98]'
+                    } `}
+                  >
+                    <span className="flex-1 truncate text-left">{name}</span>
+                    <span
+                      className={`inline-flex shrink-0 items-center rounded-full border px-2.5 py-0.5 text-[10px] font-semibold tracking-wide uppercase transition-all duration-200 ${
+                        badgeType === 'soon'
+                          ? 'border-primary/40 bg-primary/10 text-primary shadow-primary/20 shadow'
+                          : 'text-text-disabled border-neutral-300 bg-neutral-100 dark:border-neutral-700 dark:bg-neutral-800'
+                      } `}
+                    >
+                      {badge}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </nav>
+        ))}
 
       {/* Footer Section */}
       <div className="bg-surface/50 mt-auto w-full flex-shrink-0 backdrop-blur-sm">
@@ -281,7 +288,12 @@ export function Sidebar({ user, onSignOut }: SidebarProps) {
               className="group hover:bg-foreground/5 focus-visible:ring-secondary/50 flex w-full items-center gap-3 rounded-lg px-3 py-2.5 transition-all duration-200 focus-visible:ring-2 focus-visible:ring-offset-2 active:scale-[0.98]"
             >
               <div className="relative">
-                <UserAvatar user={user} sizeClass="w-9 h-9" textClass="text-sm font-bold" />
+                <UserAvatar
+                  user={user}
+                  sizeClass="w-9 h-9"
+                  textClass="text-sm font-bold"
+                  avatarUrl={profile?.avatar_url}
+                />
                 <div className="bg-success border-surface absolute -right-0.5 -bottom-0.5 h-3 w-3 rounded-full border-2" />
               </div>
               <div className="min-w-0 flex-1 text-left">

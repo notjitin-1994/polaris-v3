@@ -16,6 +16,11 @@ export interface Database {
           last_name: string | null;
           avatar_url: string | null;
           preferences: Json;
+          subscription_tier: string;
+          user_role: string;
+          subscription_metadata: Json;
+          role_assigned_at: string;
+          role_assigned_by: string | null;
           blueprint_creation_count: number;
           blueprint_saving_count: number;
           blueprint_creation_limit: number;
@@ -31,6 +36,11 @@ export interface Database {
           last_name?: string | null;
           avatar_url?: string | null;
           preferences?: Json;
+          subscription_tier?: string;
+          user_role?: string;
+          subscription_metadata?: Json;
+          role_assigned_at?: string;
+          role_assigned_by?: string | null;
           blueprint_creation_count?: number;
           blueprint_saving_count?: number;
           blueprint_creation_limit?: number;
@@ -45,6 +55,11 @@ export interface Database {
           last_name?: string | null;
           avatar_url?: string | null;
           preferences?: Json;
+          subscription_tier?: string;
+          user_role?: string;
+          subscription_metadata?: Json;
+          role_assigned_at?: string;
+          role_assigned_by?: string | null;
           blueprint_creation_count?: number;
           blueprint_saving_count?: number;
           blueprint_creation_limit?: number;
@@ -130,6 +145,26 @@ export interface Database {
         Returns: Json;
       };
       validate_static_answers: unknown;
+      create_user_profile: {
+        Args: {
+          p_user_id: string;
+          p_full_name?: string | null;
+          p_first_name?: string | null;
+          p_last_name?: string | null;
+          p_avatar_url?: string | null;
+        };
+        Returns: Database['public']['Tables']['user_profiles']['Row'];
+      };
+      get_or_create_user_profile: {
+        Args: {
+          p_user_id: string;
+          p_full_name?: string | null;
+          p_first_name?: string | null;
+          p_last_name?: string | null;
+          p_avatar_url?: string | null;
+        };
+        Returns: Database['public']['Tables']['user_profiles']['Row'];
+      };
     };
     Enums: Record<string, never>;
   };

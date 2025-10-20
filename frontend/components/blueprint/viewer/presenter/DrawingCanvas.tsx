@@ -204,7 +204,7 @@ export function DrawingCanvas({
 
     if (tool === 'shape' && shapeStart) {
       const pos = getMousePos(e);
-      
+
       // Create rectangle path
       const rectPath: Point[] = [
         shapeStart,
@@ -269,7 +269,14 @@ export function DrawingCanvas({
       ref={canvasRef}
       className="absolute inset-0 z-10"
       style={{
-        cursor: tool === 'eraser' ? 'crosshair' : tool === 'pen' || tool === 'highlighter' ? 'crosshair' : tool === 'shape' ? 'crosshair' : 'default',
+        cursor:
+          tool === 'eraser'
+            ? 'crosshair'
+            : tool === 'pen' || tool === 'highlighter'
+              ? 'crosshair'
+              : tool === 'shape'
+                ? 'crosshair'
+                : 'default',
       }}
       onMouseDown={handleMouseDown}
       onMouseMove={handleMouseMove}
@@ -282,27 +289,3 @@ export function DrawingCanvas({
     />
   );
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

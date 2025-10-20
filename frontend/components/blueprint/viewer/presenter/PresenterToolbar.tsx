@@ -88,8 +88,8 @@ export function PresenterToolbar({
       className={cn(
         'flex h-12 w-12 flex-col items-center justify-center rounded-xl border transition-all',
         activeTool === tool
-          ? 'border-primary/50 bg-primary/20 text-primary shadow-lg shadow-primary/20'
-          : 'border-white/10 bg-white/5 text-text-secondary hover:border-primary/30 hover:bg-primary/10 hover:text-primary'
+          ? 'border-primary/50 bg-primary/20 text-primary shadow-primary/20 shadow-lg'
+          : 'bg-surface/50 text-text-secondary hover:border-primary/30 hover:bg-primary/10 hover:text-primary border-neutral-200/20'
       )}
       title={`${label}${shortcut ? ` (${shortcut})` : ''}`}
     >
@@ -99,7 +99,7 @@ export function PresenterToolbar({
   );
 
   return (
-    <div className="glass-panel relative rounded-2xl border border-white/10 p-4 backdrop-blur-xl">
+    <div className="glass-panel relative rounded-2xl border border-neutral-200/20 p-4 backdrop-blur-xl">
       <div className="flex items-center justify-between gap-4">
         {/* Navigation */}
         <div className="flex items-center gap-2">
@@ -111,8 +111,8 @@ export function PresenterToolbar({
             className={cn(
               'flex h-12 w-12 items-center justify-center rounded-xl border transition-all',
               canGoPrev
-                ? 'border-white/10 bg-white/5 text-white hover:border-secondary/50 hover:bg-secondary/10 hover:text-secondary'
-                : 'cursor-not-allowed border-white/5 bg-white/[0.02] text-text-disabled'
+                ? 'bg-surface/50 text-foreground hover:border-secondary/50 hover:bg-secondary/10 hover:text-secondary border-neutral-200/20'
+                : 'bg-surface/30 text-text-disabled cursor-not-allowed border-neutral-200/10'
             )}
             aria-label="Previous slide"
           >
@@ -127,8 +127,8 @@ export function PresenterToolbar({
             className={cn(
               'flex h-12 w-12 items-center justify-center rounded-xl border transition-all',
               canGoNext
-                ? 'border-white/10 bg-white/5 text-white hover:border-secondary/50 hover:bg-secondary/10 hover:text-secondary'
-                : 'cursor-not-allowed border-white/5 bg-white/[0.02] text-text-disabled'
+                ? 'bg-surface/50 text-foreground hover:border-secondary/50 hover:bg-secondary/10 hover:text-secondary border-neutral-200/20'
+                : 'bg-surface/30 text-text-disabled cursor-not-allowed border-neutral-200/10'
             )}
             aria-label="Next slide"
           >
@@ -161,11 +161,11 @@ export function PresenterToolbar({
                 'flex h-12 items-center gap-2 rounded-xl border px-4 transition-all',
                 showColorPicker
                   ? 'border-primary/50 bg-primary/20 text-primary'
-                  : 'border-white/10 bg-white/5 text-text-secondary hover:border-primary/30 hover:bg-primary/10'
+                  : 'bg-surface/50 text-text-secondary hover:border-primary/30 hover:bg-primary/10 border-neutral-200/20'
               )}
             >
               <div
-                className="h-5 w-5 rounded-md border-2 border-white/20"
+                className="h-5 w-5 rounded-md border-2 border-neutral-200/20"
                 style={{ backgroundColor: drawingSettings.color }}
               />
               <Palette className="h-4 w-4" />
@@ -177,11 +177,9 @@ export function PresenterToolbar({
                   initial={{ opacity: 0, y: 10, scale: 0.95 }}
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                  className="absolute bottom-full left-0 z-50 mb-2 rounded-xl border border-white/10 bg-slate-900 p-4 shadow-2xl backdrop-blur-xl"
+                  className="bg-surface/80 absolute bottom-full left-0 z-50 mb-2 rounded-xl border border-neutral-200/20 p-4 shadow-2xl backdrop-blur-xl"
                 >
-                  <h4 className="mb-3 text-xs font-semibold text-foreground">
-                    Drawing Color
-                  </h4>
+                  <h4 className="text-foreground mb-3 text-xs font-semibold">Drawing Color</h4>
                   <div className="grid grid-cols-3 gap-2">
                     {PRESET_COLORS.map((color) => (
                       <button
@@ -196,8 +194,8 @@ export function PresenterToolbar({
                         className={cn(
                           'group relative h-10 w-10 rounded-lg border-2 transition-all hover:scale-110',
                           drawingSettings.color === color.value
-                            ? 'border-primary shadow-lg shadow-primary/30'
-                            : 'border-white/20 hover:border-white/40'
+                            ? 'border-primary shadow-primary/30 shadow-lg'
+                            : 'border-neutral-200/20 hover:border-neutral-200/40'
                         )}
                         style={{ backgroundColor: color.value }}
                         title={color.name}
@@ -229,7 +227,7 @@ export function PresenterToolbar({
                 'flex h-12 items-center gap-2 rounded-xl border px-4 transition-all',
                 showSizePicker
                   ? 'border-primary/50 bg-primary/20 text-primary'
-                  : 'border-white/10 bg-white/5 text-text-secondary hover:border-primary/30 hover:bg-primary/10'
+                  : 'bg-surface/50 text-text-secondary hover:border-primary/30 hover:bg-primary/10 border-neutral-200/20'
               )}
             >
               <div
@@ -248,11 +246,9 @@ export function PresenterToolbar({
                   initial={{ opacity: 0, y: 10, scale: 0.95 }}
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                  className="absolute bottom-full left-0 z-50 mb-2 rounded-xl border border-white/10 bg-slate-900 p-4 shadow-2xl backdrop-blur-xl"
+                  className="bg-surface/80 absolute bottom-full left-0 z-50 mb-2 rounded-xl border border-neutral-200/20 p-4 shadow-2xl backdrop-blur-xl"
                 >
-                  <h4 className="mb-3 text-xs font-semibold text-foreground">
-                    Brush Size
-                  </h4>
+                  <h4 className="text-foreground mb-3 text-xs font-semibold">Brush Size</h4>
                   <div className="flex flex-col gap-2">
                     {PRESET_SIZES.map((size) => (
                       <button
@@ -268,7 +264,7 @@ export function PresenterToolbar({
                           'flex items-center justify-between gap-4 rounded-lg border px-4 py-2 transition-all',
                           drawingSettings.size === size.value
                             ? 'border-primary/50 bg-primary/20 text-primary'
-                            : 'border-white/10 bg-white/5 text-text-secondary hover:border-primary/30 hover:bg-primary/10'
+                            : 'bg-surface/50 text-text-secondary hover:border-primary/30 hover:bg-primary/10 border-neutral-200/20'
                         )}
                       >
                         <span className="text-sm font-medium">{size.name}</span>
@@ -295,7 +291,7 @@ export function PresenterToolbar({
               // Clear all drawings
               onToolChange('none');
             }}
-            className="flex h-12 w-12 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-text-secondary transition-all hover:border-red-500/50 hover:bg-red-500/10 hover:text-red-500"
+            className="bg-surface/50 text-text-secondary flex h-12 w-12 items-center justify-center rounded-xl border border-neutral-200/20 transition-all hover:border-red-500/50 hover:bg-red-500/10 hover:text-red-500"
             title="Clear all drawings"
           >
             <Trash2 className="h-5 w-5" />
@@ -305,27 +301,3 @@ export function PresenterToolbar({
     </div>
   );
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

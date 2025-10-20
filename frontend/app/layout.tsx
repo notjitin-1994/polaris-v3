@@ -56,12 +56,11 @@ export default function RootLayout({
               // Apply theme class immediately to prevent flash
               (function() {
                 try {
-                  const stored = localStorage.getItem('smartslate-theme');
-                  const theme = (stored && ['light', 'dark'].includes(stored)) ? stored : 'dark';
+                  // Always default to dark theme for SmartSlate
                   document.documentElement.classList.remove('light', 'dark');
-                  document.documentElement.classList.add(theme);
+                  document.documentElement.classList.add('dark');
                 } catch (e) {
-                  // Fallback to dark if localStorage fails
+                  // Fallback to dark if anything fails
                   document.documentElement.classList.add('dark');
                 }
               })();
@@ -69,7 +68,10 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className={`${quicksand.variable} ${lato.variable} antialiased`} suppressHydrationWarning>
+      <body
+        className={`${quicksand.variable} ${lato.variable} antialiased`}
+        suppressHydrationWarning
+      >
         <GlobalErrorBoundary>
           <ThemeProvider defaultTheme="dark">
             <AuthProvider>

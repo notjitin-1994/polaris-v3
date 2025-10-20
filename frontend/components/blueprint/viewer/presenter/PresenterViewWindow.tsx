@@ -7,14 +7,9 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import {
-  Monitor,
-  Clock,
-  Timer,
-  Eye,
-} from 'lucide-react';
+import { Monitor, Clock, Timer, Eye } from 'lucide-react';
 import { RichTextNotesEditor } from './RichTextNotesEditor';
-import { PresentationToolbar, type PresentationTool, type PresentationDrawingSettings } from '../PresentationToolbar';
+import { PresenterToolbar, type PresenterTool, type DrawingSettings } from './PresenterToolbar';
 import { cn } from '@/lib/design-system';
 
 interface SlideData {
@@ -31,13 +26,7 @@ interface SlideData {
   };
 }
 
-export type PresenterTool = 
-  | 'none' 
-  | 'laser' 
-  | 'pen' 
-  | 'highlighter' 
-  | 'eraser' 
-  | 'shape';
+export type PresenterTool = 'none' | 'laser' | 'pen' | 'highlighter' | 'eraser' | 'shape';
 
 export interface DrawingSettings {
   color: string;
@@ -72,7 +61,7 @@ export function PresenterViewWindow({
     });
     return initialNotes;
   });
-  
+
   const [elapsedTime, setElapsedTime] = useState(0);
   const [timerRunning, setTimerRunning] = useState(true);
   const [showNextSlide, setShowNextSlide] = useState(true);
@@ -80,7 +69,7 @@ export function PresenterViewWindow({
   const [showSlideChangeNotification, setShowSlideChangeNotification] = useState(false);
   const [previousSlide, setPreviousSlide] = useState(currentSlide);
   const [isEditingNotes, setIsEditingNotes] = useState(false);
-  
+
   // Drawing tools state
   const [activeTool, setActiveTool] = useState<PresentationTool>('none');
   const [drawingSettings, setDrawingSettings] = useState<PresentationDrawingSettings>({
@@ -88,15 +77,15 @@ export function PresenterViewWindow({
     size: 3,
     opacity: 1,
   });
-  
+
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
   // Send tool state changes to main window
   useEffect(() => {
     if (window.opener) {
       window.opener.postMessage(
-        { 
-          type: 'PRESENTER_TOOL_CHANGE', 
+        {
+          type: 'PRESENTER_TOOL_CHANGE',
           tool: activeTool,
           settings: drawingSettings,
         },
@@ -137,7 +126,7 @@ export function PresenterViewWindow({
     const hrs = Math.floor(seconds / 3600);
     const mins = Math.floor((seconds % 3600) / 60);
     const secs = seconds % 60;
-    
+
     if (hrs > 0) {
       return `${String(hrs).padStart(2, '0')}:${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
     }
@@ -205,21 +194,21 @@ export function PresenterViewWindow({
   }, [currentSlide, totalSlides, showTimer, showNextSlide, isEditingNotes, activeTool]);
 
   return (
-    <div className="flex h-screen flex-col bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-white overflow-hidden">
+    <div className="bg-background text-foreground flex h-screen flex-col overflow-hidden">
       {/* Header */}
-      <header className="glass-panel border-b border-white/10 px-6 py-4 backdrop-blur-xl">
+      <header className="glass-panel border-b border-neutral-200/20 px-6 py-4 backdrop-blur-xl">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2">
-              <Monitor className="h-5 w-5 text-primary" />
-              <h1 className="text-lg font-bold text-foreground">Presenter View</h1>
+              <Monitor className="text-primary h-5 w-5" />
+              <h1 className="text-foreground text-lg font-bold">Presenter View</h1>
             </div>
-            
-            <div className="flex items-center gap-2 rounded-lg border border-white/10 bg-white/5 px-3 py-1.5">
-              <span className="text-sm text-text-secondary">Slide</span>
-              <span className="text-xl font-bold text-primary">{currentSlide + 1}</span>
-              <span className="text-sm text-text-secondary">/</span>
-              <span className="text-lg text-text-secondary">{totalSlides}</span>
+
+            <div className="bg-surface/50 flex items-center gap-2 rounded-lg border border-neutral-200/20 px-3 py-1.5">
+              <span className="text-text-secondary text-sm">Slide</span>
+              <span className="text-primary text-xl font-bold">{currentSlide + 1}</span>
+              <span className="text-text-secondary text-sm">/</span>
+              <span className="text-text-secondary text-lg">{totalSlides}</span>
             </div>
           </div>
 
@@ -230,24 +219,24 @@ export function PresenterViewWindow({
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => setTimerRunning(!timerRunning)}
-                className="touch-target flex h-9 w-9 items-center justify-center rounded-lg border border-white/10 bg-white/5 text-white transition-all hover:border-primary/50 hover:bg-primary/10"
+                className="touch-target bg-surface/50 text-foreground hover:border-primary/50 hover:bg-primary/10 flex h-9 w-9 items-center justify-center rounded-lg border border-neutral-200/20 transition-all"
                 aria-label={timerRunning ? 'Pause timer' : 'Resume timer'}
               >
                 <Timer className="h-4 w-4" />
               </motion.button>
-              
-              <div className="flex items-center gap-2 rounded-lg border border-white/10 bg-white/5 px-4 py-2">
-                <Clock className="h-4 w-4 text-primary" />
-                <span className="text-xl font-mono font-bold text-white">
+
+              <div className="bg-surface/50 flex items-center gap-2 rounded-lg border border-neutral-200/20 px-4 py-2">
+                <Clock className="text-primary h-4 w-4" />
+                <span className="text-foreground font-mono text-xl font-bold">
                   {formatTime(elapsedTime)}
                 </span>
               </div>
-              
+
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => setElapsedTime(0)}
-                className="touch-target rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm font-medium text-white transition-all hover:border-secondary/50 hover:bg-secondary/10"
+                className="touch-target bg-surface/50 text-foreground hover:border-secondary/50 hover:bg-secondary/10 rounded-lg border border-neutral-200/20 px-3 py-2 text-sm font-medium transition-all"
               >
                 Reset
               </motion.button>
@@ -257,19 +246,17 @@ export function PresenterViewWindow({
       </header>
 
       {/* Main Content */}
-      <div className="flex flex-1 gap-4 p-4 overflow-hidden">
+      <div className="flex flex-1 gap-4 overflow-hidden p-4">
         {/* Notes & Next Slide Panel */}
-        <div className="flex flex-1 flex-col gap-4 w-full">
+        <div className="flex w-full flex-1 flex-col gap-4">
           {/* Notes Editor */}
-          <div className="flex-1 overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-white/5 to-white/[0.02] backdrop-blur-xl">
+          <div className="bg-surface/30 flex-1 overflow-hidden rounded-2xl border border-neutral-200/20 backdrop-blur-xl">
             <div className="flex h-full flex-col">
-              <div className="flex items-center justify-between border-b border-white/10 px-4 py-3">
+              <div className="flex items-center justify-between border-b border-neutral-200/20 px-4 py-3">
                 <div className="flex items-center gap-3">
-                  <h3 className="text-sm font-semibold text-foreground">
-                    Speaker Notes
-                  </h3>
+                  <h3 className="text-foreground text-sm font-semibold">Speaker Notes</h3>
                   {slidesData[currentSlide] && (
-                    <span className="text-xs text-text-secondary">
+                    <span className="text-text-secondary text-xs">
                       - {slidesData[currentSlide].title}
                     </span>
                   )}
@@ -277,9 +264,9 @@ export function PresenterViewWindow({
                     <motion.span
                       initial={{ opacity: 0, scale: 0.9 }}
                       animate={{ opacity: 1, scale: 1 }}
-                      className="flex items-center gap-1.5 rounded-md bg-secondary/20 px-2 py-1 text-[10px] font-medium text-secondary"
+                      className="bg-secondary/20 text-secondary flex items-center gap-1.5 rounded-md px-2 py-1 text-[10px] font-medium"
                     >
-                      <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-secondary" />
+                      <span className="bg-secondary h-1.5 w-1.5 animate-pulse rounded-full" />
                       Editing
                     </motion.span>
                   )}
@@ -288,20 +275,20 @@ export function PresenterViewWindow({
                   key={currentSlide}
                   initial={{ scale: 0.8, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
-                  className="flex items-center gap-2 rounded-lg bg-primary/20 px-3 py-1.5"
+                  className="bg-primary/20 flex items-center gap-2 rounded-lg px-3 py-1.5"
                 >
-                  <div 
+                  <div
                     className="h-2 w-2 rounded-full"
                     style={{
-                      backgroundColor: slidesData[currentSlide]?.colorTheme.primary || '#A7DADB'
+                      backgroundColor: slidesData[currentSlide]?.colorTheme.primary || '#A7DADB',
                     }}
                   />
-                  <span className="text-xs font-semibold text-primary">
+                  <span className="text-primary text-xs font-semibold">
                     Slide {currentSlide + 1} of {totalSlides}
                   </span>
                 </motion.div>
               </div>
-              
+
               <AnimatePresence mode="wait">
                 <motion.div
                   key={currentSlide}
@@ -332,31 +319,29 @@ export function PresenterViewWindow({
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="h-40 overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-white/5 to-white/[0.02] backdrop-blur-xl"
+              className="bg-surface/30 h-40 overflow-hidden rounded-2xl border border-neutral-200/20 backdrop-blur-xl"
             >
               <div className="flex h-full flex-col">
-                <div className="flex items-center justify-between border-b border-white/10 px-4 py-2">
-                  <h3 className="text-xs font-semibold text-text-secondary">
-                    Next Slide
-                  </h3>
-                  <span className="text-xs text-text-secondary">
+                <div className="flex items-center justify-between border-b border-neutral-200/20 px-4 py-2">
+                  <h3 className="text-text-secondary text-xs font-semibold">Next Slide</h3>
+                  <span className="text-text-secondary text-xs">
                     {currentSlide + 2} of {totalSlides}
                   </span>
                 </div>
-                
+
                 <div className="flex flex-1 items-center justify-center p-4">
-                  <div 
-                    className="h-full w-full rounded-lg shadow-lg flex flex-col items-center justify-center p-4"
+                  <div
+                    className="flex h-full w-full flex-col items-center justify-center rounded-lg p-4 shadow-lg"
                     style={{
-                      background: slidesData[currentSlide + 1] 
+                      background: slidesData[currentSlide + 1]
                         ? `linear-gradient(135deg, ${slidesData[currentSlide + 1].colorTheme.primary}15, ${slidesData[currentSlide + 1].colorTheme.light}10, white)`
-                        : 'rgb(249, 250, 251)'
+                        : 'rgb(249, 250, 251)',
                     }}
                   >
                     {slidesData[currentSlide + 1] ? (
                       <>
-                        <div 
-                          className="mb-2 h-8 w-8 rounded-full flex items-center justify-center text-sm font-bold"
+                        <div
+                          className="mb-2 flex h-8 w-8 items-center justify-center rounded-full text-sm font-bold"
                           style={{
                             backgroundColor: slidesData[currentSlide + 1].colorTheme.primary,
                             color: 'white',
@@ -364,7 +349,7 @@ export function PresenterViewWindow({
                         >
                           {currentSlide + 2}
                         </div>
-                        <div 
+                        <div
                           className="text-center text-sm font-semibold"
                           style={{ color: slidesData[currentSlide + 1].colorTheme.dark }}
                         >
@@ -372,7 +357,7 @@ export function PresenterViewWindow({
                         </div>
                       </>
                     ) : (
-                      <div className="text-center text-slate-600 text-sm">
+                      <div className="text-center text-sm text-slate-600">
                         Next: Slide {currentSlide + 2}
                       </div>
                     )}
@@ -393,13 +378,13 @@ export function PresenterViewWindow({
                 'flex flex-1 items-center justify-center gap-2 rounded-xl border px-4 py-3 text-sm font-medium transition-all',
                 currentSlide < totalSlides - 1
                   ? 'border-primary/50 bg-primary/10 text-primary hover:bg-primary/20'
-                  : 'cursor-not-allowed border-white/10 bg-white/5 text-text-disabled'
+                  : 'bg-surface/50 text-text-disabled cursor-not-allowed border-neutral-200/20'
               )}
             >
               <Eye className="h-4 w-4" />
               Next Slide
             </motion.button>
-            
+
             <motion.button
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
@@ -408,7 +393,7 @@ export function PresenterViewWindow({
                 'flex items-center justify-center gap-2 rounded-xl border px-4 py-3 text-sm font-medium transition-all',
                 showTimer
                   ? 'border-secondary/50 bg-secondary/20 text-secondary'
-                  : 'border-white/10 bg-white/5 text-text-secondary hover:border-secondary/30 hover:bg-secondary/10 hover:text-secondary'
+                  : 'bg-surface/50 text-text-secondary hover:border-secondary/30 hover:bg-secondary/10 hover:text-secondary border-neutral-200/20'
               )}
             >
               <Clock className="h-4 w-4" />
@@ -419,23 +404,15 @@ export function PresenterViewWindow({
       </div>
 
       {/* Presentation Toolbar */}
-      <PresentationToolbar
-        currentSlide={currentSlide}
-        totalSlides={totalSlides}
+      <PresenterToolbar
         activeTool={activeTool}
         drawingSettings={drawingSettings}
         onToolChange={setActiveTool}
         onSettingsChange={setDrawingSettings}
         onPrevSlide={goToPrevSlide}
         onNextSlide={goToNextSlide}
-        onClearDrawings={() => setActiveTool('none')}
-        onPresenterView={onClose || (() => window.close())}
-        onGridView={() => sendToMainWindow('TOGGLE_GRID')}
-        onToggleFullscreen={() => sendToMainWindow('TOGGLE_FULLSCREEN')}
         canGoPrev={currentSlide > 0}
         canGoNext={currentSlide < totalSlides - 1}
-        isFullscreen={false}
-        presenterViewActive={true}
       />
 
       {/* Slide Change Notification */}
@@ -445,32 +422,19 @@ export function PresenterViewWindow({
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
-            className="fixed top-24 left-1/2 -translate-x-1/2 z-50"
+            className="fixed top-24 left-1/2 z-50 -translate-x-1/2"
           >
-            <div 
-              className="rounded-xl px-6 py-3 shadow-2xl backdrop-blur-xl border"
-              style={{
-                backgroundColor: `${slidesData[currentSlide].colorTheme.bg}dd`,
-                borderColor: slidesData[currentSlide].colorTheme.border,
-              }}
-            >
+            <div className="glass-panel rounded-xl border border-neutral-200/20 px-6 py-3 shadow-2xl">
               <div className="flex items-center gap-3">
-                <div 
+                <div
                   className="h-3 w-3 rounded-full"
                   style={{
-                    backgroundColor: slidesData[currentSlide].colorTheme.primary
+                    backgroundColor: slidesData[currentSlide].colorTheme.primary,
                   }}
                 />
                 <div>
-                  <div className="text-xs font-medium text-text-secondary">
-                    Now viewing
-                  </div>
-                  <div 
-                    className="text-sm font-bold"
-                    style={{
-                      color: slidesData[currentSlide].colorTheme.dark
-                    }}
-                  >
+                  <div className="text-text-secondary text-xs font-medium">Now viewing</div>
+                  <div className="text-foreground text-sm font-bold">
                     Slide {currentSlide + 1}: {slidesData[currentSlide].title}
                   </div>
                 </div>
@@ -482,4 +446,3 @@ export function PresenterViewWindow({
     </div>
   );
 }
-

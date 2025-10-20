@@ -111,6 +111,10 @@
   --glass-transition-duration: var(--duration-base);
   --glass-transition-easing: cubic-bezier(0.4, 0, 0.2, 1);
 
+  /* Glass Effect Properties */
+  --glass-bg: rgba(0, 0, 0, 0.7);
+  --glass-border: rgba(255, 255, 255, 0.2);
+
   /* Glass Effect Variations */
   --glass-subtle-bg-opacity: 0.05;
   --glass-subtle-border-opacity: 0.08;
@@ -163,6 +167,52 @@
   --neutral-700: #e2e8f0;
   --neutral-800: #f1f5f9;
   --neutral-900: #f8fafc;
+}
+
+/* Ensure dark class also has the same variables */
+.dark {
+  --background: #020c1b;
+  --foreground: #e0e0e0;
+
+  /* Dark mode color tokens - Brand (user specified) */
+  --primary-accent: #a7dadb;
+  --primary-accent-light: #d0edf0;
+  --primary-accent-dark: #7bc5c7;
+  --secondary-accent: #4f46e5;
+  --secondary-accent-light: #7c69f5;
+  --secondary-accent-dark: #3730a3;
+
+  /* Dark mode color tokens - Backgrounds (user specified) */
+  --background-dark: #020c1b;
+  --background-paper: #0d1b2a;
+  --background-surface: #142433;
+
+  /* Dark mode color tokens - Text (user specified) */
+  --text-primary: #e0e0e0;
+  --text-secondary: #b0c5c6;
+  --text-disabled: #7a8a8b;
+
+  /* Dark mode color tokens - States */
+  --success: #10b981;
+  --warning: #f59e0b;
+  --error: #ef4444;
+  --info: #3b82f6;
+
+  /* Dark mode color tokens - Neutrals */
+  --neutral-50: #0f172a;
+  --neutral-100: #1e293b;
+  --neutral-200: #334155;
+  --neutral-300: #475569;
+  --neutral-400: #64748b;
+  --neutral-500: #94a3b8;
+  --neutral-600: #cbd5e1;
+  --neutral-700: #e2e8f0;
+  --neutral-800: #f1f5f9;
+  --neutral-900: #f8fafc;
+
+  /* Glass Effect Properties for dark theme */
+  --glass-bg: rgba(0, 0, 0, 0.7);
+  --glass-border: rgba(255, 255, 255, 0.2);
 }
 
 /* Light mode override (when light class is applied) */
@@ -331,6 +381,170 @@ h6 {
   font-weight: var(--font-regular);
 }
 
+/* Design System Text Colors */
+.text-foreground {
+  color: var(--foreground);
+}
+
+.text-text-primary {
+  color: var(--text-primary);
+}
+
+.text-text-secondary {
+  color: var(--text-secondary);
+}
+
+.text-text-disabled {
+  color: var(--text-disabled);
+}
+
+.text-primary {
+  color: var(--primary-accent);
+}
+
+.text-secondary {
+  color: var(--secondary-accent);
+}
+
+.text-success {
+  color: var(--success);
+}
+
+.text-warning {
+  color: var(--warning);
+}
+
+.text-error {
+  color: var(--error);
+}
+
+.text-info {
+  color: var(--info);
+}
+
+/* Design System Background Colors */
+.bg-background {
+  background-color: var(--background);
+}
+
+.bg-paper {
+  background-color: var(--background-paper);
+}
+
+.bg-surface {
+  background-color: var(--background-surface);
+}
+
+.bg-primary {
+  background-color: var(--primary-accent);
+}
+
+.bg-primary-foreground {
+  background-color: var(--primary-accent);
+  color: var(--background-dark);
+}
+
+.bg-secondary {
+  background-color: var(--secondary-accent);
+}
+
+.bg-secondary-foreground {
+  background-color: var(--secondary-accent);
+  color: #ffffff;
+}
+
+/* Design System Background Colors with Opacity Support */
+.bg-primary\/10 {
+  background-color: rgba(167, 218, 219, 0.1);
+}
+
+.bg-primary\/20 {
+  background-color: rgba(167, 218, 219, 0.2);
+}
+
+.bg-primary\/30 {
+  background-color: rgba(167, 218, 219, 0.3);
+}
+
+.bg-primary\/50 {
+  background-color: rgba(167, 218, 219, 0.5);
+}
+
+.bg-secondary\/10 {
+  background-color: rgba(79, 70, 229, 0.1);
+}
+
+.bg-secondary\/20 {
+  background-color: rgba(79, 70, 229, 0.2);
+}
+
+.bg-secondary\/30 {
+  background-color: rgba(79, 70, 229, 0.3);
+}
+
+.bg-secondary\/50 {
+  background-color: rgba(79, 70, 229, 0.5);
+}
+
+.bg-surface\/30 {
+  background-color: rgba(20, 36, 51, 0.3);
+}
+
+.bg-surface\/50 {
+  background-color: rgba(20, 36, 51, 0.5);
+}
+
+/* Design System Border Colors */
+.border-neutral-200 {
+  border-color: var(--neutral-200);
+}
+
+.border-neutral-300 {
+  border-color: var(--neutral-300);
+}
+
+.border-primary {
+  border-color: var(--primary-accent);
+}
+
+/* Design System Border Colors with Opacity Support */
+.border-primary\/30 {
+  border-color: rgba(167, 218, 219, 0.3);
+}
+
+.border-primary\/50 {
+  border-color: rgba(167, 218, 219, 0.5);
+}
+
+.border-secondary\/30 {
+  border-color: rgba(79, 70, 229, 0.3);
+}
+
+.border-secondary\/50 {
+  border-color: rgba(79, 70, 229, 0.5);
+}
+
+.border-neutral-200\/10 {
+  border-color: rgba(51, 65, 85, 0.1);
+}
+
+.border-neutral-200\/20 {
+  border-color: rgba(51, 65, 85, 0.2);
+}
+
+/* Design System Text Colors with Opacity Support */
+.text-primary\/20 {
+  color: rgba(167, 218, 219, 0.2);
+}
+
+.text-primary\/30 {
+  color: rgba(167, 218, 219, 0.3);
+}
+
+.text-secondary\/20 {
+  color: rgba(79, 70, 229, 0.2);
+}
+
 /* Default heading styles using typography scale */
 h1 {
   font-size: var(--text-display);
@@ -432,6 +646,38 @@ h6 {
   border: 1px solid rgb(255 255 255 / 0.1);
 }
 
+/* Glass Panel - Used by presenter components */
+.glass-panel {
+  position: relative;
+  background-color: var(--glass-bg, rgba(0, 0, 0, 0.7));
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid var(--glass-border, rgba(255, 255, 255, 0.2));
+  border-radius: 1rem;
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+/* Enhanced glassmorphism with better fallbacks */
+.glass-panel {
+  /* Fallback background for browsers without CSS variables support */
+  background-color: rgba(0, 0, 0, 0.7);
+  /* Use CSS variables when available */
+  background-color: var(--glass-bg, rgba(0, 0, 0, 0.7));
+}
+
+/* Enhanced glassmorphism for better browser compatibility */
+@supports not (backdrop-filter: blur(1px)) {
+  .glass-panel {
+    background-color: rgba(0, 0, 0, 0.8) !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    /* Remove backdrop-filter for unsupported browsers */
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+}
+
 .glass-strong {
   background-color: rgb(255 255 255 / 0.1);
   backdrop-filter: blur(40px);
@@ -512,14 +758,16 @@ button:focus-visible {
 /* Fallback for browsers without backdrop-filter support */
 @supports not (backdrop-filter: blur()) {
   .glass,
-  .glass-strong {
-    background: rgba(255, 255, 255, 0.1) !important;
+  .glass-strong,
+  .glass-panel {
+    background: rgba(0, 0, 0, 0.7) !important;
     border: 1px solid rgba(255, 255, 255, 0.2) !important;
   }
 
   .dark .glass,
-  .dark .glass-strong {
-    background: rgba(0, 0, 0, 0.1) !important;
+  .dark .glass-strong,
+  .dark .glass-panel {
+    background: rgba(0, 0, 0, 0.7) !important;
     border: 1px solid rgba(255, 255, 255, 0.1) !important;
   }
 }
@@ -594,6 +842,20 @@ button:focus-visible {
   50% {
     opacity: 0.5;
   }
+}
+
+@keyframes gradient {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+.animate-gradient {
+  animation: gradient 8s ease infinite;
 }
 
 /* Premium Glass Card System - Smartslate Polaris Implementation */

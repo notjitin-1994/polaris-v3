@@ -65,14 +65,14 @@ export function LaserPointer({ containerRef }: LaserPointerProps): React.JSX.Ele
       <AnimatePresence>
         {trailRef.current.slice(0, -1).map((pos, index) => {
           const opacity = (index + 1) / trailRef.current.length;
-          const scale = 0.3 + (opacity * 0.7);
-          
+          const scale = 0.3 + opacity * 0.7;
+
           return (
             <motion.div
               key={`trail-${index}`}
               initial={{ opacity: 0, scale: 0 }}
-              animate={{ 
-                opacity: opacity * 0.4, 
+              animate={{
+                opacity: opacity * 0.4,
                 scale,
               }}
               exit={{ opacity: 0, scale: 0 }}
@@ -81,7 +81,8 @@ export function LaserPointer({ containerRef }: LaserPointerProps): React.JSX.Ele
               style={{
                 left: pos.x,
                 top: pos.y,
-                background: 'radial-gradient(circle, rgba(239, 68, 68, 0.8) 0%, rgba(239, 68, 68, 0) 70%)',
+                background:
+                  'radial-gradient(circle, rgba(239, 68, 68, 0.8) 0%, rgba(239, 68, 68, 0) 70%)',
               }}
             />
           );
@@ -115,7 +116,8 @@ export function LaserPointer({ containerRef }: LaserPointerProps): React.JSX.Ele
           <div
             className="h-12 w-12 rounded-full"
             style={{
-              background: 'radial-gradient(circle, rgba(239, 68, 68, 0.6) 0%, rgba(239, 68, 68, 0) 70%)',
+              background:
+                'radial-gradient(circle, rgba(239, 68, 68, 0.6) 0%, rgba(239, 68, 68, 0) 70%)',
               filter: 'blur(8px)',
             }}
           />
@@ -137,7 +139,8 @@ export function LaserPointer({ containerRef }: LaserPointerProps): React.JSX.Ele
           <div
             className="h-8 w-8 rounded-full"
             style={{
-              background: 'radial-gradient(circle, rgba(239, 68, 68, 0.8) 0%, rgba(239, 68, 68, 0) 70%)',
+              background:
+                'radial-gradient(circle, rgba(239, 68, 68, 0.8) 0%, rgba(239, 68, 68, 0) 70%)',
               filter: 'blur(4px)',
             }}
           />
@@ -178,7 +181,7 @@ export function LaserPointer({ containerRef }: LaserPointerProps): React.JSX.Ele
             {[0, 45, 90, 135].map((angle) => (
               <motion.div
                 key={angle}
-                className="absolute left-1/2 top-1/2 h-1 w-1 -translate-x-1/2 -translate-y-1/2 rounded-full bg-red-400"
+                className="absolute top-1/2 left-1/2 h-1 w-1 -translate-x-1/2 -translate-y-1/2 rounded-full bg-red-400"
                 style={{
                   transform: `rotate(${angle}deg) translateY(-8px)`,
                 }}
@@ -199,33 +202,7 @@ export function LaserPointer({ containerRef }: LaserPointerProps): React.JSX.Ele
       </motion.div>
 
       {/* Click ripple effect */}
-      <AnimatePresence>
-        {/* This will be triggered on click events */}
-      </AnimatePresence>
+      <AnimatePresence>{/* This will be triggered on click events */}</AnimatePresence>
     </div>
   );
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

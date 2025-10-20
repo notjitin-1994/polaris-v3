@@ -28,8 +28,20 @@ export function getClaudeConfig(): ClaudeConfig {
     ''
   ).trim();
 
+  // During build time or when API key is not available, return a safe default config
+  // The blueprint generation service will handle missing API keys gracefully
   if (!apiKey) {
-    throw new Error('ANTHROPIC_API_KEY environment variable is required for Claude integration');
+    return {
+      primaryModel: 'claude-sonnet-4-20250514',
+      fallbackModel: 'claude-opus-4-20250514',
+      apiKey: '',
+      baseUrl: 'https://api.anthropic.com',
+      version: '2023-06-01',
+      maxTokens: 12000,
+      temperature: 0.2,
+      timeout: 840000,
+      retries: 2,
+    };
   }
 
   const baseUrl = (process.env.ANTHROPIC_BASE_URL || 'https://api.anthropic.com')

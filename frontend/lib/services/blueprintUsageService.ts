@@ -15,7 +15,10 @@ export class BlueprintUsageService {
   /**
    * Get blueprint usage information for a user
    */
-  static async getBlueprintUsageInfo(supabase: SupabaseClient, userId: string): Promise<BlueprintUsageInfo> {
+  static async getBlueprintUsageInfo(
+    supabase: SupabaseClient,
+    userId: string
+  ): Promise<BlueprintUsageInfo> {
     const { data, error } = await supabase.rpc('get_blueprint_usage_info', {
       p_user_id: userId,
     });
@@ -40,7 +43,10 @@ export class BlueprintUsageService {
   /**
    * Get raw blueprint counts for debugging (bypasses exemption logic)
    */
-  static async getRawBlueprintCounts(supabase: SupabaseClient, userId: string): Promise<{
+  static async getRawBlueprintCounts(
+    supabase: SupabaseClient,
+    userId: string
+  ): Promise<{
     totalBlueprints: number;
     completedBlueprints: number;
     draftBlueprints: number;
@@ -56,8 +62,8 @@ export class BlueprintUsageService {
     }
 
     const totalBlueprints = blueprints?.length || 0;
-    const completedBlueprints = blueprints?.filter(b => b.status === 'completed').length || 0;
-    const draftBlueprints = blueprints?.filter(b => b.status === 'draft').length || 0;
+    const completedBlueprints = blueprints?.filter((b) => b.status === 'completed').length || 0;
+    const draftBlueprints = blueprints?.filter((b) => b.status === 'draft').length || 0;
 
     return {
       totalBlueprints,
@@ -69,7 +75,10 @@ export class BlueprintUsageService {
   /**
    * Check if user can create a blueprint
    */
-  static async canCreateBlueprint(supabase: SupabaseClient, userId: string): Promise<{ canCreate: boolean; reason?: string }> {
+  static async canCreateBlueprint(
+    supabase: SupabaseClient,
+    userId: string
+  ): Promise<{ canCreate: boolean; reason?: string }> {
     const usage = await this.getBlueprintUsageInfo(supabase, userId);
 
     if (usage.isExempt) {
@@ -89,7 +98,10 @@ export class BlueprintUsageService {
   /**
    * Check if user can save a blueprint
    */
-  static async canSaveBlueprint(supabase: SupabaseClient, userId: string): Promise<{ canSave: boolean; reason?: string }> {
+  static async canSaveBlueprint(
+    supabase: SupabaseClient,
+    userId: string
+  ): Promise<{ canSave: boolean; reason?: string }> {
     const usage = await this.getBlueprintUsageInfo(supabase, userId);
 
     if (usage.isExempt) {
@@ -141,7 +153,11 @@ export class BlueprintUsageService {
   /**
    * Exempt a user from blueprint limits (admin function)
    */
-  static async exemptUserFromLimits(supabase: SupabaseClient, userId: string, reason: string = 'Developer exemption'): Promise<boolean> {
+  static async exemptUserFromLimits(
+    supabase: SupabaseClient,
+    userId: string,
+    reason: string = 'Developer exemption'
+  ): Promise<boolean> {
     const { data, error } = await supabase.rpc('exempt_user_from_blueprint_limits', {
       p_user_id: userId,
       p_reason: reason,
@@ -155,6 +171,3 @@ export class BlueprintUsageService {
     return data;
   }
 }
-
-// Export the class for backward compatibility if needed
-export { BlueprintUsageService };

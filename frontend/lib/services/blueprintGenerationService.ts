@@ -3,7 +3,7 @@
  * Implements triple-fallback: Claude Sonnet 4 → Claude Opus 4 → Ollama
  */
 
-import { ClaudeClient, ClaudeApiError } from '@/lib/claude/client';
+import { ClaudeClient } from '@/lib/claude/client';
 import { getClaudeConfig } from '@/lib/claude/config';
 import {
   BLUEPRINT_SYSTEM_PROMPT,
@@ -51,9 +51,9 @@ export class BlueprintGenerationService {
 
   /**
    * Generate blueprint with triple-fallback cascade
-   * 1. Try Claude Sonnet 4 (primary)
-   * 2. On failure, try Claude Opus 4 (fallback)
-   * 3. On failure, try Ollama (emergency)
+   * 1. Try Claude Sonnet 4 (primary) - if API key available
+   * 2. On failure or missing key, try Claude Opus 4 (fallback) - if API key available
+   * 3. On failure or missing key, try Ollama (emergency)
    */
   async generate(context: BlueprintContext): Promise<GenerationResult> {
     const startTime = Date.now();
@@ -69,69 +69,32 @@ export class BlueprintGenerationService {
     const systemPrompt = BLUEPRINT_SYSTEM_PROMPT;
     const userPrompt = buildBlueprintPrompt(context);
 
-    // Try Claude Sonnet 4 (primary)
-    try {
-      const blueprint = await this.generateWithClaude(
-        context,
-        this.config.primaryModel,
-        systemPrompt,
-        userPrompt,
-        12000 // max_tokens for Sonnet 4
-      );
+    // Check if Claude API key is available
+    const hasClaudeKey = this.config.apiKey && this.config.apiKey.trim().length > 0;
 
-      const duration = Date.now() - startTime;
-
-      logger.info('blueprint.generation.success', 'Blueprint generation succeeded', {
-        blueprintId: context.blueprintId,
-        model: 'claude-sonnet-4',
-        duration,
-        attempts: 1,
-      });
-
-      return {
-        success: true,
-        blueprint: blueprint.data,
-        metadata: {
-          model: 'claude-sonnet-4',
-          duration,
-          timestamp: new Date().toISOString(),
-          fallbackUsed: false,
-          attempts: 1,
-        },
-        usage: blueprint.usage,
-      };
-    } catch (sonnetError) {
-      logger.warn('blueprint.generation.claude_primary_failed', 'Claude primary failed', {
-        blueprintId: context.blueprintId,
-        error: (sonnetError as Error).message,
-      });
-
-      // Check if we should fallback to Opus 4
-      const fallbackDecision = shouldFallbackToOpus(sonnetError as Error);
-
-      logFallbackDecision(fallbackDecision, {
-        blueprintId: context.blueprintId,
-        model: 'claude-sonnet-4',
-        attempt: 1,
-      });
-
-      if (!fallbackDecision.shouldFallback) {
-        // Don't fallback - re-throw error
-        const duration = Date.now() - startTime;
-
-        logger.error(
-          'blueprint.generation.failed_no_fallback',
-          'Generation failed without fallback',
-          {
-            blueprintId: context.blueprintId,
-            duration,
-            error: (sonnetError as Error).message,
-          }
+    if (hasClaudeKey) {
+      // Try Claude Sonnet 4 (primary)
+      try {
+        const blueprint = await this.generateWithClaude(
+          context,
+          this.config.primaryModel,
+          systemPrompt,
+          userPrompt,
+          12000 // max_tokens for Sonnet 4
         );
 
+        const duration = Date.now() - startTime;
+
+        logger.info('blueprint.generation.success', 'Blueprint generation succeeded', {
+          blueprintId: context.blueprintId,
+          model: 'claude-sonnet-4',
+          duration,
+          attempts: 1,
+        });
+
         return {
-          success: false,
-          blueprint: null,
+          success: true,
+          blueprint: blueprint.data,
           metadata: {
             model: 'claude-sonnet-4',
             duration,
@@ -139,99 +102,146 @@ export class BlueprintGenerationService {
             fallbackUsed: false,
             attempts: 1,
           },
-          error: (sonnetError as Error).message,
-        };
-      }
-
-      // Try Claude Opus 4 (fallback)
-      try {
-        const blueprint = await this.generateWithClaude(
-          context,
-          this.config.fallbackModel,
-          systemPrompt,
-          userPrompt,
-          16000 // max_tokens for Opus 4
-        );
-
-        const duration = Date.now() - startTime;
-
-        logger.info('blueprint.generation.fallback_success', 'Claude fallback succeeded', {
-          blueprintId: context.blueprintId,
-          model: 'claude-opus-4',
-          duration,
-          attempts: 2,
-          fallbackTrigger: fallbackDecision.trigger,
-        });
-
-        return {
-          success: true,
-          blueprint: blueprint.data,
-          metadata: {
-            model: 'claude-opus-4',
-            duration,
-            timestamp: new Date().toISOString(),
-            fallbackUsed: true,
-            attempts: 2,
-          },
           usage: blueprint.usage,
         };
-      } catch (opusError) {
-        logger.error('blueprint.generation.claude_fallback_failed', 'Claude fallback failed', {
+      } catch (sonnetError) {
+        logger.warn('blueprint.generation.claude_primary_failed', 'Claude primary failed', {
           blueprintId: context.blueprintId,
-          sonnetError: (sonnetError as Error).message,
-          opusError: (opusError as Error).message,
-          attemptingOllama: true,
+          error: (sonnetError as Error).message,
         });
 
-        // Try Ollama (emergency fallback)
-        try {
-          const blueprint = await this.generateWithOllama(context, systemPrompt, userPrompt);
+        // Check if we should fallback to Opus 4
+        const fallbackDecision = shouldFallbackToOpus(sonnetError as Error);
 
+        logFallbackDecision(fallbackDecision, {
+          blueprintId: context.blueprintId,
+          model: 'claude-sonnet-4',
+          attempt: 1,
+        });
+
+        if (!fallbackDecision.shouldFallback) {
+          // Don't fallback - return error
           const duration = Date.now() - startTime;
 
-          logger.info('blueprint.generation.ollama_success', 'Ollama generation succeeded', {
-            blueprintId: context.blueprintId,
-            duration,
-            attempts: 3,
-            emergencyFallback: true,
-          });
-
-          return {
-            success: true,
-            blueprint,
-            metadata: {
-              model: 'ollama',
+          logger.error(
+            'blueprint.generation.failed_no_fallback',
+            'Generation failed without fallback',
+            {
+              blueprintId: context.blueprintId,
               duration,
-              timestamp: new Date().toISOString(),
-              fallbackUsed: true,
-              attempts: 3,
-            },
-          };
-        } catch (ollamaError) {
-          const duration = Date.now() - startTime;
-
-          logger.error('blueprint.generation.all_failed', 'All generation methods failed', {
-            blueprintId: context.blueprintId,
-            duration,
-            sonnetError: (sonnetError as Error).message,
-            opusError: (opusError as Error).message,
-            ollamaError: (ollamaError as Error).message,
-          });
+              error: (sonnetError as Error).message,
+            }
+          );
 
           return {
             success: false,
             blueprint: null,
             metadata: {
-              model: 'ollama',
+              model: 'claude-sonnet-4',
+              duration,
+              timestamp: new Date().toISOString(),
+              fallbackUsed: false,
+              attempts: 1,
+            },
+            error: (sonnetError as Error).message,
+          };
+        }
+
+        // Try Claude Opus 4 (fallback)
+        try {
+          const blueprint = await this.generateWithClaude(
+            context,
+            this.config.fallbackModel,
+            systemPrompt,
+            userPrompt,
+            16000 // max_tokens for Opus 4
+          );
+
+          const duration = Date.now() - startTime;
+
+          logger.info('blueprint.generation.fallback_success', 'Claude fallback succeeded', {
+            blueprintId: context.blueprintId,
+            model: 'claude-opus-4',
+            duration,
+            attempts: 2,
+            fallbackTrigger: fallbackDecision.trigger,
+          });
+
+          return {
+            success: true,
+            blueprint: blueprint.data,
+            metadata: {
+              model: 'claude-opus-4',
               duration,
               timestamp: new Date().toISOString(),
               fallbackUsed: true,
-              attempts: 3,
+              attempts: 2,
             },
-            error: 'All blueprint generation methods failed',
+            usage: blueprint.usage,
           };
+        } catch (opusError) {
+          logger.error('blueprint.generation.claude_fallback_failed', 'Claude fallback failed', {
+            blueprintId: context.blueprintId,
+            sonnetError: (sonnetError as Error).message,
+            opusError: (opusError as Error).message,
+            attemptingOllama: true,
+          });
         }
       }
+    } else {
+      logger.warn('blueprint.generation.claude_unavailable', {
+        blueprintId: context.blueprintId,
+        reason: 'Claude API key not available',
+        attemptingOllama: true,
+      });
+    }
+
+    // Try Ollama (emergency fallback)
+    try {
+      const blueprint = await this.generateWithOllama(context, systemPrompt, userPrompt);
+
+      const duration = Date.now() - startTime;
+
+      logger.info('blueprint.generation.ollama_success', 'Ollama generation succeeded', {
+        blueprintId: context.blueprintId,
+        duration,
+        attempts: hasClaudeKey ? 3 : 1,
+        emergencyFallback: true,
+      });
+
+      return {
+        success: true,
+        blueprint,
+        metadata: {
+          model: 'ollama',
+          duration,
+          timestamp: new Date().toISOString(),
+          fallbackUsed: true,
+          attempts: hasClaudeKey ? 3 : 1,
+        },
+      };
+    } catch (ollamaError) {
+      const duration = Date.now() - startTime;
+
+      logger.error('blueprint.generation.all_failed', 'All generation methods failed', {
+        blueprintId: context.blueprintId,
+        duration,
+        hasClaudeKey,
+        ollamaError: (ollamaError as Error).message,
+      });
+
+      return {
+        success: false,
+        blueprint: null,
+        metadata: {
+          model: 'ollama',
+          duration,
+          timestamp: new Date().toISOString(),
+          fallbackUsed: true,
+          attempts: hasClaudeKey ? 3 : 1,
+        },
+        error: 'All blueprint generation methods failed',
+      };
     }
   }
 

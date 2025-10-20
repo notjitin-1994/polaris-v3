@@ -8,6 +8,7 @@ import { z } from 'zod';
 import { getServerSession } from '@/lib/supabase/server';
 import { getSupabaseServerClient } from '@/lib/supabase/server';
 import { createServiceLogger } from '@/lib/logging';
+import { BlueprintUsageService } from '@/lib/services/blueprintUsageService';
 
 // Add basic health check endpoint for testing
 export async function GET() {
@@ -63,6 +64,37 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     });
 
     if (!blueprintId) {
+      // Check blueprint creation limits before creating a new blueprint
+      try {
+        const canCreate = await BlueprintUsageService.canCreateBlueprint(supabase, userId);
+
+        if (!canCreate.canCreate) {
+          logger.warn('questionnaire.save.limit_exceeded', 'Blueprint creation limit exceeded', {
+            userId,
+            reason: canCreate.reason,
+          });
+
+          return NextResponse.json(
+            {
+              success: false,
+              error: canCreate.reason || 'You cannot create more blueprints at this time.',
+              limitExceeded: true,
+            },
+            { status: 429 }
+          );
+        }
+      } catch (error) {
+        logger.error(
+          'questionnaire.save.limit_check_error',
+          'Error checking blueprint creation limits',
+          {
+            userId,
+            error: (error as Error).message,
+          }
+        );
+        // Continue with creation if we can't check limits (fallback behavior)
+      }
+
       // Create new blueprint record
       logger.info('questionnaire.save.creating', 'Creating new blueprint (no ID provided)', {
         userId,
@@ -94,6 +126,34 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
         userId,
         blueprintId,
       });
+
+      // Increment blueprint creation count after successful creation
+      try {
+        const creationIncrementResult = await BlueprintUsageService.incrementCreationCount(
+          supabase,
+          userId
+        );
+        logger.info(
+          'questionnaire.save.creation_count_incremented',
+          'Blueprint creation count incremented',
+          {
+            blueprintId,
+            userId,
+            incrementResult: creationIncrementResult,
+          }
+        );
+      } catch (error) {
+        logger.error(
+          'questionnaire.save.creation_count_error',
+          'Error incrementing blueprint creation count',
+          {
+            blueprintId,
+            userId,
+            error: (error as Error).message,
+          }
+        );
+        // Don't fail the creation if counting fails
+      }
     } else {
       // Update existing blueprint record
       logger.info('questionnaire.save.updating', 'Attempting to update existing blueprint', {
@@ -131,10 +191,51 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
 
       // If no rows were affected, the blueprint doesn't exist - create a new one instead
       if (count === 0) {
-        logger.warn('questionnaire.save.blueprint_not_found', 'Blueprint not found or access denied, creating new one', {
-          providedBlueprintId: blueprintId,
-          userId,
-        });
+        logger.warn(
+          'questionnaire.save.blueprint_not_found',
+          'Blueprint not found or access denied, creating new one',
+          {
+            providedBlueprintId: blueprintId,
+            userId,
+          }
+        );
+
+        // Check blueprint creation limits before creating a new blueprint
+        try {
+          const canCreate = await BlueprintUsageService.canCreateBlueprint(supabase, userId);
+
+          if (!canCreate.canCreate) {
+            logger.warn(
+              'questionnaire.save.fallback_limit_exceeded',
+              'Blueprint creation limit exceeded during fallback',
+              {
+                userId,
+                originalBlueprintId: blueprintId,
+                reason: canCreate.reason,
+              }
+            );
+
+            return NextResponse.json(
+              {
+                success: false,
+                error: canCreate.reason || 'You cannot create more blueprints at this time.',
+                limitExceeded: true,
+              },
+              { status: 429 }
+            );
+          }
+        } catch (error) {
+          logger.error(
+            'questionnaire.save.fallback_limit_check_error',
+            'Error checking blueprint creation limits during fallback',
+            {
+              userId,
+              originalBlueprintId: blueprintId,
+              error: (error as Error).message,
+            }
+          );
+          // Continue with creation if we can't check limits (fallback behavior)
+        }
 
         const { data: newBlueprint, error: createError } = await supabase
           .from('blueprint_generator')
@@ -147,23 +248,62 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
           .single();
 
         if (createError || !newBlueprint) {
-          logger.error('questionnaire.save.fallback_create_failed', 'Failed to create blueprint after not found', {
-            userId,
-            originalBlueprintId: blueprintId,
-            error: createError?.message,
-          });
+          logger.error(
+            'questionnaire.save.fallback_create_failed',
+            'Failed to create blueprint after not found',
+            {
+              userId,
+              originalBlueprintId: blueprintId,
+              error: createError?.message,
+            }
+          );
           return NextResponse.json(
-            { success: false, error: 'Failed to create questionnaire record after blueprint not found' },
+            {
+              success: false,
+              error: 'Failed to create questionnaire record after blueprint not found',
+            },
             { status: 500 }
           );
         }
 
         blueprintId = newBlueprint.id;
-        logger.info('questionnaire.save.fallback_created', 'Created new blueprint after not found', {
-          userId,
-          oldBlueprintId: providedBlueprintId,
-          newBlueprintId: blueprintId,
-        });
+        logger.info(
+          'questionnaire.save.fallback_created',
+          'Created new blueprint after not found',
+          {
+            userId,
+            oldBlueprintId: providedBlueprintId,
+            newBlueprintId: blueprintId,
+          }
+        );
+
+        // Increment blueprint creation count after successful creation
+        try {
+          const creationIncrementResult = await BlueprintUsageService.incrementCreationCount(
+            supabase,
+            userId
+          );
+          logger.info(
+            'questionnaire.save.fallback_creation_count_incremented',
+            'Blueprint creation count incremented after fallback',
+            {
+              blueprintId,
+              userId,
+              incrementResult: creationIncrementResult,
+            }
+          );
+        } catch (error) {
+          logger.error(
+            'questionnaire.save.fallback_creation_count_error',
+            'Error incrementing blueprint creation count after fallback',
+            {
+              blueprintId,
+              userId,
+              error: (error as Error).message,
+            }
+          );
+          // Don't fail the creation if counting fails
+        }
       } else {
         logger.info('questionnaire.save.updated', 'Successfully updated existing blueprint', {
           userId,

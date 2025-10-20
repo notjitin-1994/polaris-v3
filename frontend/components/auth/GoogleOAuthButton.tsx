@@ -11,16 +11,43 @@ export function GoogleOAuthButton(): React.JSX.Element {
     try {
       setLoading(true);
       const supabase = getSupabaseBrowserClient();
+
+      console.log('Attempting Google OAuth sign-in');
+
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
           redirectTo: `${window.location.origin}/auth/callback`,
         },
       });
-      if (error) throw error;
-      if (data?.url) window.location.href = data.url;
+
+      console.log('Google OAuth result:', { hasUrl: !!data?.url, error });
+
+      if (error) {
+        // Provide helpful error messages
+        if (error.message.includes('provider is not enabled')) {
+          throw new Error(
+            'Google sign-in is not configured. Please use email/password or contact support.'
+          );
+        } else if (error.message.includes('validation_failed')) {
+          throw new Error(
+            'Google sign-in setup incomplete. Please contact support or use email/password.'
+          );
+        } else {
+          throw error;
+        }
+      }
+
+      if (data?.url) {
+        window.location.href = data.url;
+      }
     } catch (err) {
-      alert(err instanceof Error ? err.message : 'Google sign-in failed');
+      console.error('Google OAuth error:', err);
+      alert(
+        err instanceof Error
+          ? err.message
+          : 'Google sign-in failed. Please try using email and password instead.'
+      );
     } finally {
       setLoading(false);
     }

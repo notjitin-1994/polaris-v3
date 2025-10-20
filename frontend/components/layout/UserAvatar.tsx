@@ -8,6 +8,9 @@ export function resolveUserAvatarUrl(user: User | null): string | null {
   const meta: any = user?.user_metadata ?? {};
   if (meta.noAvatar === true) return null;
 
+  // Check user metadata for avatar URL first (immediate access)
+  if (meta.avatar_url) return meta.avatar_url;
+
   // Prefer stored avatar in Supabase storage if available
   const avatarPath: string | undefined = meta.avatar_path;
   if (avatarPath) {
@@ -22,7 +25,6 @@ export function resolveUserAvatarUrl(user: User | null): string | null {
   const identities: any[] = (user as any)?.identities ?? [];
   const identityData = identities.find((i) => i?.identity_data)?.identity_data ?? {};
   return (
-    (meta.avatar_url as string) ||
     (meta.avatarURL as string) ||
     (meta.avatar as string) ||
     (meta.picture as string) ||
@@ -46,15 +48,19 @@ interface UserAvatarProps {
   user: User | null;
   sizeClass: string;
   textClass?: string;
+  avatarUrl?: string | null;
 }
 
 export const UserAvatar = memo(function UserAvatar({
   user,
   sizeClass,
   textClass = 'text-sm font-semibold text-foreground',
+  avatarUrl: propAvatarUrl,
 }: UserAvatarProps) {
   const [imgError, setImgError] = useState(false);
-  const avatarUrl = resolveUserAvatarUrl(user);
+
+  // Use provided avatar URL or resolve from user metadata
+  const avatarUrl = propAvatarUrl !== undefined ? propAvatarUrl : resolveUserAvatarUrl(user);
   const showImg = Boolean(avatarUrl) && !imgError;
 
   if (showImg) {
