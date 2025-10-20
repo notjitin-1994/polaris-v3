@@ -94,7 +94,7 @@ function DynamicQuestionnaireContent({
   const [isLoading, setIsLoading] = useState(true);
   const [lastAutosave, setLastAutosave] = useState<Date | null>(null);
   const [questionsData, setQuestionsData] = useState<DynamicQuestionsData | null>(null);
-  const [_retryCount, _setRetryCount] = useState(0);
+  const [retryCount, setRetryCount] = useState(0);
 
   const autosaveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const lastFormDataRef = useRef<string>('');
