@@ -14,6 +14,7 @@ import {
   Leaf,
   Wand2,
   ChevronDown,
+  Users,
 } from 'lucide-react';
 import { ObjectivesInfographic } from './infographics/ObjectivesInfographic';
 import { TargetAudienceInfographic } from './infographics/TargetAudienceInfographic';
