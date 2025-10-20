@@ -80,6 +80,20 @@ function GeneratingContent({ id }: { id: string }): React.JSX.Element {
           userId: user?.id,
         });
 
+        // Validate inputs before API call
+        if (!id) {
+          throw new Error('Blueprint ID is missing');
+        }
+
+        if (!user?.id) {
+          throw new Error('User authentication is required');
+        }
+
+        logger.info('blueprint.generation.ui.preparing_request', 'Preparing API request', {
+          blueprintId: id,
+          userId: user.id,
+        });
+
         // Call blueprint generation endpoint
         const response = await fetch('/api/blueprints/generate', {
           method: 'POST',
@@ -92,16 +106,53 @@ function GeneratingContent({ id }: { id: string }): React.JSX.Element {
         });
 
         if (!response.ok) {
-          const errorData = await response.json();
+          let errorMessage = 'Failed to generate blueprint';
+          let errorDetails = {};
+
+          try {
+            const errorData = await response.json();
+            errorMessage = errorData.error || errorMessage;
+
+            // Add more context based on status code
+            switch (response.status) {
+              case 400:
+                errorMessage = `Invalid request: ${errorMessage}`;
+                break;
+              case 401:
+                errorMessage = `Authentication required: ${errorMessage}`;
+                break;
+              case 404:
+                errorMessage = `Blueprint not found: ${errorMessage}`;
+                break;
+              case 429:
+                errorMessage = `Usage limit exceeded: ${errorMessage}`;
+                break;
+              case 500:
+                errorMessage = `Server error: ${errorMessage}`;
+                break;
+              default:
+                errorMessage = `HTTP ${response.status}: ${errorMessage}`;
+            }
+
+            errorDetails = {
+              statusCode: response.status,
+              errorData,
+            };
+          } catch (parseError) {
+            errorMessage = `HTTP ${response.status}: Unable to parse error response`;
+            errorDetails = {
+              statusCode: response.status,
+              parseError: (parseError as Error).message,
+            };
+          }
 
           logger.error('blueprint.generation.ui.error', 'Blueprint generation failed', {
             blueprintId: id,
-            statusCode: response.status,
-            error: errorData.error,
             duration: Date.now() - startTime,
+            ...errorDetails,
           });
 
-          throw new Error(errorData.error || 'Failed to generate blueprint');
+          throw new Error(errorMessage);
         }
 
         const result = await response.json();
@@ -128,15 +179,29 @@ function GeneratingContent({ id }: { id: string }): React.JSX.Element {
         completed = true;
         stopIntervals();
 
-        setError((error as Error).message);
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+        const errorDetails = {
+          blueprintId: id,
+          duration: Date.now() - startTime,
+          errorType: error instanceof Error ? error.constructor.name : typeof error,
+          errorMessage,
+          stack: error instanceof Error ? error.stack : undefined,
+        };
+
+        setError(errorMessage);
         setStatus('Generation failed');
         setProgress(100);
 
-        logger.error('blueprint.generation.ui.fatal_error', 'Fatal error during generation', {
-          blueprintId: id,
-          error: (error as Error).message,
-          duration: Date.now() - startTime,
-        });
+        logger.error(
+          'blueprint.generation.ui.fatal_error',
+          'Fatal error during generation',
+          errorDetails
+        );
+
+        // Also log to console in development for immediate debugging
+        if (process.env.NODE_ENV === 'development') {
+          console.error('Blueprint generation failed:', errorDetails);
+        }
       }
     };
 
