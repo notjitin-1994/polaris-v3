@@ -79,6 +79,8 @@ export function InteractiveBlueprintDashboard({
   // Extract data from blueprint
   const modules = blueprint.content_outline?.modules || [];
   const objectives = blueprint.learning_objectives?.objectives || [];
+  const totalActivities = modules.reduce((sum, m) => sum + (m.learning_activities?.length || 0), 0);
+  const totalTopics = modules.reduce((sum, m) => sum + (m.topics?.length || 0), 0);
   const totalDuration = modules.reduce((sum, module) => {
     const duration = module.duration || '';
     const weeks = duration.match(/(\d+)\s*(?:week|weeks|wk|w)\b/i);
@@ -130,12 +132,6 @@ export function InteractiveBlueprintDashboard({
   }
 
   if (blueprint.content_outline) {
-    const totalActivities = modules.reduce(
-      (sum, m) => sum + (m.learning_activities?.length || 0),
-      0
-    );
-    const totalTopics = modules.reduce((sum, m) => sum + (m.topics?.length || 0), 0);
-
     sections.push({
       id: 'content_outline',
       title: 'Content Outline',
