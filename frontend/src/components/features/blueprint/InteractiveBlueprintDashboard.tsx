@@ -18,6 +18,8 @@ import {
   DollarSign,
   BarChart3,
   Calendar,
+  Shield,
+  TrendingUp,
 } from 'lucide-react';
 import { ObjectivesInfographic } from './infographics/ObjectivesInfographic';
 import { TargetAudienceInfographic } from './infographics/TargetAudienceInfographic';
