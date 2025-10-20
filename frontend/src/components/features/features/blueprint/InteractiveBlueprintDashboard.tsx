@@ -103,7 +103,7 @@ export function InteractiveBlueprintDashboard({
       iconColor: 'text-success',
       description: `${objectives.length} measurable objectives`,
       defaultExpanded: true,
-    });
+    }
   }
 
   if (blueprint.target_audience) {
@@ -114,7 +114,7 @@ export function InteractiveBlueprintDashboard({
       gradient: 'bg-secondary/20',
       iconColor: 'text-secondary',
       description: 'Demographics and learning preferences',
-    });
+    }
   }
 
   if (blueprint.content_outline) {
@@ -125,7 +125,7 @@ export function InteractiveBlueprintDashboard({
       gradient: 'bg-primary/20',
       iconColor: 'text-primary',
       description: `${modules.length} comprehensive learning modules`,
-    });
+    }
   }
 
   if (blueprint.resources) {
@@ -136,7 +136,7 @@ export function InteractiveBlueprintDashboard({
       gradient: 'bg-success/20',
       iconColor: 'text-success',
       description: 'Team, tools, and financial allocation',
-    });
+    }
   }
 
   if (blueprint.assessment_strategy) {
@@ -147,7 +147,7 @@ export function InteractiveBlueprintDashboard({
       gradient: 'bg-primary/20',
       iconColor: 'text-primary',
       description: 'Evaluation methods and KPIs',
-    });
+    }
   }
 
   if (blueprint.implementation_timeline) {
@@ -158,7 +158,7 @@ export function InteractiveBlueprintDashboard({
       gradient: 'bg-secondary/20',
       iconColor: 'text-secondary',
       description: `${blueprint.implementation_timeline.phases.length} phases`,
-    });
+    }
   }
 
   if (blueprint.risk_mitigation) {
@@ -169,7 +169,7 @@ export function InteractiveBlueprintDashboard({
       gradient: 'bg-warning/20',
       iconColor: 'text-warning',
       description: `${blueprint.risk_mitigation.risks.length} risks addressed`,
-    });
+    }
   }
 
   if (blueprint.success_metrics) {
@@ -180,7 +180,7 @@ export function InteractiveBlueprintDashboard({
       gradient: 'bg-success/20',
       iconColor: 'text-success',
       description: 'Performance indicators and tracking',
-    });
+    }
   }
 
   if (blueprint.instructional_strategy) {
@@ -191,7 +191,7 @@ export function InteractiveBlueprintDashboard({
       gradient: 'bg-primary/20',
       iconColor: 'text-primary',
       description: 'Learning approach and methodology',
-    });
+    }
   }
 
   if (blueprint.sustainability_plan) {
@@ -202,7 +202,7 @@ export function InteractiveBlueprintDashboard({
       gradient: 'bg-success/20',
       iconColor: 'text-success',
       description: 'Long-term maintenance and scaling',
-    });
+    }
   }
 
   const toggleSection = (sectionId: string) => {
@@ -214,11 +214,11 @@ export function InteractiveBlueprintDashboard({
         next.add(sectionId);
       }
       return next;
-    });
+    }
   };
 
   const scrollToSection = (sectionId: string) => {
-    sectionRefs.current[sectionId]?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    sectionRefs.current[sectionId]?.scrollIntoView({ behavior: 'smooth', block: 'start' }
     if (!expandedSections.has(sectionId)) {
       toggleSection(sectionId);
     }
@@ -336,7 +336,7 @@ export function InteractiveBlueprintDashboard({
             </motion.div>
           );
         }
-      ),
+      }),
     [hasAnimated, mounted, shouldReduceAnimations]
   );
 
@@ -366,11 +366,10 @@ export function InteractiveBlueprintDashboard({
     [hasAnimated, mounted, shouldReduceAnimations]
   );
 
-  return (
-    <motion.div
-      variants={containerVariants}
-      className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4"
-    >
+  <motion.div
+    variants={containerVariants}
+    className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4"
+  >
         <StatCard
           icon={Clock}
           label="Total Duration"
@@ -780,7 +779,7 @@ const ExpandableSection = React.forwardRef<
       </AnimatePresence>
     </motion.div>
   );
-});
+}
 
 ExpandableSection.displayName = 'ExpandableSection';
 }

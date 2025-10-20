@@ -251,7 +251,7 @@ export function InteractiveBlueprintDashboard({
         next.add(sectionId);
       }
       return next;
-    });
+    }
   };
 
   const scrollToSection = (sectionId: string) => {
@@ -373,7 +373,7 @@ export function InteractiveBlueprintDashboard({
             </motion.div>
           );
         }
-      ),
+      }),
     [hasAnimated, mounted, shouldReduceAnimations]
   );
 
@@ -403,11 +403,10 @@ export function InteractiveBlueprintDashboard({
     [hasAnimated, mounted, shouldReduceAnimations]
   );
 
-  return (
-    <motion.div
-      variants={containerVariants}
-      className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4"
-    >
+  <motion.div
+    variants={containerVariants}
+    className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4"
+  >
         <StatCard
           icon={Clock}
           label="Total Duration"
@@ -817,7 +816,7 @@ const ExpandableSection = React.forwardRef<
       </AnimatePresence>
     </motion.div>
   );
-});
+}
 
 ExpandableSection.displayName = 'ExpandableSection';
 }

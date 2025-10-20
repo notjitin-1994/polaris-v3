@@ -7,7 +7,7 @@ import React from 'react';
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { BlueprintViewer } from '@/components/blueprint/viewer';
-import { InteractiveBlueprintDashboard } from '@/components/blueprint/InteractiveBlueprintDashboard';
+import { InteractiveBlueprintDashboard } from '@/src/components/features/blueprint/InteractiveBlueprintDashboard';
 import { blueprintFixtures } from '../fixtures/blueprints';
 import type { BlueprintJSON } from '../fixtures/blueprints';
 
