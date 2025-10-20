@@ -154,6 +154,11 @@ class ClientErrorTracker {
    */
   private async sendError(payload: ErrorPayload): Promise<void> {
     try {
+      // Additional safety check - ensure we're in a proper browser context
+      if (typeof window === 'undefined' || !window.fetch) {
+        throw new Error('Not in browser context');
+      }
+
       const response = await fetch(this.endpoint, {
         method: 'POST',
         headers: {
@@ -187,6 +192,10 @@ class ClientErrorTracker {
 export const clientErrorTracker = new ClientErrorTracker();
 
 // Auto-initialize on import (client-side only)
+// Delay initialization to ensure we're really in browser context
 if (typeof window !== 'undefined') {
-  clientErrorTracker.init();
+  // Use setTimeout to ensure we're in a proper browser context
+  setTimeout(() => {
+    clientErrorTracker.init();
+  }, 0);
 }
