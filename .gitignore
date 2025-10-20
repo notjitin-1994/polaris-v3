@@ -110,3 +110,4 @@ image.png
 # Task files
 tasks.json
 tasks/ 
+.env*.local
