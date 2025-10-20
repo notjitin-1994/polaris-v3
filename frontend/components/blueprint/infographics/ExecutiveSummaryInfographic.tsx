@@ -46,7 +46,12 @@ export function ExecutiveSummaryInfographic({
           <div className="mb-6 flex items-center justify-between">
             <div className="flex flex-1 items-center gap-3">
               <div className="rounded-xl bg-white/15 p-3.5 backdrop-blur-sm">
-                <FileText className="h-7 w-7 text-white" strokeWidth={2.5} />
+                <FileText
+                  className="h-7 w-7 text-white"
+                  strokeWidth={2.5}
+                  fill="none"
+                  stroke="currentColor"
+                />
               </div>
               <div>
                 <h3 className="text-xl font-bold text-white">Strategic Overview</h3>
@@ -78,7 +83,11 @@ export function ExecutiveSummaryInfographic({
                 title="Modify with AI"
                 aria-label="Modify Strategic Overview with AI"
               >
-                <Wand2 className="h-4 w-4 drop-shadow-[0_0_8px_rgba(167,218,219,0.9)]" />
+                <Wand2
+                  className="h-4 w-4 drop-shadow-[0_0_8px_rgba(167,218,219,0.9)]"
+                  fill="none"
+                  stroke="currentColor"
+                />
               </motion.button>
             )}
           </div>

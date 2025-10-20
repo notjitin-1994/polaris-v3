@@ -37,7 +37,12 @@ export function TargetAudienceInfographic({
       {/* Demographics Section */}
       <div>
         <div className="mb-4 flex items-center gap-2">
-          <Users className="text-primary h-5 w-5" />
+          <Users
+            className="text-primary h-5 w-5"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth={2}
+          />
           <h3 className="text-heading text-foreground font-semibold">Demographics</h3>
         </div>
 
@@ -256,7 +261,12 @@ export function TargetAudienceInfographic({
         <div>
           <div className="mb-6 flex items-center gap-3">
             <div className="bg-primary/10 flex h-10 w-10 items-center justify-center rounded-xl">
-              <BookOpen className="text-primary h-5 w-5" />
+              <BookOpen
+                className="text-primary h-5 w-5"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth={2}
+              />
             </div>
             <h3 className="text-heading text-foreground font-semibold">Learning Preferences</h3>
           </div>

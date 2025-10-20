@@ -39,7 +39,12 @@ export function PresentationSectionCard({
       <div className="flex w-full items-center justify-between p-6">
         <div className="flex min-w-0 flex-1 items-center gap-4">
           <div className={`rounded-xl p-3 ${section.gradient}`}>
-            <Icon className={`h-6 w-6 ${section.iconColor}`} />
+            <Icon
+              className={`h-6 w-6 ${section.iconColor}`}
+              fill="none"
+              stroke="currentColor"
+              strokeWidth={2}
+            />
           </div>
           <div>
             <h3 className="text-xl font-bold text-white">{section.title}</h3>
@@ -69,7 +74,11 @@ export function PresentationSectionCard({
             title="Modify with AI"
             aria-label={`Modify ${section.title} with AI`}
           >
-            <Wand2 className="h-4 w-4 drop-shadow-[0_0_8px_rgba(167,218,219,0.9)]" />
+            <Wand2
+              className="h-4 w-4 drop-shadow-[0_0_8px_rgba(167,218,219,0.9)]"
+              fill="none"
+              stroke="currentColor"
+            />
           </motion.button>
         )}
       </div>

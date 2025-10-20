@@ -181,6 +181,7 @@ export function ViewerHeader({
                   className={cn(
                     'relative flex items-center gap-2 rounded-lg px-4 py-2',
                     'text-sm font-medium transition-all duration-200',
+                    '[&_svg]:!fill-none [&_svg_*]:!fill-none',
                     isActive
                       ? ['text-primary-foreground', 'bg-primary/90', elevation.sm]
                       : ['text-text-secondary hover:text-foreground', 'hover:bg-white/5']
@@ -425,6 +426,7 @@ export function ViewerHeader({
                 className={cn(
                   'flex items-center gap-2 rounded-lg px-3 py-1.5 whitespace-nowrap',
                   'text-xs font-medium transition-all',
+                  '[&_svg]:!fill-none [&_svg_*]:!fill-none',
                   isActive
                     ? ['bg-primary/20 text-primary', 'border-primary/30 border']
                     : ['text-text-secondary', 'border border-transparent']

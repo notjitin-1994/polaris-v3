@@ -133,7 +133,8 @@ export function ViewerNavigation({
                 className={cn(
                   'flex items-center gap-1 px-2 py-1 whitespace-nowrap',
                   'text-text-secondary hover:text-foreground text-sm',
-                  'cursor-pointer transition-colors'
+                  'cursor-pointer transition-colors',
+                  '[&_svg]:!fill-none [&_svg_*]:!fill-none'
                 )}
               >
                 <Compass className="h-3.5 w-3.5" />
@@ -157,6 +158,7 @@ export function ViewerNavigation({
                         className={cn(
                           'group relative flex items-center gap-1.5 px-2 py-1 whitespace-nowrap',
                           'rounded-md text-sm transition-colors',
+                          '[&_svg]:!fill-none [&_svg_*]:!fill-none',
                           currentSection?.id === section.id
                             ? 'text-primary font-medium'
                             : 'text-text-secondary hover:text-foreground'

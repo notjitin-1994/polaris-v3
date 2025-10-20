@@ -22,8 +22,15 @@ import {
   Undo,
   Redo,
 } from 'lucide-react';
-import type { PresenterTool, DrawingSettings } from './PresenterViewWindow';
 import { cn } from '@/lib/design-system';
+
+export type PresenterTool = 'none' | 'laser' | 'pen' | 'highlighter' | 'eraser' | 'shape';
+
+export interface DrawingSettings {
+  color: string;
+  size: number;
+  opacity: number;
+}
 
 interface PresenterToolbarProps {
   activeTool: PresenterTool;
@@ -82,75 +89,118 @@ export function PresenterToolbar({
     shortcut?: string;
   }) => (
     <motion.button
-      whileHover={{ scale: 1.05 }}
+      whileHover={{ scale: 1.05, y: -2 }}
       whileTap={{ scale: 0.95 }}
       onClick={() => onToolChange(tool)}
       className={cn(
-        'flex h-12 w-12 flex-col items-center justify-center rounded-xl border transition-all',
+        'glass-card group relative flex h-16 w-16 flex-col items-center justify-center gap-1 overflow-hidden rounded-2xl border shadow-lg transition-all',
         activeTool === tool
-          ? 'border-primary/50 bg-primary/20 text-primary shadow-primary/20 shadow-lg'
-          : 'bg-surface/50 text-text-secondary hover:border-primary/30 hover:bg-primary/10 hover:text-primary border-neutral-200/20'
+          ? 'border-primary/40 shadow-primary/20 shadow-xl'
+          : 'hover:border-primary/30 border-white/10 hover:shadow-xl'
       )}
       title={`${label}${shortcut ? ` (${shortcut})` : ''}`}
     >
-      <Icon className="h-5 w-5" />
-      <span className="mt-0.5 text-[10px] font-medium">{label}</span>
+      <div
+        className={cn(
+          'absolute inset-0 bg-gradient-to-br transition-opacity',
+          activeTool === tool
+            ? 'from-primary/20 to-transparent opacity-100'
+            : 'from-primary/10 to-transparent opacity-0 group-hover:opacity-100'
+        )}
+      />
+      <Icon
+        className={cn(
+          'relative h-6 w-6 transition-all',
+          activeTool === tool
+            ? 'text-primary drop-shadow-[0_0_8px_rgba(167,218,219,0.4)]'
+            : 'text-text-secondary group-hover:text-primary'
+        )}
+      />
+      <span
+        className={cn(
+          'relative text-[10px] font-bold tracking-wide transition-colors',
+          activeTool === tool ? 'text-primary' : 'text-text-disabled group-hover:text-primary'
+        )}
+      >
+        {label}
+      </span>
     </motion.button>
   );
 
   return (
-    <div className="glass-panel relative rounded-2xl border border-neutral-200/20 p-4 backdrop-blur-xl">
-      <div className="flex items-center justify-between gap-4">
-        {/* Navigation */}
-        <div className="flex items-center gap-2">
+    <div className="glass-card-morphic relative mx-6 mb-6 overflow-hidden rounded-3xl border border-white/10 p-6 shadow-2xl">
+      {/* Ambient gradient background */}
+      <div className="from-primary/5 to-secondary/5 pointer-events-none absolute inset-0 bg-gradient-to-r via-transparent" />
+
+      <div className="relative flex items-center justify-between gap-6">
+        {/* Enhanced Navigation */}
+        <div className="flex items-center gap-3">
           <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
+            whileHover={{ scale: canGoPrev ? 1.05 : 1, y: canGoPrev ? -2 : 0 }}
+            whileTap={{ scale: canGoPrev ? 0.95 : 1 }}
             onClick={onPrevSlide}
             disabled={!canGoPrev}
             className={cn(
-              'flex h-12 w-12 items-center justify-center rounded-xl border transition-all',
+              'glass-card group relative flex h-14 w-14 items-center justify-center overflow-hidden rounded-2xl border shadow-lg transition-all',
               canGoPrev
-                ? 'bg-surface/50 text-foreground hover:border-secondary/50 hover:bg-secondary/10 hover:text-secondary border-neutral-200/20'
-                : 'bg-surface/30 text-text-disabled cursor-not-allowed border-neutral-200/10'
+                ? 'hover:border-secondary/30 border-white/10 hover:shadow-xl'
+                : 'cursor-not-allowed border-white/5 opacity-30'
             )}
             aria-label="Previous slide"
           >
-            <ChevronLeft className="h-6 w-6" />
+            {canGoPrev && (
+              <div className="from-secondary/10 absolute inset-0 bg-gradient-to-br to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
+            )}
+            <ChevronLeft
+              className={cn(
+                'relative h-7 w-7 transition-colors',
+                canGoPrev ? 'text-text-secondary group-hover:text-secondary' : 'text-text-disabled'
+              )}
+            />
           </motion.button>
 
           <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
+            whileHover={{ scale: canGoNext ? 1.05 : 1, y: canGoNext ? -2 : 0 }}
+            whileTap={{ scale: canGoNext ? 0.95 : 1 }}
             onClick={onNextSlide}
             disabled={!canGoNext}
             className={cn(
-              'flex h-12 w-12 items-center justify-center rounded-xl border transition-all',
+              'glass-card group relative flex h-14 w-14 items-center justify-center overflow-hidden rounded-2xl border shadow-lg transition-all',
               canGoNext
-                ? 'bg-surface/50 text-foreground hover:border-secondary/50 hover:bg-secondary/10 hover:text-secondary border-neutral-200/20'
-                : 'bg-surface/30 text-text-disabled cursor-not-allowed border-neutral-200/10'
+                ? 'hover:border-secondary/30 border-white/10 hover:shadow-xl'
+                : 'cursor-not-allowed border-white/5 opacity-30'
             )}
             aria-label="Next slide"
           >
-            <ChevronRight className="h-6 w-6" />
+            {canGoNext && (
+              <div className="from-secondary/10 absolute inset-0 bg-gradient-to-br to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
+            )}
+            <ChevronRight
+              className={cn(
+                'relative h-7 w-7 transition-colors',
+                canGoNext ? 'text-text-secondary group-hover:text-secondary' : 'text-text-disabled'
+              )}
+            />
           </motion.button>
         </div>
 
-        {/* Drawing Tools */}
-        <div className="flex items-center gap-2">
+        {/* Enhanced Drawing Tools */}
+        <div className="flex items-center gap-3">
+          <div className="mr-2 h-12 w-px bg-gradient-to-b from-transparent via-white/20 to-transparent" />
           <ToolButton icon={Pointer} label="Laser" tool="laser" shortcut="L" />
           <ToolButton icon={Pen} label="Pen" tool="pen" shortcut="P" />
           <ToolButton icon={Highlighter} label="Highlight" tool="highlighter" shortcut="H" />
           <ToolButton icon={Eraser} label="Eraser" tool="eraser" shortcut="E" />
           <ToolButton icon={Square} label="Shape" tool="shape" />
+          <div className="ml-2 h-12 w-px bg-gradient-to-b from-transparent via-white/20 to-transparent" />
         </div>
 
-        {/* Tool Settings */}
-        <div className="flex items-center gap-2">
+        {/* Enhanced Tool Settings */}
+        <div className="flex items-center gap-3">
           {/* Color Picker */}
           <div className="relative">
             <motion.button
-              whileHover={{ scale: 1.05 }}
+              whileHover={{ scale: 1.05, y: -2 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => {
                 setShowColorPicker(!showColorPicker);
@@ -158,17 +208,33 @@ export function PresenterToolbar({
                 setShowSettings(false);
               }}
               className={cn(
-                'flex h-12 items-center gap-2 rounded-xl border px-4 transition-all',
+                'glass-card group relative flex h-14 items-center gap-3 overflow-hidden rounded-2xl border px-4 shadow-lg transition-all',
                 showColorPicker
-                  ? 'border-primary/50 bg-primary/20 text-primary'
-                  : 'bg-surface/50 text-text-secondary hover:border-primary/30 hover:bg-primary/10 border-neutral-200/20'
+                  ? 'border-primary/40 shadow-xl'
+                  : 'hover:border-primary/30 border-white/10 hover:shadow-xl'
               )}
             >
               <div
-                className="h-5 w-5 rounded-md border-2 border-neutral-200/20"
-                style={{ backgroundColor: drawingSettings.color }}
+                className={cn(
+                  'absolute inset-0 bg-gradient-to-br transition-opacity',
+                  showColorPicker
+                    ? 'from-primary/20 to-transparent opacity-100'
+                    : 'from-primary/10 to-transparent opacity-0 group-hover:opacity-100'
+                )}
               />
-              <Palette className="h-4 w-4" />
+              <div
+                className="relative h-6 w-6 rounded-lg border-2 border-white/20 shadow-lg"
+                style={{
+                  backgroundColor: drawingSettings.color,
+                  boxShadow: `0 0 12px ${drawingSettings.color}60`,
+                }}
+              />
+              <Palette
+                className={cn(
+                  'relative h-5 w-5 transition-colors',
+                  showColorPicker ? 'text-primary' : 'text-text-secondary group-hover:text-primary'
+                )}
+              />
             </motion.button>
 
             <AnimatePresence>
@@ -177,13 +243,19 @@ export function PresenterToolbar({
                   initial={{ opacity: 0, y: 10, scale: 0.95 }}
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                  className="bg-surface/80 absolute bottom-full left-0 z-50 mb-2 rounded-xl border border-neutral-200/20 p-4 shadow-2xl backdrop-blur-xl"
+                  transition={{ type: 'spring', stiffness: 300, damping: 25 }}
+                  className="glass-card-morphic absolute bottom-full left-0 z-50 mb-3 overflow-hidden rounded-2xl border border-white/20 p-5 shadow-2xl"
                 >
-                  <h4 className="text-foreground mb-3 text-xs font-semibold">Drawing Color</h4>
-                  <div className="grid grid-cols-3 gap-2">
+                  <div className="mb-4 flex items-center gap-2">
+                    <Palette className="text-primary h-4 w-4" />
+                    <h4 className="font-heading text-sm font-bold text-white">Drawing Color</h4>
+                  </div>
+                  <div className="grid grid-cols-3 gap-3">
                     {PRESET_COLORS.map((color) => (
-                      <button
+                      <motion.button
                         key={color.value}
+                        whileHover={{ scale: 1.1, y: -2 }}
+                        whileTap={{ scale: 0.95 }}
                         onClick={() => {
                           onSettingsChange({
                             ...drawingSettings,
@@ -192,20 +264,30 @@ export function PresenterToolbar({
                           setShowColorPicker(false);
                         }}
                         className={cn(
-                          'group relative h-10 w-10 rounded-lg border-2 transition-all hover:scale-110',
+                          'glass-card group relative h-12 w-12 overflow-hidden rounded-xl border-2 shadow-lg transition-all',
                           drawingSettings.color === color.value
-                            ? 'border-primary shadow-primary/30 shadow-lg'
-                            : 'border-neutral-200/20 hover:border-neutral-200/40'
+                            ? 'border-primary/60 shadow-xl'
+                            : 'border-white/20 hover:border-white/40'
                         )}
-                        style={{ backgroundColor: color.value }}
+                        style={{
+                          backgroundColor: color.value,
+                          boxShadow:
+                            drawingSettings.color === color.value
+                              ? `0 0 20px ${color.value}60, 0 4px 12px rgba(0,0,0,0.3)`
+                              : `0 0 8px ${color.value}30`,
+                        }}
                         title={color.name}
                       >
                         {drawingSettings.color === color.value && (
-                          <div className="absolute inset-0 flex items-center justify-center">
-                            <div className="h-2 w-2 rounded-full bg-white shadow-lg" />
-                          </div>
+                          <motion.div
+                            initial={{ scale: 0 }}
+                            animate={{ scale: 1 }}
+                            className="absolute inset-0 flex items-center justify-center"
+                          >
+                            <div className="h-3 w-3 rounded-full bg-white shadow-lg ring-2 ring-white/30" />
+                          </motion.div>
                         )}
-                      </button>
+                      </motion.button>
                     ))}
                   </div>
                 </motion.div>
@@ -216,7 +298,7 @@ export function PresenterToolbar({
           {/* Size Picker */}
           <div className="relative">
             <motion.button
-              whileHover={{ scale: 1.05 }}
+              whileHover={{ scale: 1.05, y: -2 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => {
                 setShowSizePicker(!showSizePicker);
@@ -224,20 +306,36 @@ export function PresenterToolbar({
                 setShowSettings(false);
               }}
               className={cn(
-                'flex h-12 items-center gap-2 rounded-xl border px-4 transition-all',
+                'glass-card group relative flex h-14 items-center gap-3 overflow-hidden rounded-2xl border px-5 shadow-lg transition-all',
                 showSizePicker
-                  ? 'border-primary/50 bg-primary/20 text-primary'
-                  : 'bg-surface/50 text-text-secondary hover:border-primary/30 hover:bg-primary/10 border-neutral-200/20'
+                  ? 'border-primary/40 shadow-xl'
+                  : 'hover:border-primary/30 border-white/10 hover:shadow-xl'
               )}
             >
               <div
-                className="rounded-full bg-current"
+                className={cn(
+                  'absolute inset-0 bg-gradient-to-br transition-opacity',
+                  showSizePicker
+                    ? 'from-primary/20 to-transparent opacity-100'
+                    : 'from-primary/10 to-transparent opacity-0 group-hover:opacity-100'
+                )}
+              />
+              <div
+                className="relative rounded-full bg-current shadow-lg"
                 style={{
-                  width: drawingSettings.size * 2,
-                  height: drawingSettings.size * 2,
+                  width: Math.min(drawingSettings.size * 2.5, 24),
+                  height: Math.min(drawingSettings.size * 2.5, 24),
+                  boxShadow: `0 0 8px currentColor`,
                 }}
               />
-              <span className="text-sm font-medium">{drawingSettings.size}px</span>
+              <span
+                className={cn(
+                  'font-heading relative text-sm font-bold transition-colors',
+                  showSizePicker ? 'text-primary' : 'text-text-secondary group-hover:text-primary'
+                )}
+              >
+                {drawingSettings.size}px
+              </span>
             </motion.button>
 
             <AnimatePresence>
@@ -246,13 +344,19 @@ export function PresenterToolbar({
                   initial={{ opacity: 0, y: 10, scale: 0.95 }}
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                  className="bg-surface/80 absolute bottom-full left-0 z-50 mb-2 rounded-xl border border-neutral-200/20 p-4 shadow-2xl backdrop-blur-xl"
+                  transition={{ type: 'spring', stiffness: 300, damping: 25 }}
+                  className="glass-card-morphic absolute bottom-full left-0 z-50 mb-3 min-w-[200px] overflow-hidden rounded-2xl border border-white/20 p-5 shadow-2xl"
                 >
-                  <h4 className="text-foreground mb-3 text-xs font-semibold">Brush Size</h4>
-                  <div className="flex flex-col gap-2">
+                  <div className="mb-4 flex items-center gap-2">
+                    <div className="from-primary to-primary/50 h-4 w-4 rounded-full bg-gradient-to-br" />
+                    <h4 className="font-heading text-sm font-bold text-white">Brush Size</h4>
+                  </div>
+                  <div className="flex flex-col gap-2.5">
                     {PRESET_SIZES.map((size) => (
-                      <button
+                      <motion.button
                         key={size.value}
+                        whileHover={{ scale: 1.02, x: 4 }}
+                        whileTap={{ scale: 0.98 }}
                         onClick={() => {
                           onSettingsChange({
                             ...drawingSettings,
@@ -261,21 +365,39 @@ export function PresenterToolbar({
                           setShowSizePicker(false);
                         }}
                         className={cn(
-                          'flex items-center justify-between gap-4 rounded-lg border px-4 py-2 transition-all',
+                          'glass-card group relative flex items-center justify-between gap-4 overflow-hidden rounded-xl border px-4 py-3 shadow-lg transition-all',
                           drawingSettings.size === size.value
-                            ? 'border-primary/50 bg-primary/20 text-primary'
-                            : 'bg-surface/50 text-text-secondary hover:border-primary/30 hover:bg-primary/10 border-neutral-200/20'
+                            ? 'border-primary/50 shadow-primary/20 shadow-xl'
+                            : 'hover:border-primary/30 border-white/10'
                         )}
                       >
-                        <span className="text-sm font-medium">{size.name}</span>
                         <div
-                          className="rounded-full bg-current"
+                          className={cn(
+                            'absolute inset-0 bg-gradient-to-br transition-opacity',
+                            drawingSettings.size === size.value
+                              ? 'from-primary/20 to-transparent opacity-100'
+                              : 'from-primary/10 to-transparent opacity-0 group-hover:opacity-100'
+                          )}
+                        />
+                        <span
+                          className={cn(
+                            'font-heading relative text-sm font-bold transition-colors',
+                            drawingSettings.size === size.value
+                              ? 'text-primary'
+                              : 'text-text-secondary group-hover:text-primary'
+                          )}
+                        >
+                          {size.name}
+                        </span>
+                        <div
+                          className="relative rounded-full bg-current shadow-lg"
                           style={{
-                            width: size.value * 2,
-                            height: size.value * 2,
+                            width: size.value * 2.5,
+                            height: size.value * 2.5,
+                            boxShadow: `0 0 8px currentColor`,
                           }}
                         />
-                      </button>
+                      </motion.button>
                     ))}
                   </div>
                 </motion.div>
@@ -283,18 +405,19 @@ export function PresenterToolbar({
             </AnimatePresence>
           </div>
 
-          {/* Clear Button */}
+          {/* Enhanced Clear Button */}
           <motion.button
-            whileHover={{ scale: 1.05 }}
+            whileHover={{ scale: 1.05, y: -2 }}
             whileTap={{ scale: 0.95 }}
             onClick={() => {
               // Clear all drawings
               onToolChange('none');
             }}
-            className="bg-surface/50 text-text-secondary flex h-12 w-12 items-center justify-center rounded-xl border border-neutral-200/20 transition-all hover:border-red-500/50 hover:bg-red-500/10 hover:text-red-500"
+            className="glass-card group relative flex h-14 w-14 items-center justify-center overflow-hidden rounded-2xl border border-white/10 shadow-lg transition-all hover:border-red-500/40 hover:shadow-xl"
             title="Clear all drawings"
           >
-            <Trash2 className="h-5 w-5" />
+            <div className="absolute inset-0 bg-gradient-to-br from-red-500/10 to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
+            <Trash2 className="text-text-secondary relative h-6 w-6 transition-colors group-hover:text-red-500" />
           </motion.button>
         </div>
       </div>

@@ -71,7 +71,8 @@ export function ViewModeDropdown({ value, onChange }: ViewModeDropdownProps): Re
           'text-foreground bg-white/5',
           'border border-white/10',
           'hover:border-white/20 hover:bg-white/10',
-          'transition-all duration-200'
+          'transition-all duration-200',
+          '[&_svg]:!fill-none [&_svg_*]:!fill-none'
         )}
       >
         <Icon className="h-4 w-4" />
@@ -124,6 +125,7 @@ export function ViewModeDropdown({ value, onChange }: ViewModeDropdownProps): Re
                       'group relative flex w-full items-center gap-3 rounded-xl px-4 py-3',
                       'text-left transition-all duration-200',
                       'overflow-hidden',
+                      '[&_svg]:!fill-none [&_svg_*]:!fill-none',
                       isActive
                         ? 'from-primary/25 to-primary/10 text-primary shadow-primary/10 bg-gradient-to-br shadow-lg'
                         : 'text-text-secondary hover:text-foreground hover:bg-white/8'

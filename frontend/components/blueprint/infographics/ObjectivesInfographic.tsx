@@ -54,7 +54,12 @@ export function ObjectivesInfographic({
             <div className="mb-4 flex items-start justify-between">
               <div className="flex items-center gap-2">
                 <div className="bg-primary/10 flex h-8 w-8 items-center justify-center rounded-lg">
-                  <Target className="text-primary h-4 w-4" />
+                  <Target
+                    className="text-primary h-4 w-4"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth={2}
+                  />
                 </div>
                 <div className="text-primary text-xl font-bold">#{index + 1}</div>
               </div>
@@ -75,7 +80,7 @@ export function ObjectivesInfographic({
 
               {/* Metric Badge */}
               <div className="bg-primary/10 text-primary mb-4 inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs">
-                <TrendingUp className="h-3 w-3" />
+                <TrendingUp className="h-3 w-3" fill="none" stroke="currentColor" strokeWidth={2} />
                 <span className="font-medium">{obj.metric}</span>
               </div>
 

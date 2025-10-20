@@ -26,14 +26,6 @@ interface SlideData {
   };
 }
 
-export type PresenterTool = 'none' | 'laser' | 'pen' | 'highlighter' | 'eraser' | 'shape';
-
-export interface DrawingSettings {
-  color: string;
-  size: number;
-  opacity: number;
-}
-
 interface PresenterViewWindowProps {
   blueprintData: any;
   slidesData?: SlideData[];
@@ -71,8 +63,8 @@ export function PresenterViewWindow({
   const [isEditingNotes, setIsEditingNotes] = useState(false);
 
   // Drawing tools state
-  const [activeTool, setActiveTool] = useState<PresentationTool>('none');
-  const [drawingSettings, setDrawingSettings] = useState<PresentationDrawingSettings>({
+  const [activeTool, setActiveTool] = useState<PresenterTool>('none');
+  const [drawingSettings, setDrawingSettings] = useState<DrawingSettings>({
     color: '#A7DADB',
     size: 3,
     opacity: 1,
@@ -194,51 +186,89 @@ export function PresenterViewWindow({
   }, [currentSlide, totalSlides, showTimer, showNextSlide, isEditingNotes, activeTool]);
 
   return (
-    <div className="bg-background text-foreground flex h-screen flex-col overflow-hidden">
-      {/* Header */}
-      <header className="glass-panel border-b border-neutral-200/20 px-6 py-4 backdrop-blur-xl">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2">
-              <Monitor className="text-primary h-5 w-5" />
-              <h1 className="text-foreground text-lg font-bold">Presenter View</h1>
+    <div className="flex h-screen flex-col overflow-hidden bg-gradient-to-br from-[#020c1b] via-[#0d1b2a] to-[#020c1b]">
+      {/* Premium Header with Enhanced Glassmorphism */}
+      <header className="glass-card-morphic relative border-b border-white/10 px-8 py-5 shadow-2xl">
+        {/* Ambient gradient overlay */}
+        <div className="from-primary/5 to-secondary/5 pointer-events-none absolute inset-0 bg-gradient-to-r via-transparent" />
+
+        <div className="relative flex items-center justify-between">
+          <div className="flex items-center gap-6">
+            {/* Brand Icon with Glow */}
+            <div className="flex items-center gap-3">
+              <div className="from-primary/20 to-primary/5 flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br shadow-lg ring-1 ring-white/10">
+                <Monitor className="text-primary h-5 w-5 drop-shadow-[0_0_8px_rgba(167,218,219,0.4)]" />
+              </div>
+              <div>
+                <h1 className="font-heading text-xl font-bold tracking-tight text-white">
+                  Presenter View
+                </h1>
+                <p className="text-text-secondary text-xs">SmartSlate Polaris</p>
+              </div>
             </div>
 
-            <div className="bg-surface/50 flex items-center gap-2 rounded-lg border border-neutral-200/20 px-3 py-1.5">
-              <span className="text-text-secondary text-sm">Slide</span>
-              <span className="text-primary text-xl font-bold">{currentSlide + 1}</span>
-              <span className="text-text-secondary text-sm">/</span>
-              <span className="text-text-secondary text-lg">{totalSlides}</span>
+            {/* Enhanced Slide Counter */}
+            <div className="glass-card group hover:border-primary/30 relative overflow-hidden rounded-2xl border border-white/10 px-5 py-3 shadow-lg transition-all hover:shadow-xl">
+              <div className="from-primary/5 absolute inset-0 bg-gradient-to-br to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
+              <div className="relative flex items-center gap-3">
+                <span className="text-text-secondary text-xs font-medium tracking-wider uppercase">
+                  Slide
+                </span>
+                <div className="flex items-baseline gap-1">
+                  <span className="font-heading text-primary text-3xl font-bold drop-shadow-[0_0_12px_rgba(167,218,219,0.3)]">
+                    {currentSlide + 1}
+                  </span>
+                  <span className="text-text-secondary/60 text-lg">/</span>
+                  <span className="text-text-secondary text-xl font-semibold">{totalSlides}</span>
+                </div>
+              </div>
             </div>
           </div>
 
-          {/* Timer */}
+          {/* Premium Timer Section */}
           {showTimer && (
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-4">
+              {/* Timer Controls */}
               <motion.button
-                whileHover={{ scale: 1.05 }}
+                whileHover={{ scale: 1.05, y: -2 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => setTimerRunning(!timerRunning)}
-                className="touch-target bg-surface/50 text-foreground hover:border-primary/50 hover:bg-primary/10 flex h-9 w-9 items-center justify-center rounded-lg border border-neutral-200/20 transition-all"
+                className="glass-card group hover:border-secondary/40 relative h-11 w-11 overflow-hidden rounded-xl border border-white/10 shadow-lg transition-all hover:shadow-xl"
                 aria-label={timerRunning ? 'Pause timer' : 'Resume timer'}
               >
-                <Timer className="h-4 w-4" />
+                <div className="from-secondary/10 absolute inset-0 bg-gradient-to-br to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
+                <div className="relative flex h-full items-center justify-center">
+                  <Timer
+                    className={cn(
+                      'h-5 w-5 transition-colors',
+                      timerRunning ? 'text-secondary' : 'text-text-secondary'
+                    )}
+                  />
+                </div>
               </motion.button>
 
-              <div className="bg-surface/50 flex items-center gap-2 rounded-lg border border-neutral-200/20 px-4 py-2">
-                <Clock className="text-primary h-4 w-4" />
-                <span className="text-foreground font-mono text-xl font-bold">
-                  {formatTime(elapsedTime)}
-                </span>
+              {/* Enhanced Timer Display */}
+              <div className="glass-card group relative overflow-hidden rounded-2xl border border-white/10 px-6 py-3 shadow-xl">
+                <div className="from-primary/5 to-secondary/5 absolute inset-0 bg-gradient-to-br via-transparent" />
+                <div className="relative flex items-center gap-3">
+                  <Clock className="text-primary h-5 w-5 drop-shadow-[0_0_8px_rgba(167,218,219,0.4)]" />
+                  <span className="font-heading text-2xl font-bold tracking-tight text-white">
+                    {formatTime(elapsedTime)}
+                  </span>
+                </div>
               </div>
 
+              {/* Reset Button */}
               <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
+                whileHover={{ scale: 1.02, y: -2 }}
+                whileTap={{ scale: 0.98 }}
                 onClick={() => setElapsedTime(0)}
-                className="touch-target bg-surface/50 text-foreground hover:border-secondary/50 hover:bg-secondary/10 rounded-lg border border-neutral-200/20 px-3 py-2 text-sm font-medium transition-all"
+                className="glass-card group hover:border-secondary/40 relative overflow-hidden rounded-xl border border-white/10 px-4 py-2.5 shadow-lg transition-all hover:shadow-xl"
               >
-                Reset
+                <div className="from-secondary/10 absolute inset-0 bg-gradient-to-br to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
+                <span className="text-text-secondary group-hover:text-secondary relative text-sm font-semibold">
+                  Reset
+                </span>
               </motion.button>
             </div>
           )}
@@ -246,47 +276,68 @@ export function PresenterViewWindow({
       </header>
 
       {/* Main Content */}
-      <div className="flex flex-1 gap-4 overflow-hidden p-4">
+      <div className="flex flex-1 gap-6 overflow-hidden p-6">
         {/* Notes & Next Slide Panel */}
-        <div className="flex w-full flex-1 flex-col gap-4">
-          {/* Notes Editor */}
-          <div className="bg-surface/30 flex-1 overflow-hidden rounded-2xl border border-neutral-200/20 backdrop-blur-xl">
+        <div className="flex w-full flex-1 flex-col gap-6">
+          {/* Enhanced Notes Editor */}
+          <div className="glass-card relative flex-1 overflow-hidden rounded-3xl border border-white/10 shadow-2xl">
             <div className="flex h-full flex-col">
-              <div className="flex items-center justify-between border-b border-neutral-200/20 px-4 py-3">
-                <div className="flex items-center gap-3">
-                  <h3 className="text-foreground text-sm font-semibold">Speaker Notes</h3>
-                  {slidesData[currentSlide] && (
-                    <span className="text-text-secondary text-xs">
-                      - {slidesData[currentSlide].title}
+              {/* Premium Notes Header */}
+              <div className="relative border-b border-white/10 bg-gradient-to-r from-white/5 to-transparent px-6 py-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-4">
+                    <div className="from-primary/20 to-primary/5 flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br ring-1 ring-white/10">
+                      <svg
+                        className="text-primary h-4 w-4"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                        />
+                      </svg>
+                    </div>
+                    <div>
+                      <h3 className="font-heading text-base font-bold text-white">Speaker Notes</h3>
+                      {slidesData[currentSlide] && (
+                        <p className="text-text-secondary text-xs">
+                          {slidesData[currentSlide].title}
+                        </p>
+                      )}
+                    </div>
+                    {isEditingNotes && (
+                      <motion.span
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        className="glass-card border-secondary/30 flex items-center gap-2 rounded-full border px-3 py-1.5"
+                      >
+                        <span className="bg-secondary h-2 w-2 animate-pulse rounded-full shadow-[0_0_8px_rgba(79,70,229,0.6)]" />
+                        <span className="text-secondary text-xs font-semibold">Editing</span>
+                      </motion.span>
+                    )}
+                  </div>
+                  <motion.div
+                    key={currentSlide}
+                    initial={{ scale: 0.8, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    className="glass-card flex items-center gap-2.5 rounded-full border border-white/10 px-4 py-2 shadow-lg"
+                  >
+                    <div
+                      className="h-2.5 w-2.5 rounded-full shadow-lg"
+                      style={{
+                        backgroundColor: slidesData[currentSlide]?.colorTheme.primary || '#A7DADB',
+                        boxShadow: `0 0 12px ${slidesData[currentSlide]?.colorTheme.primary || '#A7DADB'}80`,
+                      }}
+                    />
+                    <span className="text-primary text-xs font-bold">
+                      Slide {currentSlide + 1}/{totalSlides}
                     </span>
-                  )}
-                  {isEditingNotes && (
-                    <motion.span
-                      initial={{ opacity: 0, scale: 0.9 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      className="bg-secondary/20 text-secondary flex items-center gap-1.5 rounded-md px-2 py-1 text-[10px] font-medium"
-                    >
-                      <span className="bg-secondary h-1.5 w-1.5 animate-pulse rounded-full" />
-                      Editing
-                    </motion.span>
-                  )}
+                  </motion.div>
                 </div>
-                <motion.div
-                  key={currentSlide}
-                  initial={{ scale: 0.8, opacity: 0 }}
-                  animate={{ scale: 1, opacity: 1 }}
-                  className="bg-primary/20 flex items-center gap-2 rounded-lg px-3 py-1.5"
-                >
-                  <div
-                    className="h-2 w-2 rounded-full"
-                    style={{
-                      backgroundColor: slidesData[currentSlide]?.colorTheme.primary || '#A7DADB',
-                    }}
-                  />
-                  <span className="text-primary text-xs font-semibold">
-                    Slide {currentSlide + 1} of {totalSlides}
-                  </span>
-                </motion.div>
               </div>
 
               <AnimatePresence mode="wait">
@@ -314,50 +365,75 @@ export function PresenterViewWindow({
             </div>
           </div>
 
-          {/* Next Slide Preview */}
+          {/* Enhanced Next Slide Preview */}
           {showNextSlide && currentSlide < totalSlides - 1 && (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="bg-surface/30 h-40 overflow-hidden rounded-2xl border border-neutral-200/20 backdrop-blur-xl"
+              className="glass-card relative h-48 overflow-hidden rounded-3xl border border-white/10 shadow-xl"
             >
               <div className="flex h-full flex-col">
-                <div className="flex items-center justify-between border-b border-neutral-200/20 px-4 py-2">
-                  <h3 className="text-text-secondary text-xs font-semibold">Next Slide</h3>
-                  <span className="text-text-secondary text-xs">
-                    {currentSlide + 2} of {totalSlides}
-                  </span>
+                {/* Next Slide Header */}
+                <div className="relative border-b border-white/10 bg-gradient-to-r from-white/5 to-transparent px-6 py-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <svg
+                        className="text-primary h-4 w-4"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M13 5l7 7-7 7M5 5l7 7-7 7"
+                        />
+                      </svg>
+                      <h3 className="font-heading text-text-secondary text-sm font-bold">
+                        Up Next
+                      </h3>
+                    </div>
+                    <span className="glass-card text-text-secondary rounded-full border border-white/10 px-3 py-1 text-xs font-semibold">
+                      Slide {currentSlide + 2}/{totalSlides}
+                    </span>
+                  </div>
                 </div>
 
-                <div className="flex flex-1 items-center justify-center p-4">
+                {/* Next Slide Content */}
+                <div className="flex flex-1 items-center justify-center p-6">
                   <div
-                    className="flex h-full w-full flex-col items-center justify-center rounded-lg p-4 shadow-lg"
+                    className="glass-card flex h-full w-full flex-col items-center justify-center gap-3 rounded-2xl border border-white/10 p-6 shadow-lg transition-all hover:scale-[1.02]"
                     style={{
                       background: slidesData[currentSlide + 1]
-                        ? `linear-gradient(135deg, ${slidesData[currentSlide + 1].colorTheme.primary}15, ${slidesData[currentSlide + 1].colorTheme.light}10, white)`
-                        : 'rgb(249, 250, 251)',
+                        ? `linear-gradient(135deg, ${slidesData[currentSlide + 1].colorTheme.primary}20, ${slidesData[currentSlide + 1].colorTheme.light}10, transparent)`
+                        : 'rgba(255, 255, 255, 0.02)',
                     }}
                   >
                     {slidesData[currentSlide + 1] ? (
                       <>
                         <div
-                          className="mb-2 flex h-8 w-8 items-center justify-center rounded-full text-sm font-bold"
+                          className="flex h-10 w-10 items-center justify-center rounded-xl text-base font-bold shadow-lg"
                           style={{
                             backgroundColor: slidesData[currentSlide + 1].colorTheme.primary,
                             color: 'white',
+                            boxShadow: `0 0 20px ${slidesData[currentSlide + 1].colorTheme.primary}60`,
                           }}
                         >
                           {currentSlide + 2}
                         </div>
                         <div
-                          className="text-center text-sm font-semibold"
-                          style={{ color: slidesData[currentSlide + 1].colorTheme.dark }}
+                          className="font-heading text-center text-base leading-tight font-bold"
+                          style={{
+                            color: slidesData[currentSlide + 1].colorTheme.primary,
+                            textShadow: `0 0 20px ${slidesData[currentSlide + 1].colorTheme.primary}40`,
+                          }}
                         >
                           {slidesData[currentSlide + 1].title}
                         </div>
                       </>
                     ) : (
-                      <div className="text-center text-sm text-slate-600">
+                      <div className="text-text-secondary text-center text-sm">
                         Next: Slide {currentSlide + 2}
                       </div>
                     )}
@@ -367,37 +443,73 @@ export function PresenterViewWindow({
             </motion.div>
           )}
 
-          {/* Bottom Action Buttons */}
-          <div className="flex gap-3">
+          {/* Enhanced Action Buttons */}
+          <div className="flex gap-4">
             <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
+              whileHover={{
+                scale: currentSlide < totalSlides - 1 ? 1.02 : 1,
+                y: currentSlide < totalSlides - 1 ? -2 : 0,
+              }}
+              whileTap={{ scale: currentSlide < totalSlides - 1 ? 0.98 : 1 }}
               onClick={goToNextSlide}
               disabled={currentSlide >= totalSlides - 1}
               className={cn(
-                'flex flex-1 items-center justify-center gap-2 rounded-xl border px-4 py-3 text-sm font-medium transition-all',
+                'glass-card group relative flex flex-1 items-center justify-center gap-3 overflow-hidden rounded-2xl border px-6 py-4 shadow-lg transition-all',
                 currentSlide < totalSlides - 1
-                  ? 'border-primary/50 bg-primary/10 text-primary hover:bg-primary/20'
-                  : 'bg-surface/50 text-text-disabled cursor-not-allowed border-neutral-200/20'
+                  ? 'border-primary/30 hover:border-primary/50 hover:shadow-xl'
+                  : 'cursor-not-allowed border-white/5 opacity-40'
               )}
             >
-              <Eye className="h-4 w-4" />
-              Next Slide
+              {currentSlide < totalSlides - 1 && (
+                <div className="from-primary/10 absolute inset-0 bg-gradient-to-br to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
+              )}
+              <Eye
+                className={cn(
+                  'relative h-5 w-5',
+                  currentSlide < totalSlides - 1 ? 'text-primary' : 'text-text-disabled'
+                )}
+              />
+              <span
+                className={cn(
+                  'font-heading relative text-sm font-bold',
+                  currentSlide < totalSlides - 1 ? 'text-primary' : 'text-text-disabled'
+                )}
+              >
+                Next Slide
+              </span>
             </motion.button>
 
             <motion.button
-              whileHover={{ scale: 1.02 }}
+              whileHover={{ scale: 1.02, y: -2 }}
               whileTap={{ scale: 0.98 }}
               onClick={() => setShowTimer(!showTimer)}
               className={cn(
-                'flex items-center justify-center gap-2 rounded-xl border px-4 py-3 text-sm font-medium transition-all',
+                'glass-card group relative flex items-center justify-center gap-3 overflow-hidden rounded-2xl border px-6 py-4 shadow-lg transition-all',
                 showTimer
-                  ? 'border-secondary/50 bg-secondary/20 text-secondary'
-                  : 'bg-surface/50 text-text-secondary hover:border-secondary/30 hover:bg-secondary/10 hover:text-secondary border-neutral-200/20'
+                  ? 'border-secondary/40 hover:border-secondary/60 hover:shadow-xl'
+                  : 'hover:border-secondary/30 border-white/10 hover:shadow-xl'
               )}
             >
-              <Clock className="h-4 w-4" />
-              Timer
+              <div
+                className={cn(
+                  'from-secondary/10 absolute inset-0 bg-gradient-to-br to-transparent transition-opacity',
+                  showTimer ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
+                )}
+              />
+              <Clock
+                className={cn(
+                  'relative h-5 w-5 transition-colors',
+                  showTimer ? 'text-secondary' : 'text-text-secondary group-hover:text-secondary'
+                )}
+              />
+              <span
+                className={cn(
+                  'font-heading relative text-sm font-bold transition-colors',
+                  showTimer ? 'text-secondary' : 'text-text-secondary group-hover:text-secondary'
+                )}
+              >
+                Timer
+              </span>
             </motion.button>
           </div>
         </div>
@@ -415,26 +527,56 @@ export function PresenterViewWindow({
         canGoNext={currentSlide < totalSlides - 1}
       />
 
-      {/* Slide Change Notification */}
+      {/* Enhanced Slide Change Notification */}
       <AnimatePresence>
         {showSlideChangeNotification && slidesData[currentSlide] && (
           <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            className="fixed top-24 left-1/2 z-50 -translate-x-1/2"
+            initial={{ opacity: 0, y: -30, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -30, scale: 0.95 }}
+            transition={{ type: 'spring', stiffness: 300, damping: 25 }}
+            className="fixed top-28 left-1/2 z-50 -translate-x-1/2"
           >
-            <div className="glass-panel rounded-xl border border-neutral-200/20 px-6 py-3 shadow-2xl">
-              <div className="flex items-center gap-3">
-                <div
-                  className="h-3 w-3 rounded-full"
-                  style={{
-                    backgroundColor: slidesData[currentSlide].colorTheme.primary,
-                  }}
-                />
+            <div className="glass-card-morphic relative overflow-hidden rounded-2xl border border-white/20 shadow-2xl">
+              {/* Ambient glow effect */}
+              <div
+                className="pointer-events-none absolute inset-0"
+                style={{
+                  background: `radial-gradient(circle at center, ${slidesData[currentSlide].colorTheme.primary}15, transparent 70%)`,
+                }}
+              />
+
+              <div className="relative flex items-center gap-4 px-8 py-4">
+                {/* Pulsing indicator */}
+                <div className="relative">
+                  <div
+                    className="h-4 w-4 animate-pulse rounded-full shadow-lg"
+                    style={{
+                      backgroundColor: slidesData[currentSlide].colorTheme.primary,
+                      boxShadow: `0 0 20px ${slidesData[currentSlide].colorTheme.primary}80`,
+                    }}
+                  />
+                  <div
+                    className="absolute inset-0 animate-ping rounded-full opacity-50"
+                    style={{
+                      backgroundColor: slidesData[currentSlide].colorTheme.primary,
+                    }}
+                  />
+                </div>
+
                 <div>
-                  <div className="text-text-secondary text-xs font-medium">Now viewing</div>
-                  <div className="text-foreground text-sm font-bold">
+                  <div className="mb-0.5 flex items-center gap-2">
+                    <span className="text-text-secondary text-xs font-semibold tracking-wider uppercase">
+                      Now Viewing
+                    </span>
+                  </div>
+                  <div
+                    className="font-heading text-base font-bold"
+                    style={{
+                      color: slidesData[currentSlide].colorTheme.primary,
+                      textShadow: `0 0 20px ${slidesData[currentSlide].colorTheme.primary}40`,
+                    }}
+                  >
                     Slide {currentSlide + 1}: {slidesData[currentSlide].title}
                   </div>
                 </div>

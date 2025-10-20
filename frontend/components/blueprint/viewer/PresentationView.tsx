@@ -294,10 +294,15 @@ export function PresentationView({
         <div className="relative z-10">
           <div className="mb-4 flex items-start justify-between">
             <div
-              className="rounded-xl p-3.5 transition-transform group-hover:scale-105"
+              className="rounded-xl p-3.5 transition-transform group-hover:scale-105 [&_svg]:!fill-none [&_svg_*]:!fill-none"
               style={{ backgroundColor: bgColor }}
             >
-              <Icon className="h-7 w-7" strokeWidth={2.5} style={{ color: iconColor }} />
+              <Icon
+                className="h-7 w-7"
+                strokeWidth={2.5}
+                fill="none"
+                style={{ color: iconColor }}
+              />
             </div>
           </div>
           <div className="space-y-2">
@@ -658,11 +663,13 @@ export function PresentationView({
                 </div>
 
                 {/* Icon Only - No background */}
-                <div className="relative z-10 flex items-center justify-center pt-6 pb-3">
+                <div className="relative z-10 flex items-center justify-center pt-6 pb-3 [&_svg]:!fill-none [&_svg_*]:!fill-none">
                   {slide.icon &&
                     React.createElement(slide.icon, {
                       className: 'h-12 w-12',
                       strokeWidth: 2,
+                      fill: 'none',
+                      stroke: 'currentColor',
                       style: {
                         color: slide.colorTheme.primary,
                         filter: `drop-shadow(0 4px 12px ${slide.colorTheme.glow})`,
@@ -929,10 +936,12 @@ export function PresentationView({
 
                 {/* Relevant slide icon in teal */}
                 {slides[currentSlide]?.icon && (
-                  <div className="flex-shrink-0 text-[rgb(167,218,219)]">
+                  <div className="flex-shrink-0 text-[rgb(167,218,219)] [&_svg]:!fill-none [&_svg_*]:!fill-none">
                     {React.createElement(slides[currentSlide].icon, {
                       className: 'h-5 w-5',
                       strokeWidth: 2,
+                      fill: 'none',
+                      stroke: 'currentColor',
                     })}
                   </div>
                 )}
