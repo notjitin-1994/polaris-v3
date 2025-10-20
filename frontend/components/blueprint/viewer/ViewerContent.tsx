@@ -73,14 +73,11 @@ export function ViewerContent({
 }: ViewerContentProps): React.JSX.Element {
   const [copiedSection, setCopiedSection] = React.useState<string | null>(null);
   const [expandedSection, setExpandedSection] = React.useState<string | null>(null);
-  
+
   // Determine content padding - Increased for breathing room
-  const contentPadding = layoutMode === 'compact' 
-    ? 'p-8' 
-    : layoutMode === 'spacious' 
-      ? 'p-16' 
-      : 'p-12';
-      
+  const contentPadding =
+    layoutMode === 'compact' ? 'p-8' : layoutMode === 'spacious' ? 'p-16' : 'p-12';
+
   // Copy section content
   const handleCopySection = async (sectionId: string, content: string) => {
     try {
@@ -94,7 +91,7 @@ export function ViewerContent({
       }
     }
   };
-  
+
   // Render content based on view mode
   const renderContent = () => {
     switch (viewMode) {
@@ -105,22 +102,16 @@ export function ViewerContent({
             {...sectionTransitions.morph}
             className="mx-auto max-w-7xl space-y-12"
           >
-            <InteractiveBlueprintDashboard
-              blueprint={blueprintData}
-              isPublicView={isPublicView}
-            />
+            <InteractiveBlueprintDashboard blueprint={blueprintData} isPublicView={isPublicView} />
           </motion.div>
         );
-        
+
       case 'document':
         return (
           <motion.div
             key="document"
             {...sectionTransitions.slideUp}
-            className={cn(
-              'mx-auto',
-              layoutMode === 'comfortable' ? 'max-w-4xl' : 'max-w-6xl',
-            )}
+            className={cn('mx-auto', layoutMode === 'comfortable' ? 'max-w-4xl' : 'max-w-6xl')}
           >
             <EnhancedMarkdownRenderer
               markdown={markdown}
@@ -130,7 +121,7 @@ export function ViewerContent({
             />
           </motion.div>
         );
-        
+
       case 'presentation':
         return (
           <PresentationView
@@ -144,70 +135,66 @@ export function ViewerContent({
             }}
           />
         );
-        
+
       case 'focus':
         return (
-          <FocusMode
-            markdown={markdown}
-            sections={sections}
-            pinnedSections={pinnedSections}
-          />
+          <FocusMode markdown={markdown} sections={sections} pinnedSections={pinnedSections} />
         );
-        
+
       default:
         return null;
     }
   };
-  
+
   // Magazine-style section renderer for document mode
   const renderMagazineSection = (section: Section, index: number) => {
     const isPinned = pinnedSections.includes(section.id);
     const isExpanded = expandedSection === section.id;
-    
+
     return (
       <motion.section
         key={section.id}
         id={section.id}
         variants={itemAnimations.morphIn}
-        className={cn(
-          'group relative scroll-mt-32',
-          index % 2 === 0 ? 'lg:pr-8' : 'lg:pl-8',
-        )}
+        className={cn('group relative scroll-mt-32', index % 2 === 0 ? 'lg:pr-8' : 'lg:pl-8')}
       >
         {/* Section Card - Cleaner styling */}
-        <div className={cn(
-          'relative overflow-hidden p-8 md:p-10 rounded-2xl',
-          'bg-white/[0.02] backdrop-blur-[6px]',
-          'border-0 shadow-sm',
-          'transition-all duration-300',
-          'hover:bg-white/[0.03] hover:shadow-md',
-          isPinned && 'bg-primary/[0.03] ring-1 ring-primary/20',
-        )}>
+        <div
+          className={cn(
+            'relative overflow-hidden rounded-2xl p-8 md:p-10',
+            'bg-white/[0.02] backdrop-blur-[6px]',
+            'border-0 shadow-sm',
+            'transition-all duration-300',
+            'hover:bg-white/[0.03] hover:shadow-md',
+            isPinned && 'bg-primary/[0.03] ring-primary/20 ring-1'
+          )}
+        >
           {/* Section Header */}
           <div className="mb-8 flex items-start justify-between">
             <div className="flex-1">
-              <h2 className={cn(
-                typographyPresets.articleTitle,
-                'mb-2 text-foreground',
-              )}>
+              <h2 className={cn(typographyPresets.articleTitle, 'text-foreground mb-2')}>
                 {section.title}
               </h2>
               {section.type !== 'markdown' && (
-                <span className={cn(
-                  typographyPresets.labelText,
-                  'inline-flex items-center gap-1.5 rounded-full',
-                  'bg-primary/10 px-3 py-1 text-primary',
-                )}>
+                <span
+                  className={cn(
+                    typographyPresets.labelText,
+                    'inline-flex items-center gap-1.5 rounded-full',
+                    'bg-primary/10 text-primary px-3 py-1'
+                  )}
+                >
                   {section.type}
                 </span>
               )}
             </div>
-            
+
             {/* Section Actions */}
-            <div className={cn(
-              'flex items-center gap-2 opacity-0 transition-opacity',
-              'group-hover:opacity-100',
-            )}>
+            <div
+              className={cn(
+                'flex items-center gap-2 opacity-0 transition-opacity',
+                'group-hover:opacity-100'
+              )}
+            >
               {/* Pin/Unpin */}
               <motion.button
                 {...microInteractions.buttonPress}
@@ -216,46 +203,46 @@ export function ViewerContent({
                   'flex h-8 w-8 items-center justify-center rounded-lg',
                   isPinned
                     ? 'bg-primary/20 text-primary'
-                    : 'bg-white/5 text-text-secondary hover:text-foreground',
-                  'transition-all',
+                    : 'text-text-secondary hover:text-foreground bg-white/5',
+                  'transition-all'
                 )}
                 title={isPinned ? 'Unpin section' : 'Pin section'}
               >
                 {isPinned ? <Pin className="h-4 w-4" /> : <PinOff className="h-4 w-4" />}
               </motion.button>
-              
+
               {/* Copy */}
               <motion.button
                 {...microInteractions.buttonPress}
                 onClick={() => handleCopySection(section.id, JSON.stringify(section.content))}
                 className={cn(
                   'flex h-8 w-8 items-center justify-center rounded-lg',
-                  'bg-white/5 text-text-secondary hover:text-foreground',
-                  'transition-all',
+                  'text-text-secondary hover:text-foreground bg-white/5',
+                  'transition-all'
                 )}
                 title="Copy section"
               >
                 {copiedSection === section.id ? (
-                  <Check className="h-4 w-4 text-success" />
+                  <Check className="text-success h-4 w-4" />
                 ) : (
                   <Copy className="h-4 w-4" />
                 )}
               </motion.button>
-              
+
               {/* Expand */}
               <motion.button
                 {...microInteractions.buttonPress}
                 onClick={() => setExpandedSection(isExpanded ? null : section.id)}
                 className={cn(
                   'flex h-8 w-8 items-center justify-center rounded-lg',
-                  'bg-white/5 text-text-secondary hover:text-foreground',
-                  'transition-all',
+                  'text-text-secondary hover:text-foreground bg-white/5',
+                  'transition-all'
                 )}
                 title="Expand section"
               >
                 <Maximize2 className="h-4 w-4" />
               </motion.button>
-              
+
               {/* AI Enhance */}
               {!isPublicView && (
                 <motion.button
@@ -263,7 +250,7 @@ export function ViewerContent({
                   className={cn(
                     'flex h-8 w-8 items-center justify-center rounded-lg',
                     'bg-primary/10 text-primary hover:bg-primary/20',
-                    'transition-all',
+                    'transition-all'
                   )}
                   title="Enhance with AI"
                 >
@@ -272,12 +259,9 @@ export function ViewerContent({
               )}
             </div>
           </div>
-          
+
           {/* Section Content */}
-          <div className={cn(
-            'prose prose-invert max-w-none',
-            isExpanded && 'prose-lg',
-          )}>
+          <div className={cn('prose prose-invert max-w-none', isExpanded && 'prose-lg')}>
             {/* Render section content based on type */}
             {section.type === 'markdown' ? (
               <div dangerouslySetInnerHTML={{ __html: section.content }} />
@@ -287,38 +271,42 @@ export function ViewerContent({
               </pre>
             )}
           </div>
-          
+
           {/* Annotations */}
           {showAnnotations && (
             <div className="mt-6 border-t border-white/10 pt-6">
-              <button className={cn(
-                'flex items-center gap-2 text-sm',
-                'text-text-secondary hover:text-foreground',
-                'transition-colors',
-              )}>
+              <button
+                className={cn(
+                  'flex items-center gap-2 text-sm',
+                  'text-text-secondary hover:text-foreground',
+                  'transition-colors'
+                )}
+              >
                 <MessageSquare className="h-4 w-4" />
                 <span>Add annotation</span>
               </button>
             </div>
           )}
-          
+
           {/* Magazine-style decoration */}
           {index === 0 && (
-            <div className={cn(
-              'absolute -left-4 top-8 h-32 w-1 bg-gradient-to-b',
-              'from-primary via-primary/50 to-transparent',
-            )} />
+            <div
+              className={cn(
+                'absolute top-8 -left-4 h-32 w-1 bg-gradient-to-b',
+                'from-primary via-primary/50 to-transparent'
+              )}
+            />
           )}
         </div>
       </motion.section>
     );
   };
-  
+
   // Presentation mode takes full control - no wrapper
   if (viewMode === 'presentation') {
     return renderContent();
   }
-  
+
   return (
     <div className={cn('relative min-h-screen', contentPadding)}>
       <AnimatePresence mode="wait">
@@ -330,38 +318,38 @@ export function ViewerContent({
             className={cn(
               'mx-auto',
               layoutMode === 'spacious' ? 'max-w-7xl' : 'max-w-5xl',
-              'space-y-12',
+              'space-y-12'
             )}
           >
             {/* Hero Section */}
             <motion.div
               variants={itemAnimations.morphIn}
-              className={cn(
-                glassCard.premium,
-                'relative overflow-hidden p-12 text-center',
-              )}
+              className={cn(glassCard.premium, 'relative overflow-hidden p-12 text-center')}
             >
-              <h1 className={cn(
-                typographyPresets.heroTitle,
-                'mb-4 text-transparent bg-clip-text',
-                'bg-gradient-to-r from-primary via-foreground to-secondary',
-              )}>
+              <h1
+                className={cn(
+                  typographyPresets.heroTitle,
+                  'mb-4 bg-clip-text text-transparent',
+                  'from-primary via-foreground to-secondary bg-gradient-to-r'
+                )}
+              >
                 {blueprintData.metadata?.title || 'Blueprint'}
               </h1>
-              <p className={cn(
-                typographyPresets.heroSubtitle,
-                'mx-auto max-w-3xl text-text-secondary',
-              )}>
-                {blueprintData.metadata?.organization || 'Organization'} • {blueprintData.metadata?.role || 'Role'}
+              <p
+                className={cn(
+                  typographyPresets.heroSubtitle,
+                  'text-text-secondary mx-auto max-w-3xl'
+                )}
+              >
+                {blueprintData.metadata?.organization || 'Organization'} •{' '}
+                {blueprintData.metadata?.role || 'Role'}
               </p>
             </motion.div>
-            
+
             {/* Magazine Grid */}
-            <div className={cn(
-              layoutMode === 'spacious' 
-                ? magazineLayouts.columns.two 
-                : 'space-y-12',
-            )}>
+            <div
+              className={cn(layoutMode === 'spacious' ? magazineLayouts.columns.two : 'space-y-12')}
+            >
               {sections.map((section, index) => renderMagazineSection(section, index))}
             </div>
           </motion.div>

@@ -100,16 +100,18 @@ describe('Blueprint Generation Endpoint', () => {
 
       expect(response.status).toBe(200);
       expect(data.success).toBe(true);
-      
+
       // Verify generation service was called
-      const { blueprintGenerationService } = await import('@/lib/services/blueprintGenerationService');
+      const { blueprintGenerationService } = await import(
+        '@/lib/services/blueprintGenerationService'
+      );
       expect(blueprintGenerationService.generate).toHaveBeenCalled();
     });
 
     it('should skip generation only when status is already completed', async () => {
       const { getSupabaseServerClient } = await import('@/lib/supabase/server');
       const mockSupabase = getSupabaseServerClient();
-      
+
       // Mock blueprint with status='completed'
       vi.mocked(mockSupabase.from as any).mockReturnValueOnce({
         select: vi.fn(() => ({
@@ -142,9 +144,11 @@ describe('Blueprint Generation Endpoint', () => {
 
       expect(response.status).toBe(200);
       expect(data.success).toBe(true);
-      
+
       // Verify generation service was NOT called
-      const { blueprintGenerationService } = await import('@/lib/services/blueprintGenerationService');
+      const { blueprintGenerationService } = await import(
+        '@/lib/services/blueprintGenerationService'
+      );
       expect(blueprintGenerationService.generate).not.toHaveBeenCalled();
     });
   });
@@ -193,7 +197,9 @@ describe('Blueprint Generation Endpoint', () => {
     });
 
     it('should set status to error if generation fails', async () => {
-      const { blueprintGenerationService } = await import('@/lib/services/blueprintGenerationService');
+      const { blueprintGenerationService } = await import(
+        '@/lib/services/blueprintGenerationService'
+      );
       vi.mocked(blueprintGenerationService.generate).mockResolvedValueOnce({
         success: false,
         error: 'Generation failed',
@@ -211,11 +217,11 @@ describe('Blueprint Generation Endpoint', () => {
       const response = await POST(request);
 
       expect(response.status).toBe(500);
-      
+
       const { getSupabaseServerClient } = await import('@/lib/supabase/server');
       const mockSupabase = getSupabaseServerClient();
       const updateMock = mockSupabase.from('blueprint_generator').update;
-      
+
       // Should have updated to status='error'
       const errorUpdateCall = (updateMock as any).mock.calls.find(
         (call: any) => call[0].status === 'error'
@@ -235,7 +241,9 @@ describe('Blueprint Generation Endpoint', () => {
 
       await POST(request);
 
-      const { blueprintGenerationService } = await import('@/lib/services/blueprintGenerationService');
+      const { blueprintGenerationService } = await import(
+        '@/lib/services/blueprintGenerationService'
+      );
       expect(blueprintGenerationService.generate).toHaveBeenCalledWith(
         expect.objectContaining({
           blueprintId: 'test-blueprint-id',
@@ -260,12 +268,12 @@ describe('Blueprint Generation Endpoint', () => {
       const { getSupabaseServerClient } = await import('@/lib/supabase/server');
       const mockSupabase = getSupabaseServerClient();
       const updateMock = mockSupabase.from('blueprint_generator').update;
-      
+
       // Find the update call that saves the blueprint
       const blueprintSaveCall = (updateMock as any).mock.calls.find(
         (call: any) => call[0].blueprint_json !== undefined
       );
-      
+
       expect(blueprintSaveCall).toBeDefined();
       expect(blueprintSaveCall[0].blueprint_json).toBeDefined();
       expect(blueprintSaveCall[0].blueprint_markdown).toBeDefined();
@@ -277,7 +285,7 @@ describe('Blueprint Generation Endpoint', () => {
     it('should reject if static questionnaire incomplete', async () => {
       const { getSupabaseServerClient } = await import('@/lib/supabase/server');
       const mockSupabase = getSupabaseServerClient();
-      
+
       vi.mocked(mockSupabase.from as any).mockReturnValueOnce({
         select: vi.fn(() => ({
           eq: vi.fn(() => ({
@@ -314,7 +322,7 @@ describe('Blueprint Generation Endpoint', () => {
     it('should reject if dynamic questionnaire incomplete', async () => {
       const { getSupabaseServerClient } = await import('@/lib/supabase/server');
       const mockSupabase = getSupabaseServerClient();
-      
+
       vi.mocked(mockSupabase.from as any).mockReturnValueOnce({
         select: vi.fn(() => ({
           eq: vi.fn(() => ({

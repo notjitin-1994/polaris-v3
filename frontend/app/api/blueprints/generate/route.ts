@@ -177,11 +177,15 @@ export async function POST(req: NextRequest): Promise<NextResponse<GenerateBluep
         );
       }
     } catch (error) {
-      logger.error('blueprints.generate.limit_check_error', 'Error checking blueprint saving limits', {
-        blueprintId,
-        userId,
-        error: (error as Error).message,
-      });
+      logger.error(
+        'blueprints.generate.limit_check_error',
+        'Error checking blueprint saving limits',
+        {
+          blueprintId,
+          userId,
+          error: (error as Error).message,
+        }
+      );
       // Continue with generation if we can't check limits (fallback behavior)
     }
 
@@ -209,9 +213,10 @@ export async function POST(req: NextRequest): Promise<NextResponse<GenerateBluep
     };
 
     // Check if V2.0 format (3-section)
-    const isV20 = staticAnswers.section_1_role_experience && 
-                  staticAnswers.section_2_organization && 
-                  staticAnswers.section_3_learning_gap;
+    const isV20 =
+      staticAnswers.section_1_role_experience &&
+      staticAnswers.section_2_organization &&
+      staticAnswers.section_3_learning_gap;
 
     let organization: string;
     let role: string;
@@ -249,7 +254,7 @@ export async function POST(req: NextRequest): Promise<NextResponse<GenerateBluep
     });
 
     const learningObjectives = extractLearningObjectives(dynamicAnswers);
-    
+
     const context = {
       blueprintId,
       userId,
@@ -260,7 +265,7 @@ export async function POST(req: NextRequest): Promise<NextResponse<GenerateBluep
       industry,
       learningObjectives,
     };
-    
+
     // Log extracted context
     logger.info('blueprints.generate.context_ready', 'Context built successfully', {
       blueprintId,
@@ -338,19 +343,30 @@ export async function POST(req: NextRequest): Promise<NextResponse<GenerateBluep
 
     // Increment blueprint saving count after successful save
     try {
-      const savingIncrementResult = await BlueprintUsageService.incrementSavingCount(supabase, userId);
-      logger.info('blueprints.generate.saving_count_incremented', 'Blueprint saving count incremented', {
-        blueprintId,
-        userId,
-        incrementResult: savingIncrementResult,
-      });
+      const savingIncrementResult = await BlueprintUsageService.incrementSavingCount(
+        supabase,
+        userId
+      );
+      logger.info(
+        'blueprints.generate.saving_count_incremented',
+        'Blueprint saving count incremented',
+        {
+          blueprintId,
+          userId,
+          incrementResult: savingIncrementResult,
+        }
+      );
       console.log('Saving count increment result:', savingIncrementResult, 'for user:', userId);
     } catch (error) {
-      logger.error('blueprints.generate.saving_count_error', 'Error incrementing blueprint saving count', {
-        blueprintId,
-        userId,
-        error: (error as Error).message,
-      });
+      logger.error(
+        'blueprints.generate.saving_count_error',
+        'Error incrementing blueprint saving count',
+        {
+          blueprintId,
+          userId,
+          error: (error as Error).message,
+        }
+      );
       // Don't fail the generation if counting fails
     }
 

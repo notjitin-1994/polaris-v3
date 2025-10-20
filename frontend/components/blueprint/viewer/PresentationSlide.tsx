@@ -22,7 +22,10 @@ interface PresentationSlideProps {
   colorTheme?: ColorTheme;
 }
 
-export function PresentationSlide({ children, colorTheme }: PresentationSlideProps): React.JSX.Element {
+export function PresentationSlide({
+  children,
+  colorTheme,
+}: PresentationSlideProps): React.JSX.Element {
   return (
     <motion.div
       initial={{ opacity: 0, x: 20 }}
@@ -35,10 +38,7 @@ export function PresentationSlide({ children, colorTheme }: PresentationSlidePro
       className="mx-auto w-full max-w-7xl"
     >
       {/* Simplified container - PresentationSectionCard provides card styling */}
-      <div className="space-y-6">
-        {children}
-      </div>
+      <div className="space-y-6">{children}</div>
     </motion.div>
   );
 }
-

@@ -109,10 +109,7 @@ export async function POST(request: NextRequest): Promise<Response> {
         error: blueprintError?.message,
         requestId,
       });
-      return NextResponse.json(
-        { error: 'Blueprint not found or access denied' },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: 'Blueprint not found or access denied' }, { status: 404 });
     }
 
     // Merge new answers with existing answers
@@ -156,10 +153,7 @@ export async function POST(request: NextRequest): Promise<Response> {
         error: saveError.message,
         requestId,
       });
-      return NextResponse.json(
-        { error: 'Failed to save answers to database' },
-        { status: 500 }
-      );
+      return NextResponse.json({ error: 'Failed to save answers to database' }, { status: 500 });
     }
 
     const duration = Date.now() - startTime;

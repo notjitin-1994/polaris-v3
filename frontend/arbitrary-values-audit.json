@@ -984,42 +984,27 @@
     {
       "value": "bg-white/15",
       "count": 6,
-      "files": [
-        "app/(auth)/signup/page.tsx",
-        "app/(auth)/login/page.tsx"
-      ]
+      "files": ["app/(auth)/signup/page.tsx", "app/(auth)/login/page.tsx"]
     },
     {
       "value": "w-[14px]",
       "count": 4,
-      "files": [
-        "app/(auth)/signup/page.tsx",
-        "app/(auth)/login/page.tsx"
-      ]
+      "files": ["app/(auth)/signup/page.tsx", "app/(auth)/login/page.tsx"]
     },
     {
       "value": "h-[14px]",
       "count": 4,
-      "files": [
-        "app/(auth)/signup/page.tsx",
-        "app/(auth)/login/page.tsx"
-      ]
+      "files": ["app/(auth)/signup/page.tsx", "app/(auth)/login/page.tsx"]
     },
     {
       "value": "min-h-[120px]",
       "count": 4,
-      "files": [
-        "app/(auth)/signup/page.tsx",
-        "app/(auth)/login/page.tsx"
-      ]
+      "files": ["app/(auth)/signup/page.tsx", "app/(auth)/login/page.tsx"]
     },
     {
       "value": "text-white/80",
       "count": 4,
-      "files": [
-        "app/(auth)/signup/page.tsx",
-        "app/(auth)/login/page.tsx"
-      ]
+      "files": ["app/(auth)/signup/page.tsx", "app/(auth)/login/page.tsx"]
     },
     {
       "value": "bg-black/60",

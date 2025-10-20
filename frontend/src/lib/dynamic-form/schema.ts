@@ -29,46 +29,52 @@ export const inputTypeSchema = z.enum([
 
 // Validation rule schema for dynamic validation
 // Note: LLM generates "rule" field, but we accept both "rule" and "type" for compatibility
-export const validationRuleSchema = z.object({
-  rule: z.enum([
-    'required',
-    'minLength',
-    'maxLength',
-    'minSelections',  // For checkbox_pills, checkbox_cards
-    'maxSelections',  // For checkbox_pills, checkbox_cards
-    'pattern',
-    'min',
-    'max',
-    'range',  // For scale/slider validation
-    'email',
-    'url',
-    'custom',
-  ]).optional(),
-  type: z.enum([
-    'required',
-    'minLength',
-    'maxLength',
-    'minSelections',
-    'maxSelections',
-    'pattern',
-    'min',
-    'max',
-    'range',
-    'email',
-    'url',
-    'custom',
-  ]).optional(),
-  value: z.union([z.string(), z.number(), z.array(z.number())]).optional(),
-  message: z.string().optional(),
-  customValidator: z.string().optional(), // Function name for custom validation
-}).transform((data) => ({
-  // Normalize: if "rule" is provided but not "type", copy rule to type
-  type: data.type || data.rule || 'required',
-  rule: data.rule || data.type || 'required',
-  value: data.value,
-  message: data.message,
-  customValidator: data.customValidator,
-}));
+export const validationRuleSchema = z
+  .object({
+    rule: z
+      .enum([
+        'required',
+        'minLength',
+        'maxLength',
+        'minSelections', // For checkbox_pills, checkbox_cards
+        'maxSelections', // For checkbox_pills, checkbox_cards
+        'pattern',
+        'min',
+        'max',
+        'range', // For scale/slider validation
+        'email',
+        'url',
+        'custom',
+      ])
+      .optional(),
+    type: z
+      .enum([
+        'required',
+        'minLength',
+        'maxLength',
+        'minSelections',
+        'maxSelections',
+        'pattern',
+        'min',
+        'max',
+        'range',
+        'email',
+        'url',
+        'custom',
+      ])
+      .optional(),
+    value: z.union([z.string(), z.number(), z.array(z.number())]).optional(),
+    message: z.string().optional(),
+    customValidator: z.string().optional(), // Function name for custom validation
+  })
+  .transform((data) => ({
+    // Normalize: if "rule" is provided but not "type", copy rule to type
+    type: data.type || data.rule || 'required',
+    rule: data.rule || data.type || 'required',
+    value: data.value,
+    message: data.message,
+    customValidator: data.customValidator,
+  }));
 
 // Base question schema with enhanced features
 const baseQuestionSchema = z.object({

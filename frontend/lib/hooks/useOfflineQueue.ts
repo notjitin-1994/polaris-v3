@@ -11,7 +11,10 @@ import { offlineQueue } from '@/lib/offline/offlineQueue';
 interface UseOfflineQueueReturn {
   isOnline: boolean;
   queuedCount: number;
-  queueRequest: (url: string, options?: RequestInit) => Promise<{ queued: true; queueId: string } | Response>;
+  queueRequest: (
+    url: string,
+    options?: RequestInit
+  ) => Promise<{ queued: true; queueId: string } | Response>;
   clearQueue: () => void;
 }
 
@@ -41,14 +44,11 @@ export function useOfflineQueue(): UseOfflineQueueReturn {
     };
   }, []);
 
-  const queueRequest = useCallback(
-    async (url: string, options?: RequestInit) => {
-      const result = await offlineQueue.queueRequest(url, options);
-      setQueuedCount(offlineQueue.getQueuedCount());
-      return result;
-    },
-    []
-  );
+  const queueRequest = useCallback(async (url: string, options?: RequestInit) => {
+    const result = await offlineQueue.queueRequest(url, options);
+    setQueuedCount(offlineQueue.getQueuedCount());
+    return result;
+  }, []);
 
   const clearQueue = useCallback(() => {
     offlineQueue.clearQueue();

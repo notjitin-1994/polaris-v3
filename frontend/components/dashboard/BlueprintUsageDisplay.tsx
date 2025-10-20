@@ -11,7 +11,9 @@ interface BlueprintUsageDisplayProps {
   className?: string;
 }
 
-export function BlueprintUsageDisplay({ className }: BlueprintUsageDisplayProps): React.JSX.Element {
+export function BlueprintUsageDisplay({
+  className,
+}: BlueprintUsageDisplayProps): React.JSX.Element {
   const { user } = useAuth();
   const [usage, setUsage] = useState<BlueprintUsageInfo | null>(null);
   const [loading, setLoading] = useState(true);
@@ -123,9 +125,9 @@ export function BlueprintUsageDisplay({ className }: BlueprintUsageDisplayProps)
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.3 }}
       >
-        <div className="flex items-center gap-2 rounded-xl bg-primary/10 border border-primary/20 px-3 py-2">
-          <Crown className="h-4 w-4 text-primary" />
-          <span className="text-sm font-medium text-primary">
+        <div className="bg-primary/10 border-primary/20 flex items-center gap-2 rounded-xl border px-3 py-2">
+          <Crown className="text-primary h-4 w-4" />
+          <span className="text-primary text-sm font-medium">
             {usage.exemptionReason || 'Unlimited Access'}
           </span>
         </div>
@@ -145,9 +147,14 @@ export function BlueprintUsageDisplay({ className }: BlueprintUsageDisplayProps)
         <div className="relative">
           <FileText className="h-4 w-4 text-white/80" />
           <div
-            className="absolute -bottom-1 -right-1 h-2 w-2 rounded-full border border-white/20"
+            className="absolute -right-1 -bottom-1 h-2 w-2 rounded-full border border-white/20"
             style={{
-              backgroundColor: creationPercentage >= 80 ? '#ef4444' : creationPercentage >= 60 ? '#f59e0b' : '#10b981',
+              backgroundColor:
+                creationPercentage >= 80
+                  ? '#ef4444'
+                  : creationPercentage >= 60
+                    ? '#f59e0b'
+                    : '#10b981',
             }}
           />
         </div>
@@ -167,9 +174,10 @@ export function BlueprintUsageDisplay({ className }: BlueprintUsageDisplayProps)
         <div className="relative">
           <Save className="h-4 w-4 text-white/80" />
           <div
-            className="absolute -bottom-1 -right-1 h-2 w-2 rounded-full border border-white/20"
+            className="absolute -right-1 -bottom-1 h-2 w-2 rounded-full border border-white/20"
             style={{
-              backgroundColor: savingPercentage >= 80 ? '#ef4444' : savingPercentage >= 60 ? '#f59e0b' : '#10b981',
+              backgroundColor:
+                savingPercentage >= 80 ? '#ef4444' : savingPercentage >= 60 ? '#f59e0b' : '#10b981',
             }}
           />
         </div>
@@ -195,13 +203,13 @@ export function BlueprintUsageDisplay({ className }: BlueprintUsageDisplayProps)
       {/* Warning for low limits */}
       {(creationRemaining <= 1 || savingRemaining <= 1) && (
         <motion.div
-          className="flex items-center gap-1 rounded-lg bg-warning/10 border border-warning/20 px-2 py-1"
+          className="bg-warning/10 border-warning/20 flex items-center gap-1 rounded-lg border px-2 py-1"
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
           transition={{ type: 'spring', stiffness: 500, damping: 30 }}
         >
-          <AlertCircle className="h-3 w-3 text-warning" />
-          <span className="text-xs font-medium text-warning">
+          <AlertCircle className="text-warning h-3 w-3" />
+          <span className="text-warning text-xs font-medium">
             {creationRemaining <= 1 && savingRemaining <= 1
               ? 'Limits low'
               : creationRemaining <= 1

@@ -10,7 +10,7 @@ import {
   sanitizeAnswer,
   normalizeOptionValue,
   type Section,
-  type Question
+  type Question,
 } from '@/lib/validation/dynamicQuestionSchemas';
 import { dynamicQuestionFixtures } from '../fixtures/dynamicQuestions';
 import { dynamicAnswerFixtures } from '../fixtures/dynamicAnswers';
@@ -20,7 +20,15 @@ const testSanitizeAnswer = (answer: unknown, question: Question): unknown => {
   // Since sanitizeAnswer is not exported, we test it through validatePartialAnswers
   const result = validatePartialAnswers(
     { test: answer },
-    [{ id: 's1', title: 'Test', description: '', order: 1, questions: [{ ...question, id: 'test' }] }],
+    [
+      {
+        id: 's1',
+        title: 'Test',
+        description: '',
+        order: 1,
+        questions: [{ ...question, id: 'test' }],
+      },
+    ],
     true // Enable sanitization
   );
   return answer; // For this test, we'll test sanitization through the validation functions
@@ -32,25 +40,25 @@ describe('Answer Validation', () => {
   describe('validatePartialAnswers', () => {
     it('should accept valid partial answers without requiring all fields', () => {
       const partialAnswers = {
-        q1_s1: "Some learning objectives",
-        q2_s1: ["cognitive"],
+        q1_s1: 'Some learning objectives',
+        q2_s1: ['cognitive'],
         // Missing many other fields, but that's okay for partial validation
       };
 
       const result = validatePartialAnswers(partialAnswers, validSections);
-      
+
       expect(result.valid).toBe(true);
       expect(Object.keys(result.errors)).toHaveLength(0);
     });
 
     it('should validate provided answers without checking required fields', () => {
       const partialAnswers = {
-        q1_s2: "invalid_option", // Invalid option
+        q1_s2: 'invalid_option', // Invalid option
         q2_s2: 100, // Exceeds maximum
       };
 
       const result = validatePartialAnswers(partialAnswers, validSections);
-      
+
       expect(result.valid).toBe(false);
       expect(result.errors.q1_s2).toBeDefined();
       expect(result.errors.q2_s2).toBeDefined();
@@ -59,10 +67,7 @@ describe('Answer Validation', () => {
 
   describe('validateCompleteAnswers', () => {
     it('should accept all valid answer types', () => {
-      const result = validateCompleteAnswers(
-        dynamicAnswerFixtures.valid,
-        validSections
-      );
+      const result = validateCompleteAnswers(dynamicAnswerFixtures.valid, validSections);
 
       expect(result.valid).toBe(true);
       expect(result.missingRequired).toHaveLength(0);
@@ -71,12 +76,12 @@ describe('Answer Validation', () => {
 
     it('should reject missing required fields', () => {
       const incompleteAnswers = {
-        q1_s1: "Some objectives", // Only one answer provided
+        q1_s1: 'Some objectives', // Only one answer provided
         // Missing all other required fields
       };
 
       const result = validateCompleteAnswers(incompleteAnswers, validSections);
-      
+
       expect(result.valid).toBe(false);
       expect(result.missingRequired.length).toBeGreaterThan(0);
       expect(result.errors).toBeDefined();
@@ -91,29 +96,26 @@ describe('Answer Validation', () => {
 
       expect(result.valid).toBe(true);
       expect(result.sanitizedAnswers).toBeDefined();
-      
+
       // Check specific sanitizations
       expect(result.sanitizedAnswers?.q2_s1).toContain('cognitive'); // Lowercased
       expect(result.sanitizedAnswers?.q3_s2).toBe('yes'); // Lowercased
     });
 
     it('should provide helpful error messages for truly invalid data', () => {
-      const result = validateCompleteAnswers(
-        dynamicAnswerFixtures.invalid,
-        validSections
-      );
+      const result = validateCompleteAnswers(dynamicAnswerFixtures.invalid, validSections);
 
       expect(result.valid).toBe(false);
-      
+
       // Check for helpful error messages
       const q1_s2_error = result.errors.q1_s2;
       expect(q1_s2_error).toBeDefined();
       // Check that the error message includes the invalid option info
       expect(JSON.stringify(q1_s2_error)).toContain('Invalid option');
-      
+
       // Check that we have multiple validation errors
       expect(Object.keys(result.errors).length).toBeGreaterThan(0);
-      
+
       // q3_s2 has value "maybe" which is invalid for toggle - if it's defined, check the error
       if (result.errors.q3_s2) {
         const q3_s2_error = result.errors.q3_s2;
@@ -130,16 +132,18 @@ describe('Answer Validation', () => {
           title: 'Text',
           description: '',
           order: 1,
-          questions: [{
-            id: 'q1',
-            label: 'Text question',
-            type: 'text',
-            required: true,
-            validation: [
-              { rule: 'minLength', value: 3, message: 'Min 3 chars' },
-              { rule: 'maxLength', value: 10, message: 'Max 10 chars' }
-            ]
-          }]
+          questions: [
+            {
+              id: 'q1',
+              label: 'Text question',
+              type: 'text',
+              required: true,
+              validation: [
+                { rule: 'minLength', value: 3, message: 'Min 3 chars' },
+                { rule: 'maxLength', value: 10, message: 'Max 10 chars' },
+              ],
+            },
+          ],
         };
 
         expect(validatePartialAnswers({ q1: 'ab' }, [textSection]).valid).toBe(false);
@@ -159,16 +163,20 @@ describe('Answer Validation', () => {
           title: 'Email',
           description: '',
           order: 1,
-          questions: [{
-            id: 'email',
-            label: 'Email',
-            type: 'email',
-            required: true
-          }]
+          questions: [
+            {
+              id: 'email',
+              label: 'Email',
+              type: 'email',
+              required: true,
+            },
+          ],
         };
 
         expect(validatePartialAnswers({ email: 'invalid' }, [emailSection]).valid).toBe(false);
-        expect(validatePartialAnswers({ email: 'valid@email.com' }, [emailSection]).valid).toBe(true);
+        expect(validatePartialAnswers({ email: 'valid@email.com' }, [emailSection]).valid).toBe(
+          true
+        );
       });
 
       it('should validate URL format', () => {
@@ -177,16 +185,20 @@ describe('Answer Validation', () => {
           title: 'URL',
           description: '',
           order: 1,
-          questions: [{
-            id: 'url',
-            label: 'URL',
-            type: 'url',
-            required: true
-          }]
+          questions: [
+            {
+              id: 'url',
+              label: 'URL',
+              type: 'url',
+              required: true,
+            },
+          ],
         };
 
         expect(validatePartialAnswers({ url: 'not a url' }, [urlSection]).valid).toBe(false);
-        expect(validatePartialAnswers({ url: 'https://example.com' }, [urlSection]).valid).toBe(true);
+        expect(validatePartialAnswers({ url: 'https://example.com' }, [urlSection]).valid).toBe(
+          true
+        );
       });
     });
 
@@ -205,7 +217,7 @@ describe('Answer Validation', () => {
 
       it('should enforce maxSelections for checkbox inputs', () => {
         const answers = {
-          q2_s3: ['video', 'interactive', 'reading', 'workshop', 'simulation', 'extra'] // 6 items, max is 5
+          q2_s3: ['video', 'interactive', 'reading', 'workshop', 'simulation', 'extra'], // 6 items, max is 5
         };
         const result = validatePartialAnswers(answers, validSections);
         // This should pass since 'extra' is not a valid option and will be filtered out
@@ -222,16 +234,18 @@ describe('Answer Validation', () => {
           title: 'Toggle',
           description: '',
           order: 1,
-          questions: [{
-            id: 'toggle',
-            label: 'Toggle',
-            type: 'toggle_switch',
-            required: true,
-            options: [
-              { value: 'yes', label: 'Yes' },
-              { value: 'no', label: 'No' }
-            ]
-          }]
+          questions: [
+            {
+              id: 'toggle',
+              label: 'Toggle',
+              type: 'toggle_switch',
+              required: true,
+              options: [
+                { value: 'yes', label: 'Yes' },
+                { value: 'no', label: 'No' },
+              ],
+            },
+          ],
         };
 
         expect(validatePartialAnswers({ toggle: 'yes' }, [toggleSection]).valid).toBe(true);
@@ -244,7 +258,7 @@ describe('Answer Validation', () => {
       it('should handle legacy select/multiselect types', () => {
         const answers = {
           q3_s5: 'canvas', // select
-          q1_s6: ['pre_assessment', 'formative'] // multiselect
+          q1_s6: ['pre_assessment', 'formative'], // multiselect
         };
         const result = validatePartialAnswers(answers, validSections);
         expect(result.valid).toBe(true);
@@ -255,7 +269,7 @@ describe('Answer Validation', () => {
       it('should validate scale within min/max bounds', () => {
         const answers = {
           q3_s1: 4, // enhanced_scale 1-5
-          q1_s7: 3  // scale 1-5
+          q1_s7: 3, // scale 1-5
         };
         const result = validatePartialAnswers(answers, validSections);
         expect(result.valid).toBe(true);
@@ -263,7 +277,7 @@ describe('Answer Validation', () => {
         // Test out of bounds
         const invalidAnswers = {
           q3_s1: 6, // exceeds max
-          q1_s7: 0  // below min
+          q1_s7: 0, // below min
         };
         const invalidResult = validatePartialAnswers(invalidAnswers, validSections);
         expect(invalidResult.valid).toBe(false);
@@ -341,8 +355,8 @@ describe('Answer Validation', () => {
 
     it('should handle null and undefined appropriately', () => {
       const answers = {
-        q1_s1: null,      // null for required field
-        q1_s9: undefined  // undefined for optional field
+        q1_s1: null, // null for required field
+        q1_s9: undefined, // undefined for optional field
       };
       const result = validateCompleteAnswers(answers, validSections);
       expect(result.valid).toBe(false);
@@ -351,18 +365,20 @@ describe('Answer Validation', () => {
     });
 
     it('should handle malformed question structures gracefully', () => {
-      const malformedSections = [{
-        id: 's1',
-        title: 'Malformed',
-        order: 1,
-        questions: [
-          {
-            id: 'q1',
-            label: 'Missing type',
-            // Missing 'type' field
-          } as any
-        ]
-      }];
+      const malformedSections = [
+        {
+          id: 's1',
+          title: 'Malformed',
+          order: 1,
+          questions: [
+            {
+              id: 'q1',
+              label: 'Missing type',
+              // Missing 'type' field
+            } as any,
+          ],
+        },
+      ];
 
       const result = validatePartialAnswers({ q1: 'answer' }, malformedSections);
       // Should handle gracefully without throwing
@@ -383,18 +399,20 @@ describe('Answer Validation', () => {
         title: 'International',
         description: '',
         order: 1,
-        questions: [{
-          id: 'q1',
-          label: 'International text',
-          type: 'textarea',
-          required: true
-        }]
+        questions: [
+          {
+            id: 'q1',
+            label: 'International text',
+            type: 'textarea',
+            required: true,
+          },
+        ],
       };
 
       const answers = {
-        q1: '这是中文文本。This is English. C\'est français. これは日本語です。'
+        q1: "这是中文文本。This is English. C'est français. これは日本語です。",
       };
-      
+
       const result = validatePartialAnswers(answers, [internationalSection]);
       expect(result.valid).toBe(true);
     });
@@ -412,7 +430,7 @@ describe('Answer Validation', () => {
         validSections,
         true // Enable sanitization
       );
-      
+
       expect(result.valid).toBe(false); // Will fail without proper question but sanitization should work
       expect(result.sanitizedAnswers?.q1_s2).toBe('individual'); // Should be lowercased
     });
@@ -427,10 +445,10 @@ describe('Answer Validation', () => {
       );
 
       expect(result.valid).toBe(false);
-      
+
       // Check that errors mention selecting from options
-      const hasHelpfulErrors = Object.values(result.errors).some(error => 
-        error.includes('select from') || error.includes('valid option')
+      const hasHelpfulErrors = Object.values(result.errors).some(
+        (error) => error.includes('select from') || error.includes('valid option')
       );
       expect(hasHelpfulErrors).toBe(true);
     });
@@ -441,27 +459,29 @@ describe('Answer Validation', () => {
         title: 'Currency',
         description: '',
         order: 1,
-        questions: [{
-          id: 'budget',
-          label: 'Budget',
-          type: 'currency',
-          required: true,
-          currencyConfig: {
-            currencySymbol: '$',
-            min: 0,
-            max: 1000000
-          }
-        }]
+        questions: [
+          {
+            id: 'budget',
+            label: 'Budget',
+            type: 'currency',
+            required: true,
+            currencyConfig: {
+              currencySymbol: '$',
+              min: 0,
+              max: 1000000,
+            },
+          },
+        ],
       };
 
       // These should all be invalid (currency should be number only)
       const invalidAnswers = [
         { budget: '$1,000' },
         { budget: '1000 USD' },
-        { budget: 'One thousand' }
+        { budget: 'One thousand' },
       ];
 
-      invalidAnswers.forEach(answers => {
+      invalidAnswers.forEach((answers) => {
         const result = validatePartialAnswers(answers, [currencySection]);
         expect(result.valid).toBe(false);
       });

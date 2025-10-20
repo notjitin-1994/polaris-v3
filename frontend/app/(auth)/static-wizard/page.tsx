@@ -19,61 +19,116 @@ import { getSupabaseBrowserClient } from '@/lib/supabase/client';
 // Form validation schema for the 3-section static questionnaire
 const staticQuestionnaireSchema = z.object({
   // Section 1: Role & Experience
-  section_1_role_experience: z.object({
-    current_role: z.string().min(1, 'Please select a role'),
-    custom_role: z.string().optional(),
-    years_in_role: z.number().min(0).max(50),
-    industry_experience: z.array(z.string()).min(1, 'Please select at least one industry'),
-    team_size: z.enum(['Solo', '2-5', '6-10', '11-25', '26-50', '51+']),
-    technical_skills: z.array(z.string()).optional(),
-  }).refine((data) => {
-    // If "Other" is selected, custom_role must be provided and not empty
-    if (data.current_role === 'Other') {
-      return data.custom_role && data.custom_role.trim().length > 0;
-    }
-    return true;
-  }, {
-    message: 'Please specify your role',
-    path: ['custom_role'],
-  }),
+  section_1_role_experience: z
+    .object({
+      current_role: z.string().min(1, 'Please select a role'),
+      custom_role: z.string().optional(),
+      years_in_role: z.number().min(0).max(50),
+      industry_experience: z.array(z.string()).min(1, 'Please select at least one industry'),
+      team_size: z.enum(['Solo', '2-5', '6-10', '11-25', '26-50', '51+']),
+      technical_skills: z.array(z.string()).optional(),
+    })
+    .refine(
+      (data) => {
+        // If "Other" is selected, custom_role must be provided and not empty
+        if (data.current_role === 'Other') {
+          return data.custom_role && data.custom_role.trim().length > 0;
+        }
+        return true;
+      },
+      {
+        message: 'Please specify your role',
+        path: ['custom_role'],
+      }
+    ),
 
   // Section 2: Organization Details
-  section_2_organization: z.object({
-    organization_name: z.string().min(2, 'Organization name must be at least 2 characters').max(200),
-    industry_sector: z.enum([
-      'Technology', 'Healthcare', 'Financial Services', 'Manufacturing',
-      'Education', 'Government/Public Sector', 'Retail/E-commerce',
-      'Professional Services', 'Non-Profit', 'Other'
-    ]),
-    organization_size: z.enum(['1-50', '51-200', '201-1000', '1001-5000', '5001-10000', '10000+']),
-    geographic_regions: z.array(z.string()).min(1, 'Please select at least one region'),
-    compliance_requirements: z.array(z.string()).min(1, 'Please select at least one compliance requirement'),
-    data_sharing_policies: z.enum(['Unrestricted', 'Internal Only', 'Need-to-Know', 'Highly Restricted', 'Classified']),
-    security_clearance: z.enum(['None', 'Confidential', 'Secret', 'Top Secret', 'Other']).optional(),
-    legal_restrictions: z.string().max(1000).optional(),
-  }).refine((data) => {
-    // If "Other" is selected for industry_sector, we need a custom industry value
-    // For now, we'll validate this in the component since we need access to the custom input state
-    return true;
-  }, {
-    message: 'Please specify your industry',
-    path: ['industry_sector'],
-  }),
+  section_2_organization: z
+    .object({
+      organization_name: z
+        .string()
+        .min(2, 'Organization name must be at least 2 characters')
+        .max(200),
+      industry_sector: z.enum([
+        'Technology',
+        'Healthcare',
+        'Financial Services',
+        'Manufacturing',
+        'Education',
+        'Government/Public Sector',
+        'Retail/E-commerce',
+        'Professional Services',
+        'Non-Profit',
+        'Other',
+      ]),
+      organization_size: z.enum([
+        '1-50',
+        '51-200',
+        '201-1000',
+        '1001-5000',
+        '5001-10000',
+        '10000+',
+      ]),
+      geographic_regions: z.array(z.string()).min(1, 'Please select at least one region'),
+      compliance_requirements: z
+        .array(z.string())
+        .min(1, 'Please select at least one compliance requirement'),
+      data_sharing_policies: z.enum([
+        'Unrestricted',
+        'Internal Only',
+        'Need-to-Know',
+        'Highly Restricted',
+        'Classified',
+      ]),
+      security_clearance: z
+        .enum(['None', 'Confidential', 'Secret', 'Top Secret', 'Other'])
+        .optional(),
+      legal_restrictions: z.string().max(1000).optional(),
+    })
+    .refine(
+      (data) => {
+        // If "Other" is selected for industry_sector, we need a custom industry value
+        // For now, we'll validate this in the component since we need access to the custom input state
+        return true;
+      },
+      {
+        message: 'Please specify your industry',
+        path: ['industry_sector'],
+      }
+    ),
 
   // Section 3: Learning Gap & Learner Details
   section_3_learning_gap: z.object({
     learning_gap_description: z.string().min(10, 'Please provide a detailed description').max(2000),
-    total_learners_range: z.enum(['1-10', '11-25', '26-50', '51-100', '101-250', '251-500', '501-1000', '1000+']),
+    total_learners_range: z.enum([
+      '1-10',
+      '11-25',
+      '26-50',
+      '51-100',
+      '101-250',
+      '251-500',
+      '501-1000',
+      '1000+',
+    ]),
     current_knowledge_level: z.number().min(1).max(5),
     motivation_factors: z.array(z.string()).min(1, 'Please select at least one motivation factor'),
     learning_location: z.array(z.string()).min(1, 'Please select at least one learning location'),
     devices_used: z.array(z.string()).min(1, 'Please select at least one device type'),
-    hours_per_week: z.enum(['<1 hour', '1-2 hours', '3-5 hours', '6-10 hours', '11-20 hours', '20+ hours']),
+    hours_per_week: z.enum([
+      '<1 hour',
+      '1-2 hours',
+      '3-5 hours',
+      '6-10 hours',
+      '11-20 hours',
+      '20+ hours',
+    ]),
     learning_deadline: z.string().optional(),
-    budget_available: z.object({
-      currency: z.string().optional(),
-      amount: z.number().min(0).optional(),
-    }).optional(),
+    budget_available: z
+      .object({
+        currency: z.string().optional(),
+        amount: z.number().min(0).optional(),
+      })
+      .optional(),
   }),
 });
 
@@ -118,155 +173,184 @@ const sections = [
   {
     id: 1,
     title: 'Role & Experience',
-    description: 'Tell us about your professional background and current responsibilities. This helps us understand your perspective and tailor recommendations to your specific needs.',
+    description:
+      'Tell us about your professional background and current responsibilities. This helps us understand your perspective and tailor recommendations to your specific needs.',
     whyThisMatters: {
-      title: "Why does this matter?",
+      title: 'Why does this matter?',
       content: (
         <div className="space-y-4">
           <p className="text-[15px] leading-relaxed">
-            The information you provide here forms the foundation of your personalized learning blueprint.
-            Each detail helps us create recommendations that are precisely tailored to your unique context and challenges.
+            The information you provide here forms the foundation of your personalized learning
+            blueprint. Each detail helps us create recommendations that are precisely tailored to
+            your unique context and challenges.
           </p>
 
           <div className="grid gap-4">
-            <div className="p-3 bg-primary/5 rounded-lg border border-primary/10">
-              <h4 className="font-semibold text-primary mb-2">🎯 Your Role & Experience</h4>
-              <p className="text-sm text-text-secondary">
-                Your position determines the lens through which we view your learning needs. A manager focuses on
-                strategic ROI and organizational impact, while a specialist needs deep technical implementation guidance.
+            <div className="bg-primary/5 border-primary/10 rounded-lg border p-3">
+              <h4 className="text-primary mb-2 font-semibold">🎯 Your Role & Experience</h4>
+              <p className="text-text-secondary text-sm">
+                Your position determines the lens through which we view your learning needs. A
+                manager focuses on strategic ROI and organizational impact, while a specialist needs
+                deep technical implementation guidance.
               </p>
             </div>
 
-            <div className="p-3 bg-primary/5 rounded-lg border border-primary/10">
-              <h4 className="font-semibold text-primary mb-2">🏢 Industry Context</h4>
-              <p className="text-sm text-text-secondary">
-                Different industries have unique compliance requirements, learning cultures, and operational constraints.
-                Healthcare organizations need HIPAA-compliant solutions, while financial services prioritize security and regulatory compliance.
+            <div className="bg-primary/5 border-primary/10 rounded-lg border p-3">
+              <h4 className="text-primary mb-2 font-semibold">🏢 Industry Context</h4>
+              <p className="text-text-secondary text-sm">
+                Different industries have unique compliance requirements, learning cultures, and
+                operational constraints. Healthcare organizations need HIPAA-compliant solutions,
+                while financial services prioritize security and regulatory compliance.
               </p>
             </div>
 
-            <div className="p-3 bg-primary/5 rounded-lg border border-primary/10">
-              <h4 className="font-semibold text-primary mb-2">👥 Team & Budget Realities</h4>
-              <p className="text-sm text-text-secondary">
-                Your team size and budget constraints directly impact implementation feasibility. We&apos;ll recommend
-                scalable solutions that fit your resources while maximizing learning outcomes and organizational impact.
+            <div className="bg-primary/5 border-primary/10 rounded-lg border p-3">
+              <h4 className="text-primary mb-2 font-semibold">👥 Team & Budget Realities</h4>
+              <p className="text-text-secondary text-sm">
+                Your team size and budget constraints directly impact implementation feasibility.
+                We&apos;ll recommend scalable solutions that fit your resources while maximizing
+                learning outcomes and organizational impact.
               </p>
             </div>
 
-            <div className="p-3 bg-primary/5 rounded-lg border border-primary/10">
-              <h4 className="font-semibold text-primary mb-2">⚡ Technical Capabilities</h4>
-              <p className="text-sm text-text-secondary">
-                Your existing technical skills and tools influence which solutions are practical. We&apos;ll leverage
-                your current tech stack while identifying opportunities to enhance your L&D technology ecosystem.
+            <div className="bg-primary/5 border-primary/10 rounded-lg border p-3">
+              <h4 className="text-primary mb-2 font-semibold">⚡ Technical Capabilities</h4>
+              <p className="text-text-secondary text-sm">
+                Your existing technical skills and tools influence which solutions are practical.
+                We&apos;ll leverage your current tech stack while identifying opportunities to
+                enhance your L&D technology ecosystem.
               </p>
             </div>
           </div>
 
-          <div className="p-4 bg-gradient-to-r from-primary/10 to-secondary/10 rounded-lg border border-primary/20">
-            <p className="text-sm font-medium text-primary mb-2">💡 The Result</p>
-            <p className="text-sm text-text-secondary">
-              By providing detailed, accurate information, you&apos;ll receive a learning blueprint that addresses
-              your specific challenges, fits your organizational context, and delivers measurable results.
-              Think of this as investing 10 minutes to save 10 months of trial and error.
+          <div className="from-primary/10 to-secondary/10 border-primary/20 rounded-lg border bg-gradient-to-r p-4">
+            <p className="text-primary mb-2 text-sm font-medium">💡 The Result</p>
+            <p className="text-text-secondary text-sm">
+              By providing detailed, accurate information, you&apos;ll receive a learning blueprint
+              that addresses your specific challenges, fits your organizational context, and
+              delivers measurable results. Think of this as investing 10 minutes to save 10 months
+              of trial and error.
             </p>
           </div>
 
-          <p className="text-xs text-text-secondary italic text-center">
-            Every detail matters. The more precisely you describe your situation, the more precisely we can solve it.
+          <p className="text-text-secondary text-center text-xs italic">
+            Every detail matters. The more precisely you describe your situation, the more precisely
+            we can solve it.
           </p>
         </div>
-      )
-    }
+      ),
+    },
   },
   {
     id: 2,
     title: 'Organization Details',
     description: 'Help us understand your organization context',
     whyThisMatters: {
-      title: "Why does this matter?",
+      title: 'Why does this matter?',
       content: (
         <div className="space-y-4">
           <p className="text-[15px] leading-relaxed">
-            Your organization&apos;s structure, industry, and operational environment significantly influence the type of learning solutions that will work best for your team.
+            Your organization&apos;s structure, industry, and operational environment significantly
+            influence the type of learning solutions that will work best for your team.
           </p>
 
           <div className="grid gap-4">
-            <div className="p-3 bg-primary/5 rounded-lg border border-primary/10">
-              <h4 className="font-semibold text-primary mb-2">🏢 Organizational Structure</h4>
-              <p className="text-sm text-text-secondary">
-                Understanding your company size, hierarchy, and decision-making processes helps us recommend solutions that align with your organizational culture and approval workflows.
+            <div className="bg-primary/5 border-primary/10 rounded-lg border p-3">
+              <h4 className="text-primary mb-2 font-semibold">🏢 Organizational Structure</h4>
+              <p className="text-text-secondary text-sm">
+                Understanding your company size, hierarchy, and decision-making processes helps us
+                recommend solutions that align with your organizational culture and approval
+                workflows.
               </p>
             </div>
 
-            <div className="p-3 bg-primary/5 rounded-lg border border-primary/10">
-              <h4 className="font-semibold text-primary mb-2">🏭 Industry Requirements</h4>
-              <p className="text-sm text-text-secondary">
-                Different sectors have unique compliance needs, learning preferences, and operational constraints. We tailor our recommendations to ensure they meet your industry&apos;s specific standards and expectations.
+            <div className="bg-primary/5 border-primary/10 rounded-lg border p-3">
+              <h4 className="text-primary mb-2 font-semibold">🏭 Industry Requirements</h4>
+              <p className="text-text-secondary text-sm">
+                Different sectors have unique compliance needs, learning preferences, and
+                operational constraints. We tailor our recommendations to ensure they meet your
+                industry&apos;s specific standards and expectations.
               </p>
             </div>
 
-            <div className="p-3 bg-primary/5 rounded-lg border border-primary/10">
-              <h4 className="font-semibold text-primary mb-2">🌍 Geographic & Compliance Factors</h4>
-              <p className="text-sm text-text-secondary">
-                Your organization&apos;s geographic footprint and regulatory requirements directly impact content delivery, data handling, and compliance considerations in your learning solutions.
+            <div className="bg-primary/5 border-primary/10 rounded-lg border p-3">
+              <h4 className="text-primary mb-2 font-semibold">
+                🌍 Geographic & Compliance Factors
+              </h4>
+              <p className="text-text-secondary text-sm">
+                Your organization&apos;s geographic footprint and regulatory requirements directly
+                impact content delivery, data handling, and compliance considerations in your
+                learning solutions.
               </p>
             </div>
           </div>
 
-          <div className="p-4 bg-gradient-to-r from-primary/10 to-secondary/10 rounded-lg border border-primary/20">
-            <p className="text-sm font-medium text-primary mb-2">🎯 Organizational Alignment</p>
-            <p className="text-sm text-text-secondary">
-              This information ensures your learning blueprint integrates seamlessly with your existing systems, respects your organizational boundaries, and supports your strategic objectives.
+          <div className="from-primary/10 to-secondary/10 border-primary/20 rounded-lg border bg-gradient-to-r p-4">
+            <p className="text-primary mb-2 text-sm font-medium">🎯 Organizational Alignment</p>
+            <p className="text-text-secondary text-sm">
+              This information ensures your learning blueprint integrates seamlessly with your
+              existing systems, respects your organizational boundaries, and supports your strategic
+              objectives.
             </p>
           </div>
         </div>
-      )
-    }
+      ),
+    },
   },
   {
     id: 3,
     title: 'Learning Gap & Learners',
     description: 'Define what needs to be learned and who needs it',
     whyThisMatters: {
-      title: "Why does this matter?",
+      title: 'Why does this matter?',
       content: (
         <div className="space-y-4">
           <p className="text-[15px] leading-relaxed">
-            Clearly defining your learning objectives and target audience ensures we create solutions that address real gaps and resonate with your learners&apos; needs and motivations.
+            Clearly defining your learning objectives and target audience ensures we create
+            solutions that address real gaps and resonate with your learners&apos; needs and
+            motivations.
           </p>
 
           <div className="grid gap-4">
-            <div className="p-3 bg-primary/5 rounded-lg border border-primary/10">
-              <h4 className="font-semibold text-primary mb-2">🎯 Learning Objectives</h4>
-              <p className="text-sm text-text-secondary">
-                Specific, measurable learning goals help us design targeted interventions rather than generic training. We align content with your desired outcomes and success metrics.
+            <div className="bg-primary/5 border-primary/10 rounded-lg border p-3">
+              <h4 className="text-primary mb-2 font-semibold">🎯 Learning Objectives</h4>
+              <p className="text-text-secondary text-sm">
+                Specific, measurable learning goals help us design targeted interventions rather
+                than generic training. We align content with your desired outcomes and success
+                metrics.
               </p>
             </div>
 
-            <div className="p-3 bg-primary/5 rounded-lg border border-primary/10">
-              <h4 className="font-semibold text-primary mb-2">👥 Target Audience</h4>
-              <p className="text-sm text-text-secondary">
-                Understanding your learners&apos; prior knowledge, motivation factors, and learning preferences allows us to create engaging, relevant content that respects their time and learning styles.
+            <div className="bg-primary/5 border-primary/10 rounded-lg border p-3">
+              <h4 className="text-primary mb-2 font-semibold">👥 Target Audience</h4>
+              <p className="text-text-secondary text-sm">
+                Understanding your learners&apos; prior knowledge, motivation factors, and learning
+                preferences allows us to create engaging, relevant content that respects their time
+                and learning styles.
               </p>
             </div>
 
-            <div className="p-3 bg-primary/5 rounded-lg border border-primary/10">
-              <h4 className="font-semibold text-primary mb-2">⏰ Timeline & Resources</h4>
-              <p className="text-sm text-text-secondary">
-                Your available time and budget constraints shape the scope and delivery method of your learning solution, ensuring it&apos;s realistic and sustainable within your operational context.
+            <div className="bg-primary/5 border-primary/10 rounded-lg border p-3">
+              <h4 className="text-primary mb-2 font-semibold">⏰ Timeline & Resources</h4>
+              <p className="text-text-secondary text-sm">
+                Your available time and budget constraints shape the scope and delivery method of
+                your learning solution, ensuring it&apos;s realistic and sustainable within your
+                operational context.
               </p>
             </div>
           </div>
 
-          <div className="p-4 bg-gradient-to-r from-primary/10 to-secondary/10 rounded-lg border border-primary/20">
-            <p className="text-sm font-medium text-primary mb-2">📊 Outcome-Focused Design</p>
-            <p className="text-sm text-text-secondary">
-              This precision ensures your learning solution delivers measurable improvements in knowledge, skills, and performance, with clear evaluation criteria and success metrics.
+          <div className="from-primary/10 to-secondary/10 border-primary/20 rounded-lg border bg-gradient-to-r p-4">
+            <p className="text-primary mb-2 text-sm font-medium">📊 Outcome-Focused Design</p>
+            <p className="text-text-secondary text-sm">
+              This precision ensures your learning solution delivers measurable improvements in
+              knowledge, skills, and performance, with clear evaluation criteria and success
+              metrics.
             </p>
           </div>
         </div>
-      )
-    }
+      ),
+    },
   },
 ];
 
@@ -294,7 +378,14 @@ function StaticWizardContent(): React.JSX.Element {
     defaultValues,
   });
 
-  const { handleSubmit, trigger, formState: { errors, isValid }, getValues, reset, watch } = methods;
+  const {
+    handleSubmit,
+    trigger,
+    formState: { errors, isValid },
+    getValues,
+    reset,
+    watch,
+  } = methods;
 
   // Keep ref in sync with state
   useEffect(() => {
@@ -302,24 +393,27 @@ function StaticWizardContent(): React.JSX.Element {
   }, [blueprintId]);
 
   // Debounced autosave function
-  const debouncedAutosave = useCallback(async (formData: StaticQuestionnaireFormData) => {
-    // Don't autosave if disabled or if we're already manually saving or submitting
-    if (!autosaveEnabled || isSaving || isSubmitting) return;
+  const debouncedAutosave = useCallback(
+    async (formData: StaticQuestionnaireFormData) => {
+      // Don't autosave if disabled or if we're already manually saving or submitting
+      if (!autosaveEnabled || isSaving || isSubmitting) return;
 
-    // Check if form data has actually changed
-    const currentFormDataString = JSON.stringify(formData);
-    if (currentFormDataString === lastFormDataRef.current) return;
+      // Check if form data has actually changed
+      const currentFormDataString = JSON.stringify(formData);
+      if (currentFormDataString === lastFormDataRef.current) return;
 
-    // Clear existing timeout
-    if (autosaveTimeoutRef.current) {
-      clearTimeout(autosaveTimeoutRef.current);
-    }
+      // Clear existing timeout
+      if (autosaveTimeoutRef.current) {
+        clearTimeout(autosaveTimeoutRef.current);
+      }
 
-    // Set new timeout for 2 seconds after user stops typing
-    autosaveTimeoutRef.current = setTimeout(async () => {
-      await performAutosave(formData);
-    }, 2000);
-  }, [autosaveEnabled, isSaving, isSubmitting]);
+      // Set new timeout for 2 seconds after user stops typing
+      autosaveTimeoutRef.current = setTimeout(async () => {
+        await performAutosave(formData);
+      }, 2000);
+    },
+    [autosaveEnabled, isSaving, isSubmitting]
+  );
 
   // Perform autosave
   const performAutosave = async (formData: StaticQuestionnaireFormData) => {
@@ -340,11 +434,14 @@ function StaticWizardContent(): React.JSX.Element {
     }
 
     // Check if any section has meaningful data
-    const hasData = Object.values(formData).some(sectionData => {
+    const hasData = Object.values(formData).some((sectionData) => {
       if (typeof sectionData === 'object' && sectionData !== null) {
-        return Object.values(sectionData).some(value =>
-          value !== '' && value !== null && value !== undefined &&
-          (Array.isArray(value) ? value.length > 0 : true)
+        return Object.values(sectionData).some(
+          (value) =>
+            value !== '' &&
+            value !== null &&
+            value !== undefined &&
+            (Array.isArray(value) ? value.length > 0 : true)
         );
       }
       return false;
@@ -366,7 +463,7 @@ function StaticWizardContent(): React.JSX.Element {
         blueprintId: currentBlueprintId || 'new',
         dataSize: currentFormDataString.length,
         hasData,
-        formDataKeys: Object.keys(formData)
+        formDataKeys: Object.keys(formData),
       });
 
       const payload = {
@@ -391,7 +488,7 @@ function StaticWizardContent(): React.JSX.Element {
           status: response.status,
           statusText: response.statusText,
           body: errorText,
-          payload: payload
+          payload: payload,
         });
         throw new Error(`HTTP error! status: ${response.status} - ${errorText}`);
       }
@@ -407,7 +504,7 @@ function StaticWizardContent(): React.JSX.Element {
       if (result.blueprintId) {
         console.log('Autosave: Updating blueprintId', {
           old: blueprintIdRef.current,
-          new: result.blueprintId
+          new: result.blueprintId,
         });
         setBlueprintId(result.blueprintId);
         blueprintIdRef.current = result.blueprintId; // Update ref immediately
@@ -417,7 +514,7 @@ function StaticWizardContent(): React.JSX.Element {
       lastFormDataRef.current = currentFormDataString;
 
       console.log('Autosave completed successfully', {
-        blueprintId: blueprintIdRef.current
+        blueprintId: blueprintIdRef.current,
       });
     } catch (error) {
       console.error('Autosave failed:', error);
@@ -436,11 +533,14 @@ function StaticWizardContent(): React.JSX.Element {
     const subscription = watch((data) => {
       if (data && Object.keys(data).length > 0) {
         // Only autosave if we have some meaningful data
-        const hasAnyData = Object.values(data).some(sectionData => {
+        const hasAnyData = Object.values(data).some((sectionData) => {
           if (typeof sectionData === 'object' && sectionData !== null) {
-            return Object.values(sectionData).some(value =>
-              value !== '' && value !== null && value !== undefined &&
-              (Array.isArray(value) ? value.length > 0 : true)
+            return Object.values(sectionData).some(
+              (value) =>
+                value !== '' &&
+                value !== null &&
+                value !== undefined &&
+                (Array.isArray(value) ? value.length > 0 : true)
             );
           }
           return false;
@@ -461,11 +561,14 @@ function StaticWizardContent(): React.JSX.Element {
       const formData = getValues();
       if (formData && Object.keys(formData).length > 0) {
         // Check if we have meaningful data before autosaving
-        const hasAnyData = Object.values(formData).some(sectionData => {
+        const hasAnyData = Object.values(formData).some((sectionData) => {
           if (typeof sectionData === 'object' && sectionData !== null) {
-            return Object.values(sectionData).some(value =>
-              value !== '' && value !== null && value !== undefined &&
-              (Array.isArray(value) ? value.length > 0 : true)
+            return Object.values(sectionData).some(
+              (value) =>
+                value !== '' &&
+                value !== null &&
+                value !== undefined &&
+                (Array.isArray(value) ? value.length > 0 : true)
             );
           }
           return false;
@@ -576,7 +679,7 @@ function StaticWizardContent(): React.JSX.Element {
           body: errorText,
           formData: formData,
           url: response.url,
-          headers: Object.fromEntries(response.headers.entries())
+          headers: Object.fromEntries(response.headers.entries()),
         });
         throw new Error(`HTTP error! status: ${response.status} - ${errorText || 'Unknown error'}`);
       }
@@ -591,7 +694,7 @@ function StaticWizardContent(): React.JSX.Element {
       if (result.blueprintId) {
         console.log('Manual save: Updating blueprintId', {
           old: blueprintIdRef.current,
-          new: result.blueprintId
+          new: result.blueprintId,
         });
         setBlueprintId(result.blueprintId);
         blueprintIdRef.current = result.blueprintId; // Update ref immediately
@@ -656,7 +759,7 @@ function StaticWizardContent(): React.JSX.Element {
     console.log('Timestamp:', new Date().toISOString());
     console.log('User:', user?.email);
     console.log('Blueprint ID:', blueprintId);
-    
+
     setIsSubmitting(true);
     setSaveError(null);
 
@@ -664,12 +767,15 @@ function StaticWizardContent(): React.JSX.Element {
       console.log('\n📝 Form Data Summary:');
       console.log('- Section 1 (Role):', data.section_1_role_experience.current_role);
       console.log('- Section 2 (Org):', data.section_2_organization.organization_name);
-      console.log('- Section 3 (Gap):', data.section_3_learning_gap.learning_gap_description.substring(0, 100) + '...');
+      console.log(
+        '- Section 3 (Gap):',
+        data.section_3_learning_gap.learning_gap_description.substring(0, 100) + '...'
+      );
 
       // Validate the form before submitting
       console.log('\n✓ Validating form...');
       const isFormValid = await trigger();
-      
+
       if (!isFormValid) {
         console.error('\n❌ Form validation failed:', errors);
         setSaveError('Please fix all validation errors before submitting');
@@ -725,7 +831,7 @@ function StaticWizardContent(): React.JSX.Element {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-[#020C1B] flex items-center justify-center">
+      <div className="flex min-h-screen items-center justify-center bg-[#020C1B]">
         <div className="text-white">Loading questionnaire...</div>
       </div>
     );
@@ -771,11 +877,11 @@ function StaticWizardContent(): React.JSX.Element {
             >
               <p className="text-xl leading-relaxed text-white/70 sm:text-2xl lg:text-3xl">
                 Complete this{' '}
-                <span className="font-medium text-primary">comprehensive questionnaire</span>{' '}
-                to help us understand your{' '}
-                <span className="font-medium text-primary">professional context</span>,{' '}
-                <span className="font-medium text-primary">organizational requirements</span>, and{' '}
-                <span className="font-medium text-primary">learning objectives</span>.
+                <span className="text-primary font-medium">comprehensive questionnaire</span> to
+                help us understand your{' '}
+                <span className="text-primary font-medium">professional context</span>,{' '}
+                <span className="text-primary font-medium">organizational requirements</span>, and{' '}
+                <span className="text-primary font-medium">learning objectives</span>.
               </p>
             </motion.div>
 
@@ -784,7 +890,7 @@ function StaticWizardContent(): React.JSX.Element {
               initial={{ scaleX: 0 }}
               animate={{ scaleX: 1 }}
               transition={{ duration: 1, delay: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
-              className="mt-16 h-px w-24 bg-primary"
+              className="bg-primary mt-16 h-px w-24"
             />
           </div>
         </div>
@@ -825,23 +931,21 @@ function StaticWizardContent(): React.JSX.Element {
 
                 {/* Error Display */}
                 {saveError && (
-                  <div className="p-4 bg-error/10 border border-error/20 rounded-lg">
-                    <p className="text-error text-sm font-medium">
-                      ⚠️ Error: {saveError}
-                    </p>
-                    <p className="text-error text-xs mt-2">
+                  <div className="bg-error/10 border-error/20 rounded-lg border p-4">
+                    <p className="text-error text-sm font-medium">⚠️ Error: {saveError}</p>
+                    <p className="text-error mt-2 text-xs">
                       Please check the browser console for more details.
                     </p>
                   </div>
                 )}
-                
+
                 {/* Validation Errors Display */}
                 {Object.keys(errors).length > 0 && (
-                  <div className="p-4 bg-warning/10 border border-warning/20 rounded-lg">
-                    <p className="text-warning text-sm font-medium mb-2">
+                  <div className="bg-warning/10 border-warning/20 rounded-lg border p-4">
+                    <p className="text-warning mb-2 text-sm font-medium">
                       ⚠️ Please fix the following errors:
                     </p>
-                    <ul className="text-warning text-xs list-disc list-inside space-y-1">
+                    <ul className="text-warning list-inside list-disc space-y-1 text-xs">
                       {Object.entries(errors).map(([key, error]) => (
                         <li key={key}>
                           {key}: {error?.message?.toString() || 'Invalid value'}
@@ -852,7 +956,7 @@ function StaticWizardContent(): React.JSX.Element {
                 )}
 
                 {/* Navigation */}
-                <div className="flex justify-end items-center pt-8 border-t border-white/10">
+                <div className="flex items-center justify-end border-t border-white/10 pt-8">
                   <div className="flex items-center gap-3">
                     {currentSection > 1 && (
                       <QuestionnaireButton
@@ -884,7 +988,7 @@ function StaticWizardContent(): React.JSX.Element {
                             isSubmitting,
                             isSaving,
                             hasErrors: Object.keys(errors).length > 0,
-                            errorCount: Object.keys(errors).length
+                            errorCount: Object.keys(errors).length,
                           });
                         }}
                       >
@@ -895,17 +999,17 @@ function StaticWizardContent(): React.JSX.Element {
                 </div>
 
                 {/* Autosave Status Indicator - moved to bottom */}
-                <div className="flex items-center justify-center text-xs text-text-secondary mt-4">
+                <div className="text-text-secondary mt-4 flex items-center justify-center text-xs">
                   <div className="flex items-center gap-2">
                     {isAutosaving && (
                       <>
-                        <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
+                        <div className="bg-primary h-2 w-2 animate-pulse rounded-full"></div>
                         <span>Saving...</span>
                       </>
                     )}
                     {lastAutosave && !isAutosaving && (
                       <>
-                        <div className="w-2 h-2 bg-success rounded-full"></div>
+                        <div className="bg-success h-2 w-2 rounded-full"></div>
                         <span>
                           Saved {Math.floor((Date.now() - lastAutosave.getTime()) / 1000)}s ago
                         </span>

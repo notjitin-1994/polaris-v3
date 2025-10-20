@@ -27,13 +27,19 @@ export { ReportsSection } from './sidebar/ReportsSection';
 export { AnnotationsSection } from './sidebar/AnnotationsSection';
 
 // Presenter view components
-export { 
-  PresenterViewWindow, 
-  RichTextNotesEditor, 
-  DrawingCanvas, 
-  LaserPointer, 
-  PresenterToolbar 
+export {
+  PresenterViewWindow,
+  RichTextNotesEditor,
+  DrawingCanvas,
+  LaserPointer,
+  PresenterToolbar,
 } from './presenter';
 
-export type { ViewMode, LayoutMode, ViewerState, CustomReport, ReportTheme } from './BlueprintViewer';
+export type {
+  ViewMode,
+  LayoutMode,
+  ViewerState,
+  CustomReport,
+  ReportTheme,
+} from './BlueprintViewer';
 export type { PresenterTool, DrawingSettings } from './presenter';

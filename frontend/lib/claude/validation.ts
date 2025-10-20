@@ -129,7 +129,7 @@ export function validateBlueprintStructure(blueprint: any): void {
  */
 function inferDisplayType(sectionKey: string, section: any): string {
   // Check for specific data structures that indicate visualization types
-  
+
   // Timeline: has phases, modules with dates, or similar temporal data
   if (section.phases || section.modules || section.timeline) {
     if (Array.isArray(section.phases) && section.phases[0]?.start_date) {
@@ -139,37 +139,46 @@ function inferDisplayType(sectionKey: string, section: any): string {
       return 'timeline';
     }
   }
-  
+
   // Table: has structured lists of similar objects or budget/resource data
   if (section.risks || section.human_resources || section.tools_and_platforms) {
     if (Array.isArray(section.risks) || Array.isArray(section.human_resources)) {
       return 'table';
     }
   }
-  
+
   // Infographic: has rich data for visualization
   if (section.objectives || section.kpis || section.metrics || section.demographics) {
     return 'infographic';
   }
-  
+
   // Chart: has explicit chart configuration or quantitative data
   if (section.chartConfig || section.chartType) {
     return 'chart';
   }
-  
+
   // Check section key for hints
   const keyLower = sectionKey.toLowerCase();
-  if (keyLower.includes('timeline') || keyLower.includes('schedule') || keyLower.includes('implementation')) {
+  if (
+    keyLower.includes('timeline') ||
+    keyLower.includes('schedule') ||
+    keyLower.includes('implementation')
+  ) {
     return 'timeline';
   }
   if (keyLower.includes('resource') || keyLower.includes('budget') || keyLower.includes('risk')) {
     return 'table';
   }
-  if (keyLower.includes('metric') || keyLower.includes('kpi') || keyLower.includes('objective') || 
-      keyLower.includes('audience') || keyLower.includes('assessment')) {
+  if (
+    keyLower.includes('metric') ||
+    keyLower.includes('kpi') ||
+    keyLower.includes('objective') ||
+    keyLower.includes('audience') ||
+    keyLower.includes('assessment')
+  ) {
     return 'infographic';
   }
-  
+
   // Default to markdown for text-heavy content
   return 'markdown';
 }
@@ -208,7 +217,7 @@ export function normalizeBlueprintStructure(blueprint: any): any {
           hasMetrics: !!section.metrics || !!section.kpis,
         });
       }
-      
+
       // Validate displayType is a known value
       const validTypes = ['infographic', 'timeline', 'chart', 'table', 'markdown'];
       if (!validTypes.includes(section.displayType)) {

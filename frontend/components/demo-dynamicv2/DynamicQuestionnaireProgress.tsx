@@ -87,7 +87,7 @@ export function DynamicQuestionnaireProgress({
             <button
               type="button"
               onClick={() => setIsExpanded(!isExpanded)}
-              className="w-full flex items-center justify-between p-3 bg-primary/5 hover:bg-primary/10 rounded-lg border border-primary/10 transition-all duration-200 group"
+              className="bg-primary/5 hover:bg-primary/10 border-primary/10 group flex w-full items-center justify-between rounded-lg border p-3 transition-all duration-200"
             >
               <div className="flex items-center gap-2">
                 <span
@@ -99,12 +99,10 @@ export function DynamicQuestionnaireProgress({
                 >
                   💡
                 </span>
-                <span className="font-medium text-primary font-quicksand">
-                  About this section
-                </span>
+                <span className="text-primary font-quicksand font-medium">About this section</span>
               </div>
               <svg
-                className={`w-4 h-4 text-primary transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`}
+                className={`text-primary h-4 w-4 transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`}
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -112,7 +110,12 @@ export function DynamicQuestionnaireProgress({
                   filter: 'drop-shadow(0 0 4px rgba(167, 218, 219, 0.3))',
                 }}
               >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M19 9l-7 7-7-7"
+                />
               </svg>
             </button>
 
@@ -122,16 +125,21 @@ export function DynamicQuestionnaireProgress({
                   <div className="space-y-4">
                     <p className="text-[15px] leading-relaxed">
                       This section focuses on gathering detailed information about{' '}
-                      <span className="font-semibold text-primary">{sections[currentStep]?.title.toLowerCase()}</span>.
-                      Each question is personalized based on your organizational context and will help create a
-                      comprehensive, tailored learning blueprint.
+                      <span className="text-primary font-semibold">
+                        {sections[currentStep]?.title.toLowerCase()}
+                      </span>
+                      . Each question is personalized based on your organizational context and will
+                      help create a comprehensive, tailored learning blueprint.
                     </p>
 
-                    <div className="p-4 bg-gradient-to-r from-primary/10 to-secondary/10 rounded-lg border border-primary/20">
-                      <p className="text-sm font-medium text-primary mb-2">💡 Why These Questions Matter</p>
-                      <p className="text-sm text-text-secondary">
-                        Every answer you provide helps us understand your unique situation better. The more detailed your
-                        responses, the more precise and actionable your learning blueprint will be.
+                    <div className="from-primary/10 to-secondary/10 border-primary/20 rounded-lg border bg-gradient-to-r p-4">
+                      <p className="text-primary mb-2 text-sm font-medium">
+                        💡 Why These Questions Matter
+                      </p>
+                      <p className="text-text-secondary text-sm">
+                        Every answer you provide helps us understand your unique situation better.
+                        The more detailed your responses, the more precise and actionable your
+                        learning blueprint will be.
                       </p>
                     </div>
                   </div>

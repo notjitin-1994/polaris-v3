@@ -79,15 +79,15 @@ function isTestInput(context: BlueprintContext): boolean {
     'example data',
     'test input',
   ];
-  
+
   const textToCheck = [
     context.organization?.toLowerCase() || '',
     context.role?.toLowerCase() || '',
     context.staticAnswers?.section_3_learning_gap?.learning_gap_description?.toLowerCase() || '',
     JSON.stringify(context.staticAnswers).toLowerCase().substring(0, 500),
   ].join(' ');
-  
-  return testPhrases.some(phrase => textToCheck.includes(phrase));
+
+  return testPhrases.some((phrase) => textToCheck.includes(phrase));
 }
 
 /**
@@ -98,7 +98,7 @@ export function buildBlueprintPrompt(context: BlueprintContext): string {
   const now = new Date();
   const currentDate = now.toISOString().split('T')[0]; // YYYY-MM-DD format
   const futureDate = new Date(now.getTime() + 45 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]; // 45 days later
-  
+
   const isTest = isTestInput(context);
 
   const prompt = `Generate a comprehensive learning blueprint based on the following inputs:
@@ -117,7 +117,9 @@ ${JSON.stringify(context.dynamicAnswers, null, 2)}
 PRIMARY LEARNING OBJECTIVES:
 ${context.learningObjectives.map((obj, i) => `${i + 1}. ${obj}`).join('\n')}
 
-${isTest ? `
+${
+  isTest
+    ? `
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 🧪 TEST MODE DETECTED
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -148,7 +150,8 @@ Ensure the generated blueprint is:
 - Professionally written as if created by an expert instructional designer
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-` : `
+`
+    : `
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 📋 BLUEPRINT GENERATION INSTRUCTIONS
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -173,7 +176,8 @@ Using ALL the context above, generate a comprehensive, personalized learning blu
 6. **Is Actionable**: Provide implementation-ready guidance with concrete next steps, specific tools, and realistic timelines
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-`}
+`
+}
 
 OUTPUT SCHEMA:
 {

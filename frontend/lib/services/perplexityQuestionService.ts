@@ -70,17 +70,25 @@ function buildPerplexityPrompt(context: QuestionGenerationContext): string {
   const { staticAnswers, userPrompts = [] } = context;
 
   // Check if V2.0 format (3-section from current PRD implementation)
-  const isV20 = staticAnswers.section_1_role_experience && 
-                staticAnswers.section_2_organization && 
-                staticAnswers.section_3_learning_gap;
+  const isV20 =
+    staticAnswers.section_1_role_experience &&
+    staticAnswers.section_2_organization &&
+    staticAnswers.section_3_learning_gap;
 
-  let org: any, learner: any, gap: any, resources: any, delivery: any, evaluation: any, constraints: any[], role: string;
+  let org: any,
+    learner: any,
+    gap: any,
+    resources: any,
+    delivery: any,
+    evaluation: any,
+    constraints: any[],
+    role: string;
 
   if (isV20) {
     // V2.0 (3-section) format - map to expected structure
-    const roleData = staticAnswers.section_1_role_experience as any || {};
-    const orgData = staticAnswers.section_2_organization as any || {};
-    const learningData = staticAnswers.section_3_learning_gap as any || {};
+    const roleData = (staticAnswers.section_1_role_experience as any) || {};
+    const orgData = (staticAnswers.section_2_organization as any) || {};
+    const learningData = (staticAnswers.section_3_learning_gap as any) || {};
 
     role = roleData.current_role || roleData.custom_role || 'Not specified';
 

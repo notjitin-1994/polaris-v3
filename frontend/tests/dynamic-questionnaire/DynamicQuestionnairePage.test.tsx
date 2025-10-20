@@ -121,21 +121,13 @@ describe('DynamicQuestionnairePage', () => {
   });
 
   it('should render loading state initially', async () => {
-    render(
-      <DynamicQuestionnairePage
-        params={Promise.resolve({ blueprintId: mockBlueprintId })}
-      />
-    );
+    render(<DynamicQuestionnairePage params={Promise.resolve({ blueprintId: mockBlueprintId })} />);
 
     expect(screen.getByText('Loading questionnaire...')).toBeInTheDocument();
   });
 
   it('should fetch and render dynamic questions', async () => {
-    render(
-      <DynamicQuestionnairePage
-        params={Promise.resolve({ blueprintId: mockBlueprintId })}
-      />
-    );
+    render(<DynamicQuestionnairePage params={Promise.resolve({ blueprintId: mockBlueprintId })} />);
 
     await waitFor(() => {
       expect(screen.getByText('Learning Objectives')).toBeInTheDocument();
@@ -146,11 +138,7 @@ describe('DynamicQuestionnairePage', () => {
   });
 
   it('should navigate to next section', async () => {
-    render(
-      <DynamicQuestionnairePage
-        params={Promise.resolve({ blueprintId: mockBlueprintId })}
-      />
-    );
+    render(<DynamicQuestionnairePage params={Promise.resolve({ blueprintId: mockBlueprintId })} />);
 
     await waitFor(() => {
       expect(screen.getByText('Learning Objectives')).toBeInTheDocument();
@@ -165,11 +153,7 @@ describe('DynamicQuestionnairePage', () => {
   });
 
   it('should navigate to previous section', async () => {
-    render(
-      <DynamicQuestionnairePage
-        params={Promise.resolve({ blueprintId: mockBlueprintId })}
-      />
-    );
+    render(<DynamicQuestionnairePage params={Promise.resolve({ blueprintId: mockBlueprintId })} />);
 
     await waitFor(() => {
       expect(screen.getByText('Learning Objectives')).toBeInTheDocument();
@@ -193,11 +177,7 @@ describe('DynamicQuestionnairePage', () => {
   });
 
   it('should show submit button on last section', async () => {
-    render(
-      <DynamicQuestionnairePage
-        params={Promise.resolve({ blueprintId: mockBlueprintId })}
-      />
-    );
+    render(<DynamicQuestionnairePage params={Promise.resolve({ blueprintId: mockBlueprintId })} />);
 
     await waitFor(() => {
       expect(screen.getByText('Learning Objectives')).toBeInTheDocument();
@@ -213,11 +193,7 @@ describe('DynamicQuestionnairePage', () => {
   });
 
   it('should have proper ARIA attributes', async () => {
-    render(
-      <DynamicQuestionnairePage
-        params={Promise.resolve({ blueprintId: mockBlueprintId })}
-      />
-    );
+    render(<DynamicQuestionnairePage params={Promise.resolve({ blueprintId: mockBlueprintId })} />);
 
     await waitFor(() => {
       expect(screen.getByText('Learning Objectives')).toBeInTheDocument();
@@ -239,11 +215,7 @@ describe('DynamicQuestionnairePage', () => {
   });
 
   it('should update progress bar as sections are completed', async () => {
-    render(
-      <DynamicQuestionnairePage
-        params={Promise.resolve({ blueprintId: mockBlueprintId })}
-      />
-    );
+    render(<DynamicQuestionnairePage params={Promise.resolve({ blueprintId: mockBlueprintId })} />);
 
     await waitFor(() => {
       expect(screen.getByText('Learning Objectives')).toBeInTheDocument();
@@ -269,11 +241,7 @@ describe('DynamicQuestionnairePage', () => {
       json: async () => ({ error: 'Blueprint not found' }),
     });
 
-    render(
-      <DynamicQuestionnairePage
-        params={Promise.resolve({ blueprintId: mockBlueprintId })}
-      />
-    );
+    render(<DynamicQuestionnairePage params={Promise.resolve({ blueprintId: mockBlueprintId })} />);
 
     await waitFor(() => {
       expect(

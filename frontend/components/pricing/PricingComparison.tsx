@@ -21,16 +21,16 @@ export function PricingComparison({ plans, planType }: PricingComparisonProps): 
     'Cost per generation',
     'Advanced features',
   ];
-  
+
   return (
     <div className="glass-card overflow-hidden rounded-2xl border border-white/10">
       <div className="overflow-x-auto">
         <table className="w-full">
           <thead className="border-b border-white/10">
             <tr>
-              <th className="p-4 text-left text-sm font-medium text-foreground">Features</th>
+              <th className="text-foreground p-4 text-left text-sm font-medium">Features</th>
               {plans.map((plan) => (
-                <th key={plan.id} className="p-4 text-center text-sm font-medium text-foreground">
+                <th key={plan.id} className="text-foreground p-4 text-center text-sm font-medium">
                   {plan.name}
                 </th>
               ))}
@@ -39,10 +39,10 @@ export function PricingComparison({ plans, planType }: PricingComparisonProps): 
           <tbody>
             {features.map((feature, index) => (
               <tr key={feature} className={index % 2 === 0 ? 'bg-white/[0.02]' : ''}>
-                <td className="p-4 text-sm text-text-secondary">{feature}</td>
+                <td className="text-text-secondary p-4 text-sm">{feature}</td>
                 {plans.map((plan) => (
                   <td key={plan.id} className="p-4 text-center">
-                    <Check className="mx-auto h-4 w-4 text-success" />
+                    <Check className="text-success mx-auto h-4 w-4" />
                   </td>
                 ))}
               </tr>

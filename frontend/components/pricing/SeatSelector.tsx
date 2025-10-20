@@ -23,21 +23,21 @@ export function SeatSelector(props: SeatSelectorProps): React.JSX.Element {
       <button
         onClick={() => onChange(Math.max(min, value - 1))}
         disabled={value <= min}
-        className="flex h-10 w-10 items-center justify-center rounded-lg bg-white/10 text-foreground transition-all hover:bg-white/20 disabled:opacity-50"
+        className="text-foreground flex h-10 w-10 items-center justify-center rounded-lg bg-white/10 transition-all hover:bg-white/20 disabled:opacity-50"
         aria-label="Decrease seats"
       >
         <Minus className="h-4 w-4" />
       </button>
 
       <div className="text-center">
-        <div className="text-3xl font-bold text-foreground">{value}</div>
-        <div className="text-xs text-text-secondary">seats</div>
+        <div className="text-foreground text-3xl font-bold">{value}</div>
+        <div className="text-text-secondary text-xs">seats</div>
       </div>
 
       <button
         onClick={() => onChange(Math.min(max, value + 1))}
         disabled={value >= max}
-        className="flex h-10 w-10 items-center justify-center rounded-lg bg-white/10 text-foreground transition-all hover:bg-white/20 disabled:opacity-50"
+        className="text-foreground flex h-10 w-10 items-center justify-center rounded-lg bg-white/10 transition-all hover:bg-white/20 disabled:opacity-50"
         aria-label="Increase seats"
       >
         <Plus className="h-4 w-4" />

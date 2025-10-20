@@ -94,7 +94,7 @@ export const GlobalLayout = memo(function GlobalLayout({
     <BlueprintSidebarProvider>
       {/* Offline Status Indicator */}
       <OfflineIndicator />
-      
+
       <div className={`bg-background text-foreground flex h-screen w-full flex-col ${className}`}>
         {/* Desktop Sidebar and Main Content */}
         <div className="flex min-h-0 flex-1">

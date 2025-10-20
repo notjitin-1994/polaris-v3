@@ -109,7 +109,7 @@ describe('Admin Logs API', () => {
       const apiLogger = logger;
       apiLogger.setService('api');
       apiLogger.info('api.request', 'API request');
-      
+
       apiLogger.setService('database');
       apiLogger.info('database.query', 'Database query');
 
@@ -255,7 +255,7 @@ describe('Admin Logs API', () => {
       expect(response.status).toBe(200);
       const data = await response.json();
       expect(data.success).toBe(true);
-      
+
       // Note: logs are cleared but the clear action itself creates a log
       // so count should be 1 (the warning log about clearing)
       expect(logger.getStore().count()).toBeGreaterThanOrEqual(0);

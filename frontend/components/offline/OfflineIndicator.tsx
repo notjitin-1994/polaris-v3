@@ -19,13 +19,13 @@ export function OfflineIndicator() {
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -20 }}
           transition={{ duration: 0.3 }}
-          className="fixed top-4 left-1/2 -translate-x-1/2 z-50 glass-strong rounded-full px-6 py-3 flex items-center gap-3 shadow-lg border border-neutral-300"
+          className="glass-strong fixed top-4 left-1/2 z-50 flex -translate-x-1/2 items-center gap-3 rounded-full border border-neutral-300 px-6 py-3 shadow-lg"
           role="alert"
           aria-live="polite"
         >
           {/* Offline icon */}
           <svg
-            className="w-5 h-5 text-error"
+            className="text-error h-5 w-5"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -41,11 +41,9 @@ export function OfflineIndicator() {
 
           {/* Status text */}
           <div className="flex flex-col">
-            <span className="text-sm font-medium text-foreground">
-              You're offline
-            </span>
+            <span className="text-foreground text-sm font-medium">You're offline</span>
             {queuedCount > 0 && (
-              <span className="text-xs text-text-secondary">
+              <span className="text-text-secondary text-xs">
                 {queuedCount} {queuedCount === 1 ? 'change' : 'changes'} will sync when back online
               </span>
             )}
@@ -53,7 +51,7 @@ export function OfflineIndicator() {
 
           {/* Pulsing indicator */}
           <motion.div
-            className="w-2 h-2 rounded-full bg-error"
+            className="bg-error h-2 w-2 rounded-full"
             animate={{
               scale: [1, 1.5, 1],
               opacity: [1, 0.5, 1],

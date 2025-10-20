@@ -175,13 +175,19 @@ export class ValidationEngine {
 
       case 'minSelections':
         if (Array.isArray(value) && value.length < (rule.value as number)) {
-          return rule.message || `Select at least ${rule.value} option${(rule.value as number) > 1 ? 's' : ''}`;
+          return (
+            rule.message ||
+            `Select at least ${rule.value} option${(rule.value as number) > 1 ? 's' : ''}`
+          );
         }
         break;
 
       case 'maxSelections':
         if (Array.isArray(value) && value.length > (rule.value as number)) {
-          return rule.message || `Select at most ${rule.value} option${(rule.value as number) > 1 ? 's' : ''}`;
+          return (
+            rule.message ||
+            `Select at most ${rule.value} option${(rule.value as number) > 1 ? 's' : ''}`
+          );
         }
         break;
 

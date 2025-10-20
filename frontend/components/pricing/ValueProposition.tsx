@@ -31,7 +31,7 @@ export function ValueProposition(): React.JSX.Element {
       description: 'Your data is encrypted and never shared',
     },
   ];
-  
+
   return (
     <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
       {values.map((value, index) => {
@@ -44,11 +44,11 @@ export function ValueProposition(): React.JSX.Element {
             transition={{ delay: index * 0.1 }}
             className="glass-card rounded-2xl border border-white/10 p-6"
           >
-            <div className="mb-4 inline-flex rounded-xl bg-primary/10 p-3">
-              <Icon className="h-6 w-6 text-primary" />
+            <div className="bg-primary/10 mb-4 inline-flex rounded-xl p-3">
+              <Icon className="text-primary h-6 w-6" />
             </div>
-            <h3 className="mb-2 font-semibold text-foreground">{value.title}</h3>
-            <p className="text-sm text-text-secondary">{value.description}</p>
+            <h3 className="text-foreground mb-2 font-semibold">{value.title}</h3>
+            <p className="text-text-secondary text-sm">{value.description}</p>
           </motion.div>
         );
       })}

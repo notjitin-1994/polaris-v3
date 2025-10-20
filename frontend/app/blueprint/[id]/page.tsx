@@ -367,13 +367,13 @@ export default function BlueprintPage({ params }: PageProps): React.JSX.Element 
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
         type="button"
-        className="pressable inline-flex h-8 items-center gap-1.5 rounded-lg border border-primary/30 bg-primary/10 px-3 text-primary transition-all hover:bg-primary/20 hover:border-primary/50"
+        className="pressable border-primary/30 bg-primary/10 text-primary hover:bg-primary/20 hover:border-primary/50 inline-flex h-8 items-center gap-1.5 rounded-lg border px-3 transition-all"
         onClick={() => setIsPresentationMode(!isPresentationMode)}
-        title={isPresentationMode ? "Exit presentation mode" : "Enter presentation mode"}
-        aria-label={isPresentationMode ? "Exit presentation mode" : "Enter presentation mode"}
+        title={isPresentationMode ? 'Exit presentation mode' : 'Enter presentation mode'}
+        aria-label={isPresentationMode ? 'Exit presentation mode' : 'Enter presentation mode'}
       >
         <Presentation className="h-3.5 w-3.5" aria-hidden="true" />
-        <span className="text-xs font-medium hidden sm:inline">
+        <span className="hidden text-xs font-medium sm:inline">
           {isPresentationMode ? 'Exit' : 'Present'}
         </span>
       </motion.button>
@@ -484,7 +484,7 @@ export default function BlueprintPage({ params }: PageProps): React.JSX.Element 
               transition={{ delay: 0.5 }}
               className="mb-8"
             >
-              <div className="glass-card rounded-2xl border border-neutral-300 bg-background p-6">
+              <div className="glass-card bg-background rounded-2xl border border-neutral-300 p-6">
                 <div className="grid grid-cols-2 gap-6 md:grid-cols-4">
                   {isFullBlueprint(blueprintData) && blueprintData.metadata.organization && (
                     <div className="flex flex-col items-center justify-center space-y-2">

@@ -1,8 +1,6 @@
 import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
-  // Remove Turbopack config for better Vercel deployment compatibility
-  // Turbopack can cause issues in deployment environments
   eslint: {
     // Allow production builds to complete even with ESLint warnings
     // Warnings are still shown but don't block the build
@@ -13,16 +11,11 @@ const nextConfig: NextConfig = {
     // TODO: Fix remaining type errors
     ignoreBuildErrors: true,
   },
-  // Add experimental features for better deployment compatibility
-  experimental: {
-    // Enable server actions for better performance
-    serverActions: {
-      bodySizeLimit: '2mb',
-    },
-  },
   // Optimize for Vercel deployment
   poweredByHeader: false,
   compress: true,
+  // Set output file tracing root to avoid workspace confusion
+  outputFileTracingRoot: __dirname,
 };
 
 export default nextConfig;

@@ -12,13 +12,13 @@ import { createServerClient } from '@supabase/ssr';
 
 // Mock Supabase client
 vi.mock('@supabase/ssr', () => ({
-  createServerClient: vi.fn()
+  createServerClient: vi.fn(),
 }));
 
 // Mock the auth module
 vi.mock('@/lib/supabase/server', () => ({
   getServerSession: vi.fn(() => ({ session: { user: { id: 'test-user-id' } } })),
-  getSupabaseServerClient: vi.fn()
+  getSupabaseServerClient: vi.fn(),
 }));
 
 // Import getSupabaseServerClient after mocking
@@ -30,28 +30,28 @@ vi.mock('@/lib/ollama/client', () => ({
     generateQuestions: vi.fn().mockResolvedValue({
       sections: [
         {
-          title: "Learning Objectives & Outcomes",
+          title: 'Learning Objectives & Outcomes',
           questions: [
             {
-              id: "q1_s1",
-              question_text: "What are your primary learning objectives?",
-              input_type: "textarea",
+              id: 'q1_s1',
+              question_text: 'What are your primary learning objectives?',
+              input_type: 'textarea',
               validation: { required: true },
-              options: null
-            }
-          ]
-        }
-      ]
-    })
-  }))
+              options: null,
+            },
+          ],
+        },
+      ],
+    }),
+  })),
 }));
 
 describe('Static to Dynamic Question Flow', () => {
   let mockSupabase: any;
-  
+
   beforeEach(() => {
     vi.clearAllMocks();
-    
+
     // Setup mock Supabase responses
     mockSupabase = {
       from: vi.fn(() => mockSupabase),
@@ -63,11 +63,11 @@ describe('Static to Dynamic Question Flow', () => {
       auth: {
         getUser: vi.fn().mockResolvedValue({
           data: { user: { id: 'test-user-id' } },
-          error: null
-        })
-      }
+          error: null,
+        }),
+      },
     };
-    
+
     (createServerClient as any).mockReturnValue(mockSupabase);
     (getSupabaseServerClient as any).mockResolvedValue(mockSupabase);
   });
@@ -75,24 +75,24 @@ describe('Static to Dynamic Question Flow', () => {
   describe('POST /api/questionnaire/save', () => {
     it('should save valid static answers in V2.0 format', async () => {
       const blueprintId = '123e4567-e89b-12d3-a456-426614174000';
-      
+
       // Mock successful insert
       mockSupabase.single.mockResolvedValueOnce({
         data: {
           id: blueprintId,
           user_id: 'test-user-id',
           static_answers: staticAnswerFixtures.valid,
-          status: 'draft'
+          status: 'draft',
         },
-        error: null
+        error: null,
       });
 
       const request = new NextRequest('http://localhost:3000/api/questionnaire/save', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          staticAnswers: staticAnswerFixtures.valid
-        })
+          staticAnswers: staticAnswerFixtures.valid,
+        }),
       });
 
       const response = await saveStaticAnswers(request);
@@ -101,7 +101,7 @@ describe('Static to Dynamic Question Flow', () => {
       expect(response.status).toBe(200);
       expect(data.success).toBe(true);
       expect(data.blueprintId).toBe(blueprintId);
-      
+
       // Verify the correct data structure was saved
       expect(mockSupabase.insert).toHaveBeenCalledWith({
         user_id: 'test-user-id',
@@ -109,7 +109,7 @@ describe('Static to Dynamic Question Flow', () => {
         status: 'draft',
         title: 'New Blueprint',
         created_at: expect.any(String),
-        updated_at: expect.any(String)
+        updated_at: expect.any(String),
       });
     });
 
@@ -118,12 +118,12 @@ describe('Static to Dynamic Question Flow', () => {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          staticAnswers: staticAnswerFixtures.incomplete
-        })
+          staticAnswers: staticAnswerFixtures.incomplete,
+        }),
       });
 
       const response = await saveStaticAnswers(request);
-      
+
       expect(response.status).toBe(400);
       const data = await response.json();
       expect(data.error).toContain('validation');
@@ -131,23 +131,23 @@ describe('Static to Dynamic Question Flow', () => {
 
     it('should handle legacy V2 format gracefully', async () => {
       const blueprintId = '223e4567-e89b-12d3-a456-426614174000';
-      
+
       mockSupabase.single.mockResolvedValueOnce({
         data: {
           id: blueprintId,
           user_id: 'test-user-id',
           static_answers: staticAnswerFixtures.legacy,
-          status: 'draft'
+          status: 'draft',
         },
-        error: null
+        error: null,
       });
 
       const request = new NextRequest('http://localhost:3000/api/questionnaire/save', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          staticAnswers: staticAnswerFixtures.legacy
-        })
+          staticAnswers: staticAnswerFixtures.legacy,
+        }),
       });
 
       const response = await saveStaticAnswers(request);
@@ -161,28 +161,28 @@ describe('Static to Dynamic Question Flow', () => {
   describe('POST /api/generate-dynamic-questions', () => {
     it('should generate dynamic questions from valid static answers', async () => {
       const blueprintId = '123e4567-e89b-12d3-a456-426614174000';
-      
+
       // Mock blueprint fetch with static answers
       mockSupabase.single.mockResolvedValueOnce({
         data: {
           id: blueprintId,
           static_answers: staticAnswerFixtures.valid,
           user_id: 'test-user-id',
-          status: 'draft'
+          status: 'draft',
         },
-        error: null
+        error: null,
       });
-      
+
       // Mock update with dynamic questions
       mockSupabase.single.mockResolvedValueOnce({
         data: { id: blueprintId },
-        error: null
+        error: null,
       });
 
       const request = new NextRequest('http://localhost:3000/api/generate-dynamic-questions', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ blueprintId })
+        body: JSON.stringify({ blueprintId }),
       });
 
       const response = await generateDynamicQuestions(request);
@@ -192,37 +192,37 @@ describe('Static to Dynamic Question Flow', () => {
       expect(data.success).toBe(true);
       expect(data.dynamicQuestions).toBeDefined();
       expect(Array.isArray(data.dynamicQuestions)).toBe(true);
-      
+
       // Verify status was updated
       expect(mockSupabase.update).toHaveBeenCalledWith(
         expect.objectContaining({
-          status: 'generating'
+          status: 'generating',
         })
       );
     });
 
     it('should fail if no static answers exist', async () => {
       const blueprintId = '323e4567-e89b-12d3-a456-426614174000';
-      
+
       // Mock blueprint without static answers
       mockSupabase.single.mockResolvedValueOnce({
         data: {
           id: blueprintId,
           static_answers: null,
           user_id: 'test-user-id',
-          status: 'draft'
+          status: 'draft',
         },
-        error: null
+        error: null,
       });
 
       const request = new NextRequest('http://localhost:3000/api/generate-dynamic-questions', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ blueprintId })
+        body: JSON.stringify({ blueprintId }),
       });
 
       const response = await generateDynamicQuestions(request);
-      
+
       expect(response.status).toBe(400);
       const data = await response.json();
       expect(data.error).toContain('static answers');
@@ -230,43 +230,43 @@ describe('Static to Dynamic Question Flow', () => {
 
     it('should ensure generated questions have consistent format', async () => {
       const blueprintId = '423e4567-e89b-12d3-a456-426614174000';
-      
+
       // Mock blueprint fetch
       mockSupabase.single.mockResolvedValueOnce({
         data: {
           id: blueprintId,
           static_answers: staticAnswerFixtures.valid,
           user_id: 'test-user-id',
-          status: 'draft'
+          status: 'draft',
         },
-        error: null
+        error: null,
       });
-      
+
       // Mock update
       mockSupabase.single.mockResolvedValueOnce({
         data: { id: blueprintId },
-        error: null
+        error: null,
       });
 
       const request = new NextRequest('http://localhost:3000/api/generate-dynamic-questions', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ blueprintId })
+        body: JSON.stringify({ blueprintId }),
       });
 
       const response = await generateDynamicQuestions(request);
       const data = await response.json();
 
       expect(response.status).toBe(200);
-      
+
       // Verify the update was called with properly formatted questions
-      const updateCall = mockSupabase.update.mock.calls.find((call: any) => 
-        call[0].dynamic_questions !== undefined
+      const updateCall = mockSupabase.update.mock.calls.find(
+        (call: any) => call[0].dynamic_questions !== undefined
       );
-      
+
       expect(updateCall).toBeDefined();
       const savedQuestions = updateCall[0].dynamic_questions;
-      
+
       // Check that questions have been mapped to the correct format
       expect(Array.isArray(savedQuestions)).toBe(true);
       if (savedQuestions.length > 0) {
@@ -281,24 +281,24 @@ describe('Static to Dynamic Question Flow', () => {
   describe('End-to-End Flow', () => {
     it('should complete full flow from static answers to dynamic questions', async () => {
       const blueprintId = '523e4567-e89b-12d3-a456-426614174000';
-      
+
       // Step 1: Save static answers
       mockSupabase.single.mockResolvedValueOnce({
         data: {
           id: blueprintId,
           user_id: 'test-user-id',
           static_answers: staticAnswerFixtures.valid,
-          status: 'draft'
+          status: 'draft',
         },
-        error: null
+        error: null,
       });
 
       const saveRequest = new NextRequest('http://localhost:3000/api/questionnaire/save', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          staticAnswers: staticAnswerFixtures.valid
-        })
+          staticAnswers: staticAnswerFixtures.valid,
+        }),
       });
 
       const saveResponse = await saveStaticAnswers(saveRequest);
@@ -312,21 +312,24 @@ describe('Static to Dynamic Question Flow', () => {
           id: blueprintId,
           static_answers: staticAnswerFixtures.valid,
           user_id: 'test-user-id',
-          status: 'draft'
+          status: 'draft',
         },
-        error: null
-      });
-      
-      mockSupabase.single.mockResolvedValueOnce({
-        data: { id: blueprintId },
-        error: null
+        error: null,
       });
 
-      const generateRequest = new NextRequest('http://localhost:3000/api/generate-dynamic-questions', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ blueprintId })
+      mockSupabase.single.mockResolvedValueOnce({
+        data: { id: blueprintId },
+        error: null,
       });
+
+      const generateRequest = new NextRequest(
+        'http://localhost:3000/api/generate-dynamic-questions',
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ blueprintId }),
+        }
+      );
 
       const generateResponse = await generateDynamicQuestions(generateRequest);
       expect(generateResponse.status).toBe(200);
@@ -337,29 +340,29 @@ describe('Static to Dynamic Question Flow', () => {
 
     it('should handle edge case static answers correctly', async () => {
       const blueprintId = '623e4567-e89b-12d3-a456-426614174000';
-      
+
       // Use edge case fixture with extreme values
       mockSupabase.single.mockResolvedValueOnce({
         data: {
           id: blueprintId,
           user_id: 'test-user-id',
           static_answers: staticAnswerFixtures.edgeCase,
-          status: 'draft'
+          status: 'draft',
         },
-        error: null
+        error: null,
       });
 
       const saveRequest = new NextRequest('http://localhost:3000/api/questionnaire/save', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          staticAnswers: staticAnswerFixtures.edgeCase
-        })
+          staticAnswers: staticAnswerFixtures.edgeCase,
+        }),
       });
 
       const response = await saveStaticAnswers(saveRequest);
       expect(response.status).toBe(200);
-      
+
       // Verify that extreme values are preserved
       expect(mockSupabase.insert).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -367,10 +370,10 @@ describe('Static to Dynamic Question Flow', () => {
             section_3_learning_gap: expect.objectContaining({
               budget_available: {
                 amount: 50000000, // $50 million preserved
-                currency: "USD"
-              }
-            })
-          })
+                currency: 'USD',
+              },
+            }),
+          }),
         })
       );
     });

@@ -11,7 +11,11 @@ import { ArrowLeft } from 'lucide-react';
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
 import { glassPanel, microInteractions, cn } from '@/lib/design-system';
 import type { BlueprintJSON } from '../types';
-import { PresentationToolbar, type PresentationTool, type PresentationDrawingSettings } from './PresentationToolbar';
+import {
+  PresentationToolbar,
+  type PresentationTool,
+  type PresentationDrawingSettings,
+} from './PresentationToolbar';
 import { PresentationSlide } from './PresentationSlide';
 import { PresentationSectionCard } from './PresentationSectionCard';
 import { PresenterNotes } from './PresenterNotes';
@@ -30,20 +34,20 @@ import { TimelineInfographic } from '../infographics/TimelineInfographic';
 import { RiskMitigationInfographic } from '../infographics/RiskMitigationInfographic';
 import { SuccessMetricsInfographic } from '../infographics/SuccessMetricsInfographic';
 import { SustainabilityPlanInfographic } from '../infographics/SustainabilityPlanInfographic';
-import { 
-  Clock, 
+import {
+  Clock,
   Timer,
-  Layers, 
+  Layers,
   Target,
-  BookOpen, 
-  Compass, 
-  Users, 
-  Lightbulb, 
-  DollarSign, 
-  BarChart3, 
-  Calendar, 
-  Shield, 
-  TrendingUp, 
+  BookOpen,
+  Compass,
+  Users,
+  Lightbulb,
+  DollarSign,
+  BarChart3,
+  Calendar,
+  Shield,
+  TrendingUp,
   Leaf,
   CheckCircle,
   FileBarChart,
@@ -209,7 +213,7 @@ export function PresentationView({
   const [elapsedTime, setElapsedTime] = useState(0);
   const [mounted, setMounted] = useState(false);
   const [presenterWindow, setPresenterWindow] = useState<Window | null>(null);
-  
+
   // Drawing tools state
   const [activeTool, setActiveTool] = useState<PresentationTool>('none');
   const [drawingSettings, setDrawingSettings] = useState<PresentationDrawingSettings>({
@@ -293,11 +297,7 @@ export function PresentationView({
               className="rounded-xl p-3.5 transition-transform group-hover:scale-105"
               style={{ backgroundColor: bgColor }}
             >
-              <Icon 
-                className="h-7 w-7" 
-                strokeWidth={2.5}
-                style={{ color: iconColor }} 
-              />
+              <Icon className="h-7 w-7" strokeWidth={2.5} style={{ color: iconColor }} />
             </div>
           </div>
           <div className="space-y-2">
@@ -315,7 +315,11 @@ export function PresentationView({
               ) : (
                 <span className="text-4xl font-bold text-white">0</span>
               )}
-              {suffix && <span className="text-xl font-medium" style={{ color: iconColor }}>{suffix}</span>}
+              {suffix && (
+                <span className="text-xl font-medium" style={{ color: iconColor }}>
+                  {suffix}
+                </span>
+              )}
             </div>
           </div>
         </div>
@@ -371,7 +375,7 @@ export function PresentationView({
         icon: FileText,
         colorTheme: colorPalettes.executive,
         notes:
-          '<h2>Opening Strong</h2><p>Start with a confident, clear introduction. Establish credibility and set expectations for the presentation.</p><h3>Key Points to Cover:</h3><ul><li>Welcome the audience and introduce yourself</li><li>State the purpose and scope of this program</li><li>Highlight the strategic value and business impact</li><li>Reference the metrics shown to demonstrate program scale</li></ul><h3>Tips:</h3><ul><li>Maintain eye contact and speak with conviction</li><li>Use a moderate pace - don\'t rush through the overview</li><li>Pause after key statistics to let them sink in</li><li>Connect the program to organizational goals</li></ul>',
+          "<h2>Opening Strong</h2><p>Start with a confident, clear introduction. Establish credibility and set expectations for the presentation.</p><h3>Key Points to Cover:</h3><ul><li>Welcome the audience and introduce yourself</li><li>State the purpose and scope of this program</li><li>Highlight the strategic value and business impact</li><li>Reference the metrics shown to demonstrate program scale</li></ul><h3>Tips:</h3><ul><li>Maintain eye contact and speak with conviction</li><li>Use a moderate pace - don't rush through the overview</li><li>Pause after key statistics to let them sink in</li><li>Connect the program to organizational goals</li></ul>",
         content: (
           <ExecutiveSummaryInfographic
             content={blueprintData.executive_summary.content}
@@ -600,14 +604,14 @@ export function PresentationView({
     if (slideArray.length > 0) {
       const firstSlide = slideArray[0];
       const originalContent = firstSlide.content;
-      
+
       // Component for embedded slide grid preview
       const EmbeddedSlideGrid = () => (
         <div className="mt-12">
           <div className="mb-6 flex items-center gap-3">
-            <div className="h-6 w-0.5 rounded-full bg-gradient-to-b from-primary to-primary/50" />
-            <h3 className="text-xl font-bold text-foreground">Presentation Overview</h3>
-            <div className="text-text-secondary text-sm font-medium ml-auto">
+            <div className="from-primary to-primary/50 h-6 w-0.5 rounded-full bg-gradient-to-b" />
+            <h3 className="text-foreground text-xl font-bold">Presentation Overview</h3>
+            <div className="text-text-secondary ml-auto text-sm font-medium">
               <span className="text-foreground font-semibold">{slideArray.length}</span>
               <span className="mx-1">slides</span>
             </div>
@@ -626,16 +630,16 @@ export function PresentationView({
                 }}
               >
                 {/* Decorative gradient background with slide color */}
-                <div 
-                  className="absolute inset-0 opacity-[0.15] pointer-events-none"
-                  style={{ 
+                <div
+                  className="pointer-events-none absolute inset-0 opacity-[0.15]"
+                  style={{
                     background: `linear-gradient(135deg, ${slide.colorTheme.primary}40 0%, ${slide.colorTheme.dark}20 100%)`,
                   }}
                 />
-                
+
                 {/* Top accent bar */}
-                <div 
-                  className="absolute top-0 left-0 right-0 h-1 rounded-t-xl"
+                <div
+                  className="absolute top-0 right-0 left-0 h-1 rounded-t-xl"
                   style={{
                     background: `linear-gradient(90deg, ${slide.colorTheme.primary}, ${slide.colorTheme.light})`,
                   }}
@@ -643,7 +647,7 @@ export function PresentationView({
 
                 {/* Slide Number Badge */}
                 <div
-                  className="absolute right-2 top-2 rounded-full px-2.5 py-1 text-xs font-bold shadow-lg"
+                  className="absolute top-2 right-2 rounded-full px-2.5 py-1 text-xs font-bold shadow-lg"
                   style={{
                     backgroundColor: slide.colorTheme.primary,
                     color: '#fff',
@@ -655,22 +659,21 @@ export function PresentationView({
 
                 {/* Icon Only - No background */}
                 <div className="relative z-10 flex items-center justify-center pt-6 pb-3">
-                  {slide.icon && (
+                  {slide.icon &&
                     React.createElement(slide.icon, {
-                      className: "h-12 w-12",
+                      className: 'h-12 w-12',
                       strokeWidth: 2,
-                      style: { 
+                      style: {
                         color: slide.colorTheme.primary,
                         filter: `drop-shadow(0 4px 12px ${slide.colorTheme.glow})`,
                       },
-                    })
-                  )}
+                    })}
                 </div>
 
                 {/* Slide Title */}
-                <div className="relative z-10 mt-2 text-center px-1">
-                  <h4 
-                    className="text-sm font-bold leading-tight"
+                <div className="relative z-10 mt-2 px-1 text-center">
+                  <h4
+                    className="text-sm leading-tight font-bold"
                     style={{ color: slide.colorTheme.primary }}
                   >
                     {slide.title}
@@ -742,9 +745,11 @@ export function PresentationView({
     }
 
     // Get blueprint ID from URL
-    const blueprintId = window.location.pathname.split('/').find((segment) => 
-      segment.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i)
-    );
+    const blueprintId = window.location.pathname
+      .split('/')
+      .find((segment) =>
+        segment.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i)
+      );
 
     if (!blueprintId) {
       console.error('Blueprint ID not found');
@@ -753,7 +758,7 @@ export function PresentationView({
 
     // Store slides data in sessionStorage for presenter window to access
     try {
-      const slidesData = slides.map(slide => ({
+      const slidesData = slides.map((slide) => ({
         id: slide.id,
         title: slide.title,
         notes: slide.notes,
@@ -864,38 +869,37 @@ export function PresentationView({
   });
 
   return (
-    <div className="fixed inset-0 z-50 flex flex-col bg-background">
+    <div className="bg-background fixed inset-0 z-50 flex flex-col">
       {/* Decorative background gradient - unified teal theme */}
-      <div className="fixed inset-0 opacity-20 pointer-events-none">
+      <div className="pointer-events-none fixed inset-0 opacity-20">
         <motion.div
           animate={{
-            background: 'radial-gradient(circle at 25% 0%, rgba(167, 218, 219, 0.25), transparent 50%)',
+            background:
+              'radial-gradient(circle at 25% 0%, rgba(167, 218, 219, 0.25), transparent 50%)',
           }}
           transition={{ duration: 0.8 }}
           className="absolute top-0 left-1/4 h-96 w-96 rounded-full blur-3xl"
         />
         <motion.div
           animate={{
-            background: 'radial-gradient(circle at 75% 100%, rgba(167, 218, 219, 0.15), transparent 50%)',
+            background:
+              'radial-gradient(circle at 75% 100%, rgba(167, 218, 219, 0.15), transparent 50%)',
           }}
           transition={{ duration: 0.8, delay: 0.1 }}
-          className="absolute bottom-0 right-1/4 h-96 w-96 rounded-full blur-3xl"
+          className="absolute right-1/4 bottom-0 h-96 w-96 rounded-full blur-3xl"
         />
       </div>
 
       {/* Presentation Header */}
       <motion.header
         initial={{ opacity: 0, y: -20 }}
-        animate={{ 
-          opacity: 1, 
+        animate={{
+          opacity: 1,
           y: 0,
           borderColor: 'rgba(167, 218, 219, 0.3)',
         }}
         transition={{ duration: 0.3 }}
-        className={cn(
-          glassPanel.header,
-          'relative z-50 border-b',
-        )}
+        className={cn(glassPanel.header, 'relative z-50 border-b')}
         style={{
           borderBottomColor: 'rgba(167, 218, 219, 0.3)',
         }}
@@ -903,39 +907,39 @@ export function PresentationView({
         <div className="mx-auto max-w-screen-2xl px-4 sm:px-6 lg:px-8">
           <div className="flex h-14 items-center justify-between gap-4">
             {/* Left: Back + Title */}
-            <div className="flex items-center gap-3 min-w-0 flex-1">
-                  {/* Back button */}
-                  <motion.button
-                    {...microInteractions.buttonPress}
-                    onClick={handleExit}
-                    className={cn(
-                      'flex h-9 w-9 items-center justify-center rounded-lg flex-shrink-0',
-                      'text-text-secondary hover:text-foreground',
-                      'hover:bg-white/10 transition-all duration-200',
-                    )}
-                    aria-label="Exit presentation"
-                  >
-                    <ArrowLeft className="h-5 w-5" />
-                  </motion.button>
+            <div className="flex min-w-0 flex-1 items-center gap-3">
+              {/* Back button */}
+              <motion.button
+                {...microInteractions.buttonPress}
+                onClick={handleExit}
+                className={cn(
+                  'flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg',
+                  'text-text-secondary hover:text-foreground',
+                  'transition-all duration-200 hover:bg-white/10'
+                )}
+                aria-label="Exit presentation"
+              >
+                <ArrowLeft className="h-5 w-5" />
+              </motion.button>
 
               {/* Slide Title with accent */}
-              <div className="flex items-center gap-2 min-w-0">
+              <div className="flex min-w-0 items-center gap-2">
                 {/* Teal accent bar */}
-                <div className="hidden sm:flex h-6 w-0.5 rounded-full bg-gradient-to-b from-[rgb(167,218,219)] to-[rgba(167,218,219,0.5)]" />
-                
+                <div className="hidden h-6 w-0.5 rounded-full bg-gradient-to-b from-[rgb(167,218,219)] to-[rgba(167,218,219,0.5)] sm:flex" />
+
                 {/* Relevant slide icon in teal */}
                 {slides[currentSlide]?.icon && (
                   <div className="flex-shrink-0 text-[rgb(167,218,219)]">
                     {React.createElement(slides[currentSlide].icon, {
-                      className: "h-5 w-5",
+                      className: 'h-5 w-5',
                       strokeWidth: 2,
                     })}
                   </div>
                 )}
-                
+
                 {/* Title in teal */}
                 <h1
-                  className="text-lg font-bold truncate text-[rgb(167,218,219)]"
+                  className="truncate text-lg font-bold text-[rgb(167,218,219)]"
                   style={{
                     textShadow: '0 0 20px rgba(167, 218, 219, 0.3)',
                   }}
@@ -946,7 +950,7 @@ export function PresentationView({
             </div>
 
             {/* Right: Slide counter */}
-            <div className="flex items-center gap-2 flex-shrink-0">
+            <div className="flex flex-shrink-0 items-center gap-2">
               <div className="text-text-secondary text-sm font-medium">
                 <span className="text-foreground font-semibold">{currentSlide + 1}</span>
                 <span className="mx-1">/</span>
@@ -960,15 +964,12 @@ export function PresentationView({
       {/* Main Content Area */}
       <div className="relative flex flex-1 overflow-hidden">
         {/* Slides Container */}
-        <div 
+        <div
           ref={slideContainerRef}
-          className="relative z-10 flex-1 overflow-y-auto px-4 pb-24 pt-6 sm:px-8 lg:px-12"
+          className="relative z-10 flex-1 overflow-y-auto px-4 pt-6 pb-24 sm:px-8 lg:px-12"
         >
           <AnimatePresence mode="wait">
-            <PresentationSlide 
-              key={currentSlide}
-              colorTheme={slides[currentSlide]?.colorTheme}
-            >
+            <PresentationSlide key={currentSlide} colorTheme={slides[currentSlide]?.colorTheme}>
               {slides[currentSlide]?.colorTheme && (
                 <ColorThemeProvider colorTheme={slides[currentSlide].colorTheme}>
                   {slides[currentSlide]?.content}
@@ -1035,4 +1036,3 @@ export function PresentationView({
     </div>
   );
 }
-

@@ -89,7 +89,9 @@ export const Header = memo(function Header({
     'border-b border-neutral-200',
     sticky ? 'sticky top-0 z-50' : '',
     className,
-  ].filter(Boolean).join(' ');
+  ]
+    .filter(Boolean)
+    .join(' ');
 
   return (
     <motion.header

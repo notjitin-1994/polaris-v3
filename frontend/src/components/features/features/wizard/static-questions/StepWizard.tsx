@@ -369,7 +369,7 @@ export function StepWizard(): React.JSX.Element {
     return (
       <div className="glass-card p-6 md:p-8">
         <div className="animate-fade-in flex flex-col items-center justify-center py-12">
-          <div className="mb-4 h-12 w-12 animate-spin rounded-full border-2 border-primary/30 border-t-primary"></div>
+          <div className="border-primary/30 border-t-primary mb-4 h-12 w-12 animate-spin rounded-full border-2"></div>
           <p className="text-sm text-white/70">Loading your existing blueprint...</p>
         </div>
       </div>
@@ -399,8 +399,8 @@ export function StepWizard(): React.JSX.Element {
           {/* Save Status */}
           <div className="flex items-center justify-start py-2">
             {saveState === 'saving' && (
-              <div className="animate-fade-in flex items-center gap-2 text-primary/80">
-                <div className="h-3 w-3 animate-spin rounded-full border-2 border-primary/30 border-t-primary"></div>
+              <div className="animate-fade-in text-primary/80 flex items-center gap-2">
+                <div className="border-primary/30 border-t-primary h-3 w-3 animate-spin rounded-full border-2"></div>
                 <span className="text-xs font-medium">Saving...</span>
               </div>
             )}
@@ -419,7 +419,7 @@ export function StepWizard(): React.JSX.Element {
               </div>
             )}
             {saveState === 'error' && (
-              <div className="animate-fade-in flex items-center gap-2 text-error">
+              <div className="animate-fade-in text-error flex items-center gap-2">
                 <svg className="h-3 w-3" fill="currentColor" viewBox="0 0 20 20">
                   <path
                     fillRule="evenodd"

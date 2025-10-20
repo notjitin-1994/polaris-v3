@@ -72,27 +72,25 @@ export function AnnotationDialog({
               onClick={(e) => e.stopPropagation()}
             >
               {/* Decorative Gradient */}
-              <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary via-secondary to-primary" />
+              <div className="from-primary via-secondary to-primary absolute top-0 right-0 left-0 h-1 bg-gradient-to-r" />
 
               {/* Header */}
               <div className="border-b border-white/10 p-6">
                 <div className="flex items-start justify-between">
                   <div className="flex items-start gap-3">
-                    <div className="mt-1 rounded-lg bg-secondary/20 p-2">
-                      <MessageSquare className="h-5 w-5 text-secondary" />
+                    <div className="bg-secondary/20 mt-1 rounded-lg p-2">
+                      <MessageSquare className="text-secondary h-5 w-5" />
                     </div>
                     <div>
-                      <h2 className="font-heading text-xl font-bold text-white">
-                        Add Annotation
-                      </h2>
-                      <p className="mt-1 text-sm text-text-secondary line-clamp-1">
+                      <h2 className="font-heading text-xl font-bold text-white">Add Annotation</h2>
+                      <p className="text-text-secondary mt-1 line-clamp-1 text-sm">
                         {sectionTitle}
                       </p>
                     </div>
                   </div>
                   <button
                     onClick={handleCancel}
-                    className="rounded-lg p-2 text-text-secondary transition-colors hover:bg-white/5 hover:text-white"
+                    className="text-text-secondary rounded-lg p-2 transition-colors hover:bg-white/5 hover:text-white"
                     aria-label="Close dialog"
                   >
                     <X className="h-5 w-5" />
@@ -104,10 +102,10 @@ export function AnnotationDialog({
               <div className="p-6">
                 <div className="space-y-4">
                   {/* Info Banner */}
-                  <div className="flex items-start gap-3 rounded-lg border border-primary/20 bg-primary/10 p-4">
-                    <Sparkles className="mt-0.5 h-5 w-5 flex-shrink-0 text-primary" />
+                  <div className="border-primary/20 bg-primary/10 flex items-start gap-3 rounded-lg border p-4">
+                    <Sparkles className="text-primary mt-0.5 h-5 w-5 flex-shrink-0" />
                     <div className="flex-1">
-                      <p className="text-sm text-text-secondary">
+                      <p className="text-text-secondary text-sm">
                         Add your thoughts, insights, or questions about this section. These
                         annotations are private and will be saved locally with your preferences.
                       </p>
@@ -116,7 +114,10 @@ export function AnnotationDialog({
 
                   {/* Textarea */}
                   <div>
-                    <label htmlFor="annotation-text" className="mb-2 block text-sm font-medium text-white">
+                    <label
+                      htmlFor="annotation-text"
+                      className="mb-2 block text-sm font-medium text-white"
+                    >
                       Your Note
                     </label>
                     <textarea
@@ -125,17 +126,13 @@ export function AnnotationDialog({
                       onChange={(e) => setNote(e.target.value)}
                       placeholder="Enter your annotation here..."
                       rows={6}
-                      className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-white placeholder:text-text-disabled focus:border-secondary focus:outline-none focus:ring-2 focus:ring-secondary/50"
+                      className="placeholder:text-text-disabled focus:border-secondary focus:ring-secondary/50 w-full rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-white focus:ring-2 focus:outline-none"
                       autoFocus
                     />
                     <div className="mt-2 flex items-center justify-between">
-                      <p className="text-xs text-text-disabled">
-                        {note.length} characters
-                      </p>
+                      <p className="text-text-disabled text-xs">{note.length} characters</p>
                       {note.length > 0 && (
-                        <p className="text-xs text-success">
-                          Note ready to save
-                        </p>
+                        <p className="text-success text-xs">Note ready to save</p>
                       )}
                     </div>
                   </div>
@@ -146,7 +143,7 @@ export function AnnotationDialog({
               <div className="flex items-center justify-end gap-3 border-t border-white/10 bg-white/5 p-6">
                 <button
                   onClick={handleCancel}
-                  className="rounded-lg border border-white/10 px-6 py-2.5 font-medium text-text-secondary transition-colors hover:border-white/20 hover:bg-white/5 hover:text-white"
+                  className="text-text-secondary rounded-lg border border-white/10 px-6 py-2.5 font-medium transition-colors hover:border-white/20 hover:bg-white/5 hover:text-white"
                   disabled={isSaving}
                 >
                   Cancel
@@ -154,7 +151,7 @@ export function AnnotationDialog({
                 <button
                   onClick={handleSave}
                   disabled={isSaving || note.trim().length === 0}
-                  className="inline-flex items-center gap-2 rounded-lg bg-secondary px-6 py-2.5 font-medium text-secondary-foreground shadow-lg transition-all hover:bg-secondary/90 hover:shadow-xl disabled:cursor-not-allowed disabled:opacity-50"
+                  className="bg-secondary text-secondary-foreground hover:bg-secondary/90 inline-flex items-center gap-2 rounded-lg px-6 py-2.5 font-medium shadow-lg transition-all hover:shadow-xl disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   {isSaving ? (
                     <>
@@ -176,4 +173,3 @@ export function AnnotationDialog({
     </AnimatePresence>
   );
 }
-

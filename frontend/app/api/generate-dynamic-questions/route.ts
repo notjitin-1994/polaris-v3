@@ -108,12 +108,14 @@ export async function POST(request: NextRequest): Promise<Response> {
         const result = await generateDynamicQuestionsV2(blueprintId, sa);
 
         // CRITICAL: Normalize all option values to ensure consistency
-        const { normalizeSectionQuestions } = await import('@/lib/validation/dynamicQuestionSchemas');
+        const { normalizeSectionQuestions } = await import(
+          '@/lib/validation/dynamicQuestionSchemas'
+        );
         const normalizedSections = normalizeSectionQuestions(result.sections || []);
 
         console.log('[GenerateDynamicQuestions V2.0] Normalized questions:', {
           sectionsCount: normalizedSections.length,
-          sampleOptions: normalizedSections[0]?.questions?.[0]?.options?.slice(0, 3).map(opt => ({
+          sampleOptions: normalizedSections[0]?.questions?.[0]?.options?.slice(0, 3).map((opt) => ({
             value: opt.value,
             label: opt.label,
           })),
@@ -145,7 +147,10 @@ export async function POST(request: NextRequest): Promise<Response> {
       } catch (error) {
         console.error('Error generating dynamic questions with V2.0 service:', error);
         // Reset status so the user can retry generation
-        await supabase.from('blueprint_generator').update({ status: 'draft' }).eq('id', blueprintId);
+        await supabase
+          .from('blueprint_generator')
+          .update({ status: 'draft' })
+          .eq('id', blueprintId);
         return NextResponse.json(
           {
             error: 'Failed to generate dynamic questions. Please try again.',
@@ -306,20 +311,26 @@ export async function POST(request: NextRequest): Promise<Response> {
     // Debug logging
     console.log('[GenerateDynamicQuestions] Generated questions:', {
       sectionsCount: normalizedSections.length,
-      sampleSection: normalizedSections[0] ? {
-        id: normalizedSections[0].id,
-        title: normalizedSections[0].title,
-        questionsCount: normalizedSections[0].questions?.length,
-        sampleQuestion: normalizedSections[0].questions?.[0] ? {
-          id: normalizedSections[0].questions[0].id,
-          type: normalizedSections[0].questions[0].type,
-          optionsCount: normalizedSections[0].questions[0].options?.length,
-          sampleOptions: normalizedSections[0].questions[0].options?.slice(0, 3).map(opt => ({
-            value: opt.value,
-            label: opt.label,
-          })),
-        } : null,
-      } : null,
+      sampleSection: normalizedSections[0]
+        ? {
+            id: normalizedSections[0].id,
+            title: normalizedSections[0].title,
+            questionsCount: normalizedSections[0].questions?.length,
+            sampleQuestion: normalizedSections[0].questions?.[0]
+              ? {
+                  id: normalizedSections[0].questions[0].id,
+                  type: normalizedSections[0].questions[0].type,
+                  optionsCount: normalizedSections[0].questions[0].options?.length,
+                  sampleOptions: normalizedSections[0].questions[0].options
+                    ?.slice(0, 3)
+                    .map((opt) => ({
+                      value: opt.value,
+                      label: opt.label,
+                    })),
+                }
+              : null,
+          }
+        : null,
     });
 
     // Update the blueprint with generated dynamic questions (store both formats)

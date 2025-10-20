@@ -109,10 +109,7 @@ export async function POST(request: NextRequest): Promise<Response> {
         error: blueprintError?.message,
         requestId,
       });
-      return NextResponse.json(
-        { error: 'Blueprint not found or access denied' },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: 'Blueprint not found or access denied' }, { status: 404 });
     }
 
     // Validate that dynamic questions exist
@@ -134,7 +131,9 @@ export async function POST(request: NextRequest): Promise<Response> {
         blueprintId,
         userId: user.id,
         dynamicQuestionsType: typeof blueprint.dynamic_questions,
-        dynamicQuestionsKeys: blueprint.dynamic_questions ? Object.keys(blueprint.dynamic_questions) : [],
+        dynamicQuestionsKeys: blueprint.dynamic_questions
+          ? Object.keys(blueprint.dynamic_questions)
+          : [],
         requestId,
       });
       return NextResponse.json(
@@ -144,11 +143,12 @@ export async function POST(request: NextRequest): Promise<Response> {
     }
 
     // Validate structure of sections before validation
-    const validSections = sections.filter((section: any) => 
-      section && 
-      section.questions && 
-      Array.isArray(section.questions) &&
-      section.questions.length > 0
+    const validSections = sections.filter(
+      (section: any) =>
+        section &&
+        section.questions &&
+        Array.isArray(section.questions) &&
+        section.questions.length > 0
     );
 
     if (validSections.length === 0) {
@@ -170,17 +170,21 @@ export async function POST(request: NextRequest): Promise<Response> {
       blueprintId,
       answersCount: Object.keys(answers).length,
       sectionsCount: validSections.length,
-      sampleAnswers: Object.entries(answers).slice(0, 3).map(([id, val]) => ({
-        id,
-        type: typeof val,
-        isArray: Array.isArray(val),
-        value: Array.isArray(val) ? `Array(${(val as any[]).length}): [${(val as any[]).slice(0, 5).join(', ')}]` : String(val).substring(0, 50),
-      })),
+      sampleAnswers: Object.entries(answers)
+        .slice(0, 3)
+        .map(([id, val]) => ({
+          id,
+          type: typeof val,
+          isArray: Array.isArray(val),
+          value: Array.isArray(val)
+            ? `Array(${(val as any[]).length}): [${(val as any[]).slice(0, 5).join(', ')}]`
+            : String(val).substring(0, 50),
+        })),
       requestId,
     });
-    
+
     // Log sample question options for debugging mismatches
-    const sampleQuestions = validSections.slice(0, 2).flatMap((section: any) => 
+    const sampleQuestions = validSections.slice(0, 2).flatMap((section: any) =>
       section.questions.slice(0, 2).map((q: any) => ({
         id: q.id,
         type: q.type,
@@ -202,17 +206,17 @@ export async function POST(request: NextRequest): Promise<Response> {
     try {
       // Validate with sanitization enabled (filters out invalid option values)
       validation = validateCompleteAnswers(answers, validSections as Section[], true);
-      
+
       // Log if any answers were sanitized
       if (validation.sanitizedAnswers) {
         const originalKeys = Object.keys(answers);
         const sanitizedKeys = Object.keys(validation.sanitizedAnswers);
-        const changedAnswers = originalKeys.filter(key => {
+        const changedAnswers = originalKeys.filter((key) => {
           const original = answers[key];
           const sanitized = validation.sanitizedAnswers?.[key];
           return JSON.stringify(original) !== JSON.stringify(sanitized);
         });
-        
+
         if (changedAnswers.length > 0) {
           dbLogger.info('validation.sanitized', 'Some answers were automatically corrected', {
             blueprintId,
@@ -222,7 +226,7 @@ export async function POST(request: NextRequest): Promise<Response> {
           });
         }
       }
-      
+
       dbLogger.info('validation.complete', 'Validation completed', {
         blueprintId,
         valid: validation.valid,
@@ -239,46 +243,51 @@ export async function POST(request: NextRequest): Promise<Response> {
         errorStack: validationError instanceof Error ? validationError.stack : undefined,
         requestId,
       });
-      return NextResponse.json(
-        { error: 'Internal validation error occurred' },
-        { status: 500 }
-      );
+      return NextResponse.json({ error: 'Internal validation error occurred' }, { status: 500 });
     }
 
     if (!validation.valid) {
       // Log detailed error information for debugging
-      const errorDetails = Object.entries(validation.errors).slice(0, 5).map(([qId, error]) => {
-        // Find the question to get context
-        let questionInfo = { type: 'unknown', label: 'unknown', options: [] as any[], validValues: [] as string[] };
-        for (const section of validSections) {
-          const q = section.questions.find((quest: any) => quest.id === qId);
-          if (q) {
-            questionInfo = { 
-              type: q.type, 
-              label: q.label,
-              validValues: q.options ? q.options.map((opt: any) => opt.value) : [],
-              options: q.options || [],
-            };
-            break;
+      const errorDetails = Object.entries(validation.errors)
+        .slice(0, 5)
+        .map(([qId, error]) => {
+          // Find the question to get context
+          let questionInfo = {
+            type: 'unknown',
+            label: 'unknown',
+            options: [] as any[],
+            validValues: [] as string[],
+          };
+          for (const section of validSections) {
+            const q = section.questions.find((quest: any) => quest.id === qId);
+            if (q) {
+              questionInfo = {
+                type: q.type,
+                label: q.label,
+                validValues: q.options ? q.options.map((opt: any) => opt.value) : [],
+                options: q.options || [],
+              };
+              break;
+            }
           }
-        }
-        
-        return {
-          questionId: qId,
-          questionType: questionInfo.type,
-          questionLabel: questionInfo.label?.substring(0, 100),
-          error,
-          submittedValue: answers[qId] ? (
-            Array.isArray(answers[qId]) 
-              ? `Array: [${(answers[qId] as any[]).join(', ')}]` 
-              : String(answers[qId]).substring(0, 100)
-          ) : 'undefined',
-          validOptions: questionInfo.options.length > 0 
-            ? questionInfo.options.map((opt: any) => opt.value).slice(0, 10)
-            : undefined,
-        };
-      });
-      
+
+          return {
+            questionId: qId,
+            questionType: questionInfo.type,
+            questionLabel: questionInfo.label?.substring(0, 100),
+            error,
+            submittedValue: answers[qId]
+              ? Array.isArray(answers[qId])
+                ? `Array: [${(answers[qId] as any[]).join(', ')}]`
+                : String(answers[qId]).substring(0, 100)
+              : 'undefined',
+            validOptions:
+              questionInfo.options.length > 0
+                ? questionInfo.options.map((opt: any) => opt.value).slice(0, 10)
+                : undefined,
+          };
+        });
+
       logger.warn('api.error', 'Answer validation failed', {
         blueprintId,
         userId: user.id,
@@ -287,17 +296,22 @@ export async function POST(request: NextRequest): Promise<Response> {
         errorDetails,
         requestId,
       });
-      
+
       // Separate different types of errors for clearer user guidance
-      const requiredFieldErrors = validation.missingRequired.filter(id => !validation.errors[id] || validation.errors[id] === 'This field is required');
-      const invalidValueErrors = Object.keys(validation.errors).filter(id => !requiredFieldErrors.includes(id));
-      
+      const requiredFieldErrors = validation.missingRequired.filter(
+        (id) => !validation.errors[id] || validation.errors[id] === 'This field is required'
+      );
+      const invalidValueErrors = Object.keys(validation.errors).filter(
+        (id) => !requiredFieldErrors.includes(id)
+      );
+
       return NextResponse.json(
         {
           error: 'Answer validation failed',
-          message: validation.missingRequired.length > 0 
-            ? `Please complete ${validation.missingRequired.length} required field${validation.missingRequired.length > 1 ? 's' : ''} before submitting.`
-            : 'Some answers need to be corrected. Please review the errors below.',
+          message:
+            validation.missingRequired.length > 0
+              ? `Please complete ${validation.missingRequired.length} required field${validation.missingRequired.length > 1 ? 's' : ''} before submitting.`
+              : 'Some answers need to be corrected. Please review the errors below.',
           validationErrors: validation.errors,
           missingRequired: validation.missingRequired,
           errorSummary: {
@@ -305,9 +319,9 @@ export async function POST(request: NextRequest): Promise<Response> {
             requiredFieldsMissing: requiredFieldErrors.length,
             invalidAnswers: invalidValueErrors.length,
           },
-          errorDetails: errorDetails.slice(0, 10).map(d => {
+          errorDetails: errorDetails.slice(0, 10).map((d) => {
             const error = typeof d.error === 'string' ? d.error : 'Invalid value';
-            
+
             // Provide more specific hints based on the error type
             let hint = '';
             if (error.includes('required')) {
@@ -331,7 +345,7 @@ export async function POST(request: NextRequest): Promise<Response> {
             } else {
               hint = 'Please provide a valid answer for this question';
             }
-            
+
             return {
               questionId: d.questionId,
               question: d.questionLabel?.substring(0, 150) || 'Unknown question',
@@ -339,13 +353,16 @@ export async function POST(request: NextRequest): Promise<Response> {
               hint: hint,
               questionType: d.questionType,
               currentValue: d.submittedValue,
-              validOptions: d.validOptions // Only for selection-based questions
+              validOptions: d.validOptions, // Only for selection-based questions
             };
           }),
           suggestions: [
-            invalidValueErrors.length > 0 && 'Double-check that you\'re selecting from the provided options, not typing custom text.',
-            requiredFieldErrors.length > 0 && 'Look for questions marked with a red asterisk (*) - these are required.',
-            validation.missingRequired.length > 3 && 'Consider saving your progress and continuing later if you need more time.',
+            invalidValueErrors.length > 0 &&
+              "Double-check that you're selecting from the provided options, not typing custom text.",
+            requiredFieldErrors.length > 0 &&
+              'Look for questions marked with a red asterisk (*) - these are required.',
+            validation.missingRequired.length > 3 &&
+              'Consider saving your progress and continuing later if you need more time.',
           ].filter(Boolean),
         },
         { status: 400 }
@@ -354,22 +371,26 @@ export async function POST(request: NextRequest): Promise<Response> {
 
     // Use sanitized answers if available (filters out invalid option values)
     const answersToSave = validation.sanitizedAnswers || answers;
-    
+
     // Log if any answers were corrected during sanitization
     const originalKeys = new Set(Object.keys(answers));
     const sanitizedKeys = new Set(Object.keys(answersToSave));
-    const correctedCount = Array.from(originalKeys).filter(key => {
+    const correctedCount = Array.from(originalKeys).filter((key) => {
       return JSON.stringify(answers[key]) !== JSON.stringify(answersToSave[key]);
     }).length;
-    
+
     if (correctedCount > 0) {
-      dbLogger.info('validation.answers_corrected', 'Some answers were auto-corrected during sanitization', {
-        blueprintId,
-        correctedCount,
-        requestId,
-      });
+      dbLogger.info(
+        'validation.answers_corrected',
+        'Some answers were auto-corrected during sanitization',
+        {
+          blueprintId,
+          correctedCount,
+          requestId,
+        }
+      );
     }
-    
+
     // Merge with existing answers (in case of partial saves)
     const existingAnswers = blueprint.dynamic_answers || {};
     const finalAnswers = {
@@ -404,10 +425,7 @@ export async function POST(request: NextRequest): Promise<Response> {
         error: saveError.message,
         requestId,
       });
-      return NextResponse.json(
-        { error: 'Failed to save answers to database' },
-        { status: 500 }
-      );
+      return NextResponse.json({ error: 'Failed to save answers to database' }, { status: 500 });
     }
 
     const duration = Date.now() - startTime;
@@ -431,13 +449,17 @@ export async function POST(request: NextRequest): Promise<Response> {
 
     // Blueprint generation is triggered by the /generating/:blueprintId page
     // which calls /api/blueprints/generate after user is redirected
-    logger.info('blueprint.generation.ready', 'Dynamic answers saved, ready for blueprint generation', {
-      blueprintId,
-      userId: user.id,
-      requestId,
-      nextStep: '/generating/:blueprintId will trigger generation',
-      currentStatus: 'Answers saved, not yet generated',
-    });
+    logger.info(
+      'blueprint.generation.ready',
+      'Dynamic answers saved, ready for blueprint generation',
+      {
+        blueprintId,
+        userId: user.id,
+        requestId,
+        nextStep: '/generating/:blueprintId will trigger generation',
+        currentStatus: 'Answers saved, not yet generated',
+      }
+    );
 
     return NextResponse.json({
       success: true,

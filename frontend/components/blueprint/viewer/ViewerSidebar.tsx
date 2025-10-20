@@ -78,16 +78,18 @@ export function ViewerSidebar({
   const [showNewReportDialog, setShowNewReportDialog] = useState(false);
   const [editingReport, setEditingReport] = useState<string | null>(null);
   const [expandedFolders, setExpandedFolders] = useState<Set<string>>(new Set(['pinned']));
-  
+
   // Group sections
   const groupedSections = {
-    pinned: sections.filter(s => pinnedSections.includes(s.id)),
-    visible: sections.filter(s => !pinnedSections.includes(s.id) && !hiddenSections.includes(s.id)),
-    hidden: sections.filter(s => hiddenSections.includes(s.id)),
+    pinned: sections.filter((s) => pinnedSections.includes(s.id)),
+    visible: sections.filter(
+      (s) => !pinnedSections.includes(s.id) && !hiddenSections.includes(s.id)
+    ),
+    hidden: sections.filter((s) => hiddenSections.includes(s.id)),
   };
-  
+
   const toggleFolder = (folder: string) => {
-    setExpandedFolders(prev => {
+    setExpandedFolders((prev) => {
       const newSet = new Set(prev);
       if (newSet.has(folder)) {
         newSet.delete(folder);
@@ -97,12 +99,12 @@ export function ViewerSidebar({
       return newSet;
     });
   };
-  
+
   const renderSection = (section: Section) => {
     const isPinned = pinnedSections.includes(section.id);
     const isHidden = hiddenSections.includes(section.id);
     const isActive = activeSection === section.id;
-    
+
     return (
       <motion.div
         key={section.id}
@@ -119,11 +121,11 @@ export function ViewerSidebar({
             'text-sm transition-all',
             isActive
               ? 'bg-primary/20 text-primary font-medium'
-              : 'text-text-secondary hover:text-foreground hover:bg-white/5',
+              : 'text-text-secondary hover:text-foreground hover:bg-white/5'
           )}
         >
           <span className="truncate">{section.title}</span>
-          
+
           <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100">
             <motion.button
               {...microInteractions.buttonPress}
@@ -133,14 +135,12 @@ export function ViewerSidebar({
               }}
               className={cn(
                 'h-6 w-6 rounded p-1',
-                isPinned
-                  ? 'text-primary hover:bg-primary/20'
-                  : 'hover:bg-white/10',
+                isPinned ? 'text-primary hover:bg-primary/20' : 'hover:bg-white/10'
               )}
             >
               <Pin className="h-full w-full" />
             </motion.button>
-            
+
             <motion.button
               {...microInteractions.buttonPress}
               onClick={(e) => {
@@ -156,39 +156,29 @@ export function ViewerSidebar({
       </motion.div>
     );
   };
-  
+
   const renderSectionGroup = (title: string, sections: Section[], folderId: string) => {
     const isExpanded = expandedFolders.has(folderId);
-    
+
     if (sections.length === 0 && folderId !== 'pinned') return null;
-    
+
     return (
       <div key={folderId} className="space-y-1">
         <motion.button
           onClick={() => toggleFolder(folderId)}
           className={cn(
             'flex w-full items-center gap-2 rounded-lg px-2 py-1.5',
-            'text-xs font-medium uppercase tracking-wider',
+            'text-xs font-medium tracking-wider uppercase',
             'text-text-secondary hover:text-foreground',
-            'transition-colors',
+            'transition-colors'
           )}
         >
-          {isExpanded ? (
-            <FolderOpen className="h-3.5 w-3.5" />
-          ) : (
-            <Folder className="h-3.5 w-3.5" />
-          )}
+          {isExpanded ? <FolderOpen className="h-3.5 w-3.5" /> : <Folder className="h-3.5 w-3.5" />}
           <span>{title}</span>
-          <span className="ml-auto text-[10px] opacity-50">
-            {sections.length}
-          </span>
-          {isExpanded ? (
-            <ChevronDown className="h-3 w-3" />
-          ) : (
-            <ChevronRight className="h-3 w-3" />
-          )}
+          <span className="ml-auto text-[10px] opacity-50">{sections.length}</span>
+          {isExpanded ? <ChevronDown className="h-3 w-3" /> : <ChevronRight className="h-3 w-3" />}
         </motion.button>
-        
+
         <AnimatePresence>
           {isExpanded && (
             <motion.div
@@ -198,11 +188,9 @@ export function ViewerSidebar({
               className="space-y-0.5 overflow-hidden pl-2"
             >
               {sections.map(renderSection)}
-              
+
               {sections.length === 0 && (
-                <p className="px-3 py-2 text-xs text-text-disabled">
-                  No sections pinned yet
-                </p>
+                <p className="text-text-disabled px-3 py-2 text-xs">No sections pinned yet</p>
               )}
             </motion.div>
           )}
@@ -210,20 +198,16 @@ export function ViewerSidebar({
       </div>
     );
   };
-  
+
   const renderReport = (report: CustomReport) => {
     const isEditing = editingReport === report.id;
-    
+
     return (
       <motion.div
         key={report.id}
         layout
         variants={itemAnimations.fadeInScale}
-        className={cn(
-          glassCard.base,
-          glassCard.hover,
-          'group p-3',
-        )}
+        className={cn(glassCard.base, glassCard.hover, 'group p-3')}
       >
         {isEditing ? (
           <div className="space-y-2">
@@ -234,7 +218,7 @@ export function ViewerSidebar({
               className={cn(
                 componentStyles.input.base,
                 componentStyles.input.variants.glass,
-                componentStyles.input.sizes.sm,
+                componentStyles.input.sizes.sm
               )}
               autoFocus
             />
@@ -245,7 +229,7 @@ export function ViewerSidebar({
                 componentStyles.input.base,
                 componentStyles.input.variants.glass,
                 componentStyles.input.sizes.sm,
-                'resize-none',
+                'resize-none'
               )}
               rows={2}
             />
@@ -255,7 +239,7 @@ export function ViewerSidebar({
                 className={cn(
                   componentStyles.button.base,
                   componentStyles.button.variants.primary,
-                  componentStyles.button.sizes.xs,
+                  componentStyles.button.sizes.xs
                 )}
               >
                 Save
@@ -265,7 +249,7 @@ export function ViewerSidebar({
                 className={cn(
                   componentStyles.button.base,
                   componentStyles.button.variants.ghost,
-                  componentStyles.button.sizes.xs,
+                  componentStyles.button.sizes.xs
                 )}
               >
                 Cancel
@@ -275,26 +259,26 @@ export function ViewerSidebar({
         ) : (
           <>
             <div className="mb-2">
-              <h4 className="font-medium text-foreground">{report.name}</h4>
-              <p className="text-xs text-text-secondary line-clamp-2">
-                {report.description}
-              </p>
+              <h4 className="text-foreground font-medium">{report.name}</h4>
+              <p className="text-text-secondary line-clamp-2 text-xs">{report.description}</p>
             </div>
-            
+
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <span className={cn(
-                  'inline-flex items-center gap-1 rounded-full',
-                  'bg-primary/10 px-2 py-0.5 text-[10px] text-primary',
-                )}>
+                <span
+                  className={cn(
+                    'inline-flex items-center gap-1 rounded-full',
+                    'bg-primary/10 text-primary px-2 py-0.5 text-[10px]'
+                  )}
+                >
                   <Layout className="h-3 w-3" />
                   {report.layout}
                 </span>
-                <span className="text-[10px] text-text-disabled">
+                <span className="text-text-disabled text-[10px]">
                   {report.sections.length} sections
                 </span>
               </div>
-              
+
               <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100">
                 <motion.button
                   {...microInteractions.buttonPress}
@@ -312,7 +296,7 @@ export function ViewerSidebar({
                 <motion.button
                   {...microInteractions.buttonPress}
                   onClick={() => onDeleteReport(report.id)}
-                  className="h-6 w-6 rounded p-1 hover:bg-white/10 hover:text-error"
+                  className="hover:text-error h-6 w-6 rounded p-1 hover:bg-white/10"
                 >
                   <Trash2 className="h-full w-full" />
                 </motion.button>
@@ -323,18 +307,12 @@ export function ViewerSidebar({
       </motion.div>
     );
   };
-  
+
   return (
-    <aside className={cn(
-      glassPanel.sidebar,
-      'h-full overflow-hidden',
-    )}>
+    <aside className={cn(glassPanel.sidebar, 'h-full overflow-hidden')}>
       {/* Tabs */}
       <div className="border-b border-white/10 p-4">
-        <div className={cn(
-          glassCard.base,
-          'flex items-center p-1',
-        )}>
+        <div className={cn(glassCard.base, 'flex items-center p-1')}>
           {['sections', 'reports'].map((tab) => (
             <button
               key={tab}
@@ -344,7 +322,7 @@ export function ViewerSidebar({
                 'capitalize transition-all',
                 activeTab === tab
                   ? 'bg-primary/20 text-primary'
-                  : 'text-text-secondary hover:text-foreground',
+                  : 'text-text-secondary hover:text-foreground'
               )}
             >
               {tab}
@@ -352,7 +330,7 @@ export function ViewerSidebar({
           ))}
         </div>
       </div>
-      
+
       {/* Content */}
       <div className="flex-1 overflow-y-auto p-4">
         <AnimatePresence mode="wait">
@@ -385,26 +363,22 @@ export function ViewerSidebar({
                     componentStyles.button.base,
                     componentStyles.button.variants.glass,
                     componentStyles.button.sizes.md,
-                    'w-full justify-center',
+                    'w-full justify-center'
                   )}
                 >
                   <Plus className="h-4 w-4" />
                   <span>Create Report</span>
                 </motion.button>
               )}
-              
+
               {/* Reports List */}
               {customReports.length > 0 ? (
-                <div className="space-y-2">
-                  {customReports.map(renderReport)}
-                </div>
+                <div className="space-y-2">{customReports.map(renderReport)}</div>
               ) : (
                 <div className="py-8 text-center">
-                  <FileText className="mx-auto mb-3 h-12 w-12 text-text-disabled" />
-                  <p className="text-sm text-text-secondary">
-                    No custom reports yet
-                  </p>
-                  <p className="mt-1 text-xs text-text-disabled">
+                  <FileText className="text-text-disabled mx-auto mb-3 h-12 w-12" />
+                  <p className="text-text-secondary text-sm">No custom reports yet</p>
+                  <p className="text-text-disabled mt-1 text-xs">
                     Create reports from pinned sections
                   </p>
                 </div>
@@ -413,7 +387,7 @@ export function ViewerSidebar({
           )}
         </AnimatePresence>
       </div>
-      
+
       {/* Create Report Dialog */}
       <NewReportDialog
         isOpen={showNewReportDialog}

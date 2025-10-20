@@ -51,7 +51,7 @@ vi.mock('@/store/authStore', () => ({
       clearAuth: vi.fn(),
       reset: vi.fn(),
     };
-    
+
     if (typeof selector === 'function') {
       return selector(mockStore);
     }

@@ -67,7 +67,7 @@ export function ViewerNavigation({
   const [visibleSections, setVisibleSections] = useState<Set<string>>(new Set());
   const [hoveredSection, setHoveredSection] = useState<string | null>(null);
   const observerRef = useRef<IntersectionObserver | null>(null);
-  
+
   // Set up intersection observer for section visibility
   useEffect(() => {
     observerRef.current = new IntersectionObserver(
@@ -90,7 +90,7 @@ export function ViewerNavigation({
         threshold: 0.1,
       }
     );
-    
+
     // Observe all sections
     sections.forEach((section) => {
       const element = document.getElementById(section.id);
@@ -98,20 +98,20 @@ export function ViewerNavigation({
         observerRef.current.observe(element);
       }
     });
-    
+
     return () => {
       observerRef.current?.disconnect();
     };
   }, [sections]);
-  
+
   // Get current section based on visibility
-  const currentSection = sections.find(s => visibleSections.has(s.id)) || sections[0];
-  
+  const currentSection = sections.find((s) => visibleSections.has(s.id)) || sections[0];
+
   // Get breadcrumb path
   const breadcrumbPath = activeSection
-    ? sections.slice(0, sections.findIndex(s => s.id === activeSection) + 1)
+    ? sections.slice(0, sections.findIndex((s) => s.id === activeSection) + 1)
     : [currentSection].filter(Boolean);
-    
+
   return (
     <>
       {/* Sticky Breadcrumbs */}
@@ -120,7 +120,7 @@ export function ViewerNavigation({
         className={cn(
           glassPanel.header,
           'sticky top-16 z-30 border-b border-white/5',
-          'backdrop-blur-xl backdrop-saturate-150',
+          'backdrop-blur-xl backdrop-saturate-150'
         )}
       >
         <div className="mx-auto max-w-screen-2xl px-4 sm:px-6 lg:px-8">
@@ -131,22 +131,22 @@ export function ViewerNavigation({
                 {...microInteractions.buttonHover}
                 onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
                 className={cn(
-                  'flex items-center gap-1 whitespace-nowrap px-2 py-1',
-                  'text-sm text-text-secondary hover:text-foreground',
-                  'cursor-pointer transition-colors',
+                  'flex items-center gap-1 px-2 py-1 whitespace-nowrap',
+                  'text-text-secondary hover:text-foreground text-sm',
+                  'cursor-pointer transition-colors'
                 )}
               >
                 <Compass className="h-3.5 w-3.5" />
                 <span>Overview</span>
               </motion.span>
-              
+
               <AnimatePresence mode="popLayout">
                 {breadcrumbPath.map((section, index) => {
                   const Icon = sectionIcons[section.id] || sectionIcons.default;
-                  
+
                   return (
                     <React.Fragment key={section.id}>
-                      <ChevronRight className="h-3.5 w-3.5 text-text-disabled" />
+                      <ChevronRight className="text-text-disabled h-3.5 w-3.5" />
                       <motion.button
                         initial={{ opacity: 0, x: -10 }}
                         animate={{ opacity: 1, x: 0 }}
@@ -155,16 +155,16 @@ export function ViewerNavigation({
                         onMouseEnter={() => setHoveredSection(section.id)}
                         onMouseLeave={() => setHoveredSection(null)}
                         className={cn(
-                          'group relative flex items-center gap-1.5 whitespace-nowrap px-2 py-1',
-                          'text-sm transition-colors rounded-md',
+                          'group relative flex items-center gap-1.5 px-2 py-1 whitespace-nowrap',
+                          'rounded-md text-sm transition-colors',
                           currentSection?.id === section.id
                             ? 'text-primary font-medium'
-                            : 'text-text-secondary hover:text-foreground',
+                            : 'text-text-secondary hover:text-foreground'
                         )}
                       >
                         <Icon className="h-3.5 w-3.5" />
                         <span>{section.title}</span>
-                        
+
                         {/* Hover preview */}
                         {hoveredSection === section.id && index < breadcrumbPath.length - 1 && (
                           <motion.div
@@ -173,11 +173,11 @@ export function ViewerNavigation({
                             className={cn(
                               glassCard.premium,
                               elevation.xl,
-                              'absolute top-full left-0 mt-2 w-64 p-4',
+                              'absolute top-full left-0 mt-2 w-64 p-4'
                             )}
                           >
-                            <h4 className="mb-2 font-medium text-foreground">{section.title}</h4>
-                            <p className="text-xs text-text-secondary line-clamp-3">
+                            <h4 className="text-foreground mb-2 font-medium">{section.title}</h4>
+                            <p className="text-text-secondary line-clamp-3 text-xs">
                               Click to navigate to this section
                             </p>
                           </motion.div>
@@ -188,7 +188,7 @@ export function ViewerNavigation({
                 })}
               </AnimatePresence>
             </div>
-            
+
             {/* Mini-map toggle */}
             <motion.button
               {...microInteractions.buttonPress}
@@ -199,9 +199,9 @@ export function ViewerNavigation({
                 'flex h-8 items-center gap-2 rounded-lg px-3',
                 'text-sm font-medium',
                 showMinimap
-                  ? 'bg-primary/20 text-primary border border-primary/30'
+                  ? 'bg-primary/20 text-primary border-primary/30 border'
                   : 'text-text-secondary hover:text-foreground hover:bg-white/5',
-                'transition-all',
+                'transition-all'
               )}
             >
               <Map className="h-3.5 w-3.5" />
@@ -210,7 +210,7 @@ export function ViewerNavigation({
           </div>
         </div>
       </motion.nav>
-      
+
       {/* Mini-map Overlay */}
       <AnimatePresence>
         {showMinimap && (
@@ -219,22 +219,18 @@ export function ViewerNavigation({
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: 100 }}
             transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-            className={cn(
-              glassCard.premium,
-              elevation.xl,
-              'fixed right-6 top-32 z-40 w-48 p-4',
-            )}
+            className={cn(glassCard.premium, elevation.xl, 'fixed top-32 right-6 z-40 w-48 p-4')}
           >
-            <h3 className={cn(typographyPresets.labelText, 'mb-3 text-foreground')}>
+            <h3 className={cn(typographyPresets.labelText, 'text-foreground mb-3')}>
               Document Map
             </h3>
-            
+
             <div className="space-y-1">
               {sections.map((section) => {
                 const Icon = sectionIcons[section.id] || sectionIcons.default;
                 const isActive = currentSection?.id === section.id;
                 const isVisible = visibleSections.has(section.id);
-                
+
                 return (
                   <motion.button
                     key={section.id}
@@ -246,18 +242,18 @@ export function ViewerNavigation({
                         ? 'bg-primary/20 text-primary font-medium'
                         : isVisible
                           ? 'text-foreground hover:bg-white/5'
-                          : 'text-text-disabled hover:text-text-secondary hover:bg-white/5',
+                          : 'text-text-disabled hover:text-text-secondary hover:bg-white/5'
                     )}
                   >
                     <Icon className="h-3 w-3 flex-shrink-0" />
                     <span className="truncate text-left">{section.title}</span>
-                    
+
                     {/* Progress indicator */}
                     <div className="ml-auto h-1.5 w-1.5 flex-shrink-0">
                       {isActive && (
                         <motion.div
                           layoutId="minimapIndicator"
-                          className="h-full w-full rounded-full bg-primary"
+                          className="bg-primary h-full w-full rounded-full"
                           transition={{ type: 'spring', stiffness: 400, damping: 30 }}
                         />
                       )}
@@ -266,14 +262,14 @@ export function ViewerNavigation({
                 );
               })}
             </div>
-            
+
             {/* Visual progress bar */}
             <div className="mt-4 h-1 overflow-hidden rounded-full bg-white/10">
               <motion.div
-                className="h-full bg-gradient-to-r from-primary to-secondary"
+                className="from-primary to-secondary h-full bg-gradient-to-r"
                 initial={{ width: 0 }}
                 animate={{
-                  width: `${((sections.findIndex(s => s.id === currentSection?.id) + 1) / sections.length) * 100}%`,
+                  width: `${((sections.findIndex((s) => s.id === currentSection?.id) + 1) / sections.length) * 100}%`,
                 }}
                 transition={{ type: 'spring', stiffness: 200, damping: 30 }}
               />

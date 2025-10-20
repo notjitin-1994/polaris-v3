@@ -25,12 +25,12 @@ describe('Client Error Tracker', () => {
   describe('Manual Error Capture', () => {
     it('should capture errors manually', async () => {
       const testError = new Error('Test error');
-      
+
       clientErrorTracker.captureError(testError, { context: 'test' });
-      
+
       // Wait for async queue processing
-      await new Promise(resolve => setTimeout(resolve, 100));
-      
+      await new Promise((resolve) => setTimeout(resolve, 100));
+
       expect(global.fetch).toHaveBeenCalledWith(
         '/api/logs/client',
         expect.objectContaining({
@@ -43,9 +43,9 @@ describe('Client Error Tracker', () => {
 
     it('should capture warnings', async () => {
       clientErrorTracker.captureWarning('Warning message', { source: 'test' });
-      
-      await new Promise(resolve => setTimeout(resolve, 100));
-      
+
+      await new Promise((resolve) => setTimeout(resolve, 100));
+
       expect(global.fetch).toHaveBeenCalledWith(
         '/api/logs/client',
         expect.objectContaining({
@@ -57,9 +57,9 @@ describe('Client Error Tracker', () => {
 
     it('should capture info messages', async () => {
       clientErrorTracker.captureInfo('Info message', { action: 'test' });
-      
-      await new Promise(resolve => setTimeout(resolve, 100));
-      
+
+      await new Promise((resolve) => setTimeout(resolve, 100));
+
       expect(global.fetch).toHaveBeenCalledWith(
         '/api/logs/client',
         expect.objectContaining({
@@ -76,11 +76,11 @@ describe('Client Error Tracker', () => {
       const errorInfo = {
         componentStack: '    in ErrorComponent (at App.tsx:10)\n    in App (at index.tsx:5)',
       };
-      
+
       clientErrorTracker.captureReactError(testError, errorInfo);
-      
-      await new Promise(resolve => setTimeout(resolve, 100));
-      
+
+      await new Promise((resolve) => setTimeout(resolve, 100));
+
       expect(global.fetch).toHaveBeenCalledWith(
         '/api/logs/client',
         expect.objectContaining({
@@ -99,20 +99,20 @@ describe('Client Error Tracker', () => {
     it('should include error stack trace', async () => {
       const error = new Error('Test error');
       error.stack = 'Error: Test error\n    at test.ts:10:15';
-      
+
       clientErrorTracker.captureError(error);
-      
-      await new Promise(resolve => setTimeout(resolve, 100));
-      
+
+      await new Promise((resolve) => setTimeout(resolve, 100));
+
       const callBody = JSON.parse((global.fetch as any).mock.calls[0][1].body);
       expect(callBody.metadata.errorStack).toContain('test.ts:10:15');
     });
 
     it('should handle non-Error objects', async () => {
       clientErrorTracker.captureError('String error message');
-      
-      await new Promise(resolve => setTimeout(resolve, 100));
-      
+
+      await new Promise((resolve) => setTimeout(resolve, 100));
+
       expect(global.fetch).toHaveBeenCalledWith(
         '/api/logs/client',
         expect.objectContaining({
@@ -129,11 +129,11 @@ describe('Client Error Tracker', () => {
         action: 'button-click',
         data: { foo: 'bar' },
       };
-      
+
       clientErrorTracker.captureError(error, context);
-      
-      await new Promise(resolve => setTimeout(resolve, 100));
-      
+
+      await new Promise((resolve) => setTimeout(resolve, 100));
+
       const callBody = JSON.parse((global.fetch as any).mock.calls[0][1].body);
       expect(callBody.metadata.userId).toBe('user-123');
       expect(callBody.metadata.action).toBe('button-click');
@@ -150,13 +150,13 @@ describe('Client Error Tracker', () => {
         ok: true,
         json: async () => ({ success: true }),
       });
-      
+
       const error = new Error('Test error');
       clientErrorTracker.captureError(error);
-      
+
       // Wait for first attempt and retry
-      await new Promise(resolve => setTimeout(resolve, 100));
-      
+      await new Promise((resolve) => setTimeout(resolve, 100));
+
       // Should have attempted at least once
       expect(global.fetch).toHaveBeenCalled();
     });
@@ -173,28 +173,24 @@ describe('Client Error Tracker', () => {
           json: async () => ({ success: true }),
         });
       });
-      
+
       const error = new Error('Test error');
       clientErrorTracker.captureError(error);
-      
+
       // Just verify it was called once initially
-      await new Promise(resolve => setTimeout(resolve, 100));
-      
+      await new Promise((resolve) => setTimeout(resolve, 100));
+
       expect(callCount).toBeGreaterThanOrEqual(1);
     }, 1000);
 
     it('should process multiple errors in queue', async () => {
-      const errors = [
-        new Error('Error 1'),
-        new Error('Error 2'),
-        new Error('Error 3'),
-      ];
-      
-      errors.forEach(error => clientErrorTracker.captureError(error));
-      
+      const errors = [new Error('Error 1'), new Error('Error 2'), new Error('Error 3')];
+
+      errors.forEach((error) => clientErrorTracker.captureError(error));
+
       // Wait for queue processing
-      await new Promise(resolve => setTimeout(resolve, 500));
-      
+      await new Promise((resolve) => setTimeout(resolve, 500));
+
       // Should have been called at least once
       expect(global.fetch).toHaveBeenCalled();
     });
@@ -205,14 +201,14 @@ describe('Client Error Tracker', () => {
       vi.clearAllMocks();
       const error = new Error('Test error');
       clientErrorTracker.captureError(error);
-      
-      await new Promise(resolve => setTimeout(resolve, 200));
-      
+
+      await new Promise((resolve) => setTimeout(resolve, 200));
+
       expect(global.fetch).toHaveBeenCalled();
       const callArgs = (global.fetch as any).mock.calls[0];
       if (callArgs && callArgs[1]) {
         const callBody = JSON.parse(callArgs[1].body);
-        
+
         expect(callBody).toHaveProperty('level');
         expect(callBody).toHaveProperty('event');
         expect(callBody).toHaveProperty('message');
@@ -224,10 +220,10 @@ describe('Client Error Tracker', () => {
 
     it('should use correct event names', async () => {
       vi.clearAllMocks();
-      
+
       clientErrorTracker.captureError(new Error('Error'));
-      await new Promise(resolve => setTimeout(resolve, 200));
-      
+      await new Promise((resolve) => setTimeout(resolve, 200));
+
       const errorCall = (global.fetch as any).mock.calls[0];
       if (errorCall && errorCall[1]) {
         const callBody = JSON.parse(errorCall[1].body);

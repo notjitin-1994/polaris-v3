@@ -357,244 +357,244 @@ export function InteractiveBlueprintDashboard({
 
           {/* Enhanced Stats Grid - Desktop layout on all screen sizes */}
           <motion.div variants={containerVariants} className="grid grid-cols-4 gap-6">
-        <StatCard
-          icon={Clock}
-          label="Total Duration"
-          value={totalDuration}
-          suffix="hrs"
-          gradient="bg-primary/20"
-          delay={0}
-        />
-        <StatCard
-          icon={Layers}
-          label="Learning Modules"
-          value={modules.length}
-          gradient="from-secondary to-secondary/80"
-          delay={0.1}
-        />
-        <StatCard
-          icon={Target}
-          label="Learning Objectives"
-          value={objectives.length}
-          gradient="from-success to-success/80"
-          delay={0.2}
-        />
-        <StatCard
-          icon={BookOpen}
-          label="Total Activities"
-          value={modules.reduce((sum, m) => sum + (m.learning_activities?.length || 0), 0)}
-          gradient="from-warning to-warning/80"
-          delay={0.3}
-        />
-      </motion.div>
-
-      {/* Control Bar */}
-      <motion.div variants={itemVariants} className="mt-8 flex items-center justify-between">
-        <div className="flex gap-2">
-          <button
-            onClick={expandAll}
-            className="border-primary-500/30 bg-primary-500/10 hover:bg-primary-500/20 flex items-center gap-2 rounded-lg border px-4 py-2 text-sm font-medium text-white transition-all"
-          >
-            <Maximize2 className="h-4 w-4" />
-            Expand All
-          </button>
-          <button
-            onClick={collapseAll}
-            className="flex items-center gap-2 rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-white transition-all hover:bg-white/10"
-          >
-            <Minimize2 className="h-4 w-4" />
-            Collapse All
-          </button>
-        </div>
-        <div className="text-text-secondary text-sm">
-          {expandedSections.size} of {sections.length} sections expanded
-        </div>
-      </motion.div>
-
-      {/* Expandable Sections */}
-      <div className="space-y-4">
-        {/* Learning Objectives */}
-        {blueprint.learning_objectives && (
-          <ExpandableSection
-            section={sections.find((s) => s.id === 'objectives')!}
-            isExpanded={expandedSections.has('objectives')}
-            onToggle={() => toggleSection('objectives')}
-            ref={(el) => {
-              sectionRefs.current['objectives'] = el;
-            }}
-            isPublicView={isPublicView}
-          >
-            <ObjectivesInfographic
-              objectives={objectives}
-              chartConfig={blueprint.learning_objectives.chartConfig}
+            <StatCard
+              icon={Clock}
+              label="Total Duration"
+              value={totalDuration}
+              suffix="hrs"
+              gradient="bg-primary/20"
+              delay={0}
             />
-          </ExpandableSection>
-        )}
-
-        {/* Target Audience */}
-        {blueprint.target_audience && (
-          <ExpandableSection
-            section={sections.find((s) => s.id === 'target_audience')!}
-            isExpanded={expandedSections.has('target_audience')}
-            onToggle={() => toggleSection('target_audience')}
-            ref={(el) => {
-              sectionRefs.current['target_audience'] = el;
-            }}
-            isPublicView={isPublicView}
-          >
-            <TargetAudienceInfographic data={blueprint.target_audience} />
-          </ExpandableSection>
-        )}
-
-        {/* Content Outline */}
-        {blueprint.content_outline && modules.length > 0 && (
-          <ExpandableSection
-            section={sections.find((s) => s.id === 'content_outline')!}
-            isExpanded={expandedSections.has('content_outline')}
-            onToggle={() => toggleSection('content_outline')}
-            ref={(el) => {
-              sectionRefs.current['content_outline'] = el;
-            }}
-            isPublicView={isPublicView}
-          >
-            <ContentOutlineInfographic modules={modules} />
-          </ExpandableSection>
-        )}
-
-        {/* Resources & Budget */}
-        {blueprint.resources && (
-          <ExpandableSection
-            section={sections.find((s) => s.id === 'resources')!}
-            isExpanded={expandedSections.has('resources')}
-            onToggle={() => toggleSection('resources')}
-            ref={(el) => {
-              sectionRefs.current['resources'] = el;
-            }}
-            isPublicView={isPublicView}
-          >
-            <BudgetResourcesInfographic
-              budget={blueprint.resources.budget}
-              human_resources={blueprint.resources.human_resources}
-              tools_and_platforms={blueprint.resources.tools_and_platforms}
+            <StatCard
+              icon={Layers}
+              label="Learning Modules"
+              value={modules.length}
+              gradient="from-secondary to-secondary/80"
+              delay={0.1}
             />
-          </ExpandableSection>
-        )}
-
-        {/* Assessment Strategy */}
-        {blueprint.assessment_strategy && (
-          <ExpandableSection
-            section={sections.find((s) => s.id === 'assessment')!}
-            isExpanded={expandedSections.has('assessment')}
-            onToggle={() => toggleSection('assessment')}
-            ref={(el) => {
-              sectionRefs.current['assessment'] = el;
-            }}
-            isPublicView={isPublicView}
-          >
-            <AssessmentStrategyInfographic
-              kpis={blueprint.assessment_strategy.kpis}
-              overview={blueprint.assessment_strategy.overview}
-              evaluationMethods={blueprint.assessment_strategy.evaluation_methods}
-              chartConfig={blueprint.assessment_strategy.chartConfig}
+            <StatCard
+              icon={Target}
+              label="Learning Objectives"
+              value={objectives.length}
+              gradient="from-success to-success/80"
+              delay={0.2}
             />
-          </ExpandableSection>
-        )}
-
-        {/* Implementation Timeline */}
-        {blueprint.implementation_timeline && (
-          <ExpandableSection
-            section={sections.find((s) => s.id === 'timeline')!}
-            isExpanded={expandedSections.has('timeline')}
-            onToggle={() => toggleSection('timeline')}
-            ref={(el) => {
-              sectionRefs.current['timeline'] = el;
-            }}
-            isPublicView={isPublicView}
-          >
-            <TimelineInfographic
-              phases={blueprint.implementation_timeline.phases}
-              critical_path={blueprint.implementation_timeline.critical_path}
+            <StatCard
+              icon={BookOpen}
+              label="Total Activities"
+              value={modules.reduce((sum, m) => sum + (m.learning_activities?.length || 0), 0)}
+              gradient="from-warning to-warning/80"
+              delay={0.3}
             />
-          </ExpandableSection>
-        )}
+          </motion.div>
 
-        {/* Risk Mitigation */}
-        {blueprint.risk_mitigation && (
-          <ExpandableSection
-            section={sections.find((s) => s.id === 'risks')!}
-            isExpanded={expandedSections.has('risks')}
-            onToggle={() => toggleSection('risks')}
-            ref={(el) => {
-              sectionRefs.current['risks'] = el;
-            }}
-            isPublicView={isPublicView}
-          >
-            <RiskMitigationInfographic
-              risks={blueprint.risk_mitigation.risks}
-              contingency_plans={blueprint.risk_mitigation.contingency_plans}
-            />
-          </ExpandableSection>
-        )}
+          {/* Control Bar */}
+          <motion.div variants={itemVariants} className="mt-8 flex items-center justify-between">
+            <div className="flex gap-2">
+              <button
+                onClick={expandAll}
+                className="border-primary-500/30 bg-primary-500/10 hover:bg-primary-500/20 flex items-center gap-2 rounded-lg border px-4 py-2 text-sm font-medium text-white transition-all"
+              >
+                <Maximize2 className="h-4 w-4" />
+                Expand All
+              </button>
+              <button
+                onClick={collapseAll}
+                className="flex items-center gap-2 rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-white transition-all hover:bg-white/10"
+              >
+                <Minimize2 className="h-4 w-4" />
+                Collapse All
+              </button>
+            </div>
+            <div className="text-text-secondary text-sm">
+              {expandedSections.size} of {sections.length} sections expanded
+            </div>
+          </motion.div>
 
-        {/* Success Metrics */}
-        {blueprint.success_metrics && (
-          <ExpandableSection
-            section={sections.find((s) => s.id === 'metrics')!}
-            isExpanded={expandedSections.has('metrics')}
-            onToggle={() => toggleSection('metrics')}
-            ref={(el) => {
-              sectionRefs.current['metrics'] = el;
-            }}
-            isPublicView={isPublicView}
-          >
-            <SuccessMetricsInfographic
-              metrics={blueprint.success_metrics.metrics}
-              reportingCadence={blueprint.success_metrics.reporting_cadence}
-            />
-          </ExpandableSection>
-        )}
+          {/* Expandable Sections */}
+          <div className="space-y-4">
+            {/* Learning Objectives */}
+            {blueprint.learning_objectives && (
+              <ExpandableSection
+                section={sections.find((s) => s.id === 'objectives')!}
+                isExpanded={expandedSections.has('objectives')}
+                onToggle={() => toggleSection('objectives')}
+                ref={(el) => {
+                  sectionRefs.current['objectives'] = el;
+                }}
+                isPublicView={isPublicView}
+              >
+                <ObjectivesInfographic
+                  objectives={objectives}
+                  chartConfig={blueprint.learning_objectives.chartConfig}
+                />
+              </ExpandableSection>
+            )}
 
-        {/* Instructional Strategy */}
-        {blueprint.instructional_strategy && (
-          <ExpandableSection
-            section={sections.find((s) => s.id === 'strategy')!}
-            isExpanded={expandedSections.has('strategy')}
-            onToggle={() => toggleSection('strategy')}
-            ref={(el) => {
-              sectionRefs.current['strategy'] = el;
-            }}
-            isPublicView={isPublicView}
-          >
-            <InstructionalStrategyInfographic
-              overview={blueprint.instructional_strategy.overview}
-              modalities={blueprint.instructional_strategy.modalities}
-              cohort_model={blueprint.instructional_strategy.cohort_model}
-              accessibility_considerations={
-                blueprint.instructional_strategy.accessibility_considerations
-              }
-            />
-          </ExpandableSection>
-        )}
+            {/* Target Audience */}
+            {blueprint.target_audience && (
+              <ExpandableSection
+                section={sections.find((s) => s.id === 'target_audience')!}
+                isExpanded={expandedSections.has('target_audience')}
+                onToggle={() => toggleSection('target_audience')}
+                ref={(el) => {
+                  sectionRefs.current['target_audience'] = el;
+                }}
+                isPublicView={isPublicView}
+              >
+                <TargetAudienceInfographic data={blueprint.target_audience} />
+              </ExpandableSection>
+            )}
 
-        {/* Sustainability Plan */}
-        {blueprint.sustainability_plan && (
-          <ExpandableSection
-            section={sections.find((s) => s.id === 'sustainability')!}
-            isExpanded={expandedSections.has('sustainability')}
-            onToggle={() => toggleSection('sustainability')}
-            ref={(el) => {
-              sectionRefs.current['sustainability'] = el;
-            }}
-            isPublicView={isPublicView}
-          >
-            <SustainabilityPlanInfographic
-              content={blueprint.sustainability_plan.content}
-              maintenance_schedule={blueprint.sustainability_plan.maintenance_schedule}
-              scaling_considerations={blueprint.sustainability_plan.scaling_considerations}
-            />
-          </ExpandableSection>
-        )}
-      </div>
+            {/* Content Outline */}
+            {blueprint.content_outline && modules.length > 0 && (
+              <ExpandableSection
+                section={sections.find((s) => s.id === 'content_outline')!}
+                isExpanded={expandedSections.has('content_outline')}
+                onToggle={() => toggleSection('content_outline')}
+                ref={(el) => {
+                  sectionRefs.current['content_outline'] = el;
+                }}
+                isPublicView={isPublicView}
+              >
+                <ContentOutlineInfographic modules={modules} />
+              </ExpandableSection>
+            )}
+
+            {/* Resources & Budget */}
+            {blueprint.resources && (
+              <ExpandableSection
+                section={sections.find((s) => s.id === 'resources')!}
+                isExpanded={expandedSections.has('resources')}
+                onToggle={() => toggleSection('resources')}
+                ref={(el) => {
+                  sectionRefs.current['resources'] = el;
+                }}
+                isPublicView={isPublicView}
+              >
+                <BudgetResourcesInfographic
+                  budget={blueprint.resources.budget}
+                  human_resources={blueprint.resources.human_resources}
+                  tools_and_platforms={blueprint.resources.tools_and_platforms}
+                />
+              </ExpandableSection>
+            )}
+
+            {/* Assessment Strategy */}
+            {blueprint.assessment_strategy && (
+              <ExpandableSection
+                section={sections.find((s) => s.id === 'assessment')!}
+                isExpanded={expandedSections.has('assessment')}
+                onToggle={() => toggleSection('assessment')}
+                ref={(el) => {
+                  sectionRefs.current['assessment'] = el;
+                }}
+                isPublicView={isPublicView}
+              >
+                <AssessmentStrategyInfographic
+                  kpis={blueprint.assessment_strategy.kpis}
+                  overview={blueprint.assessment_strategy.overview}
+                  evaluationMethods={blueprint.assessment_strategy.evaluation_methods}
+                  chartConfig={blueprint.assessment_strategy.chartConfig}
+                />
+              </ExpandableSection>
+            )}
+
+            {/* Implementation Timeline */}
+            {blueprint.implementation_timeline && (
+              <ExpandableSection
+                section={sections.find((s) => s.id === 'timeline')!}
+                isExpanded={expandedSections.has('timeline')}
+                onToggle={() => toggleSection('timeline')}
+                ref={(el) => {
+                  sectionRefs.current['timeline'] = el;
+                }}
+                isPublicView={isPublicView}
+              >
+                <TimelineInfographic
+                  phases={blueprint.implementation_timeline.phases}
+                  critical_path={blueprint.implementation_timeline.critical_path}
+                />
+              </ExpandableSection>
+            )}
+
+            {/* Risk Mitigation */}
+            {blueprint.risk_mitigation && (
+              <ExpandableSection
+                section={sections.find((s) => s.id === 'risks')!}
+                isExpanded={expandedSections.has('risks')}
+                onToggle={() => toggleSection('risks')}
+                ref={(el) => {
+                  sectionRefs.current['risks'] = el;
+                }}
+                isPublicView={isPublicView}
+              >
+                <RiskMitigationInfographic
+                  risks={blueprint.risk_mitigation.risks}
+                  contingency_plans={blueprint.risk_mitigation.contingency_plans}
+                />
+              </ExpandableSection>
+            )}
+
+            {/* Success Metrics */}
+            {blueprint.success_metrics && (
+              <ExpandableSection
+                section={sections.find((s) => s.id === 'metrics')!}
+                isExpanded={expandedSections.has('metrics')}
+                onToggle={() => toggleSection('metrics')}
+                ref={(el) => {
+                  sectionRefs.current['metrics'] = el;
+                }}
+                isPublicView={isPublicView}
+              >
+                <SuccessMetricsInfographic
+                  metrics={blueprint.success_metrics.metrics}
+                  reportingCadence={blueprint.success_metrics.reporting_cadence}
+                />
+              </ExpandableSection>
+            )}
+
+            {/* Instructional Strategy */}
+            {blueprint.instructional_strategy && (
+              <ExpandableSection
+                section={sections.find((s) => s.id === 'strategy')!}
+                isExpanded={expandedSections.has('strategy')}
+                onToggle={() => toggleSection('strategy')}
+                ref={(el) => {
+                  sectionRefs.current['strategy'] = el;
+                }}
+                isPublicView={isPublicView}
+              >
+                <InstructionalStrategyInfographic
+                  overview={blueprint.instructional_strategy.overview}
+                  modalities={blueprint.instructional_strategy.modalities}
+                  cohort_model={blueprint.instructional_strategy.cohort_model}
+                  accessibility_considerations={
+                    blueprint.instructional_strategy.accessibility_considerations
+                  }
+                />
+              </ExpandableSection>
+            )}
+
+            {/* Sustainability Plan */}
+            {blueprint.sustainability_plan && (
+              <ExpandableSection
+                section={sections.find((s) => s.id === 'sustainability')!}
+                isExpanded={expandedSections.has('sustainability')}
+                onToggle={() => toggleSection('sustainability')}
+                ref={(el) => {
+                  sectionRefs.current['sustainability'] = el;
+                }}
+                isPublicView={isPublicView}
+              >
+                <SustainabilityPlanInfographic
+                  content={blueprint.sustainability_plan.content}
+                  maintenance_schedule={blueprint.sustainability_plan.maintenance_schedule}
+                  scaling_considerations={blueprint.sustainability_plan.scaling_considerations}
+                />
+              </ExpandableSection>
+            )}
+          </div>
         </div>
       </div>
     </motion.div>

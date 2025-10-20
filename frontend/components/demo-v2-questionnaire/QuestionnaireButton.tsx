@@ -22,7 +22,8 @@ export function QuestionnaireButton({
   className,
   fullWidth = false,
 }: QuestionnaireButtonProps): React.JSX.Element {
-  const baseClasses = 'inline-flex items-center justify-center rounded-lg font-medium transition-all duration-200 focus-visible:ring-2 focus-visible:ring-indigo-500/50 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50';
+  const baseClasses =
+    'inline-flex items-center justify-center rounded-lg font-medium transition-all duration-200 focus-visible:ring-2 focus-visible:ring-indigo-500/50 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50';
 
   const variantClasses = {
     primary: 'bg-indigo-600 text-white hover:bg-indigo-700 shadow-sm hover:shadow-md',
@@ -44,16 +45,9 @@ export function QuestionnaireButton({
       type={type}
       onClick={onClick}
       disabled={disabled}
-      className={cn(
-        baseClasses,
-        variantClasses[variant],
-        sizeClasses[size],
-        widthClass,
-        className
-      )}
+      className={cn(baseClasses, variantClasses[variant], sizeClasses[size], widthClass, className)}
     >
       {children}
     </button>
   );
 }
-

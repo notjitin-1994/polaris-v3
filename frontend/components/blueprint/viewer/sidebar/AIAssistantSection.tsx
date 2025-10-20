@@ -7,15 +7,7 @@
 
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import {
-  Sparkles,
-  ChevronDown,
-  Send,
-  Wand2,
-  Brain,
-  FileText,
-  Loader2,
-} from 'lucide-react';
+import { Sparkles, ChevronDown, Send, Wand2, Brain, FileText, Loader2 } from 'lucide-react';
 import { cn, glassCard, microInteractions, componentStyles } from '@/lib/design-system';
 
 interface AIAssistantSectionProps {
@@ -30,11 +22,13 @@ export function AIAssistantSection({
   isPublicView = false,
 }: AIAssistantSectionProps): React.JSX.Element {
   const [isExpanded, setIsExpanded] = useState(false);
-  const [messages, setMessages] = useState<Array<{
-    role: 'user' | 'assistant';
-    content: string;
-    timestamp: Date;
-  }>>([]);
+  const [messages, setMessages] = useState<
+    Array<{
+      role: 'user' | 'assistant';
+      content: string;
+      timestamp: Date;
+    }>
+  >([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
@@ -67,17 +61,20 @@ export function AIAssistantSection({
       timestamp: new Date(),
     };
 
-    setMessages(prev => [...prev, userMessage]);
+    setMessages((prev) => [...prev, userMessage]);
     setInput('');
     setIsLoading(true);
 
     // TODO: Integrate with AI API
     setTimeout(() => {
-      setMessages(prev => [...prev, {
-        role: 'assistant' as const,
-        content: 'AI response will appear here.',
-        timestamp: new Date(),
-      }]);
+      setMessages((prev) => [
+        ...prev,
+        {
+          role: 'assistant' as const,
+          content: 'AI response will appear here.',
+          timestamp: new Date(),
+        },
+      ]);
       setIsLoading(false);
     }, 1000);
   };
@@ -89,22 +86,16 @@ export function AIAssistantSection({
         onClick={() => setIsExpanded(!isExpanded)}
         className={cn(
           'flex w-full items-center gap-2 rounded-lg px-3 py-2',
-          'text-sm font-medium text-foreground',
-          'hover:bg-white/5 transition-colors',
+          'text-foreground text-sm font-medium',
+          'transition-colors hover:bg-white/5'
         )}
       >
-        <div className={cn(
-          'flex h-7 w-7 items-center justify-center rounded-lg',
-          'bg-primary/20',
-        )}>
-          <Sparkles className="h-4 w-4 text-primary" />
+        <div className={cn('flex h-7 w-7 items-center justify-center rounded-lg', 'bg-primary/20')}>
+          <Sparkles className="text-primary h-4 w-4" />
         </div>
         <span className="flex-1 text-left">AI Assistant</span>
         <ChevronDown
-          className={cn(
-            'h-4 w-4 transition-transform duration-200',
-            isExpanded && 'rotate-180',
-          )}
+          className={cn('h-4 w-4 transition-transform duration-200', isExpanded && 'rotate-180')}
         />
       </button>
 
@@ -121,7 +112,7 @@ export function AIAssistantSection({
                 'flex flex-col items-center gap-1 rounded-lg p-2',
                 'bg-white/5 hover:bg-white/10',
                 'text-text-secondary hover:text-foreground',
-                'transition-all duration-200',
+                'transition-all duration-200'
               )}
               title={action.label}
             >
@@ -142,14 +133,11 @@ export function AIAssistantSection({
             transition={{ duration: 0.2 }}
             className="mt-3 overflow-hidden"
           >
-            <div className={cn(
-              glassCard.base,
-              'mx-3 p-3',
-            )}>
+            <div className={cn(glassCard.base, 'mx-3 p-3')}>
               {/* Context Display */}
               {currentSection && (
-                <div className="mb-3 rounded-lg bg-primary/10 px-3 py-2">
-                  <p className="text-xs text-primary">
+                <div className="bg-primary/10 mb-3 rounded-lg px-3 py-2">
+                  <p className="text-primary text-xs">
                     Analyzing: <span className="font-medium">{currentSection}</span>
                   </p>
                 </div>
@@ -158,7 +146,7 @@ export function AIAssistantSection({
               {/* Chat Messages */}
               <div className="mb-3 max-h-64 space-y-2 overflow-y-auto">
                 {messages.length === 0 ? (
-                  <p className="py-8 text-center text-xs text-text-disabled">
+                  <p className="text-text-disabled py-8 text-center text-xs">
                     Ask me anything about this blueprint
                   </p>
                 ) : (
@@ -169,18 +157,18 @@ export function AIAssistantSection({
                         'rounded-lg px-3 py-2 text-xs',
                         message.role === 'user'
                           ? 'bg-primary/20 text-foreground ml-4'
-                          : 'bg-white/5 text-text-secondary mr-4',
+                          : 'text-text-secondary mr-4 bg-white/5'
                       )}
                     >
                       {message.content}
                     </div>
                   ))
                 )}
-                
+
                 {isLoading && (
                   <div className="flex items-center gap-2 rounded-lg bg-white/5 px-3 py-2">
-                    <Loader2 className="h-3 w-3 animate-spin text-primary" />
-                    <span className="text-xs text-text-secondary">Thinking...</span>
+                    <Loader2 className="text-primary h-3 w-3 animate-spin" />
+                    <span className="text-text-secondary text-xs">Thinking...</span>
                   </div>
                 )}
               </div>
@@ -203,7 +191,7 @@ export function AIAssistantSection({
                     componentStyles.input.base,
                     componentStyles.input.variants.glass,
                     componentStyles.input.sizes.sm,
-                    'flex-1',
+                    'flex-1'
                   )}
                 />
                 <motion.button
@@ -214,8 +202,8 @@ export function AIAssistantSection({
                     'flex h-9 w-9 items-center justify-center rounded-lg',
                     'bg-primary/20 text-primary',
                     'hover:bg-primary/30',
-                    'disabled:opacity-50 disabled:cursor-not-allowed',
-                    'transition-colors',
+                    'disabled:cursor-not-allowed disabled:opacity-50',
+                    'transition-colors'
                   )}
                 >
                   <Send className="h-4 w-4" />
@@ -224,9 +212,7 @@ export function AIAssistantSection({
 
               {/* Character count */}
               <div className="mt-2 text-right">
-                <span className="text-[10px] text-text-disabled">
-                  {input.length}/500
-                </span>
+                <span className="text-text-disabled text-[10px]">{input.length}/500</span>
               </div>
             </div>
           </motion.div>
@@ -235,4 +221,3 @@ export function AIAssistantSection({
     </div>
   );
 }
-

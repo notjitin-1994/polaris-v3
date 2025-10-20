@@ -75,7 +75,7 @@ function DynamicWizardContent({ id }: { id: string }): React.JSX.Element {
       <div className="flex min-h-screen items-center justify-center bg-[#020C1B] p-4">
         <div className="max-w-md text-center">
           <h1 className="mb-4 text-2xl font-bold text-white">Blueprint Not Found</h1>
-          <p className="mb-6 text-text-secondary">
+          <p className="text-text-secondary mb-6">
             The blueprint you&apos;re looking for doesn&apos;t exist or you don&apos;t have
             permission to access it.
           </p>
@@ -134,7 +134,7 @@ function DynamicWizardContent({ id }: { id: string }): React.JSX.Element {
                 <h2 className="mb-4 text-2xl font-bold text-white">
                   Dynamic Questions Not Available
                 </h2>
-                <p className="mb-8 text-text-secondary">
+                <p className="text-text-secondary mb-8">
                   The dynamic questions for this blueprint haven&apos;t been generated yet. This
                   feature is currently under development.
                 </p>
@@ -156,7 +156,7 @@ function DynamicWizardContent({ id }: { id: string }): React.JSX.Element {
                       <p className="text-primary mb-2 text-sm font-medium">
                         In a complete implementation, this page would:
                       </p>
-                      <ul className="space-y-1 text-sm text-text-secondary">
+                      <ul className="text-text-secondary space-y-1 text-sm">
                         <li>• Generate personalized questions based on your static responses</li>
                         <li>• Present them in an interactive, multi-step form</li>
                         <li>• Allow you to provide detailed answers with rich input types</li>
@@ -211,7 +211,7 @@ function DynamicWizardContent({ id }: { id: string }): React.JSX.Element {
                         router.push('/static-wizard');
                       }
                     }}
-                    className="inline-flex items-center justify-center gap-2 rounded-lg border border-neutral-300 bg-background px-6 py-2.5 text-sm font-medium text-text-secondary transition-colors hover:bg-surface"
+                    className="bg-background text-text-secondary hover:bg-surface inline-flex items-center justify-center gap-2 rounded-lg border border-neutral-300 px-6 py-2.5 text-sm font-medium transition-colors"
                   >
                     Create Another Blueprint
                   </button>
@@ -250,9 +250,7 @@ function DynamicWizardContent({ id }: { id: string }): React.JSX.Element {
             >
               <h1 className="font-heading lg:text-10xl text-7xl font-bold tracking-tight text-white sm:text-8xl md:text-9xl">
                 <span>Starmap </span>
-                <span className="text-primary">
-                  Cartographer
-                </span>
+                <span className="text-primary">Cartographer</span>
               </h1>
             </motion.div>
 
@@ -265,14 +263,11 @@ function DynamicWizardContent({ id }: { id: string }): React.JSX.Element {
             >
               <p className="text-xl leading-relaxed text-white/70 sm:text-2xl lg:text-3xl">
                 Chart your course with{' '}
-                <span className="font-medium text-primary">personalized questions</span> derived
-                from your <span className="font-medium text-primary">mission parameters</span>.
-                We&apos;ll use these{' '}
-                <span className="font-medium text-primary">
-                  coordinates
-                </span>{' '}
+                <span className="text-primary font-medium">personalized questions</span> derived
+                from your <span className="text-primary font-medium">mission parameters</span>.
+                We&apos;ll use these <span className="text-primary font-medium">coordinates</span>{' '}
                 to craft your{' '}
-                <span className="font-medium text-primary">complete learning trajectory</span>
+                <span className="text-primary font-medium">complete learning trajectory</span>
               </p>
             </motion.div>
 
@@ -281,7 +276,7 @@ function DynamicWizardContent({ id }: { id: string }): React.JSX.Element {
               initial={{ scaleX: 0 }}
               animate={{ scaleX: 1 }}
               transition={{ duration: 1, delay: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
-              className="mt-16 h-px w-24 bg-primary"
+              className="bg-primary mt-16 h-px w-24"
             />
           </div>
         </div>

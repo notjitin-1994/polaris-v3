@@ -26,7 +26,7 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { 
+import {
   glassPanel,
   glassCard,
   itemAnimations,
@@ -59,27 +59,27 @@ export function ViewerHeader({
   const [showMoreMenu, setShowMoreMenu] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
   const [isSharing, setIsSharing] = useState(false);
-  
+
   // Close menus when clicking outside
   React.useEffect(() => {
     const handleClickOutside = () => {
       setShowAiMenu(false);
       setShowMoreMenu(false);
     };
-    
+
     if (showAiMenu || showMoreMenu) {
       document.addEventListener('click', handleClickOutside);
       return () => document.removeEventListener('click', handleClickOutside);
     }
   }, [showAiMenu, showMoreMenu]);
-  
+
   const viewModes = [
     { id: 'dashboard' as ViewMode, label: 'Analytics', icon: LayoutGrid },
     { id: 'document' as ViewMode, label: 'Document', icon: FileText },
     { id: 'presentation' as ViewMode, label: 'Present', icon: Presentation },
     { id: 'focus' as ViewMode, label: 'Focus', icon: Focus },
   ];
-  
+
   const handleExport = async () => {
     setIsExporting(true);
     try {
@@ -106,7 +106,7 @@ export function ViewerHeader({
       setIsExporting(false);
     }
   };
-  
+
   const handleShare = async () => {
     setIsSharing(true);
     try {
@@ -116,7 +116,7 @@ export function ViewerHeader({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ blueprintId }),
       });
-      
+
       if (response.ok) {
         const result = await response.json();
         if (result.shareUrl) {
@@ -132,14 +132,11 @@ export function ViewerHeader({
       setIsSharing(false);
     }
   };
-  
+
   return (
     <motion.header
       variants={itemAnimations.fadeInScale}
-      className={cn(
-        glassPanel.header,
-        'relative z-50 border-b border-white/10',
-      )}
+      className={cn(glassPanel.header, 'relative z-50 border-b border-white/10')}
     >
       <div className="mx-auto max-w-screen-2xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between gap-4">
@@ -154,55 +151,45 @@ export function ViewerHeader({
                 className={cn(
                   'flex h-10 w-10 items-center justify-center rounded-xl',
                   'text-text-secondary hover:text-foreground',
-                  'hover:bg-white/5 transition-colors',
+                  'transition-colors hover:bg-white/5'
                 )}
               >
                 <ArrowLeft className="h-5 w-5" />
               </motion.button>
             )}
-            
+
             {/* Title */}
             <div className="flex flex-col">
-              <h1 className={cn(typographyPresets.labelText, 'text-text-secondary')}>
-                Blueprint
-              </h1>
-              <h2 className={cn('text-lg font-semibold text-foreground line-clamp-1')}>
+              <h1 className={cn(typographyPresets.labelText, 'text-text-secondary')}>Blueprint</h1>
+              <h2 className={cn('text-foreground line-clamp-1 text-lg font-semibold')}>
                 {blueprintTitle}
               </h2>
             </div>
           </div>
-          
+
           {/* Center section - View mode switcher */}
-          <div className={cn(
-            glassCard.base,
-            'hidden lg:flex items-center p-1 gap-1',
-          )}>
+          <div className={cn(glassCard.base, 'hidden items-center gap-1 p-1 lg:flex')}>
             {viewModes.map((mode) => {
               const Icon = mode.icon;
               const isActive = viewMode === mode.id;
-              
+
               return (
                 <motion.button
                   key={mode.id}
                   {...microInteractions.buttonPress}
                   onClick={() => onViewModeChange(mode.id)}
                   className={cn(
-                    'relative flex items-center gap-2 px-4 py-2 rounded-lg',
+                    'relative flex items-center gap-2 rounded-lg px-4 py-2',
                     'text-sm font-medium transition-all duration-200',
-                    isActive ? [
-                      'text-primary-foreground',
-                      'bg-primary/90',
-                      elevation.sm,
-                    ] : [
-                      'text-text-secondary hover:text-foreground',
-                      'hover:bg-white/5',
-                    ],
+                    isActive
+                      ? ['text-primary-foreground', 'bg-primary/90', elevation.sm]
+                      : ['text-text-secondary hover:text-foreground', 'hover:bg-white/5']
                   )}
                 >
                   {isActive && (
                     <motion.div
                       layoutId="activeViewMode"
-                      className="absolute inset-0 bg-primary rounded-lg"
+                      className="bg-primary absolute inset-0 rounded-lg"
                       transition={{ type: 'spring', stiffness: 400, damping: 30 }}
                     />
                   )}
@@ -212,7 +199,7 @@ export function ViewerHeader({
               );
             })}
           </div>
-          
+
           {/* Right section */}
           <div className="flex items-center gap-2">
             {/* Search */}
@@ -224,20 +211,22 @@ export function ViewerHeader({
                 glassCard.base,
                 'flex h-10 items-center gap-2 px-4',
                 'text-text-secondary hover:text-foreground',
-                'hover:bg-white/5 transition-all',
+                'transition-all hover:bg-white/5'
               )}
             >
               <Search className="h-4 w-4" />
-              <span className="hidden sm:inline text-sm">Search</span>
-              <kbd className={cn(
-                'hidden sm:inline-flex h-5 items-center gap-1 px-1.5',
-                'text-xs font-medium text-text-secondary',
-                'bg-white/5 rounded border border-white/10',
-              )}>
+              <span className="hidden text-sm sm:inline">Search</span>
+              <kbd
+                className={cn(
+                  'hidden h-5 items-center gap-1 px-1.5 sm:inline-flex',
+                  'text-text-secondary text-xs font-medium',
+                  'rounded border border-white/10 bg-white/5'
+                )}
+              >
                 <span className="text-[10px]">⌘</span>K
               </kbd>
             </motion.button>
-            
+
             {/* AI Tools */}
             {!isPublicView && (
               <div className="relative">
@@ -253,7 +242,7 @@ export function ViewerHeader({
                     glassCard.hover,
                     'flex h-10 items-center gap-2 px-4',
                     'text-primary hover:text-primary-light',
-                    'border-primary/20',
+                    'border-primary/20'
                   )}
                 >
                   <motion.div
@@ -268,9 +257,9 @@ export function ViewerHeader({
                   >
                     <Sparkles className="h-4 w-4" />
                   </motion.div>
-                  <span className="hidden sm:inline text-sm font-medium">AI Tools</span>
+                  <span className="hidden text-sm font-medium sm:inline">AI Tools</span>
                 </motion.button>
-                
+
                 {/* AI Menu Dropdown */}
                 <AnimatePresence>
                   {showAiMenu && (
@@ -282,33 +271,36 @@ export function ViewerHeader({
                       className={cn(
                         glassCard.premium,
                         elevation.xl,
-                        'absolute right-0 top-full mt-2 w-56 p-2',
+                        'absolute top-full right-0 mt-2 w-56 p-2'
                       )}
                     >
                       <button
                         onClick={() => setShowAiMenu(false)}
                         className={cn(
-                      'flex w-full items-center gap-3 rounded-lg px-3 py-2',
-                      'text-sm text-text-secondary hover:text-foreground',
-                      'hover:bg-white/5 transition-colors',
-                    )}>
-                      <Wand2 className="h-4 w-4" />
-                      <span>Generate Summary</span>
-                    </button>
-                    <button className={cn(
-                      'flex w-full items-center gap-3 rounded-lg px-3 py-2',
-                      'text-sm text-text-secondary hover:text-foreground',
-                      'hover:bg-white/5 transition-colors',
-                    )}>
-                      <Brain className="h-4 w-4" />
-                      <span>Extract Insights</span>
-                    </button>
+                          'flex w-full items-center gap-3 rounded-lg px-3 py-2',
+                          'text-text-secondary hover:text-foreground text-sm',
+                          'transition-colors hover:bg-white/5'
+                        )}
+                      >
+                        <Wand2 className="h-4 w-4" />
+                        <span>Generate Summary</span>
+                      </button>
+                      <button
+                        className={cn(
+                          'flex w-full items-center gap-3 rounded-lg px-3 py-2',
+                          'text-text-secondary hover:text-foreground text-sm',
+                          'transition-colors hover:bg-white/5'
+                        )}
+                      >
+                        <Brain className="h-4 w-4" />
+                        <span>Extract Insights</span>
+                      </button>
                       <button
                         onClick={() => setShowAiMenu(false)}
                         className={cn(
                           'flex w-full items-center gap-3 rounded-lg px-3 py-2',
-                          'text-sm text-text-secondary hover:text-foreground',
-                          'hover:bg-white/5 transition-colors',
+                          'text-text-secondary hover:text-foreground text-sm',
+                          'transition-colors hover:bg-white/5'
                         )}
                       >
                         <Bot className="h-4 w-4" />
@@ -319,7 +311,7 @@ export function ViewerHeader({
                 </AnimatePresence>
               </div>
             )}
-            
+
             {/* Export */}
             <motion.button
               {...microInteractions.buttonPress}
@@ -328,8 +320,8 @@ export function ViewerHeader({
               className={cn(
                 'flex h-10 w-10 items-center justify-center rounded-xl',
                 'text-text-secondary hover:text-foreground',
-                'hover:bg-white/5 transition-colors',
-                'disabled:opacity-50',
+                'transition-colors hover:bg-white/5',
+                'disabled:opacity-50'
               )}
             >
               {isExporting ? (
@@ -343,7 +335,7 @@ export function ViewerHeader({
                 <Download className="h-5 w-5" />
               )}
             </motion.button>
-            
+
             {/* Share */}
             <motion.button
               {...microInteractions.buttonPress}
@@ -352,8 +344,8 @@ export function ViewerHeader({
               className={cn(
                 'flex h-10 w-10 items-center justify-center rounded-xl',
                 'text-text-secondary hover:text-foreground',
-                'hover:bg-white/5 transition-colors',
-                'disabled:opacity-50',
+                'transition-colors hover:bg-white/5',
+                'disabled:opacity-50'
               )}
             >
               {isSharing ? (
@@ -367,7 +359,7 @@ export function ViewerHeader({
                 <Share2 className="h-5 w-5" />
               )}
             </motion.button>
-            
+
             {/* More options */}
             <div className="relative">
               <motion.button
@@ -379,12 +371,12 @@ export function ViewerHeader({
                 className={cn(
                   'flex h-10 w-10 items-center justify-center rounded-xl',
                   'text-text-secondary hover:text-foreground',
-                  'hover:bg-white/5 transition-colors',
+                  'transition-colors hover:bg-white/5'
                 )}
               >
                 <MoreVertical className="h-5 w-5" />
               </motion.button>
-              
+
               {/* More Menu */}
               <AnimatePresence>
                 {showMoreMenu && (
@@ -396,15 +388,15 @@ export function ViewerHeader({
                     className={cn(
                       glassCard.premium,
                       elevation.xl,
-                      'absolute right-0 top-full mt-2 w-48 p-2',
+                      'absolute top-full right-0 mt-2 w-48 p-2'
                     )}
                   >
                     <button
                       onClick={() => setShowMoreMenu(false)}
                       className={cn(
                         'flex w-full items-center gap-3 rounded-lg px-3 py-2',
-                        'text-sm text-text-secondary hover:text-foreground',
-                        'hover:bg-white/5 transition-colors',
+                        'text-text-secondary hover:text-foreground text-sm',
+                        'transition-colors hover:bg-white/5'
                       )}
                     >
                       <Settings className="h-4 w-4" />
@@ -417,29 +409,25 @@ export function ViewerHeader({
           </div>
         </div>
       </div>
-      
+
       {/* View mode switcher for mobile */}
       <div className="border-t border-white/5 px-4 py-2 lg:hidden">
         <div className="flex items-center gap-2 overflow-x-auto">
           {viewModes.map((mode) => {
             const Icon = mode.icon;
             const isActive = viewMode === mode.id;
-            
+
             return (
               <motion.button
                 key={mode.id}
                 {...microInteractions.buttonPress}
                 onClick={() => onViewModeChange(mode.id)}
                 className={cn(
-                  'flex items-center gap-2 whitespace-nowrap rounded-lg px-3 py-1.5',
+                  'flex items-center gap-2 rounded-lg px-3 py-1.5 whitespace-nowrap',
                   'text-xs font-medium transition-all',
-                  isActive ? [
-                    'bg-primary/20 text-primary',
-                    'border border-primary/30',
-                  ] : [
-                    'text-text-secondary',
-                    'border border-transparent',
-                  ],
+                  isActive
+                    ? ['bg-primary/20 text-primary', 'border-primary/30 border']
+                    : ['text-text-secondary', 'border border-transparent']
                 )}
               >
                 <Icon className="h-3.5 w-3.5" />

@@ -10,14 +10,15 @@ export const glassStyles = {
   medium: 'bg-white/[0.03] backdrop-blur-[8px] border border-white/[0.08]',
   strong: 'bg-white/[0.04] backdrop-blur-[10px] border border-white/[0.1]',
   intense: 'bg-white/[0.05] backdrop-blur-[12px] border border-white/[0.12]',
-  
+
   // Prismatic color shifts
   prism: {
-    hover: 'hover:bg-gradient-to-br hover:from-primary/[0.08] hover:via-secondary/[0.05] hover:to-primary/[0.08]',
+    hover:
+      'hover:bg-gradient-to-br hover:from-primary/[0.08] hover:via-secondary/[0.05] hover:to-primary/[0.08]',
     active: 'bg-gradient-to-br from-primary/[0.1] via-secondary/[0.06] to-primary/[0.1]',
     subtle: 'bg-gradient-to-br from-white/[0.04] via-primary/[0.02] to-white/[0.04]',
   },
-  
+
   // Depth hierarchy shadows - Softer for cleaner aesthetic (max 20% opacity)
   shadow: {
     none: '',
@@ -27,12 +28,15 @@ export const glassStyles = {
     xl: 'shadow-[0_16px_48px_rgba(0,0,0,0.12),0_8px_16px_rgba(0,0,0,0.06)]',
     glow: 'shadow-[0_0_40px_rgba(167,218,219,0.08),0_8px_32px_rgba(0,0,0,0.06)]',
   },
-  
+
   // Ambient light effects
   ambient: {
-    primary: 'before:absolute before:inset-0 before:bg-gradient-radial before:from-primary/[0.08] before:to-transparent before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-500',
-    secondary: 'before:absolute before:inset-0 before:bg-gradient-radial before:from-secondary/[0.08] before:to-transparent before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-500',
-    rainbow: 'before:absolute before:inset-0 before:bg-gradient-conic before:from-primary/[0.1] before:via-secondary/[0.1] before:to-primary/[0.1] before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-700 before:blur-xl',
+    primary:
+      'before:absolute before:inset-0 before:bg-gradient-radial before:from-primary/[0.08] before:to-transparent before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-500',
+    secondary:
+      'before:absolute before:inset-0 before:bg-gradient-radial before:from-secondary/[0.08] before:to-transparent before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-500',
+    rainbow:
+      'before:absolute before:inset-0 before:bg-gradient-conic before:from-primary/[0.1] before:via-secondary/[0.1] before:to-primary/[0.1] before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-700 before:blur-xl',
   },
 } as const;
 
@@ -69,7 +73,7 @@ export function createGlassEffect(options: {
     prism = false,
     ambient = null,
   } = options;
-  
+
   const classes = [
     `bg-white/[${opacity}]`,
     `backdrop-blur-${blur}`,
@@ -77,7 +81,9 @@ export function createGlassEffect(options: {
     glassStyles.shadow[shadow],
     prism && glassStyles.prism.subtle,
     ambient && glassStyles.ambient[ambient],
-  ].filter(Boolean).join(' ');
-  
+  ]
+    .filter(Boolean)
+    .join(' ');
+
   return classes;
 }

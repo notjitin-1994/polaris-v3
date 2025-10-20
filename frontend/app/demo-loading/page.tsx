@@ -73,7 +73,7 @@ function DemoContent(): React.JSX.Element {
   };
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-background">
+    <div className="bg-background relative min-h-screen overflow-hidden">
       {/* Animated Background Elements */}
       <div className="pointer-events-none absolute inset-0 z-0">
         {/* Primary gradient overlay */}
@@ -111,21 +111,28 @@ function DemoContent(): React.JSX.Element {
         {/* Sparkle effects */}
         {[...Array(6)].map((_, i) => {
           const topPositions = ['top-5', 'top-8', 'top-11', 'top-14', 'top-17', 'top-20'];
-          const leftPositions = ['left-2.5', 'left-10', 'left-2.5', 'left-10', 'left-2.5', 'left-10'];
+          const leftPositions = [
+            'left-2.5',
+            'left-10',
+            'left-2.5',
+            'left-10',
+            'left-2.5',
+            'left-10',
+          ];
 
           return (
             <motion.div
               key={i}
               className={`bg-primary/40 absolute h-1 w-1 rounded-full ${topPositions[i]} ${leftPositions[i]}`}
-            animate={{
-              opacity: [0, 1, 0],
-              scale: [0, 1, 0],
-            }}
-            transition={{
-              duration: 2,
-              repeat: Infinity,
-              delay: i * 0.3,
-            }}
+              animate={{
+                opacity: [0, 1, 0],
+                scale: [0, 1, 0],
+              }}
+              transition={{
+                duration: 2,
+                repeat: Infinity,
+                delay: i * 0.3,
+              }}
             />
           );
         })}
@@ -214,9 +221,7 @@ function DemoContent(): React.JSX.Element {
                 <div className="flex-1 text-center">
                   <h1 className="font-heading text-4xl font-bold tracking-tight text-white sm:text-5xl md:text-6xl lg:text-7xl">
                     <span>Analyzing </span>
-                    <span className="text-primary">
-                      Mission Data
-                    </span>
+                    <span className="text-primary">Mission Data</span>
                   </h1>
                 </div>
               </div>
@@ -256,9 +261,7 @@ function DemoContent(): React.JSX.Element {
                 <div className="flex-1 text-center">
                   <h1 className="font-heading text-4xl font-bold tracking-tight text-white sm:text-5xl md:text-6xl lg:text-7xl">
                     <span>Constructing </span>
-                    <span className="text-primary">
-                      Your Starmap
-                    </span>
+                    <span className="text-primary">Your Starmap</span>
                   </h1>
                 </div>
               </div>
@@ -413,9 +416,7 @@ function DemoContent(): React.JSX.Element {
               >
                 <div className="glass-strong rounded-full px-6 py-3 text-sm backdrop-blur-md">
                   <span className="text-text-secondary">Powered by </span>
-                  <span className="font-semibold text-primary">
-                    Solara
-                  </span>
+                  <span className="text-primary font-semibold">Solara</span>
                 </div>
               </motion.div>
             </motion.div>

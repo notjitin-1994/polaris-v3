@@ -17,7 +17,7 @@ describe('Blueprint Status Flow', () => {
   beforeEach(async () => {
     supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
     testUserId = 'test-user-' + Date.now();
-    
+
     // Create test blueprint
     const { data, error } = await supabase
       .from('blueprint_generator')
@@ -38,10 +38,7 @@ describe('Blueprint Status Flow', () => {
   afterEach(async () => {
     // Cleanup test data
     if (testBlueprintId) {
-      await supabase
-        .from('blueprint_generator')
-        .delete()
-        .eq('id', testBlueprintId);
+      await supabase.from('blueprint_generator').delete().eq('id', testBlueprintId);
     }
   });
 
@@ -52,7 +49,7 @@ describe('Blueprint Status Flow', () => {
       .select('*')
       .eq('id', testBlueprintId)
       .single();
-    
+
     expect(bp.data?.status).toBe('draft');
 
     // Step 2: Generate dynamic questions (status: 'generating')
@@ -64,9 +61,7 @@ describe('Blueprint Status Flow', () => {
           {
             id: 's1',
             title: 'Test Section',
-            questions: [
-              { id: 's1_q1', label: 'Test Question', type: 'text', required: true },
-            ],
+            questions: [{ id: 's1_q1', label: 'Test Question', type: 'text', required: true }],
           },
         ],
       })
@@ -77,7 +72,7 @@ describe('Blueprint Status Flow', () => {
       .select('status')
       .eq('id', testBlueprintId)
       .single();
-    
+
     expect(bp.data?.status).toBe('generating');
 
     // Step 3: Submit dynamic answers - status should NOT become 'completed'
@@ -89,12 +84,8 @@ describe('Blueprint Status Flow', () => {
       })
       .eq('id', testBlueprintId);
 
-    bp = await supabase
-      .from('blueprint_generator')
-      .select('*')
-      .eq('id', testBlueprintId)
-      .single();
-    
+    bp = await supabase.from('blueprint_generator').select('*').eq('id', testBlueprintId).single();
+
     // CRITICAL ASSERTION: Status should NOT be 'completed' yet
     expect(bp.data?.status).not.toBe('completed');
     expect(bp.data?.status).toBe('generating'); // Should remain in previous state
@@ -121,12 +112,8 @@ describe('Blueprint Status Flow', () => {
       })
       .eq('id', testBlueprintId);
 
-    bp = await supabase
-      .from('blueprint_generator')
-      .select('*')
-      .eq('id', testBlueprintId)
-      .single();
-    
+    bp = await supabase.from('blueprint_generator').select('*').eq('id', testBlueprintId).single();
+
     expect(bp.data?.status).toBe('completed');
     expect(bp.data?.blueprint_json).toBeDefined();
     expect(bp.data?.blueprint_json).not.toEqual({});
@@ -148,7 +135,7 @@ describe('Blueprint Status Flow', () => {
       .select('status')
       .eq('id', testBlueprintId)
       .single();
-    
+
     expect(bp.data?.status).toBe('answering');
   });
 
@@ -186,7 +173,7 @@ describe('Blueprint Status Flow', () => {
       .select('status')
       .eq('id', testBlueprintId)
       .single();
-    
+
     expect(bp.data?.status).toBe('error');
   });
 
@@ -225,7 +212,7 @@ describe('Blueprint Status Flow', () => {
       .select('*')
       .eq('id', testBlueprintId)
       .single();
-    
+
     expect(bp.data?.static_answers).toEqual(staticAnswers);
     expect(bp.data?.dynamic_questions).toEqual(dynamicQuestions);
     expect(bp.data?.dynamic_answers).toEqual(dynamicAnswers);
@@ -251,9 +238,9 @@ describe('Blueprint Status Flow', () => {
       .filter('blueprint_json', 'eq', '{}');
 
     expect(brokenBlueprints).toBeDefined();
-    
+
     // Should find at least our test blueprint
-    const foundBroken = brokenBlueprints?.some(bp => bp.id === testBlueprintId);
+    const foundBroken = brokenBlueprints?.some((bp) => bp.id === testBlueprintId);
     expect(foundBroken).toBe(true);
   });
 
@@ -284,7 +271,7 @@ describe('Blueprint Status Flow', () => {
       .select('status')
       .eq('id', testBlueprintId)
       .single();
-    
+
     expect(bp.data?.status).toBe('answering');
   });
 });

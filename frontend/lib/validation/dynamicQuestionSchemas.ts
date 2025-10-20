@@ -15,28 +15,28 @@ export const inputTypeSchema = z.enum([
   'textarea',
   'email',
   'url',
-  
+
   // Selection inputs (visual)
   'radio_pills',
   'checkbox_pills',
   'radio_cards',
   'checkbox_cards',
   'toggle_switch',
-  
+
   // Legacy selection (deprecated but supported)
   'select',
   'multiselect',
-  
+
   // Scale/slider inputs
   'scale',
   'enhanced_scale',
   'labeled_slider',
-  
+
   // Numeric inputs
   'currency',
   'number_spinner',
   'number',
-  
+
   // Date/time inputs
   'date',
 ]);
@@ -88,46 +88,48 @@ export type Option = z.infer<typeof optionSchema>;
 /**
  * Generate a standardized option value from a label
  * This creates consistent, URL-safe, lowercase values that are easy to match
- * 
+ *
  * Examples:
  * - "Knowledge Transfer" → "knowledge-transfer"
- * - "3-5 years" → "3-5-years"  
+ * - "3-5 years" → "3-5-years"
  * - "Very Satisfied" → "very-satisfied"
  */
 export function generateStandardOptionValue(label: string): string {
-  return label
-    .toLowerCase()
-    .trim()
-    // Replace multiple spaces/underscores with single hyphen
-    .replace(/[\s_]+/g, '-')
-    // Remove special characters except hyphens and alphanumerics
-    .replace(/[^a-z0-9-]/g, '')
-    // Remove duplicate hyphens
-    .replace(/-+/g, '-')
-    // Remove leading/trailing hyphens
-    .replace(/^-+|-+$/g, '');
+  return (
+    label
+      .toLowerCase()
+      .trim()
+      // Replace multiple spaces/underscores with single hyphen
+      .replace(/[\s_]+/g, '-')
+      // Remove special characters except hyphens and alphanumerics
+      .replace(/[^a-z0-9-]/g, '')
+      // Remove duplicate hyphens
+      .replace(/-+/g, '-')
+      // Remove leading/trailing hyphens
+      .replace(/^-+|-+$/g, '')
+  );
 }
 
 /**
  * Normalize option values to ensure consistency across generation
  * This prevents mismatches between generated values and submitted answers
- * 
+ *
  * If the value is already well-formatted, keep it. Otherwise, generate from label.
  */
 export function normalizeOptionValue(value: string, label?: string): string {
   const trimmedValue = value.trim();
-  
+
   // If value is already lowercase alphanumeric with hyphens, use it
   const isWellFormatted = /^[a-z0-9-]+$/.test(trimmedValue);
   if (isWellFormatted && trimmedValue.length > 0) {
     return trimmedValue;
   }
-  
+
   // Otherwise, generate standard value from label if available
   if (label && label.trim()) {
     return generateStandardOptionValue(label);
   }
-  
+
   // Fallback: normalize the value itself
   return generateStandardOptionValue(value);
 }
@@ -139,10 +141,10 @@ export function normalizeQuestionOptions(question: Question): Question {
   if (!question.options || question.options.length === 0) {
     return question;
   }
-  
+
   return {
     ...question,
-    options: question.options.map(opt => ({
+    options: question.options.map((opt) => ({
       ...opt,
       // Normalize value, using label as reference
       value: normalizeOptionValue(opt.value, opt.label),
@@ -158,7 +160,7 @@ export function normalizeQuestionOptions(question: Question): Question {
  * Normalize all questions in sections to ensure consistency
  */
 export function normalizeSectionQuestions(sections: Section[]): Section[] {
-  return sections.map(section => ({
+  return sections.map((section) => ({
     ...section,
     questions: section.questions.map(normalizeQuestionOptions),
   }));
@@ -209,17 +211,17 @@ export const questionSchema = z.object({
   placeholder: z.string().optional(),
   helpText: z.string().optional(),
   validation: z.array(validationRuleSchema).optional(),
-  
+
   // Options for selection inputs
   options: z.array(optionSchema).optional(),
   maxSelections: z.number().int().positive().optional(),
-  
+
   // Configurations for different input types
   scaleConfig: scaleConfigSchema.optional(),
   sliderConfig: sliderConfigSchema.optional(),
   numberConfig: numberConfigSchema.optional(),
   currencyConfig: currencyConfigSchema.optional(),
-  
+
   // Metadata
   metadata: z.record(z.unknown()).optional(),
 });
@@ -246,12 +248,14 @@ export type Section = z.infer<typeof sectionSchema>;
 
 export const dynamicQuestionsResponseSchema = z.object({
   sections: z.array(sectionSchema).min(1, 'At least one section is required'),
-  metadata: z.object({
-    generatedAt: z.string().optional(),
-    provider: z.string().optional(),
-    model: z.string().optional(),
-    duration: z.number().optional(),
-  }).optional(),
+  metadata: z
+    .object({
+      generatedAt: z.string().optional(),
+      provider: z.string().optional(),
+      model: z.string().optional(),
+      duration: z.number().optional(),
+    })
+    .optional(),
 });
 
 export type DynamicQuestionsResponse = z.infer<typeof dynamicQuestionsResponseSchema>;
@@ -265,10 +269,10 @@ export type DynamicQuestionsResponse = z.infer<typeof dynamicQuestionsResponseSc
  */
 export function createAnswerSchema(question: Question): z.ZodSchema {
   const { type, required, validation } = question;
-  
+
   // Base schema based on input type
   let schema: z.ZodSchema;
-  
+
   switch (type) {
     case 'text':
     case 'textarea':
@@ -282,50 +286,45 @@ export function createAnswerSchema(question: Question): z.ZodSchema {
         schema = z.string().url('Invalid URL');
       }
       break;
-      
+
     case 'radio_pills':
     case 'radio_cards':
     case 'toggle_switch':
     case 'select':
       schema = z.string();
       if (question.options) {
-        const validValues = question.options.map(opt => opt.value);
+        const validValues = question.options.map((opt) => opt.value);
         schema = z.enum(validValues as [string, ...string[]]);
       }
       break;
-      
+
     case 'checkbox_pills':
     case 'checkbox_cards':
     case 'multiselect':
       schema = z.array(z.string());
       if (question.options) {
-        const validValues = question.options.map(opt => opt.value);
+        const validValues = question.options.map((opt) => opt.value);
         schema = z.array(z.enum(validValues as [string, ...string[]]));
       }
       break;
-      
+
     case 'scale':
     case 'enhanced_scale':
       if (question.scaleConfig) {
-        schema = z.number()
-          .int()
-          .min(question.scaleConfig.min)
-          .max(question.scaleConfig.max);
+        schema = z.number().int().min(question.scaleConfig.min).max(question.scaleConfig.max);
       } else {
         schema = z.number().int();
       }
       break;
-      
+
     case 'labeled_slider':
       if (question.sliderConfig) {
-        schema = z.number()
-          .min(question.sliderConfig.min)
-          .max(question.sliderConfig.max);
+        schema = z.number().min(question.sliderConfig.min).max(question.sliderConfig.max);
       } else {
         schema = z.number();
       }
       break;
-      
+
     case 'currency':
     case 'number':
     case 'number_spinner':
@@ -347,17 +346,17 @@ export function createAnswerSchema(question: Question): z.ZodSchema {
         }
       }
       break;
-      
+
     case 'date':
       schema = z.string().refine((val) => !isNaN(Date.parse(val)), {
         message: 'Invalid date format',
       });
       break;
-      
+
     default:
       schema = z.unknown();
   }
-  
+
   // Apply validation rules
   if (validation) {
     validation.forEach((rule) => {
@@ -400,12 +399,12 @@ export function createAnswerSchema(question: Question): z.ZodSchema {
       }
     });
   }
-  
+
   // Make optional if not required
   if (!required) {
     schema = schema.optional();
   }
-  
+
   return schema;
 }
 
@@ -414,13 +413,13 @@ export function createAnswerSchema(question: Question): z.ZodSchema {
  */
 export function createAnswersSchema(sections: Section[]): z.ZodSchema {
   const shape: Record<string, z.ZodSchema> = {};
-  
+
   sections.forEach((section) => {
     section.questions.forEach((question) => {
       shape[question.id] = createAnswerSchema(question);
     });
   });
-  
+
   return z.object(shape);
 }
 
@@ -434,34 +433,30 @@ function normalizeAnswerValue(
   context: { type: 'single' | 'multi'; attemptNumber: number }
 ): { matched: string | null; confidence: 'exact' | 'normalized' | 'fuzzy' | 'none' } {
   const options = question.options || [];
-  const validValues = options.map(opt => opt.value);
-  const validLabels = options.map(opt => opt.label);
-  
+  const validValues = options.map((opt) => opt.value);
+  const validLabels = options.map((opt) => opt.label);
+
   // Strategy 1: Exact value match (highest confidence)
   if (validValues.includes(val)) {
     return { matched: val, confidence: 'exact' };
   }
-  
+
   // Strategy 2: Case-insensitive value match
   const lowerVal = val.toLowerCase().trim();
-  const caseInsensitiveMatch = options.find(opt => 
-    opt.value.toLowerCase().trim() === lowerVal
-  );
+  const caseInsensitiveMatch = options.find((opt) => opt.value.toLowerCase().trim() === lowerVal);
   if (caseInsensitiveMatch) {
     return { matched: caseInsensitiveMatch.value, confidence: 'normalized' };
   }
-  
+
   // Strategy 3: Label match (in case UI sent label instead of value)
-  const labelMatch = options.find(opt => 
-    opt.label.toLowerCase().trim() === lowerVal
-  );
+  const labelMatch = options.find((opt) => opt.label.toLowerCase().trim() === lowerVal);
   if (labelMatch) {
     return { matched: labelMatch.value, confidence: 'normalized' };
   }
-  
+
   // Strategy 4: Fuzzy match removing spaces, hyphens, underscores
   const normalizedVal = val.replace(/[\s_-]+/g, '').toLowerCase();
-  const fuzzyMatch = options.find(opt => {
+  const fuzzyMatch = options.find((opt) => {
     const normalizedOptValue = opt.value.replace(/[\s_-]+/g, '').toLowerCase();
     const normalizedOptLabel = opt.label.replace(/[\s_-]+/g, '').toLowerCase();
     return normalizedOptValue === normalizedVal || normalizedOptLabel === normalizedVal;
@@ -469,58 +464,60 @@ function normalizeAnswerValue(
   if (fuzzyMatch) {
     return { matched: fuzzyMatch.value, confidence: 'fuzzy' };
   }
-  
+
   // Strategy 5: Partial substring match (very forgiving - only for single values)
   if (context.type === 'single' && val.length > 3) {
-    const substringMatch = options.find(opt => {
+    const substringMatch = options.find((opt) => {
       const optValueLower = opt.value.toLowerCase();
       const optLabelLower = opt.label.toLowerCase();
-      return optValueLower.includes(lowerVal) || 
-             lowerVal.includes(optValueLower) ||
-             optLabelLower.includes(lowerVal) ||
-             lowerVal.includes(optLabelLower);
+      return (
+        optValueLower.includes(lowerVal) ||
+        lowerVal.includes(optValueLower) ||
+        optLabelLower.includes(lowerVal) ||
+        lowerVal.includes(optLabelLower)
+      );
     });
     if (substringMatch) {
       return { matched: substringMatch.value, confidence: 'fuzzy' };
     }
   }
-  
+
   // Strategy 6: For toggle switches, smart boolean matching
   if (question.type === 'toggle_switch' && options.length === 2) {
     const yesPatterns = ['yes', 'y', 'true', 't', '1', 'on', 'enabled', 'active', 'agree'];
     const noPatterns = ['no', 'n', 'false', 'f', '0', 'off', 'disabled', 'inactive', 'disagree'];
-    
+
     const valLower = lowerVal;
-    const isYesLike = yesPatterns.some(pattern => 
-      valLower === pattern || valLower.includes(pattern)
+    const isYesLike = yesPatterns.some(
+      (pattern) => valLower === pattern || valLower.includes(pattern)
     );
-    const isNoLike = noPatterns.some(pattern => 
-      valLower === pattern || valLower.includes(pattern)
+    const isNoLike = noPatterns.some(
+      (pattern) => valLower === pattern || valLower.includes(pattern)
     );
-    
+
     if (isYesLike) {
-      const yesOption = options.find(opt => {
+      const yesOption = options.find((opt) => {
         const optLower = opt.value.toLowerCase();
         const labelLower = opt.label.toLowerCase();
-        return yesPatterns.some(pattern => 
-          optLower.includes(pattern) || labelLower.includes(pattern)
+        return yesPatterns.some(
+          (pattern) => optLower.includes(pattern) || labelLower.includes(pattern)
         );
       });
       if (yesOption) return { matched: yesOption.value, confidence: 'fuzzy' };
     }
-    
+
     if (isNoLike) {
-      const noOption = options.find(opt => {
+      const noOption = options.find((opt) => {
         const optLower = opt.value.toLowerCase();
         const labelLower = opt.label.toLowerCase();
-        return noPatterns.some(pattern => 
-          optLower.includes(pattern) || labelLower.includes(pattern)
+        return noPatterns.some(
+          (pattern) => optLower.includes(pattern) || labelLower.includes(pattern)
         );
       });
       if (noOption) return { matched: noOption.value, confidence: 'fuzzy' };
     }
   }
-  
+
   return { matched: null, confidence: 'none' };
 }
 
@@ -532,107 +529,127 @@ function normalizeAnswerValue(
 function sanitizeAnswer(answer: unknown, question: Question): unknown {
   // For selection types with options, filter to only valid values
   const isMultiSelect = ['checkbox_pills', 'checkbox_cards', 'multiselect'].includes(question.type);
-  const isSingleSelect = ['radio_pills', 'radio_cards', 'toggle_switch', 'select'].includes(question.type);
-  
+  const isSingleSelect = ['radio_pills', 'radio_cards', 'toggle_switch', 'select'].includes(
+    question.type
+  );
+
   if (question.options && question.options.length > 0) {
-    const validValues = question.options.map(opt => opt.value);
-    const validLabels = question.options.map(opt => opt.label);
-    
+    const validValues = question.options.map((opt) => opt.value);
+    const validLabels = question.options.map((opt) => opt.label);
+
     if (isMultiSelect && Array.isArray(answer)) {
       // Ensure all array elements are strings
-      const stringArray = answer.map(val => String(val));
+      const stringArray = answer.map((val) => String(val));
       const matched: Array<{ original: string; normalized: string; confidence: string }> = [];
       const unmatched: string[] = [];
-      
+
       // Try to normalize each value
-      const normalized = stringArray.map((val, idx) => {
-        const result = normalizeAnswerValue(val, question, { 
-          type: 'multi', 
-          attemptNumber: idx + 1 
-        });
-        
-        if (result.matched) {
-          matched.push({
-            original: val,
-            normalized: result.matched,
-            confidence: result.confidence,
+      const normalized = stringArray
+        .map((val, idx) => {
+          const result = normalizeAnswerValue(val, question, {
+            type: 'multi',
+            attemptNumber: idx + 1,
           });
-          return result.matched;
-        } else {
-          unmatched.push(val);
-          return null;
-        }
-      }).filter((val): val is string => val !== null);
-      
+
+          if (result.matched) {
+            matched.push({
+              original: val,
+              normalized: result.matched,
+              confidence: result.confidence,
+            });
+            return result.matched;
+          } else {
+            unmatched.push(val);
+            return null;
+          }
+        })
+        .filter((val): val is string => val !== null);
+
       // Enhanced logging with actionable information
       if (unmatched.length > 0) {
-        console.warn(`[sanitizeAnswer] Some values could not be matched for question ${question.id}`, {
-          questionId: question.id,
-          questionLabel: question.label?.substring(0, 100),
-          questionType: question.type,
-          totalSubmitted: stringArray.length,
-          successfullyMatched: matched.length,
-          unmatchedCount: unmatched.length,
-          unmatchedValues: unmatched,
-          matchedMappings: matched.slice(0, 10),
-          availableOptions: question.options.map(opt => ({
-            value: opt.value,
-            label: opt.label,
-          })).slice(0, 10),
-          suggestedFix: unmatched.length > 0 ? 
-            'Check if question options were regenerated or if there\'s a mismatch between option values and submitted answers' : 
-            null,
-        });
-      } else if (matched.some(m => m.confidence !== 'exact')) {
-        console.info(`[sanitizeAnswer] Successfully normalized ${matched.length} values with fuzzy matching`, {
-          questionId: question.id,
-          normalizedMappings: matched.filter(m => m.confidence !== 'exact'),
-        });
+        console.warn(
+          `[sanitizeAnswer] Some values could not be matched for question ${question.id}`,
+          {
+            questionId: question.id,
+            questionLabel: question.label?.substring(0, 100),
+            questionType: question.type,
+            totalSubmitted: stringArray.length,
+            successfullyMatched: matched.length,
+            unmatchedCount: unmatched.length,
+            unmatchedValues: unmatched,
+            matchedMappings: matched.slice(0, 10),
+            availableOptions: question.options
+              .map((opt) => ({
+                value: opt.value,
+                label: opt.label,
+              }))
+              .slice(0, 10),
+            suggestedFix:
+              unmatched.length > 0
+                ? "Check if question options were regenerated or if there's a mismatch between option values and submitted answers"
+                : null,
+          }
+        );
+      } else if (matched.some((m) => m.confidence !== 'exact')) {
+        console.info(
+          `[sanitizeAnswer] Successfully normalized ${matched.length} values with fuzzy matching`,
+          {
+            questionId: question.id,
+            normalizedMappings: matched.filter((m) => m.confidence !== 'exact'),
+          }
+        );
       }
-      
+
       // CRITICAL: Always return an array, preserve as much user data as possible
       return normalized;
     } else if (isSingleSelect && answer !== undefined && answer !== null && answer !== '') {
       const answerStr = String(answer).trim();
-      
+
       // Use the normalized value matcher
-      const result = normalizeAnswerValue(answerStr, question, { 
-        type: 'single', 
-        attemptNumber: 1 
+      const result = normalizeAnswerValue(answerStr, question, {
+        type: 'single',
+        attemptNumber: 1,
       });
-      
+
       if (result.matched) {
         // Log if we did fuzzy matching
         if (result.confidence !== 'exact') {
-          console.info(`[sanitizeAnswer] Normalized single-select value for question ${question.id}`, {
-            questionId: question.id,
-            questionLabel: question.label?.substring(0, 100),
-            original: answerStr,
-            normalized: result.matched,
-            confidence: result.confidence,
-          });
+          console.info(
+            `[sanitizeAnswer] Normalized single-select value for question ${question.id}`,
+            {
+              questionId: question.id,
+              questionLabel: question.label?.substring(0, 100),
+              original: answerStr,
+              normalized: result.matched,
+              confidence: result.confidence,
+            }
+          );
         }
         return result.matched;
       }
-      
+
       // No match found - log detailed info for debugging
-      console.warn(`[sanitizeAnswer] Could not match single-select value for question ${question.id}`, {
-        questionId: question.id,
-        questionLabel: question.label?.substring(0, 100),
-        questionType: question.type,
-        submittedValue: answerStr,
-        availableOptions: question.options.map(opt => ({
-          value: opt.value,
-          label: opt.label,
-        })),
-        suggestedFix: 'Check if question options were regenerated or if submitted value format differs from expected',
-      });
-      
+      console.warn(
+        `[sanitizeAnswer] Could not match single-select value for question ${question.id}`,
+        {
+          questionId: question.id,
+          questionLabel: question.label?.substring(0, 100),
+          questionType: question.type,
+          submittedValue: answerStr,
+          availableOptions: question.options.map((opt) => ({
+            value: opt.value,
+            label: opt.label,
+          })),
+          suggestedFix:
+            'Check if question options were regenerated or if submitted value format differs from expected',
+        }
+      );
+
       // Return the original answer - validation will provide a clear error
       return answerStr;
     }
   }
-  
+
   // For non-selection types or when answer is already valid, return as-is
   return answer;
 }
@@ -646,7 +663,7 @@ export function validatePartialAnswers(
   sanitize: boolean = true
 ): { valid: boolean; errors: Record<string, string> } {
   const errors: Record<string, string> = {};
-  
+
   // Safety check for sections
   if (!sections || !Array.isArray(sections)) {
     return {
@@ -654,7 +671,7 @@ export function validatePartialAnswers(
       errors: { _general: 'Invalid sections structure' },
     };
   }
-  
+
   Object.entries(answers).forEach(([questionId, answer]) => {
     // Find the question
     let question: Question | undefined;
@@ -662,23 +679,23 @@ export function validatePartialAnswers(
       if (!section || !section.questions || !Array.isArray(section.questions)) {
         continue;
       }
-      question = section.questions.find(q => q.id === questionId);
+      question = section.questions.find((q) => q.id === questionId);
       if (question) break;
     }
-    
+
     if (!question) {
       errors[questionId] = 'Question not found';
       return;
     }
-    
+
     // Optionally sanitize answer to remove invalid options
     const answerToValidate = sanitize ? sanitizeAnswer(answer, question) : answer;
-    
+
     // Validate the answer
     try {
       const schema = createAnswerSchema(question);
       const result = schema.safeParse(answerToValidate);
-      
+
       if (!result.success) {
         // Extract and format error messages properly - NEVER use JSON.stringify on errors
         const zodErrors = result.error.errors;
@@ -688,21 +705,32 @@ export function validatePartialAnswers(
             const err = zodErrors[0];
             // Build a clear error message
             if (err.code === 'invalid_enum_value') {
-              const actualValue = Array.isArray(answer) && err.path && err.path.length > 0
-                ? answer[err.path[0] as number]
-                : answer;
-              
+              const actualValue =
+                Array.isArray(answer) && err.path && err.path.length > 0
+                  ? answer[err.path[0] as number]
+                  : answer;
+
               // Provide helpful context about valid options
               if (question.options && question.options.length > 0) {
-                const validOptions = question.options.map(opt => opt.label).slice(0, 5);
-                const moreOptions = question.options.length > 5 ? ` and ${question.options.length - 5} more` : '';
-                errors[questionId] = `"${actualValue}" is not a valid option. Please select from: ${validOptions.join(', ')}${moreOptions}`;
+                const validOptions = question.options.map((opt) => opt.label).slice(0, 5);
+                const moreOptions =
+                  question.options.length > 5 ? ` and ${question.options.length - 5} more` : '';
+                errors[questionId] =
+                  `"${actualValue}" is not a valid option. Please select from: ${validOptions.join(', ')}${moreOptions}`;
               } else {
                 errors[questionId] = `Invalid value "${actualValue}". ${err.message}`;
               }
-            } else if (err.code === 'too_small' && Array.isArray(answerToValidate) && answerToValidate.length === 0) {
+            } else if (
+              err.code === 'too_small' &&
+              Array.isArray(answerToValidate) &&
+              answerToValidate.length === 0
+            ) {
               errors[questionId] = 'Please select at least one option';
-            } else if (err.code === 'invalid_type' && err.expected === 'string' && err.received === 'undefined') {
+            } else if (
+              err.code === 'invalid_type' &&
+              err.expected === 'string' &&
+              err.received === 'undefined'
+            ) {
               errors[questionId] = 'Please select an option';
             } else {
               errors[questionId] = err.message;
@@ -712,9 +740,10 @@ export function validatePartialAnswers(
             const errorMessages = zodErrors.map((err, index) => {
               // Build clear error messages for each validation failure
               if (err.code === 'invalid_enum_value') {
-                const actualValue = Array.isArray(answer) && err.path && err.path.length > 0
-                  ? answer[err.path[0] as number]
-                  : answer;
+                const actualValue =
+                  Array.isArray(answer) && err.path && err.path.length > 0
+                    ? answer[err.path[0] as number]
+                    : answer;
                 return `"${actualValue}" is not a valid option`;
               } else if (err.code === 'too_small' || err.code === 'too_big') {
                 const pathStr = err.path && err.path.length > 0 ? `[${err.path.join('.')}] ` : '';
@@ -722,12 +751,18 @@ export function validatePartialAnswers(
               }
               return err.message;
             });
-            
+
             // Provide helpful context for multi-select questions
             if (question.type.includes('checkbox') || question.type === 'multiselect') {
-              const validOptions = question.options ? question.options.map(opt => opt.label).slice(0, 3) : [];
-              const moreOptions = question.options && question.options.length > 3 ? ` and ${question.options.length - 3} more` : '';
-              errors[questionId] = `Invalid selections. Please choose from: ${validOptions.join(', ')}${moreOptions}`;
+              const validOptions = question.options
+                ? question.options.map((opt) => opt.label).slice(0, 3)
+                : [];
+              const moreOptions =
+                question.options && question.options.length > 3
+                  ? ` and ${question.options.length - 3} more`
+                  : '';
+              errors[questionId] =
+                `Invalid selections. Please choose from: ${validOptions.join(', ')}${moreOptions}`;
             } else {
               errors[questionId] = errorMessages.join('; ');
             }
@@ -737,11 +772,12 @@ export function validatePartialAnswers(
         }
       }
     } catch (validationError) {
-      const errMsg = validationError instanceof Error ? validationError.message : 'Validation error occurred';
+      const errMsg =
+        validationError instanceof Error ? validationError.message : 'Validation error occurred';
       errors[questionId] = `Validation error: ${errMsg}`;
     }
   });
-  
+
   return {
     valid: Object.keys(errors).length === 0,
     errors,
@@ -755,11 +791,16 @@ export function validateCompleteAnswers(
   answers: Record<string, unknown>,
   sections: Section[],
   sanitize: boolean = true
-): { valid: boolean; errors: Record<string, string>; missingRequired: string[]; sanitizedAnswers?: Record<string, unknown> } {
+): {
+  valid: boolean;
+  errors: Record<string, string>;
+  missingRequired: string[];
+  sanitizedAnswers?: Record<string, unknown>;
+} {
   const errors: Record<string, string> = {};
   const missingRequired: string[] = [];
   const sanitizedAnswers: Record<string, unknown> = {};
-  
+
   // Safety check for sections
   if (!sections || !Array.isArray(sections)) {
     return {
@@ -768,7 +809,7 @@ export function validateCompleteAnswers(
       missingRequired: [],
     };
   }
-  
+
   // Sanitize all answers if requested
   if (sanitize) {
     Object.entries(answers).forEach(([questionId, answer]) => {
@@ -778,10 +819,10 @@ export function validateCompleteAnswers(
         if (!section || !section.questions || !Array.isArray(section.questions)) {
           continue;
         }
-        question = section.questions.find(q => q.id === questionId);
+        question = section.questions.find((q) => q.id === questionId);
         if (question) break;
       }
-      
+
       if (question) {
         sanitizedAnswers[questionId] = sanitizeAnswer(answer, question);
       } else {
@@ -791,51 +832,58 @@ export function validateCompleteAnswers(
   } else {
     Object.assign(sanitizedAnswers, answers);
   }
-  
+
   // Check all required questions are answered (using sanitized values)
   sections.forEach((section) => {
     if (!section || !section.questions || !Array.isArray(section.questions)) {
       return;
     }
-    
+
     section.questions.forEach((question) => {
       if (question && question.required) {
         const answer = sanitizedAnswers[question.id];
         const originalAnswer = answers[question.id];
-        
+
         // Check for empty arrays in addition to undefined/null/empty string
-        const isEmpty = answer === undefined || 
-                       answer === null || 
-                       answer === '' ||
-                       (Array.isArray(answer) && answer.length === 0);
-        
+        const isEmpty =
+          answer === undefined ||
+          answer === null ||
+          answer === '' ||
+          (Array.isArray(answer) && answer.length === 0);
+
         if (isEmpty) {
           // If original answer existed but sanitization cleared it, provide helpful error
           if (originalAnswer !== undefined && originalAnswer !== null && originalAnswer !== '') {
-            const answerPreview = Array.isArray(originalAnswer) 
+            const answerPreview = Array.isArray(originalAnswer)
               ? `[${(originalAnswer as any[]).slice(0, 3).join(', ')}${(originalAnswer as any[]).length > 3 ? '...' : ''}]`
               : String(originalAnswer).substring(0, 50);
-            
+
             // Provide specific guidance based on question type
             if (question.options && question.options.length > 0) {
-              const validOptions = question.options.map(opt => opt.label).slice(0, 5);
-              const moreOptions = question.options.length > 5 ? ` and ${question.options.length - 5} more` : '';
-              
+              const validOptions = question.options.map((opt) => opt.label).slice(0, 5);
+              const moreOptions =
+                question.options.length > 5 ? ` and ${question.options.length - 5} more` : '';
+
               if (question.type === 'toggle_switch') {
-                errors[question.id] = `Your previous answer "${answerPreview}" is no longer valid. This question may have been updated. Please select from the current options.`;
+                errors[question.id] =
+                  `Your previous answer "${answerPreview}" is no longer valid. This question may have been updated. Please select from the current options.`;
               } else if (question.type.includes('checkbox') || question.type === 'multiselect') {
                 // Check if this is likely a question regeneration issue
                 const originalArray = Array.isArray(originalAnswer) ? originalAnswer : [];
                 if (originalArray.length > 0) {
-                  errors[question.id] = `Your previous selections (${originalArray.length} items) are no longer valid. The question options may have changed. Please make new selections from: ${validOptions.join(', ')}${moreOptions}`;
+                  errors[question.id] =
+                    `Your previous selections (${originalArray.length} items) are no longer valid. The question options may have changed. Please make new selections from: ${validOptions.join(', ')}${moreOptions}`;
                 } else {
-                  errors[question.id] = `Your selections "${answerPreview}" don't match available options. Please choose from: ${validOptions.join(', ')}${moreOptions}`;
+                  errors[question.id] =
+                    `Your selections "${answerPreview}" don't match available options. Please choose from: ${validOptions.join(', ')}${moreOptions}`;
                 }
               } else {
-                errors[question.id] = `Your previous answer "${answerPreview}" is no longer valid. Please select from: ${validOptions.join(', ')}${moreOptions}`;
+                errors[question.id] =
+                  `Your previous answer "${answerPreview}" is no longer valid. Please select from: ${validOptions.join(', ')}${moreOptions}`;
               }
             } else {
-              errors[question.id] = `Your answer "${answerPreview}" doesn't match the current question format. Please re-enter your answer.`;
+              errors[question.id] =
+                `Your answer "${answerPreview}" doesn't match the current question format. Please re-enter your answer.`;
             }
           } else {
             errors[question.id] = 'This field is required';
@@ -845,11 +893,11 @@ export function validateCompleteAnswers(
       }
     });
   });
-  
+
   // Validate all provided answers (using sanitized version)
   const partialValidation = validatePartialAnswers(sanitizedAnswers, sections, false); // Already sanitized
   Object.assign(errors, partialValidation.errors);
-  
+
   return {
     valid: Object.keys(errors).length === 0 && missingRequired.length === 0,
     errors,

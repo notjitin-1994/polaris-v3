@@ -66,52 +66,262 @@ const KNOWLEDGE_LEVELS = [
 const CURRENCIES = {
   // North America
   USD: { symbol: '$', locale: 'en-US', maxValue: 4999999, label: 'Under $5M', name: 'US Dollar' },
-  CAD: { symbol: 'C$', locale: 'en-CA', maxValue: 6500000, label: 'Under C$6.5M', name: 'Canadian Dollar' },
-  MXN: { symbol: '$', locale: 'es-MX', maxValue: 90000000, label: 'Under $90M', name: 'Mexican Peso' },
+  CAD: {
+    symbol: 'C$',
+    locale: 'en-CA',
+    maxValue: 6500000,
+    label: 'Under C$6.5M',
+    name: 'Canadian Dollar',
+  },
+  MXN: {
+    symbol: '$',
+    locale: 'es-MX',
+    maxValue: 90000000,
+    label: 'Under $90M',
+    name: 'Mexican Peso',
+  },
 
   // Europe
   EUR: { symbol: '€', locale: 'de-DE', maxValue: 4500000, label: 'Under €4.5M', name: 'Euro' },
-  GBP: { symbol: '£', locale: 'en-GB', maxValue: 4000000, label: 'Under £4M', name: 'British Pound' },
-  CHF: { symbol: 'CHF', locale: 'de-CH', maxValue: 4500000, label: 'Under CHF 4.5M', name: 'Swiss Franc' },
-  SEK: { symbol: 'kr', locale: 'sv-SE', maxValue: 50000000, label: 'Under 50M kr', name: 'Swedish Krona' },
-  NOK: { symbol: 'kr', locale: 'nb-NO', maxValue: 50000000, label: 'Under 50M kr', name: 'Norwegian Krone' },
-  DKK: { symbol: 'kr', locale: 'da-DK', maxValue: 35000000, label: 'Under 35M kr', name: 'Danish Krone' },
-  PLN: { symbol: 'zł', locale: 'pl-PL', maxValue: 20000000, label: 'Under 20M zł', name: 'Polish Złoty' },
-  CZK: { symbol: 'Kč', locale: 'cs-CZ', maxValue: 110000000, label: 'Under 110M Kč', name: 'Czech Koruna' },
-  HUF: { symbol: 'Ft', locale: 'hu-HU', maxValue: 1800000000, label: 'Under 1.8B Ft', name: 'Hungarian Forint' },
+  GBP: {
+    symbol: '£',
+    locale: 'en-GB',
+    maxValue: 4000000,
+    label: 'Under £4M',
+    name: 'British Pound',
+  },
+  CHF: {
+    symbol: 'CHF',
+    locale: 'de-CH',
+    maxValue: 4500000,
+    label: 'Under CHF 4.5M',
+    name: 'Swiss Franc',
+  },
+  SEK: {
+    symbol: 'kr',
+    locale: 'sv-SE',
+    maxValue: 50000000,
+    label: 'Under 50M kr',
+    name: 'Swedish Krona',
+  },
+  NOK: {
+    symbol: 'kr',
+    locale: 'nb-NO',
+    maxValue: 50000000,
+    label: 'Under 50M kr',
+    name: 'Norwegian Krone',
+  },
+  DKK: {
+    symbol: 'kr',
+    locale: 'da-DK',
+    maxValue: 35000000,
+    label: 'Under 35M kr',
+    name: 'Danish Krone',
+  },
+  PLN: {
+    symbol: 'zł',
+    locale: 'pl-PL',
+    maxValue: 20000000,
+    label: 'Under 20M zł',
+    name: 'Polish Złoty',
+  },
+  CZK: {
+    symbol: 'Kč',
+    locale: 'cs-CZ',
+    maxValue: 110000000,
+    label: 'Under 110M Kč',
+    name: 'Czech Koruna',
+  },
+  HUF: {
+    symbol: 'Ft',
+    locale: 'hu-HU',
+    maxValue: 1800000000,
+    label: 'Under 1.8B Ft',
+    name: 'Hungarian Forint',
+  },
 
   // Asia-Pacific
-  AUD: { symbol: 'A$', locale: 'en-AU', maxValue: 7000000, label: 'Under A$7M', name: 'Australian Dollar' },
-  NZD: { symbol: 'NZ$', locale: 'en-NZ', maxValue: 8000000, label: 'Under NZ$8M', name: 'New Zealand Dollar' },
-  JPY: { symbol: '¥', locale: 'ja-JP', maxValue: 700000000, label: 'Under ¥700M', name: 'Japanese Yen' },
-  CNY: { symbol: '¥', locale: 'zh-CN', maxValue: 35000000, label: 'Under ¥35M', name: 'Chinese Yuan' },
-  HKD: { symbol: 'HK$', locale: 'zh-HK', maxValue: 39000000, label: 'Under HK$39M', name: 'Hong Kong Dollar' },
-  SGD: { symbol: 'S$', locale: 'en-SG', maxValue: 7000000, label: 'Under S$7M', name: 'Singapore Dollar' },
-  KRW: { symbol: '₩', locale: 'ko-KR', maxValue: 6000000000, label: 'Under ₩6B', name: 'South Korean Won' },
-  INR: { symbol: '₹', locale: 'en-IN', maxValue: 410000000, label: 'Under ₹410M', name: 'Indian Rupee' },
-  THB: { symbol: '฿', locale: 'th-TH', maxValue: 180000000, label: 'Under ฿180M', name: 'Thai Baht' },
-  MYR: { symbol: 'RM', locale: 'ms-MY', maxValue: 22000000, label: 'Under RM22M', name: 'Malaysian Ringgit' },
-  IDR: { symbol: 'Rp', locale: 'id-ID', maxValue: 75000000000, label: 'Under Rp75B', name: 'Indonesian Rupiah' },
-  PHP: { symbol: '₱', locale: 'en-PH', maxValue: 280000000, label: 'Under ₱280M', name: 'Philippine Peso' },
+  AUD: {
+    symbol: 'A$',
+    locale: 'en-AU',
+    maxValue: 7000000,
+    label: 'Under A$7M',
+    name: 'Australian Dollar',
+  },
+  NZD: {
+    symbol: 'NZ$',
+    locale: 'en-NZ',
+    maxValue: 8000000,
+    label: 'Under NZ$8M',
+    name: 'New Zealand Dollar',
+  },
+  JPY: {
+    symbol: '¥',
+    locale: 'ja-JP',
+    maxValue: 700000000,
+    label: 'Under ¥700M',
+    name: 'Japanese Yen',
+  },
+  CNY: {
+    symbol: '¥',
+    locale: 'zh-CN',
+    maxValue: 35000000,
+    label: 'Under ¥35M',
+    name: 'Chinese Yuan',
+  },
+  HKD: {
+    symbol: 'HK$',
+    locale: 'zh-HK',
+    maxValue: 39000000,
+    label: 'Under HK$39M',
+    name: 'Hong Kong Dollar',
+  },
+  SGD: {
+    symbol: 'S$',
+    locale: 'en-SG',
+    maxValue: 7000000,
+    label: 'Under S$7M',
+    name: 'Singapore Dollar',
+  },
+  KRW: {
+    symbol: '₩',
+    locale: 'ko-KR',
+    maxValue: 6000000000,
+    label: 'Under ₩6B',
+    name: 'South Korean Won',
+  },
+  INR: {
+    symbol: '₹',
+    locale: 'en-IN',
+    maxValue: 410000000,
+    label: 'Under ₹410M',
+    name: 'Indian Rupee',
+  },
+  THB: {
+    symbol: '฿',
+    locale: 'th-TH',
+    maxValue: 180000000,
+    label: 'Under ฿180M',
+    name: 'Thai Baht',
+  },
+  MYR: {
+    symbol: 'RM',
+    locale: 'ms-MY',
+    maxValue: 22000000,
+    label: 'Under RM22M',
+    name: 'Malaysian Ringgit',
+  },
+  IDR: {
+    symbol: 'Rp',
+    locale: 'id-ID',
+    maxValue: 75000000000,
+    label: 'Under Rp75B',
+    name: 'Indonesian Rupiah',
+  },
+  PHP: {
+    symbol: '₱',
+    locale: 'en-PH',
+    maxValue: 280000000,
+    label: 'Under ₱280M',
+    name: 'Philippine Peso',
+  },
 
   // Middle East & Africa
-  SAR: { symbol: '﷼', locale: 'ar-SA', maxValue: 19000000, label: 'Under ﷼19M', name: 'Saudi Riyal' },
-  AED: { symbol: 'د.إ', locale: 'ar-AE', maxValue: 18500000, label: 'Under د.إ18.5M', name: 'UAE Dirham' },
-  ILS: { symbol: '₪', locale: 'he-IL', maxValue: 19000000, label: 'Under ₪19M', name: 'Israeli Shekel' },
-  ZAR: { symbol: 'R', locale: 'en-ZA', maxValue: 90000000, label: 'Under R90M', name: 'South African Rand' },
-  EGP: { symbol: '£', locale: 'ar-EG', maxValue: 240000000, label: 'Under £240M', name: 'Egyptian Pound' },
+  SAR: {
+    symbol: '﷼',
+    locale: 'ar-SA',
+    maxValue: 19000000,
+    label: 'Under ﷼19M',
+    name: 'Saudi Riyal',
+  },
+  AED: {
+    symbol: 'د.إ',
+    locale: 'ar-AE',
+    maxValue: 18500000,
+    label: 'Under د.إ18.5M',
+    name: 'UAE Dirham',
+  },
+  ILS: {
+    symbol: '₪',
+    locale: 'he-IL',
+    maxValue: 19000000,
+    label: 'Under ₪19M',
+    name: 'Israeli Shekel',
+  },
+  ZAR: {
+    symbol: 'R',
+    locale: 'en-ZA',
+    maxValue: 90000000,
+    label: 'Under R90M',
+    name: 'South African Rand',
+  },
+  EGP: {
+    symbol: '£',
+    locale: 'ar-EG',
+    maxValue: 240000000,
+    label: 'Under £240M',
+    name: 'Egyptian Pound',
+  },
 
   // South America
-  BRL: { symbol: 'R$', locale: 'pt-BR', maxValue: 25000000, label: 'Under R$25M', name: 'Brazilian Real' },
-  ARS: { symbol: '$', locale: 'es-AR', maxValue: 2500000000, label: 'Under $2.5B', name: 'Argentine Peso' },
-  CLP: { symbol: '$', locale: 'es-CL', maxValue: 4000000000, label: 'Under $4B', name: 'Chilean Peso' },
-  COP: { symbol: '$', locale: 'es-CO', maxValue: 25000000000, label: 'Under $25B', name: 'Colombian Peso' },
-  PEN: { symbol: 'S/', locale: 'es-PE', maxValue: 19000000, label: 'Under S/19M', name: 'Peruvian Sol' },
+  BRL: {
+    symbol: 'R$',
+    locale: 'pt-BR',
+    maxValue: 25000000,
+    label: 'Under R$25M',
+    name: 'Brazilian Real',
+  },
+  ARS: {
+    symbol: '$',
+    locale: 'es-AR',
+    maxValue: 2500000000,
+    label: 'Under $2.5B',
+    name: 'Argentine Peso',
+  },
+  CLP: {
+    symbol: '$',
+    locale: 'es-CL',
+    maxValue: 4000000000,
+    label: 'Under $4B',
+    name: 'Chilean Peso',
+  },
+  COP: {
+    symbol: '$',
+    locale: 'es-CO',
+    maxValue: 25000000000,
+    label: 'Under $25B',
+    name: 'Colombian Peso',
+  },
+  PEN: {
+    symbol: 'S/',
+    locale: 'es-PE',
+    maxValue: 19000000,
+    label: 'Under S/19M',
+    name: 'Peruvian Sol',
+  },
 
   // Other Major Currencies
-  RUB: { symbol: '₽', locale: 'ru-RU', maxValue: 450000000, label: 'Under ₽450M', name: 'Russian Ruble' },
-  TRY: { symbol: '₺', locale: 'tr-TR', maxValue: 140000000, label: 'Under ₺140M', name: 'Turkish Lira' },
-  ZMW: { symbol: 'ZK', locale: 'en-ZM', maxValue: 130000000, label: 'Under ZK130M', name: 'Zambian Kwacha' },
+  RUB: {
+    symbol: '₽',
+    locale: 'ru-RU',
+    maxValue: 450000000,
+    label: 'Under ₽450M',
+    name: 'Russian Ruble',
+  },
+  TRY: {
+    symbol: '₺',
+    locale: 'tr-TR',
+    maxValue: 140000000,
+    label: 'Under ₺140M',
+    name: 'Turkish Lira',
+  },
+  ZMW: {
+    symbol: 'ZK',
+    locale: 'en-ZM',
+    maxValue: 130000000,
+    label: 'Under ZK130M',
+    name: 'Zambian Kwacha',
+  },
 };
 
 export function LearningGapSection(): React.JSX.Element {
@@ -125,7 +335,8 @@ export function LearningGapSection(): React.JSX.Element {
   const watchedValues = watch();
 
   // Get current currency and its configuration with proper null checks
-  const currentCurrency = watchedValues?.section_3_learning_gap?.budget_available?.currency || 'USD';
+  const currentCurrency =
+    watchedValues?.section_3_learning_gap?.budget_available?.currency || 'USD';
   const currencyConfig = CURRENCIES[currentCurrency as keyof typeof CURRENCIES] || CURRENCIES.USD;
 
   // Format number according to currency
@@ -190,36 +401,39 @@ export function LearningGapSection(): React.JSX.Element {
           <label className="text-foreground block text-[15px] leading-tight font-medium">
             Total Number of Learners
           </label>
-          <span className="text-xs text-primary bg-primary/20 px-2 py-1 rounded-full border border-primary/30 shadow-md shadow-primary/25">
+          <span className="text-primary bg-primary/20 border-primary/30 shadow-primary/25 rounded-full border px-2 py-1 text-xs shadow-md">
             Select one
           </span>
         </div>
 
         <div className="flex flex-wrap gap-3">
           {LEARNER_COUNT_RANGES.map((range) => {
-            const isSelected = watchedValues?.section_3_learning_gap?.total_learners_range === range.value;
+            const isSelected =
+              watchedValues?.section_3_learning_gap?.total_learners_range === range.value;
             return (
               <button
                 key={range.value}
                 type="button"
                 onClick={() => setValue('section_3_learning_gap.total_learners_range', range.value)}
                 className={cn(
-                  'relative px-5 py-3 rounded-full text-sm font-medium transition-all duration-200 border-2',
+                  'relative rounded-full border-2 px-5 py-3 text-sm font-medium transition-all duration-200',
                   'hover:scale-105 active:scale-95',
                   isSelected
-                    ? 'bg-primary text-primary-foreground border-primary shadow-lg ring-2 ring-primary/40'
-                    : 'bg-transparent text-white/80 border-white/30 hover:bg-white/10 hover:border-white/50'
+                    ? 'bg-primary text-primary-foreground border-primary ring-primary/40 shadow-lg ring-2'
+                    : 'border-white/30 bg-transparent text-white/80 hover:border-white/50 hover:bg-white/10'
                 )}
               >
                 <span className="flex items-center gap-2">
-                  <span className={cn(
-                    'w-3 h-3 rounded-full border-2 transition-all duration-200',
-                    isSelected
-                      ? 'bg-teal-400 border-teal-400 shadow-sm'
-                      : 'border-white/60 bg-white/20'
-                  )}>
+                  <span
+                    className={cn(
+                      'h-3 w-3 rounded-full border-2 transition-all duration-200',
+                      isSelected
+                        ? 'border-teal-400 bg-teal-400 shadow-sm'
+                        : 'border-white/60 bg-white/20'
+                    )}
+                  >
                     {isSelected && (
-                      <span className="w-full h-full rounded-full bg-teal-400 scale-75 animate-pulse" />
+                      <span className="h-full w-full scale-75 animate-pulse rounded-full bg-teal-400" />
                     )}
                   </span>
                   {range.label}
@@ -232,9 +446,15 @@ export function LearningGapSection(): React.JSX.Element {
         {errors.section_3_learning_gap?.total_learners_range && (
           <div className="animate-fade-in text-error flex items-start gap-2 text-[13px] font-medium">
             <svg className="mt-0.5 h-4 w-4 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+              <path
+                fillRule="evenodd"
+                d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                clipRule="evenodd"
+              />
             </svg>
-            <span className="leading-tight">{errors.section_3_learning_gap.total_learners_range.message}</span>
+            <span className="leading-tight">
+              {errors.section_3_learning_gap.total_learners_range.message}
+            </span>
           </div>
         )}
       </div>
@@ -245,7 +465,7 @@ export function LearningGapSection(): React.JSX.Element {
           <label className="text-foreground block text-[15px] leading-tight font-medium">
             Current Knowledge Level
           </label>
-          <span className="text-xs text-primary bg-primary/20 px-2 py-1 rounded-full border border-primary/30 shadow-md shadow-primary/25">
+          <span className="text-primary bg-primary/20 border-primary/30 shadow-primary/25 rounded-full border px-2 py-1 text-xs shadow-md">
             Select one
           </span>
         </div>
@@ -253,29 +473,34 @@ export function LearningGapSection(): React.JSX.Element {
         {/* Knowledge Level Options */}
         <div className="flex flex-wrap gap-3">
           {KNOWLEDGE_LEVELS.map((level) => {
-            const isSelected = watchedValues?.section_3_learning_gap?.current_knowledge_level === level.value;
+            const isSelected =
+              watchedValues?.section_3_learning_gap?.current_knowledge_level === level.value;
             return (
               <button
                 key={level.value}
                 type="button"
-                onClick={() => setValue('section_3_learning_gap.current_knowledge_level', level.value)}
+                onClick={() =>
+                  setValue('section_3_learning_gap.current_knowledge_level', level.value)
+                }
                 className={cn(
-                  'relative px-5 py-3 rounded-full text-sm font-medium transition-all duration-200 border-2',
+                  'relative rounded-full border-2 px-5 py-3 text-sm font-medium transition-all duration-200',
                   'hover:scale-105 active:scale-95',
                   isSelected
-                    ? 'bg-primary text-primary-foreground border-primary shadow-lg ring-2 ring-primary/40'
-                    : 'bg-transparent text-white/80 border-white/30 hover:bg-white/10 hover:border-white/50'
+                    ? 'bg-primary text-primary-foreground border-primary ring-primary/40 shadow-lg ring-2'
+                    : 'border-white/30 bg-transparent text-white/80 hover:border-white/50 hover:bg-white/10'
                 )}
               >
                 <span className="flex items-center gap-2">
-                  <span className={cn(
-                    'w-3 h-3 rounded-full border-2 transition-all duration-200',
-                    isSelected
-                      ? 'bg-teal-400 border-teal-400 shadow-sm'
-                      : 'border-white/60 bg-white/20'
-                  )}>
+                  <span
+                    className={cn(
+                      'h-3 w-3 rounded-full border-2 transition-all duration-200',
+                      isSelected
+                        ? 'border-teal-400 bg-teal-400 shadow-sm'
+                        : 'border-white/60 bg-white/20'
+                    )}
+                  >
                     {isSelected && (
-                      <span className="w-full h-full rounded-full bg-teal-400 scale-75 animate-pulse" />
+                      <span className="h-full w-full scale-75 animate-pulse rounded-full bg-teal-400" />
                     )}
                   </span>
                   {level.label}
@@ -288,9 +513,15 @@ export function LearningGapSection(): React.JSX.Element {
         {errors.section_3_learning_gap?.current_knowledge_level && (
           <div className="animate-fade-in text-error flex items-start gap-2 text-[13px] font-medium">
             <svg className="mt-0.5 h-4 w-4 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+              <path
+                fillRule="evenodd"
+                d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                clipRule="evenodd"
+              />
             </svg>
-            <span className="leading-tight">{errors.section_3_learning_gap.current_knowledge_level.message}</span>
+            <span className="leading-tight">
+              {errors.section_3_learning_gap.current_knowledge_level.message}
+            </span>
           </div>
         )}
       </div>
@@ -301,30 +532,36 @@ export function LearningGapSection(): React.JSX.Element {
           <label className="text-foreground block text-[15px] leading-tight font-medium">
             Motivation Factors
           </label>
-          <span className="text-xs text-white/60 bg-white/10 px-2 py-1 rounded-full">
+          <span className="rounded-full bg-white/10 px-2 py-1 text-xs text-white/60">
             Select all that apply
           </span>
         </div>
         <div className="flex flex-wrap gap-3">
           {MOTIVATION_FACTORS.map((factor) => {
-            const isSelected = watchedValues?.section_3_learning_gap?.motivation_factors?.includes(factor.value) || false;
+            const isSelected =
+              watchedValues?.section_3_learning_gap?.motivation_factors?.includes(factor.value) ||
+              false;
             return (
               <button
                 key={factor.value}
                 type="button"
                 onClick={() => handleMotivationChange(factor.value, !isSelected)}
                 className={cn(
-                  'relative px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 border',
+                  'relative rounded-lg border px-4 py-2 text-sm font-medium transition-all duration-200',
                   'hover:scale-105 active:scale-95',
                   isSelected
-                    ? 'bg-primary text-primary-foreground border-primary shadow-lg ring-2 ring-primary/30'
-                    : 'bg-white/10 text-white/80 border-white/20 hover:bg-white/20 hover:border-white/30'
+                    ? 'bg-primary text-primary-foreground border-primary ring-primary/30 shadow-lg ring-2'
+                    : 'border-white/20 bg-white/10 text-white/80 hover:border-white/30 hover:bg-white/20'
                 )}
               >
                 <span className="flex items-center gap-2">
                   {isSelected && (
-                    <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                    <svg className="h-3 w-3" fill="currentColor" viewBox="0 0 20 20">
+                      <path
+                        fillRule="evenodd"
+                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                        clipRule="evenodd"
+                      />
                     </svg>
                   )}
                   {factor.label}
@@ -336,9 +573,15 @@ export function LearningGapSection(): React.JSX.Element {
         {errors.section_3_learning_gap?.motivation_factors && (
           <div className="animate-fade-in text-error flex items-start gap-2 text-[13px] font-medium">
             <svg className="mt-0.5 h-4 w-4 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+              <path
+                fillRule="evenodd"
+                d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                clipRule="evenodd"
+              />
             </svg>
-            <span className="leading-tight">{errors.section_3_learning_gap.motivation_factors.message}</span>
+            <span className="leading-tight">
+              {errors.section_3_learning_gap.motivation_factors.message}
+            </span>
           </div>
         )}
       </div>
@@ -349,30 +592,36 @@ export function LearningGapSection(): React.JSX.Element {
           <label className="text-foreground block text-[15px] leading-tight font-medium">
             Learning Location Preferences
           </label>
-          <span className="text-xs text-white/60 bg-white/10 px-2 py-1 rounded-full">
+          <span className="rounded-full bg-white/10 px-2 py-1 text-xs text-white/60">
             Select all that apply
           </span>
         </div>
         <div className="flex flex-wrap gap-3">
           {LEARNING_LOCATIONS.map((location) => {
-            const isSelected = watchedValues?.section_3_learning_gap?.learning_location?.includes(location.value) || false;
+            const isSelected =
+              watchedValues?.section_3_learning_gap?.learning_location?.includes(location.value) ||
+              false;
             return (
               <button
                 key={location.value}
                 type="button"
                 onClick={() => handleLocationChange(location.value, !isSelected)}
                 className={cn(
-                  'relative px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 border',
+                  'relative rounded-lg border px-4 py-2 text-sm font-medium transition-all duration-200',
                   'hover:scale-105 active:scale-95',
                   isSelected
-                    ? 'bg-primary text-primary-foreground border-primary shadow-lg ring-2 ring-primary/30'
-                    : 'bg-white/10 text-white/80 border-white/20 hover:bg-white/20 hover:border-white/30'
+                    ? 'bg-primary text-primary-foreground border-primary ring-primary/30 shadow-lg ring-2'
+                    : 'border-white/20 bg-white/10 text-white/80 hover:border-white/30 hover:bg-white/20'
                 )}
               >
                 <span className="flex items-center gap-2">
                   {isSelected && (
-                    <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                    <svg className="h-3 w-3" fill="currentColor" viewBox="0 0 20 20">
+                      <path
+                        fillRule="evenodd"
+                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                        clipRule="evenodd"
+                      />
                     </svg>
                   )}
                   {location.label}
@@ -384,9 +633,15 @@ export function LearningGapSection(): React.JSX.Element {
         {errors.section_3_learning_gap?.learning_location && (
           <div className="animate-fade-in text-error flex items-start gap-2 text-[13px] font-medium">
             <svg className="mt-0.5 h-4 w-4 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+              <path
+                fillRule="evenodd"
+                d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                clipRule="evenodd"
+              />
             </svg>
-            <span className="leading-tight">{errors.section_3_learning_gap.learning_location.message}</span>
+            <span className="leading-tight">
+              {errors.section_3_learning_gap.learning_location.message}
+            </span>
           </div>
         )}
       </div>
@@ -397,30 +652,35 @@ export function LearningGapSection(): React.JSX.Element {
           <label className="text-foreground block text-[15px] leading-tight font-medium">
             Devices Learners Will Use
           </label>
-          <span className="text-xs text-white/60 bg-white/10 px-2 py-1 rounded-full">
+          <span className="rounded-full bg-white/10 px-2 py-1 text-xs text-white/60">
             Select all that apply
           </span>
         </div>
         <div className="grid grid-cols-2 gap-3">
           {DEVICES_USED.map((device) => {
-            const isSelected = watchedValues?.section_3_learning_gap?.devices_used?.includes(device.value) || false;
+            const isSelected =
+              watchedValues?.section_3_learning_gap?.devices_used?.includes(device.value) || false;
             return (
               <button
                 key={device.value}
                 type="button"
                 onClick={() => handleDeviceChange(device.value, !isSelected)}
                 className={cn(
-                  'relative px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 border',
+                  'relative rounded-lg border px-4 py-2 text-sm font-medium transition-all duration-200',
                   'hover:scale-105 active:scale-95',
                   isSelected
-                    ? 'bg-primary text-primary-foreground border-primary shadow-lg ring-2 ring-primary/30'
-                    : 'bg-white/10 text-white/80 border-white/20 hover:bg-white/20 hover:border-white/30'
+                    ? 'bg-primary text-primary-foreground border-primary ring-primary/30 shadow-lg ring-2'
+                    : 'border-white/20 bg-white/10 text-white/80 hover:border-white/30 hover:bg-white/20'
                 )}
               >
                 <span className="flex items-center gap-2">
                   {isSelected && (
-                    <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                    <svg className="h-3 w-3" fill="currentColor" viewBox="0 0 20 20">
+                      <path
+                        fillRule="evenodd"
+                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                        clipRule="evenodd"
+                      />
                     </svg>
                   )}
                   {device.label}
@@ -432,9 +692,15 @@ export function LearningGapSection(): React.JSX.Element {
         {errors.section_3_learning_gap?.devices_used && (
           <div className="animate-fade-in text-error flex items-start gap-2 text-[13px] font-medium">
             <svg className="mt-0.5 h-4 w-4 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+              <path
+                fillRule="evenodd"
+                d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                clipRule="evenodd"
+              />
             </svg>
-            <span className="leading-tight">{errors.section_3_learning_gap.devices_used.message}</span>
+            <span className="leading-tight">
+              {errors.section_3_learning_gap.devices_used.message}
+            </span>
           </div>
         )}
       </div>
@@ -445,36 +711,39 @@ export function LearningGapSection(): React.JSX.Element {
           <label className="text-foreground block text-[15px] leading-tight font-medium">
             Time Available Per Week
           </label>
-          <span className="text-xs text-primary bg-primary/20 px-2 py-1 rounded-full border border-primary/30 shadow-md shadow-primary/25">
+          <span className="text-primary bg-primary/20 border-primary/30 shadow-primary/25 rounded-full border px-2 py-1 text-xs shadow-md">
             Select one
           </span>
         </div>
 
         <div className="flex flex-wrap gap-3">
           {HOURS_PER_WEEK.map((option) => {
-            const isSelected = watchedValues?.section_3_learning_gap?.hours_per_week === option.value;
+            const isSelected =
+              watchedValues?.section_3_learning_gap?.hours_per_week === option.value;
             return (
               <button
                 key={option.value}
                 type="button"
                 onClick={() => setValue('section_3_learning_gap.hours_per_week', option.value)}
                 className={cn(
-                  'relative px-5 py-3 rounded-full text-sm font-medium transition-all duration-200 border-2',
+                  'relative rounded-full border-2 px-5 py-3 text-sm font-medium transition-all duration-200',
                   'hover:scale-105 active:scale-95',
                   isSelected
-                    ? 'bg-primary text-primary-foreground border-primary shadow-lg ring-2 ring-primary/40'
-                    : 'bg-transparent text-white/80 border-white/30 hover:bg-white/10 hover:border-white/50'
+                    ? 'bg-primary text-primary-foreground border-primary ring-primary/40 shadow-lg ring-2'
+                    : 'border-white/30 bg-transparent text-white/80 hover:border-white/50 hover:bg-white/10'
                 )}
               >
                 <span className="flex items-center gap-2">
-                  <span className={cn(
-                    'w-3 h-3 rounded-full border-2 transition-all duration-200',
-                    isSelected
-                      ? 'bg-teal-400 border-teal-400 shadow-sm'
-                      : 'border-white/60 bg-white/20'
-                  )}>
+                  <span
+                    className={cn(
+                      'h-3 w-3 rounded-full border-2 transition-all duration-200',
+                      isSelected
+                        ? 'border-teal-400 bg-teal-400 shadow-sm'
+                        : 'border-white/60 bg-white/20'
+                    )}
+                  >
                     {isSelected && (
-                      <span className="w-full h-full rounded-full bg-teal-400 scale-75 animate-pulse" />
+                      <span className="h-full w-full scale-75 animate-pulse rounded-full bg-teal-400" />
                     )}
                   </span>
                   {option.label}
@@ -487,9 +756,15 @@ export function LearningGapSection(): React.JSX.Element {
         {errors.section_3_learning_gap?.hours_per_week && (
           <div className="animate-fade-in text-error flex items-start gap-2 text-[13px] font-medium">
             <svg className="mt-0.5 h-4 w-4 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+              <path
+                fillRule="evenodd"
+                d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                clipRule="evenodd"
+              />
             </svg>
-            <span className="leading-tight">{errors.section_3_learning_gap.hours_per_week.message}</span>
+            <span className="leading-tight">
+              {errors.section_3_learning_gap.hours_per_week.message}
+            </span>
           </div>
         )}
       </div>
@@ -525,9 +800,9 @@ export function LearningGapSection(): React.JSX.Element {
                   const value = parseInt(e.target.value);
                   setValue('section_3_learning_gap.budget_available.amount', value);
                 }}
-                className="w-full h-2 bg-white/20 rounded-lg appearance-none cursor-pointer slider budget-slider"
+                className="slider budget-slider h-2 w-full cursor-pointer appearance-none rounded-lg bg-white/20"
                 style={{
-                  background: `linear-gradient(to right, #a7dadb 0%, #a7dadb ${((watchedValues?.section_3_learning_gap?.budget_available?.amount || 0) / currencyConfig.maxValue) * 100}%, rgba(255,255,255,0.2) ${((watchedValues?.section_3_learning_gap?.budget_available?.amount || 0) / currencyConfig.maxValue) * 100}%, rgba(255,255,255,0.2) 100%)`
+                  background: `linear-gradient(to right, #a7dadb 0%, #a7dadb ${((watchedValues?.section_3_learning_gap?.budget_available?.amount || 0) / currencyConfig.maxValue) * 100}%, rgba(255,255,255,0.2) ${((watchedValues?.section_3_learning_gap?.budget_available?.amount || 0) / currencyConfig.maxValue) * 100}%, rgba(255,255,255,0.2) 100%)`,
                 }}
               />
             </div>
@@ -540,18 +815,22 @@ export function LearningGapSection(): React.JSX.Element {
           {/* Budget Display and Currency */}
           <div className="flex items-center justify-between gap-4">
             {/* Budget Display */}
-            <div className="flex items-center justify-center flex-1">
+            <div className="flex flex-1 items-center justify-center">
               <div className="relative">
                 {(watchedValues?.section_3_learning_gap?.budget_available?.amount || 0) === 0 ? (
-                  <div className="w-48 px-4 py-2 text-center text-lg font-normal text-white/40 italic bg-transparent">
+                  <div className="w-48 bg-transparent px-4 py-2 text-center text-lg font-normal text-white/40 italic">
                     No Budget Available
                   </div>
                 ) : (
                   <>
-                    <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/60 text-sm">{currencyConfig.symbol}</span>
+                    <span className="absolute top-1/2 left-3 -translate-y-1/2 transform text-sm text-white/60">
+                      {currencyConfig.symbol}
+                    </span>
                     <input
                       type="text"
-                      value={formatCurrency(watchedValues?.section_3_learning_gap?.budget_available?.amount || 0)}
+                      value={formatCurrency(
+                        watchedValues?.section_3_learning_gap?.budget_available?.amount || 0
+                      )}
                       onChange={(e) => {
                         // Remove formatting and parse as number
                         const rawValue = e.target.value.replace(/[^\d]/g, '');
@@ -567,7 +846,7 @@ export function LearningGapSection(): React.JSX.Element {
                         const clampedValue = Math.min(numericValue, currencyConfig.maxValue);
                         setValue('section_3_learning_gap.budget_available.amount', clampedValue);
                       }}
-                      className="w-48 px-4 py-2 pl-8 text-center text-lg font-medium text-foreground bg-white/10 border border-white/20 rounded-lg focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30"
+                      className="text-foreground focus:border-primary focus:ring-primary/30 w-48 rounded-lg border border-white/20 bg-white/10 px-4 py-2 pl-8 text-center text-lg font-medium focus:ring-2 focus:outline-none"
                     />
                   </>
                 )}
@@ -582,8 +861,10 @@ export function LearningGapSection(): React.JSX.Element {
                 onChange={(value) => {
                   setValue('section_3_learning_gap.budget_available.currency', value);
                   // Reset budget if it exceeds the new currency's max
-                  const currentBudget = watchedValues?.section_3_learning_gap?.budget_available?.amount || 0;
-                  const newCurrencyConfig = CURRENCIES[value as keyof typeof CURRENCIES] || CURRENCIES.USD;
+                  const currentBudget =
+                    watchedValues?.section_3_learning_gap?.budget_available?.amount || 0;
+                  const newCurrencyConfig =
+                    CURRENCIES[value as keyof typeof CURRENCIES] || CURRENCIES.USD;
                   if (currentBudget > newCurrencyConfig.maxValue) {
                     setValue('section_3_learning_gap.budget_available.amount', 0);
                   }
@@ -645,10 +926,10 @@ export function LearningGapSection(): React.JSX.Element {
         </div>
 
         <p className="text-text-secondary text-[13px] leading-snug">
-          Total budget available for this training initiative (materials, tools, external resources, etc.)
+          Total budget available for this training initiative (materials, tools, external resources,
+          etc.)
         </p>
       </div>
     </div>
   );
 }
-

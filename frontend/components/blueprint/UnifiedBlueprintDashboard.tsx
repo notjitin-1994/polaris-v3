@@ -80,14 +80,16 @@ export function UnifiedBlueprintDashboard({
   const [hasAnimated, setHasAnimated] = useState(false);
   const [currentSectionIndex, setCurrentSectionIndex] = useState(0);
   const [hasInteracted, setHasInteracted] = useState(false);
-  const [selectedMetric, setSelectedMetric] = useState<'duration' | 'topics' | 'activities'>('duration');
+  const [selectedMetric, setSelectedMetric] = useState<'duration' | 'topics' | 'activities'>(
+    'duration'
+  );
   const navigationRef = useRef<HTMLDivElement>(null);
   const { shouldReduceAnimations } = useMobileDetect();
 
   useEffect(() => {
     setMounted(true);
   }, []);
-  
+
   // Track animation state once
   useEffect(() => {
     if (isInView && !hasAnimated) {
@@ -117,7 +119,7 @@ export function UnifiedBlueprintDashboard({
   if (isComprehensive) {
     modules = blueprint.content_outline?.modules || [];
     objectives = blueprint.learning_objectives?.objectives || [];
-    
+
     // Calculate duration from modules
     totalDuration = modules.reduce((sum, module) => {
       const duration = module.duration || '';
@@ -134,7 +136,7 @@ export function UnifiedBlueprintDashboard({
 
       return sum + totalHours;
     }, 0);
-    
+
     totalActivities = modules.reduce((sum, m) => sum + (m.learning_activities?.length || 0), 0);
   } else {
     // Simple blueprint format
@@ -144,12 +146,15 @@ export function UnifiedBlueprintDashboard({
       const duration = typeof module.duration === 'number' ? module.duration : 0;
       return sum + duration;
     }, 0);
-    totalActivities = modules.reduce((sum, m) => sum + (Array.isArray(m.activities) ? m.activities.length : 0), 0);
+    totalActivities = modules.reduce(
+      (sum, m) => sum + (Array.isArray(m.activities) ? m.activities.length : 0),
+      0
+    );
   }
 
   // Build sections for comprehensive blueprints
   const sections: SectionDef[] = [];
-  
+
   if (isComprehensive) {
     if (blueprint.learning_objectives) {
       sections.push({
@@ -263,104 +268,120 @@ export function UnifiedBlueprintDashboard({
   }
 
   // Animation variants - memoized to prevent re-creation
-  const containerVariants: Variants = React.useMemo(() => ({
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: shouldReduceAnimations ? 0.02 : 0.08,
-        delayChildren: shouldReduceAnimations ? 0 : 0.05,
+  const containerVariants: Variants = React.useMemo(
+    () => ({
+      hidden: { opacity: 0 },
+      visible: {
+        opacity: 1,
+        transition: {
+          staggerChildren: shouldReduceAnimations ? 0.02 : 0.08,
+          delayChildren: shouldReduceAnimations ? 0 : 0.05,
+        },
       },
-    },
-  }), [shouldReduceAnimations]);
+    }),
+    [shouldReduceAnimations]
+  );
 
-  const itemVariants: Variants = React.useMemo(() => ({
-    hidden: {
-      opacity: 0,
-      y: shouldReduceAnimations ? 0 : 15,
-      scale: shouldReduceAnimations ? 1 : 0.96,
-    },
-    visible: {
-      opacity: 1,
-      y: 0,
-      scale: 1,
-      transition: shouldReduceAnimations
-        ? { duration: 0.2, ease: 'easeOut' }
-        : {
-            type: 'spring',
-            stiffness: 200,
-            damping: 20,
-            mass: 0.8,
-          },
-    },
-  }), [shouldReduceAnimations]);
+  const itemVariants: Variants = React.useMemo(
+    () => ({
+      hidden: {
+        opacity: 0,
+        y: shouldReduceAnimations ? 0 : 15,
+        scale: shouldReduceAnimations ? 1 : 0.96,
+      },
+      visible: {
+        opacity: 1,
+        y: 0,
+        scale: 1,
+        transition: shouldReduceAnimations
+          ? { duration: 0.2, ease: 'easeOut' }
+          : {
+              type: 'spring',
+              stiffness: 200,
+              damping: 20,
+              mass: 0.8,
+            },
+      },
+    }),
+    [shouldReduceAnimations]
+  );
 
   // Stat Card Component - Simplified and reliable
-  const StatCard = React.memo(({
-    icon: Icon,
-    label,
-    value,
-    suffix = '',
-    trend = null,
-    gradient,
-    delay = 0,
-  }: {
-    icon: React.ElementType;
-    label: string;
-    value: number;
-    suffix?: string;
-    trend?: number | null;
-    gradient: string;
-    delay?: number;
-  }) => {
-    const iconColor = gradient.includes('primary')
-      ? 'text-primary'
-      : gradient.includes('success')
-        ? 'text-success'
-        : gradient.includes('warning')
-          ? 'text-warning'
-          : 'text-primary';
+  const StatCard = React.memo(
+    ({
+      icon: Icon,
+      label,
+      value,
+      suffix = '',
+      trend = null,
+      gradient,
+      delay = 0,
+    }: {
+      icon: React.ElementType;
+      label: string;
+      value: number;
+      suffix?: string;
+      trend?: number | null;
+      gradient: string;
+      delay?: number;
+    }) => {
+      const iconColor = gradient.includes('primary')
+        ? 'text-primary'
+        : gradient.includes('success')
+          ? 'text-success'
+          : gradient.includes('warning')
+            ? 'text-warning'
+            : 'text-primary';
 
-    return (
-      <div className="group relative overflow-hidden rounded-2xl border border-white/10 bg-white/[0.02] backdrop-blur-sm p-6 min-h-[160px] transition-all duration-300 hover:border-primary/30 hover:shadow-xl hover:shadow-primary/10 hover:-translate-y-1">
-        {/* Background gradient */}
-        <div className={`absolute inset-0 ${gradient} opacity-5 transition-opacity group-hover:opacity-10`} />
-        
-        {/* Content */}
-        <div className="relative z-10 h-full flex flex-col">
-          {/* Icon and trend */}
-          <div className="mb-4 flex items-start justify-between">
-            <div className={`rounded-xl p-3 ${gradient} transition-transform group-hover:scale-110`}>
-              <Icon className={`h-6 w-6 ${iconColor}`} />
-            </div>
-            {trend !== null && (
-              <div className={`flex items-center gap-1 rounded-full px-2 py-1 text-xs ${
-                trend > 0 ? 'bg-success/20 text-success' : 'bg-error/20 text-error'
-              }`}>
-                <TrendingUp className={`h-3 w-3 ${trend < 0 ? 'rotate-180' : ''}`} />
-                <span>{Math.abs(trend)}%</span>
+      return (
+        <div className="group hover:border-primary/30 hover:shadow-primary/10 relative min-h-[160px] overflow-hidden rounded-2xl border border-white/10 bg-white/[0.02] p-6 backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
+          {/* Background gradient */}
+          <div
+            className={`absolute inset-0 ${gradient} opacity-5 transition-opacity group-hover:opacity-10`}
+          />
+
+          {/* Content */}
+          <div className="relative z-10 flex h-full flex-col">
+            {/* Icon and trend */}
+            <div className="mb-4 flex items-start justify-between">
+              <div
+                className={`rounded-xl p-3 ${gradient} transition-transform group-hover:scale-110`}
+              >
+                <Icon className={`h-6 w-6 ${iconColor}`} />
               </div>
-            )}
-          </div>
-          
-          {/* Label and value */}
-          <div className="space-y-2 mt-auto">
-            <p className="text-text-secondary text-sm font-medium uppercase tracking-wide">{label}</p>
-            <div className="flex items-baseline gap-2">
-              {mounted ? (
-                <span className="text-4xl font-bold text-foreground">
-                  {suffix === 'hrs' ? value.toFixed(1) : value.toLocaleString()}
-                </span>
-              ) : (
-                <span className="text-4xl font-bold text-foreground">-</span>
+              {trend !== null && (
+                <div
+                  className={`flex items-center gap-1 rounded-full px-2 py-1 text-xs ${
+                    trend > 0 ? 'bg-success/20 text-success' : 'bg-error/20 text-error'
+                  }`}
+                >
+                  <TrendingUp className={`h-3 w-3 ${trend < 0 ? 'rotate-180' : ''}`} />
+                  <span>{Math.abs(trend)}%</span>
+                </div>
               )}
-              {suffix && <span className="text-primary text-xl font-medium">{suffix}</span>}
+            </div>
+
+            {/* Label and value */}
+            <div className="mt-auto space-y-2">
+              <p className="text-text-secondary text-sm font-medium tracking-wide uppercase">
+                {label}
+              </p>
+              <div className="flex items-baseline gap-2">
+                {mounted ? (
+                  <span className="text-foreground text-4xl font-bold">
+                    {suffix === 'hrs' ? value.toFixed(1) : value.toLocaleString()}
+                  </span>
+                ) : (
+                  <span className="text-foreground text-4xl font-bold">-</span>
+                )}
+                {suffix && <span className="text-primary text-xl font-medium">{suffix}</span>}
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    );
-  });
+      );
+    }
+  );
 
   // Navigation functions for comprehensive view
   const goToNextSection = () => {
@@ -397,7 +418,10 @@ export function UnifiedBlueprintDashboard({
         className="relative space-y-6"
       >
         {/* Stats Grid */}
-        <motion.div variants={containerVariants} className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        <motion.div
+          variants={containerVariants}
+          className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4"
+        >
           <StatCard
             icon={Clock}
             label="Total Duration"
@@ -442,11 +466,11 @@ export function UnifiedBlueprintDashboard({
 
         {/* Section Navigation */}
         <motion.div ref={navigationRef} variants={itemVariants}>
-          <div className="relative rounded-lg border border-neutral-200 bg-background">
+          <div className="bg-background relative rounded-lg border border-neutral-200">
             {/* Core Sections */}
             <div className="px-4 py-3">
-              <div className="text-xs font-medium text-primary mb-3">Core Learning</div>
-              <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-2">
+              <div className="text-primary mb-3 text-xs font-medium">Core Learning</div>
+              <div className="grid grid-cols-1 gap-2 sm:grid-cols-3 lg:grid-cols-5">
                 {sections.slice(0, 5).map((section, index) => {
                   const isActive = index === currentSectionIndex;
                   return (
@@ -461,13 +485,15 @@ export function UnifiedBlueprintDashboard({
                           : 'text-text-secondary/70 hover:text-text-secondary'
                       }`}
                     >
-                      <span className={`text-xs leading-tight ${isActive ? 'font-medium' : 'font-normal'}`}>
+                      <span
+                        className={`text-xs leading-tight ${isActive ? 'font-medium' : 'font-normal'}`}
+                      >
                         {section.title}
                       </span>
                       {isActive && (
                         <motion.div
                           layoutId="activeSectionIndicator"
-                          className="absolute inset-0 rounded-md bg-primary/10 border border-primary/20"
+                          className="bg-primary/10 border-primary/20 absolute inset-0 rounded-md border"
                           transition={{ type: 'spring', stiffness: 400, damping: 25 }}
                         />
                       )}
@@ -482,8 +508,8 @@ export function UnifiedBlueprintDashboard({
               <>
                 <div className="border-t border-white/5" />
                 <div className="px-4 py-3">
-                  <div className="text-xs font-medium text-primary mb-3">Implementation</div>
-                  <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-2">
+                  <div className="text-primary mb-3 text-xs font-medium">Implementation</div>
+                  <div className="grid grid-cols-1 gap-2 sm:grid-cols-3 lg:grid-cols-5">
                     {sections.slice(5).map((section, index) => {
                       const absoluteIndex = 5 + index;
                       const isActive = absoluteIndex === currentSectionIndex;
@@ -499,13 +525,15 @@ export function UnifiedBlueprintDashboard({
                               : 'text-text-secondary/70 hover:text-text-secondary'
                           }`}
                         >
-                          <span className={`text-xs leading-tight ${isActive ? 'font-medium' : 'font-normal'}`}>
+                          <span
+                            className={`text-xs leading-tight ${isActive ? 'font-medium' : 'font-normal'}`}
+                          >
                             {section.title}
                           </span>
                           {isActive && (
                             <motion.div
                               layoutId="activeSectionIndicator"
-                              className="absolute inset-0 rounded-md bg-primary/10 border border-primary/20"
+                              className="bg-primary/10 border-primary/20 absolute inset-0 rounded-md border"
                               transition={{ type: 'spring', stiffness: 400, damping: 25 }}
                             />
                           )}
@@ -519,9 +547,11 @@ export function UnifiedBlueprintDashboard({
 
             {/* Progress */}
             <div className="border-t border-white/5 px-4 py-2.5">
-              <div className="flex items-center justify-between text-xs text-text-secondary/80">
-                <span>{currentSectionIndex + 1} / {sections.length}</span>
-                <span className="font-medium text-primary/80">
+              <div className="text-text-secondary/80 flex items-center justify-between text-xs">
+                <span>
+                  {currentSectionIndex + 1} / {sections.length}
+                </span>
+                <span className="text-primary/80 font-medium">
                   {Math.round(((currentSectionIndex + 1) / sections.length) * 100)}%
                 </span>
               </div>
@@ -530,7 +560,7 @@ export function UnifiedBlueprintDashboard({
                   initial={{ width: 0 }}
                   animate={{ width: `${((currentSectionIndex + 1) / sections.length) * 100}%` }}
                   transition={{ duration: 0.5, ease: 'easeOut' }}
-                  className="bg-gradient-to-r from-primary to-primary/80 h-full rounded-full"
+                  className="from-primary to-primary/80 h-full rounded-full bg-gradient-to-r"
                 />
               </div>
             </div>
@@ -594,7 +624,9 @@ export function UnifiedBlueprintDashboard({
                 : 'bg-primary/20 hover:bg-primary/30 border-primary/30 text-primary border'
             }`}
           >
-            <ChevronLeft className={`h-5 w-5 transition-transform ${currentSectionIndex > 0 ? 'group-hover:-translate-x-1' : ''}`} />
+            <ChevronLeft
+              className={`h-5 w-5 transition-transform ${currentSectionIndex > 0 ? 'group-hover:-translate-x-1' : ''}`}
+            />
             <span className="hidden sm:inline">Previous</span>
           </motion.button>
 
@@ -614,7 +646,9 @@ export function UnifiedBlueprintDashboard({
             }`}
           >
             <span className="hidden sm:inline">Next</span>
-            <ChevronRight className={`h-5 w-5 transition-transform ${currentSectionIndex < sections.length - 1 ? 'group-hover:translate-x-1' : ''}`} />
+            <ChevronRight
+              className={`h-5 w-5 transition-transform ${currentSectionIndex < sections.length - 1 ? 'group-hover:translate-x-1' : ''}`}
+            />
           </motion.button>
         </motion.div>
       </motion.div>
@@ -622,8 +656,9 @@ export function UnifiedBlueprintDashboard({
   }
 
   // Render simple blueprint (legacy format) with charts
-  const resources = 'resources' in blueprint && Array.isArray(blueprint.resources) ? blueprint.resources : [];
-  
+  const resources =
+    'resources' in blueprint && Array.isArray(blueprint.resources) ? blueprint.resources : [];
+
   // Module data for charts
   const moduleData = modules.slice(0, 8).map((module, index) => ({
     name: module.title?.length > 25 ? `${module.title.substring(0, 25)}...` : module.title,
@@ -685,7 +720,9 @@ export function UnifiedBlueprintDashboard({
           className="border-primary/30 bg-primary/20 mb-6 inline-flex items-center gap-2 rounded-full border px-5 py-2.5 backdrop-blur-xl"
         >
           <Sparkles className="text-primary h-5 w-5 animate-pulse" />
-          <span className="text-primary text-sm font-bold tracking-wider uppercase">Blueprint Analytics</span>
+          <span className="text-primary text-sm font-bold tracking-wider uppercase">
+            Blueprint Analytics
+          </span>
           <Sparkles className="text-primary h-5 w-5 animate-pulse" />
         </motion.div>
         <h2 className="mb-3 text-4xl font-bold text-white">Learning Journey Overview</h2>
@@ -695,7 +732,10 @@ export function UnifiedBlueprintDashboard({
       </motion.div>
 
       {/* Stats Grid */}
-      <motion.div variants={containerVariants} className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+      <motion.div
+        variants={containerVariants}
+        className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4"
+      >
         <StatCard
           icon={Clock}
           label="Total Duration"
@@ -731,7 +771,10 @@ export function UnifiedBlueprintDashboard({
 
       {/* Module Analytics */}
       {moduleData.length > 0 && (
-        <motion.div variants={itemVariants} className="glass-card rounded-3xl border border-white/10 p-8">
+        <motion.div
+          variants={itemVariants}
+          className="glass-card rounded-3xl border border-white/10 p-8"
+        >
           <div className="mb-6">
             <div className="mb-4 flex items-center justify-between">
               <div className="flex items-center gap-3">
@@ -780,7 +823,12 @@ export function UnifiedBlueprintDashboard({
               />
               <YAxis stroke="#b0c5c6" fontSize={12} />
               <Tooltip content={<CustomTooltip />} />
-              <Bar dataKey={selectedMetric} fill="url(#barGradient)" radius={[8, 8, 0, 0]} animationDuration={1500} />
+              <Bar
+                dataKey={selectedMetric}
+                fill="url(#barGradient)"
+                radius={[8, 8, 0, 0]}
+                animationDuration={1500}
+              />
             </BarChart>
           </ResponsiveContainer>
         </motion.div>
@@ -788,7 +836,10 @@ export function UnifiedBlueprintDashboard({
 
       {/* Resource Distribution */}
       {resourceData.length > 0 && (
-        <motion.div variants={itemVariants} className="glass-card rounded-3xl border border-white/10 p-8">
+        <motion.div
+          variants={itemVariants}
+          className="glass-card rounded-3xl border border-white/10 p-8"
+        >
           <div className="mb-6 flex items-center gap-3">
             <div className="bg-success/20 rounded-xl p-3">
               <Users className="text-success h-6 w-6" />
@@ -802,7 +853,14 @@ export function UnifiedBlueprintDashboard({
             <PieChart>
               <defs>
                 {COLORS.primary.map((color, index) => (
-                  <linearGradient key={index} id={`pieGradient${index}`} x1="0" y1="0" x2="0" y2="1">
+                  <linearGradient
+                    key={index}
+                    id={`pieGradient${index}`}
+                    x1="0"
+                    y1="0"
+                    x2="0"
+                    y2="1"
+                  >
                     <stop offset="0%" stopColor={color} stopOpacity={1} />
                     <stop offset="100%" stopColor={color} stopOpacity={0.6} />
                   </linearGradient>
@@ -824,7 +882,10 @@ export function UnifiedBlueprintDashboard({
                 animationDuration={1500}
               >
                 {resourceData.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={`url(#pieGradient${index % COLORS.primary.length})`} />
+                  <Cell
+                    key={`cell-${index}`}
+                    fill={`url(#pieGradient${index % COLORS.primary.length})`}
+                  />
                 ))}
               </Pie>
               <Tooltip content={<CustomTooltip />} />
@@ -835,14 +896,19 @@ export function UnifiedBlueprintDashboard({
 
       {/* Learning Objectives */}
       {objectives.length > 0 && (
-        <motion.div variants={itemVariants} className="glass-card rounded-3xl border border-white/10 p-8">
+        <motion.div
+          variants={itemVariants}
+          className="glass-card rounded-3xl border border-white/10 p-8"
+        >
           <div className="mb-6 flex items-center gap-3">
             <div className="bg-primary/20 rounded-xl p-3">
               <Target className="text-primary h-6 w-6" />
             </div>
             <div>
               <h3 className="text-xl font-bold text-white">Learning Objectives</h3>
-              <p className="text-text-secondary text-sm">{objectives.length} key objectives to master</p>
+              <p className="text-text-secondary text-sm">
+                {objectives.length} key objectives to master
+              </p>
             </div>
           </div>
 
@@ -859,7 +925,9 @@ export function UnifiedBlueprintDashboard({
                   <CheckCircle2 className="text-primary group-hover:text-primary-light h-5 w-5 transition-colors" />
                 </div>
                 <p className="text-text-secondary group-hover:text-foreground text-sm transition-colors">
-                  {typeof objective === 'string' ? objective : objective.title || objective.description}
+                  {typeof objective === 'string'
+                    ? objective
+                    : objective.title || objective.description}
                 </p>
               </motion.div>
             ))}
@@ -883,5 +951,3 @@ export function UnifiedBlueprintDashboard({
     </motion.div>
   );
 }
-
-

@@ -189,11 +189,7 @@
  * iPad-specific optimizations
  * Aggressive performance optimizations for iPad
  */
-@media only screen
-  and (min-device-width: 768px)
-  and (max-device-width: 1024px)
-  and (-webkit-min-device-pixel-ratio: 2) {
-
+@media only screen and (min-device-width: 768px) and (max-device-width: 1024px) and (-webkit-min-device-pixel-ratio: 2) {
   .glass-mobile {
     /* Completely remove backdrop-filter on iPad */
     backdrop-filter: none !important;
@@ -397,8 +393,9 @@
  * Glass element with hover lift animation
  */
 .glass-lift-mobile {
-  transition: transform var(--glass-transition-duration) var(--glass-transition-easing),
-              box-shadow var(--glass-transition-duration) var(--glass-transition-easing);
+  transition:
+    transform var(--glass-transition-duration) var(--glass-transition-easing),
+    box-shadow var(--glass-transition-duration) var(--glass-transition-easing);
 }
 
 .glass-lift-mobile:hover {

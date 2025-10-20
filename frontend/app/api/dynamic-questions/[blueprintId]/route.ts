@@ -101,10 +101,7 @@ export async function GET(
         error: blueprintError?.message,
         requestId,
       });
-      return NextResponse.json(
-        { error: 'Blueprint not found or access denied' },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: 'Blueprint not found or access denied' }, { status: 404 });
     }
 
     const duration = Date.now() - startTime;
@@ -135,7 +132,8 @@ export async function GET(
       userId: user.id,
       sectionCount: sections.length,
       totalQuestions,
-      hasExistingAnswers: !!blueprint.dynamic_answers && Object.keys(blueprint.dynamic_answers).length > 0,
+      hasExistingAnswers:
+        !!blueprint.dynamic_answers && Object.keys(blueprint.dynamic_answers).length > 0,
       currentSection: blueprint.current_section ?? 0,
       duration,
       requestId,

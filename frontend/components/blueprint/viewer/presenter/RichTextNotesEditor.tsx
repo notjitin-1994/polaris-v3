@@ -33,10 +33,10 @@ interface RichTextNotesEditorProps {
   onBlur?: () => void;
 }
 
-type FormatCommand = 
-  | 'bold' 
-  | 'italic' 
-  | 'underline' 
+type FormatCommand =
+  | 'bold'
+  | 'italic'
+  | 'underline'
   | 'strikeThrough'
   | 'insertUnorderedList'
   | 'insertOrderedList'
@@ -88,14 +88,14 @@ export function RichTextNotesEditor({
   // Update active formats
   const updateActiveFormats = () => {
     const formats = new Set<string>();
-    
+
     if (document.queryCommandState('bold')) formats.add('bold');
     if (document.queryCommandState('italic')) formats.add('italic');
     if (document.queryCommandState('underline')) formats.add('underline');
     if (document.queryCommandState('strikeThrough')) formats.add('strikeThrough');
     if (document.queryCommandState('insertUnorderedList')) formats.add('insertUnorderedList');
     if (document.queryCommandState('insertOrderedList')) formats.add('insertOrderedList');
-    
+
     setActiveFormats(formats);
   };
 
@@ -154,7 +154,7 @@ export function RichTextNotesEditor({
         'flex h-8 w-8 items-center justify-center rounded-lg border transition-all',
         active
           ? 'border-primary/50 bg-primary/20 text-primary'
-          : 'border-white/10 bg-white/5 text-text-secondary hover:border-primary/30 hover:bg-primary/10 hover:text-primary'
+          : 'text-text-secondary hover:border-primary/30 hover:bg-primary/10 hover:text-primary border-white/10 bg-white/5'
       )}
       title={label}
       type="button"
@@ -200,21 +200,9 @@ export function RichTextNotesEditor({
 
           {/* Headings */}
           <div className="flex items-center gap-1">
-            <ToolbarButton
-              icon={Heading1}
-              label="Heading 1"
-              onClick={() => applyHeading(1)}
-            />
-            <ToolbarButton
-              icon={Heading2}
-              label="Heading 2"
-              onClick={() => applyHeading(2)}
-            />
-            <ToolbarButton
-              icon={Heading3}
-              label="Heading 3"
-              onClick={() => applyHeading(3)}
-            />
+            <ToolbarButton icon={Heading1} label="Heading 1" onClick={() => applyHeading(1)} />
+            <ToolbarButton icon={Heading2} label="Heading 2" onClick={() => applyHeading(2)} />
+            <ToolbarButton icon={Heading3} label="Heading 3" onClick={() => applyHeading(3)} />
           </div>
 
           <div className="h-6 w-px bg-white/10" />
@@ -270,12 +258,12 @@ export function RichTextNotesEditor({
                   setShowHighlightPicker(false);
                 }}
               />
-              
+
               {showTextColorPicker && (
                 <motion.div
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="absolute left-0 top-full z-50 mt-2 rounded-lg border border-white/10 bg-slate-900 p-2 shadow-2xl backdrop-blur-xl"
+                  className="absolute top-full left-0 z-50 mt-2 rounded-lg border border-white/10 bg-slate-900 p-2 shadow-2xl backdrop-blur-xl"
                 >
                   <div className="grid grid-cols-5 gap-1">
                     {TEXT_COLORS.map((color) => (
@@ -302,12 +290,12 @@ export function RichTextNotesEditor({
                   setShowTextColorPicker(false);
                 }}
               />
-              
+
               {showHighlightPicker && (
                 <motion.div
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="absolute left-0 top-full z-50 mt-2 rounded-lg border border-white/10 bg-slate-900 p-2 shadow-2xl backdrop-blur-xl"
+                  className="absolute top-full left-0 z-50 mt-2 rounded-lg border border-white/10 bg-slate-900 p-2 shadow-2xl backdrop-blur-xl"
                 >
                   <div className="grid grid-cols-4 gap-1">
                     {HIGHLIGHT_COLORS.map((color) => (
@@ -316,7 +304,7 @@ export function RichTextNotesEditor({
                         onClick={() => applyHighlightColor(color)}
                         className={cn(
                           'h-6 w-6 rounded border transition-transform hover:scale-110',
-                          color === 'transparent' 
+                          color === 'transparent'
                             ? 'border-white/20 bg-slate-800'
                             : 'border-white/20'
                         )}
@@ -347,7 +335,7 @@ export function RichTextNotesEditor({
         onKeyUp={updateActiveFormats}
         onFocus={() => onFocus?.()}
         onBlur={() => onBlur?.()}
-        className="notes-editor flex-1 overflow-y-auto p-4 text-foreground focus:outline-none"
+        className="notes-editor text-foreground flex-1 overflow-y-auto p-4 focus:outline-none"
         style={{
           minHeight: '200px',
         }}
@@ -358,58 +346,58 @@ export function RichTextNotesEditor({
         .notes-editor {
           line-height: 1.6;
         }
-        
+
         .notes-editor h1 {
           font-size: 1.875rem;
           font-weight: 700;
           margin-bottom: 0.75rem;
           color: var(--foreground);
         }
-        
+
         .notes-editor h2 {
           font-size: 1.5rem;
           font-weight: 600;
           margin-bottom: 0.5rem;
           color: var(--foreground);
         }
-        
+
         .notes-editor h3 {
           font-size: 1.25rem;
           font-weight: 600;
           margin-bottom: 0.5rem;
           color: var(--foreground);
         }
-        
+
         .notes-editor p {
           margin-bottom: 0.5rem;
         }
-        
+
         .notes-editor ul,
         .notes-editor ol {
           margin-left: 1.5rem;
           margin-bottom: 0.5rem;
         }
-        
+
         .notes-editor ul {
           list-style-type: disc;
         }
-        
+
         .notes-editor ol {
           list-style-type: decimal;
         }
-        
+
         .notes-editor li {
           margin-bottom: 0.25rem;
         }
-        
+
         .notes-editor strong {
           font-weight: 700;
         }
-        
+
         .notes-editor em {
           font-style: italic;
         }
-        
+
         .notes-editor u {
           text-decoration: underline;
         }
@@ -417,4 +405,3 @@ export function RichTextNotesEditor({
     </div>
   );
 }
-

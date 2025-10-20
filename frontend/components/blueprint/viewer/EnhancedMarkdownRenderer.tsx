@@ -56,14 +56,14 @@ export function EnhancedMarkdownRenderer({
   const enableDropCaps = layoutMode === 'spacious';
   const enableColumns = layoutMode === 'spacious';
   const enablePullQuotes = layoutMode !== 'compact';
-  
+
   return (
     <motion.article
       variants={itemAnimations.fadeInUp}
       className={cn(
         'prose prose-invert prose-lg max-w-none',
         layoutMode === 'spacious' && 'prose-xl',
-        layoutMode === 'compact' && 'prose-base',
+        layoutMode === 'compact' && 'prose-base'
       )}
     >
       <ReactMarkdown
@@ -76,103 +76,98 @@ export function EnhancedMarkdownRenderer({
               variants={itemAnimations.fadeInScale}
               className={cn(
                 typographyPresets.heroTitle,
-                'mb-8 mt-12 border-b border-white/10 pb-6',
-                'bg-gradient-to-r from-foreground via-primary to-foreground bg-clip-text text-transparent',
-                enableDropCaps && magazineLayouts.dropCap,
+                'mt-12 mb-8 border-b border-white/10 pb-6',
+                'from-foreground via-primary to-foreground bg-gradient-to-r bg-clip-text text-transparent',
+                enableDropCaps && magazineLayouts.dropCap
               )}
             >
               {children}
             </motion.h1>
           ),
-          
+
           h2: ({ children }) => (
             <motion.h2
               variants={itemAnimations.fadeInUp}
               className={cn(
                 typographyPresets.articleTitle,
-                'group mt-10 mb-6 flex items-center gap-4',
+                'group mt-10 mb-6 flex items-center gap-4'
               )}
             >
-              <span className="h-1 w-12 rounded-full bg-gradient-to-r from-primary to-transparent" />
+              <span className="from-primary h-1 w-12 rounded-full bg-gradient-to-r to-transparent" />
               {children}
             </motion.h2>
           ),
-          
+
           h3: ({ children }) => (
             <motion.h3
               variants={itemAnimations.fadeInUp}
-              className={cn(
-                'text-2xl font-semibold text-foreground',
-                'mt-8 mb-4',
-              )}
+              className={cn('text-foreground text-2xl font-semibold', 'mt-8 mb-4')}
             >
               {children}
             </motion.h3>
           ),
-          
+
           // Paragraphs with optional column layout
           p: ({ children }) => {
             // Check if this paragraph contains only an image
-            const isImageOnly = React.Children.count(children) === 1 && 
-              React.isValidElement(children) && 
+            const isImageOnly =
+              React.Children.count(children) === 1 &&
+              React.isValidElement(children) &&
               (children as any).type === 'img';
-              
+
             if (isImageOnly) {
               return <div className="my-8">{children}</div>;
             }
-            
+
             return (
               <p
                 className={cn(
                   typographyPresets.articleBody,
-                  'mb-6 text-text-secondary',
-                  enableColumns && sections.length > 3 && magazineLayouts.columns.two,
+                  'text-text-secondary mb-6',
+                  enableColumns && sections.length > 3 && magazineLayouts.columns.two
                 )}
               >
                 {children}
               </p>
             );
           },
-          
+
           // Enhanced blockquotes as pull quotes
           blockquote: ({ children }) => (
             <motion.blockquote
               variants={itemAnimations.slideInLeft}
               className={cn(
                 glassCard.base,
-                'relative my-8 border-l-4 border-primary p-6',
-                enablePullQuotes && magazineLayouts.pullQuote,
+                'border-primary relative my-8 border-l-4 p-6',
+                enablePullQuotes && magazineLayouts.pullQuote
               )}
             >
-              <Quote className="absolute -left-3 -top-3 h-8 w-8 text-primary/20" />
+              <Quote className="text-primary/20 absolute -top-3 -left-3 h-8 w-8" />
               <div className="relative z-10">{children}</div>
             </motion.blockquote>
           ),
-          
+
           // Code blocks with syntax highlighting
           pre: ({ children }) => (
             <motion.pre
               variants={itemAnimations.fadeInScale}
-              className={cn(
-                glassCard.base,
-                'my-6 overflow-hidden !bg-[#1a1b26] p-0',
-              )}
+              className={cn(glassCard.base, 'my-6 overflow-hidden !bg-[#1a1b26] p-0')}
             >
               <div className="flex items-center justify-between border-b border-white/10 px-4 py-2">
-                <Code className="h-4 w-4 text-primary" />
-                <span className="text-xs text-text-secondary">Code</span>
+                <Code className="text-primary h-4 w-4" />
+                <span className="text-text-secondary text-xs">Code</span>
               </div>
               <div className="overflow-x-auto p-4">{children}</div>
             </motion.pre>
           ),
-          
+
           // Inline code styling
           code: ({ children, ...props }) => {
             return (
               <code
                 className={cn(
-                  'rounded-md border border-primary/20 bg-primary/10',
-                  'px-1.5 py-0.5 font-mono text-sm text-primary',
+                  'border-primary/20 bg-primary/10 rounded-md border',
+                  'text-primary px-1.5 py-0.5 font-mono text-sm'
                 )}
                 {...props}
               >
@@ -180,61 +175,51 @@ export function EnhancedMarkdownRenderer({
               </code>
             );
           },
-          
+
           // Enhanced lists
-          ul: ({ children }) => (
-            <ul className="my-6 space-y-3">
-              {children}
-            </ul>
-          ),
-          
+          ul: ({ children }) => <ul className="my-6 space-y-3">{children}</ul>,
+
           li: ({ children }) => (
             <li
               className={cn(
-                'relative pl-8 text-text-secondary',
-                'before:absolute before:left-0 before:top-[0.6em]',
-                'before:h-2 before:w-2 before:rounded-full before:bg-primary',
-                'hover:text-foreground transition-colors',
+                'text-text-secondary relative pl-8',
+                'before:absolute before:top-[0.6em] before:left-0',
+                'before:bg-primary before:h-2 before:w-2 before:rounded-full',
+                'hover:text-foreground transition-colors'
               )}
             >
               {children}
             </li>
           ),
-          
+
           // Tables with glass morphism
           table: ({ children }) => (
             <div className={cn(glassCard.base, 'my-8 overflow-hidden')}>
               <div className="overflow-x-auto">
-                <table className="w-full">
-                  {children}
-                </table>
+                <table className="w-full">{children}</table>
               </div>
             </div>
           ),
-          
+
           thead: ({ children }) => (
-            <thead className="border-b border-white/10 bg-white/5">
-              {children}
-            </thead>
+            <thead className="border-b border-white/10 bg-white/5">{children}</thead>
           ),
-          
+
           th: ({ children }) => (
             <th
               className={cn(
-                'px-4 py-3 text-left font-semibold text-primary',
-                typographyPresets.labelText,
+                'text-primary px-4 py-3 text-left font-semibold',
+                typographyPresets.labelText
               )}
             >
               {children}
             </th>
           ),
-          
+
           td: ({ children }) => (
-            <td className="border-b border-white/5 px-4 py-3 text-text-secondary">
-              {children}
-            </td>
+            <td className="text-text-secondary border-b border-white/5 px-4 py-3">{children}</td>
           ),
-          
+
           // Links with external indicator
           a: ({ children, href }) => {
             const isExternal = href?.startsWith('http');
@@ -243,9 +228,9 @@ export function EnhancedMarkdownRenderer({
                 href={href}
                 className={cn(
                   'inline-flex items-center gap-1',
-                  'text-primary underline decoration-primary/40',
+                  'text-primary decoration-primary/40 underline',
                   'hover:text-primary-light hover:decoration-primary',
-                  'transition-colors',
+                  'transition-colors'
                 )}
                 target={isExternal ? '_blank' : undefined}
                 rel={isExternal ? 'noopener noreferrer' : undefined}
@@ -255,34 +240,26 @@ export function EnhancedMarkdownRenderer({
               </a>
             );
           },
-          
+
           // Images with enhanced styling
           img: ({ src, alt }) => (
-            <motion.figure
-              variants={itemAnimations.fadeInScale}
-              className="my-8"
-            >
+            <motion.figure variants={itemAnimations.fadeInScale} className="my-8">
               <div className={cn(glassCard.base, 'overflow-hidden p-2')}>
-                <img
-                  src={src}
-                  alt={alt}
-                  className="w-full rounded-lg"
-                  loading="lazy"
-                />
+                <img src={src} alt={alt} className="w-full rounded-lg" loading="lazy" />
               </div>
               {alt && (
-                <figcaption className="mt-3 text-center text-sm text-text-secondary">
+                <figcaption className="text-text-secondary mt-3 text-center text-sm">
                   {alt}
                 </figcaption>
               )}
             </motion.figure>
           ),
-          
+
           // Horizontal rules as decorative elements
           hr: () => (
             <div className="my-12 flex items-center gap-4">
               <div className="h-px flex-1 bg-gradient-to-r from-transparent via-white/20 to-transparent" />
-              <Zap className="h-5 w-5 text-primary" />
+              <Zap className="text-primary h-5 w-5" />
               <div className="h-px flex-1 bg-gradient-to-r from-transparent via-white/20 to-transparent" />
             </div>
           ),

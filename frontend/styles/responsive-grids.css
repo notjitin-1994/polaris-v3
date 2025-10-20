@@ -489,27 +489,51 @@
  * Grid span utilities for responsive layouts
  * Mobile-first approach with progressive enhancement
  */
-.col-span-1 { grid-column: span 1; }
-.col-span-2 { grid-column: span 2; }
-.col-span-3 { grid-column: span 3; }
-.col-span-4 { grid-column: span 4; }
+.col-span-1 {
+  grid-column: span 1;
+}
+.col-span-2 {
+  grid-column: span 2;
+}
+.col-span-3 {
+  grid-column: span 3;
+}
+.col-span-4 {
+  grid-column: span 4;
+}
 
 /* Responsive column spans */
 @media (min-width: 640px) {
-  .col-span-sm-1 { grid-column: span 1; }
-  .col-span-sm-2 { grid-column: span 2; }
+  .col-span-sm-1 {
+    grid-column: span 1;
+  }
+  .col-span-sm-2 {
+    grid-column: span 2;
+  }
 }
 
 @media (min-width: 1024px) {
-  .col-span-lg-1 { grid-column: span 1; }
-  .col-span-lg-2 { grid-column: span 2; }
-  .col-span-lg-3 { grid-column: span 3; }
+  .col-span-lg-1 {
+    grid-column: span 1;
+  }
+  .col-span-lg-2 {
+    grid-column: span 2;
+  }
+  .col-span-lg-3 {
+    grid-column: span 3;
+  }
 }
 
 /* Row span utilities */
-.row-span-1 { grid-row: span 1; }
-.row-span-2 { grid-row: span 2; }
-.row-span-3 { grid-row: span 3; }
+.row-span-1 {
+  grid-row: span 1;
+}
+.row-span-2 {
+  grid-row: span 2;
+}
+.row-span-3 {
+  grid-row: span 3;
+}
 
 /* ========================================
    RESPONSIVE GRID AREAS
@@ -522,10 +546,10 @@
 .grid-areas-mobile {
   display: grid;
   grid-template-areas:
-    "header"
-    "main"
-    "sidebar"
-    "footer";
+    'header'
+    'main'
+    'sidebar'
+    'footer';
   grid-template-columns: 1fr;
   gap: 1rem;
 }
@@ -533,19 +557,27 @@
 @media (min-width: 1024px) {
   .grid-areas-mobile {
     grid-template-areas:
-      "header header"
-      "sidebar main"
-      "footer footer";
+      'header header'
+      'sidebar main'
+      'footer footer';
     grid-template-columns: 280px 1fr;
     gap: 2rem;
   }
 }
 
 /* Grid area assignments */
-.grid-header { grid-area: header; }
-.grid-main { grid-area: main; }
-.grid-sidebar { grid-area: sidebar; }
-.grid-footer { grid-area: footer; }
+.grid-header {
+  grid-area: header;
+}
+.grid-main {
+  grid-area: main;
+}
+.grid-sidebar {
+  grid-area: sidebar;
+}
+.grid-footer {
+  grid-area: footer;
+}
 
 /* ========================================
    UTILITY GRID PATTERNS

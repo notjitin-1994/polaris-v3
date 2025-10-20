@@ -94,10 +94,10 @@ function LoadingContent({ id }: { id: string }): React.JSX.Element {
         });
 
         const checkResponse = await fetch(`/api/dynamic-questions/${id}`);
-        
+
         if (checkResponse.ok) {
           const existingData = await checkResponse.json();
-          
+
           // Validate questionnaire completeness
           const isQuestionnaireComplete = (data: any): boolean => {
             // Must have sections
@@ -107,7 +107,11 @@ function LoadingContent({ id }: { id: string }): React.JSX.Element {
 
             // Each section must have questions
             for (const section of data.sections) {
-              if (!section.questions || !Array.isArray(section.questions) || section.questions.length === 0) {
+              if (
+                !section.questions ||
+                !Array.isArray(section.questions) ||
+                section.questions.length === 0
+              ) {
                 return false;
               }
 
@@ -121,10 +125,14 @@ function LoadingContent({ id }: { id: string }): React.JSX.Element {
 
             // Must have a reasonable number of sections (typically 10)
             if (data.sections.length < 5) {
-              logger.warn('dynamic_questions.incomplete', 'Too few sections, considering incomplete', {
-                blueprintId: id,
-                sectionCount: data.sections.length,
-              });
+              logger.warn(
+                'dynamic_questions.incomplete',
+                'Too few sections, considering incomplete',
+                {
+                  blueprintId: id,
+                  sectionCount: data.sections.length,
+                }
+              );
               return false;
             }
 
@@ -139,13 +147,19 @@ function LoadingContent({ id }: { id: string }): React.JSX.Element {
               (sum: number, section: any) => sum + (section.questions?.length || 0),
               0
             );
-            
-            logger.info('dynamic_questions.exists_and_complete', '✓ Path 1: Complete questionnaire found, loading existing', {
-              blueprintId: id,
-              sectionCount: existingData.sections.length,
-              totalQuestions,
-              hasExistingAnswers: !!existingData.existingAnswers && Object.keys(existingData.existingAnswers).length > 0,
-            });
+
+            logger.info(
+              'dynamic_questions.exists_and_complete',
+              '✓ Path 1: Complete questionnaire found, loading existing',
+              {
+                blueprintId: id,
+                sectionCount: existingData.sections.length,
+                totalQuestions,
+                hasExistingAnswers:
+                  !!existingData.existingAnswers &&
+                  Object.keys(existingData.existingAnswers).length > 0,
+              }
+            );
 
             completed = true;
             stopIntervals();
@@ -161,11 +175,15 @@ function LoadingContent({ id }: { id: string }): React.JSX.Element {
             // ========================================================================
             // PATH 2: Questionnaire EXISTS but is INCOMPLETE → Regenerate
             // ========================================================================
-            logger.warn('dynamic_questions.incomplete', '⚠ Path 2: Incomplete questionnaire detected, regenerating', {
-              blueprintId: id,
-              hasSections: !!existingData.sections,
-              sectionCount: existingData.sections?.length || 0,
-            });
+            logger.warn(
+              'dynamic_questions.incomplete',
+              '⚠ Path 2: Incomplete questionnaire detected, regenerating',
+              {
+                blueprintId: id,
+                hasSections: !!existingData.sections,
+                sectionCount: existingData.sections?.length || 0,
+              }
+            );
             // Will fall through to generation logic below
           }
         }

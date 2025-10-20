@@ -53,7 +53,7 @@ export default function PresenterPage({ params }: PageProps) {
       }
 
       setBlueprintData(data.blueprint_json);
-      
+
       // Try to load slides data from sessionStorage
       try {
         const storedSlides = sessionStorage.getItem(`presenter-slides-${id}`);
@@ -71,12 +71,10 @@ export default function PresenterPage({ params }: PageProps) {
       } catch (error) {
         console.error('Failed to parse slides data:', error);
         // Fallback calculation
-        const sections = Object.keys(data.blueprint_json || {}).filter(
-          (key) => key !== 'metadata'
-        );
+        const sections = Object.keys(data.blueprint_json || {}).filter((key) => key !== 'metadata');
         setTotalSlides(sections.length + 1);
       }
-      
+
       setLoading(false);
     };
 
@@ -100,12 +98,9 @@ export default function PresenterPage({ params }: PageProps) {
   // Send slide changes back to parent
   const handleSlideChange = (slide: number) => {
     setCurrentSlide(slide);
-    
+
     if (window.opener) {
-      window.opener.postMessage(
-        { type: 'PRESENTER_SLIDE_CHANGE', slide },
-        window.location.origin
-      );
+      window.opener.postMessage({ type: 'PRESENTER_SLIDE_CHANGE', slide }, window.location.origin);
     }
   };
 
@@ -113,7 +108,7 @@ export default function PresenterPage({ params }: PageProps) {
     return (
       <div className="flex h-screen items-center justify-center bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950">
         <div className="text-center">
-          <div className="mb-4 h-12 w-12 animate-spin rounded-full border-4 border-primary border-t-transparent mx-auto" />
+          <div className="border-primary mx-auto mb-4 h-12 w-12 animate-spin rounded-full border-4 border-t-transparent" />
           <p className="text-lg text-white">Loading presenter view...</p>
         </div>
       </div>
@@ -141,4 +136,3 @@ export default function PresenterPage({ params }: PageProps) {
     />
   );
 }
-

@@ -16,61 +16,116 @@ import { QuestionnaireButton } from '@/components/demo-v2-questionnaire/Question
 // Form validation schema for the 3-section static questionnaire
 const staticQuestionnaireSchema = z.object({
   // Section 1: Role & Experience
-  section_1_role_experience: z.object({
-    current_role: z.string().min(1, 'Please select a role'),
-    custom_role: z.string().optional(),
-    years_in_role: z.number().min(0).max(50),
-    industry_experience: z.array(z.string()).min(1, 'Please select at least one industry'),
-    team_size: z.enum(['Solo', '2-5', '6-10', '11-25', '26-50', '51+']),
-    technical_skills: z.array(z.string()).optional(),
-  }).refine((data) => {
-    // If "Other" is selected, custom_role must be provided and not empty
-    if (data.current_role === 'Other') {
-      return data.custom_role && data.custom_role.trim().length > 0;
-    }
-    return true;
-  }, {
-    message: 'Please specify your role',
-    path: ['custom_role'],
-  }),
+  section_1_role_experience: z
+    .object({
+      current_role: z.string().min(1, 'Please select a role'),
+      custom_role: z.string().optional(),
+      years_in_role: z.number().min(0).max(50),
+      industry_experience: z.array(z.string()).min(1, 'Please select at least one industry'),
+      team_size: z.enum(['Solo', '2-5', '6-10', '11-25', '26-50', '51+']),
+      technical_skills: z.array(z.string()).optional(),
+    })
+    .refine(
+      (data) => {
+        // If "Other" is selected, custom_role must be provided and not empty
+        if (data.current_role === 'Other') {
+          return data.custom_role && data.custom_role.trim().length > 0;
+        }
+        return true;
+      },
+      {
+        message: 'Please specify your role',
+        path: ['custom_role'],
+      }
+    ),
 
   // Section 2: Organization Details
-  section_2_organization: z.object({
-    organization_name: z.string().min(2, 'Organization name must be at least 2 characters').max(200),
-    industry_sector: z.enum([
-      'Technology', 'Healthcare', 'Financial Services', 'Manufacturing',
-      'Education', 'Government/Public Sector', 'Retail/E-commerce',
-      'Professional Services', 'Non-Profit', 'Other'
-    ]),
-    organization_size: z.enum(['1-50', '51-200', '201-1000', '1001-5000', '5001-10000', '10000+']),
-    geographic_regions: z.array(z.string()).min(1, 'Please select at least one region'),
-    compliance_requirements: z.array(z.string()).min(1, 'Please select at least one compliance requirement'),
-    data_sharing_policies: z.enum(['Unrestricted', 'Internal Only', 'Need-to-Know', 'Highly Restricted', 'Classified']),
-    security_clearance: z.enum(['None', 'Confidential', 'Secret', 'Top Secret', 'Other']).optional(),
-    legal_restrictions: z.string().max(1000).optional(),
-  }).refine((data) => {
-    // If "Other" is selected for industry_sector, we need a custom industry value
-    // For now, we'll validate this in the component since we need access to the custom input state
-    return true;
-  }, {
-    message: 'Please specify your industry',
-    path: ['industry_sector'],
-  }),
+  section_2_organization: z
+    .object({
+      organization_name: z
+        .string()
+        .min(2, 'Organization name must be at least 2 characters')
+        .max(200),
+      industry_sector: z.enum([
+        'Technology',
+        'Healthcare',
+        'Financial Services',
+        'Manufacturing',
+        'Education',
+        'Government/Public Sector',
+        'Retail/E-commerce',
+        'Professional Services',
+        'Non-Profit',
+        'Other',
+      ]),
+      organization_size: z.enum([
+        '1-50',
+        '51-200',
+        '201-1000',
+        '1001-5000',
+        '5001-10000',
+        '10000+',
+      ]),
+      geographic_regions: z.array(z.string()).min(1, 'Please select at least one region'),
+      compliance_requirements: z
+        .array(z.string())
+        .min(1, 'Please select at least one compliance requirement'),
+      data_sharing_policies: z.enum([
+        'Unrestricted',
+        'Internal Only',
+        'Need-to-Know',
+        'Highly Restricted',
+        'Classified',
+      ]),
+      security_clearance: z
+        .enum(['None', 'Confidential', 'Secret', 'Top Secret', 'Other'])
+        .optional(),
+      legal_restrictions: z.string().max(1000).optional(),
+    })
+    .refine(
+      (data) => {
+        // If "Other" is selected for industry_sector, we need a custom industry value
+        // For now, we'll validate this in the component since we need access to the custom input state
+        return true;
+      },
+      {
+        message: 'Please specify your industry',
+        path: ['industry_sector'],
+      }
+    ),
 
   // Section 3: Learning Gap & Learner Details
   section_3_learning_gap: z.object({
     learning_gap_description: z.string().min(10, 'Please provide a detailed description').max(2000),
-    total_learners_range: z.enum(['1-10', '11-25', '26-50', '51-100', '101-250', '251-500', '501-1000', '1000+']),
+    total_learners_range: z.enum([
+      '1-10',
+      '11-25',
+      '26-50',
+      '51-100',
+      '101-250',
+      '251-500',
+      '501-1000',
+      '1000+',
+    ]),
     current_knowledge_level: z.number().min(1).max(5),
     motivation_factors: z.array(z.string()).min(1, 'Please select at least one motivation factor'),
     learning_location: z.array(z.string()).min(1, 'Please select at least one learning location'),
     devices_used: z.array(z.string()).min(1, 'Please select at least one device type'),
-    hours_per_week: z.enum(['<1 hour', '1-2 hours', '3-5 hours', '6-10 hours', '11-20 hours', '20+ hours']),
+    hours_per_week: z.enum([
+      '<1 hour',
+      '1-2 hours',
+      '3-5 hours',
+      '6-10 hours',
+      '11-20 hours',
+      '20+ hours',
+    ]),
     learning_deadline: z.string().optional(),
-    budget_available: z.object({
-      currency: z.string().optional(),
-      amount: z.number().min(0).optional(),
-    }).optional(),
+    budget_available: z
+      .object({
+        currency: z.string().optional(),
+        amount: z.number().min(0).optional(),
+      })
+      .optional(),
   }),
 });
 
@@ -115,155 +170,184 @@ const sections = [
   {
     id: 1,
     title: 'Role & Experience',
-    description: 'Tell us about your professional background and current responsibilities. This helps us understand your perspective and tailor recommendations to your specific needs.',
+    description:
+      'Tell us about your professional background and current responsibilities. This helps us understand your perspective and tailor recommendations to your specific needs.',
     whyThisMatters: {
-      title: "Why does this matter?",
+      title: 'Why does this matter?',
       content: (
         <div className="space-y-4">
           <p className="text-[15px] leading-relaxed">
-            The information you provide here forms the foundation of your personalized learning blueprint.
-            Each detail helps us create recommendations that are precisely tailored to your unique context and challenges.
+            The information you provide here forms the foundation of your personalized learning
+            blueprint. Each detail helps us create recommendations that are precisely tailored to
+            your unique context and challenges.
           </p>
 
           <div className="grid gap-4">
-            <div className="p-3 bg-primary/5 rounded-lg border border-primary/10">
-              <h4 className="font-semibold text-primary mb-2">🎯 Your Role & Experience</h4>
-              <p className="text-sm text-text-secondary">
-                Your position determines the lens through which we view your learning needs. A manager focuses on
-                strategic ROI and organizational impact, while a specialist needs deep technical implementation guidance.
+            <div className="bg-primary/5 border-primary/10 rounded-lg border p-3">
+              <h4 className="text-primary mb-2 font-semibold">🎯 Your Role & Experience</h4>
+              <p className="text-text-secondary text-sm">
+                Your position determines the lens through which we view your learning needs. A
+                manager focuses on strategic ROI and organizational impact, while a specialist needs
+                deep technical implementation guidance.
               </p>
             </div>
 
-            <div className="p-3 bg-primary/5 rounded-lg border border-primary/10">
-              <h4 className="font-semibold text-primary mb-2">🏢 Industry Context</h4>
-              <p className="text-sm text-text-secondary">
-                Different industries have unique compliance requirements, learning cultures, and operational constraints.
-                Healthcare organizations need HIPAA-compliant solutions, while financial services prioritize security and regulatory compliance.
+            <div className="bg-primary/5 border-primary/10 rounded-lg border p-3">
+              <h4 className="text-primary mb-2 font-semibold">🏢 Industry Context</h4>
+              <p className="text-text-secondary text-sm">
+                Different industries have unique compliance requirements, learning cultures, and
+                operational constraints. Healthcare organizations need HIPAA-compliant solutions,
+                while financial services prioritize security and regulatory compliance.
               </p>
             </div>
 
-            <div className="p-3 bg-primary/5 rounded-lg border border-primary/10">
-              <h4 className="font-semibold text-primary mb-2">👥 Team & Budget Realities</h4>
-              <p className="text-sm text-text-secondary">
-                Your team size and budget constraints directly impact implementation feasibility. We&apos;ll recommend
-                scalable solutions that fit your resources while maximizing learning outcomes and organizational impact.
+            <div className="bg-primary/5 border-primary/10 rounded-lg border p-3">
+              <h4 className="text-primary mb-2 font-semibold">👥 Team & Budget Realities</h4>
+              <p className="text-text-secondary text-sm">
+                Your team size and budget constraints directly impact implementation feasibility.
+                We&apos;ll recommend scalable solutions that fit your resources while maximizing
+                learning outcomes and organizational impact.
               </p>
             </div>
 
-            <div className="p-3 bg-primary/5 rounded-lg border border-primary/10">
-              <h4 className="font-semibold text-primary mb-2">⚡ Technical Capabilities</h4>
-              <p className="text-sm text-text-secondary">
-                Your existing technical skills and tools influence which solutions are practical. We&apos;ll leverage
-                your current tech stack while identifying opportunities to enhance your L&D technology ecosystem.
+            <div className="bg-primary/5 border-primary/10 rounded-lg border p-3">
+              <h4 className="text-primary mb-2 font-semibold">⚡ Technical Capabilities</h4>
+              <p className="text-text-secondary text-sm">
+                Your existing technical skills and tools influence which solutions are practical.
+                We&apos;ll leverage your current tech stack while identifying opportunities to
+                enhance your L&D technology ecosystem.
               </p>
             </div>
           </div>
 
-          <div className="p-4 bg-gradient-to-r from-primary/10 to-secondary/10 rounded-lg border border-primary/20">
-            <p className="text-sm font-medium text-primary mb-2">💡 The Result</p>
-            <p className="text-sm text-text-secondary">
-              By providing detailed, accurate information, you&apos;ll receive a learning blueprint that addresses
-              your specific challenges, fits your organizational context, and delivers measurable results.
-              Think of this as investing 10 minutes to save 10 months of trial and error.
+          <div className="from-primary/10 to-secondary/10 border-primary/20 rounded-lg border bg-gradient-to-r p-4">
+            <p className="text-primary mb-2 text-sm font-medium">💡 The Result</p>
+            <p className="text-text-secondary text-sm">
+              By providing detailed, accurate information, you&apos;ll receive a learning blueprint
+              that addresses your specific challenges, fits your organizational context, and
+              delivers measurable results. Think of this as investing 10 minutes to save 10 months
+              of trial and error.
             </p>
           </div>
 
-          <p className="text-xs text-text-secondary italic text-center">
-            Every detail matters. The more precisely you describe your situation, the more precisely we can solve it.
+          <p className="text-text-secondary text-center text-xs italic">
+            Every detail matters. The more precisely you describe your situation, the more precisely
+            we can solve it.
           </p>
         </div>
-      )
-    }
+      ),
+    },
   },
   {
     id: 2,
     title: 'Organization Details',
     description: 'Help us understand your organization context',
     whyThisMatters: {
-      title: "Why does this matter?",
+      title: 'Why does this matter?',
       content: (
         <div className="space-y-4">
           <p className="text-[15px] leading-relaxed">
-            Your organization&apos;s structure, industry, and operational environment significantly influence the type of learning solutions that will work best for your team.
+            Your organization&apos;s structure, industry, and operational environment significantly
+            influence the type of learning solutions that will work best for your team.
           </p>
 
           <div className="grid gap-4">
-            <div className="p-3 bg-primary/5 rounded-lg border border-primary/10">
-              <h4 className="font-semibold text-primary mb-2">🏢 Organizational Structure</h4>
-              <p className="text-sm text-text-secondary">
-                Understanding your company size, hierarchy, and decision-making processes helps us recommend solutions that align with your organizational culture and approval workflows.
+            <div className="bg-primary/5 border-primary/10 rounded-lg border p-3">
+              <h4 className="text-primary mb-2 font-semibold">🏢 Organizational Structure</h4>
+              <p className="text-text-secondary text-sm">
+                Understanding your company size, hierarchy, and decision-making processes helps us
+                recommend solutions that align with your organizational culture and approval
+                workflows.
               </p>
             </div>
 
-            <div className="p-3 bg-primary/5 rounded-lg border border-primary/10">
-              <h4 className="font-semibold text-primary mb-2">🏭 Industry Requirements</h4>
-              <p className="text-sm text-text-secondary">
-                Different sectors have unique compliance needs, learning preferences, and operational constraints. We tailor our recommendations to ensure they meet your industry&apos;s specific standards and expectations.
+            <div className="bg-primary/5 border-primary/10 rounded-lg border p-3">
+              <h4 className="text-primary mb-2 font-semibold">🏭 Industry Requirements</h4>
+              <p className="text-text-secondary text-sm">
+                Different sectors have unique compliance needs, learning preferences, and
+                operational constraints. We tailor our recommendations to ensure they meet your
+                industry&apos;s specific standards and expectations.
               </p>
             </div>
 
-            <div className="p-3 bg-primary/5 rounded-lg border border-primary/10">
-              <h4 className="font-semibold text-primary mb-2">🌍 Geographic & Compliance Factors</h4>
-              <p className="text-sm text-text-secondary">
-                Your organization&apos;s geographic footprint and regulatory requirements directly impact content delivery, data handling, and compliance considerations in your learning solutions.
+            <div className="bg-primary/5 border-primary/10 rounded-lg border p-3">
+              <h4 className="text-primary mb-2 font-semibold">
+                🌍 Geographic & Compliance Factors
+              </h4>
+              <p className="text-text-secondary text-sm">
+                Your organization&apos;s geographic footprint and regulatory requirements directly
+                impact content delivery, data handling, and compliance considerations in your
+                learning solutions.
               </p>
             </div>
           </div>
 
-          <div className="p-4 bg-gradient-to-r from-primary/10 to-secondary/10 rounded-lg border border-primary/20">
-            <p className="text-sm font-medium text-primary mb-2">🎯 Organizational Alignment</p>
-            <p className="text-sm text-text-secondary">
-              This information ensures your learning blueprint integrates seamlessly with your existing systems, respects your organizational boundaries, and supports your strategic objectives.
+          <div className="from-primary/10 to-secondary/10 border-primary/20 rounded-lg border bg-gradient-to-r p-4">
+            <p className="text-primary mb-2 text-sm font-medium">🎯 Organizational Alignment</p>
+            <p className="text-text-secondary text-sm">
+              This information ensures your learning blueprint integrates seamlessly with your
+              existing systems, respects your organizational boundaries, and supports your strategic
+              objectives.
             </p>
           </div>
         </div>
-      )
-    }
+      ),
+    },
   },
   {
     id: 3,
     title: 'Learning Gap & Learners',
     description: 'Define what needs to be learned and who needs it',
     whyThisMatters: {
-      title: "Why does this matter?",
+      title: 'Why does this matter?',
       content: (
         <div className="space-y-4">
           <p className="text-[15px] leading-relaxed">
-            Clearly defining your learning objectives and target audience ensures we create solutions that address real gaps and resonate with your learners&apos; needs and motivations.
+            Clearly defining your learning objectives and target audience ensures we create
+            solutions that address real gaps and resonate with your learners&apos; needs and
+            motivations.
           </p>
 
           <div className="grid gap-4">
-            <div className="p-3 bg-primary/5 rounded-lg border border-primary/10">
-              <h4 className="font-semibold text-primary mb-2">🎯 Learning Objectives</h4>
-              <p className="text-sm text-text-secondary">
-                Specific, measurable learning goals help us design targeted interventions rather than generic training. We align content with your desired outcomes and success metrics.
+            <div className="bg-primary/5 border-primary/10 rounded-lg border p-3">
+              <h4 className="text-primary mb-2 font-semibold">🎯 Learning Objectives</h4>
+              <p className="text-text-secondary text-sm">
+                Specific, measurable learning goals help us design targeted interventions rather
+                than generic training. We align content with your desired outcomes and success
+                metrics.
               </p>
             </div>
 
-            <div className="p-3 bg-primary/5 rounded-lg border border-primary/10">
-              <h4 className="font-semibold text-primary mb-2">👥 Target Audience</h4>
-              <p className="text-sm text-text-secondary">
-                Understanding your learners&apos; prior knowledge, motivation factors, and learning preferences allows us to create engaging, relevant content that respects their time and learning styles.
+            <div className="bg-primary/5 border-primary/10 rounded-lg border p-3">
+              <h4 className="text-primary mb-2 font-semibold">👥 Target Audience</h4>
+              <p className="text-text-secondary text-sm">
+                Understanding your learners&apos; prior knowledge, motivation factors, and learning
+                preferences allows us to create engaging, relevant content that respects their time
+                and learning styles.
               </p>
             </div>
 
-            <div className="p-3 bg-primary/5 rounded-lg border border-primary/10">
-              <h4 className="font-semibold text-primary mb-2">⏰ Timeline & Resources</h4>
-              <p className="text-sm text-text-secondary">
-                Your available time and budget constraints shape the scope and delivery method of your learning solution, ensuring it&apos;s realistic and sustainable within your operational context.
+            <div className="bg-primary/5 border-primary/10 rounded-lg border p-3">
+              <h4 className="text-primary mb-2 font-semibold">⏰ Timeline & Resources</h4>
+              <p className="text-text-secondary text-sm">
+                Your available time and budget constraints shape the scope and delivery method of
+                your learning solution, ensuring it&apos;s realistic and sustainable within your
+                operational context.
               </p>
             </div>
           </div>
 
-          <div className="p-4 bg-gradient-to-r from-primary/10 to-secondary/10 rounded-lg border border-primary/20">
-            <p className="text-sm font-medium text-primary mb-2">📊 Outcome-Focused Design</p>
-            <p className="text-sm text-text-secondary">
-              This precision ensures your learning solution delivers measurable improvements in knowledge, skills, and performance, with clear evaluation criteria and success metrics.
+          <div className="from-primary/10 to-secondary/10 border-primary/20 rounded-lg border bg-gradient-to-r p-4">
+            <p className="text-primary mb-2 text-sm font-medium">📊 Outcome-Focused Design</p>
+            <p className="text-text-secondary text-sm">
+              This precision ensures your learning solution delivers measurable improvements in
+              knowledge, skills, and performance, with clear evaluation criteria and success
+              metrics.
             </p>
           </div>
         </div>
-      )
-    }
+      ),
+    },
   },
 ];
 
@@ -280,7 +364,12 @@ export default function DemoV2QuestionnairePage(): React.JSX.Element {
     defaultValues,
   });
 
-  const { handleSubmit, trigger, formState: { errors, isValid }, getValues } = methods;
+  const {
+    handleSubmit,
+    trigger,
+    formState: { errors, isValid },
+    getValues,
+  } = methods;
 
   // Function to save questionnaire data
   const saveQuestionnaire = async (data?: StaticQuestionnaireFormData): Promise<string | null> => {
@@ -397,7 +486,9 @@ export default function DemoV2QuestionnairePage(): React.JSX.Element {
       console.log('Dynamic questions generated:', generateResult);
 
       // Show success message and redirect to dynamic questionnaire
-      alert(`✅ Static questionnaire completed!\n\n${generateResult.message}\n\nGenerated ${generateResult.dynamicQuestions?.length || 0} sections with dynamic questions.`);
+      alert(
+        `✅ Static questionnaire completed!\n\n${generateResult.message}\n\nGenerated ${generateResult.dynamicQuestions?.length || 0} sections with dynamic questions.`
+      );
 
       // TODO: Redirect to dynamic questionnaire page
       // window.location.href = `/dynamic-questionnaire/${savedBlueprintId}`;
@@ -461,11 +552,11 @@ export default function DemoV2QuestionnairePage(): React.JSX.Element {
             >
               <p className="text-xl leading-relaxed text-white/70 sm:text-2xl lg:text-3xl">
                 Complete this{' '}
-                <span className="font-medium text-primary">comprehensive questionnaire</span>{' '}
-                to help us understand your{' '}
-                <span className="font-medium text-primary">professional context</span>,{' '}
-                <span className="font-medium text-primary">organizational requirements</span>, and{' '}
-                <span className="font-medium text-primary">learning objectives</span>.
+                <span className="text-primary font-medium">comprehensive questionnaire</span> to
+                help us understand your{' '}
+                <span className="text-primary font-medium">professional context</span>,{' '}
+                <span className="text-primary font-medium">organizational requirements</span>, and{' '}
+                <span className="text-primary font-medium">learning objectives</span>.
               </p>
             </motion.div>
 
@@ -474,7 +565,7 @@ export default function DemoV2QuestionnairePage(): React.JSX.Element {
               initial={{ scaleX: 0 }}
               animate={{ scaleX: 1 }}
               transition={{ duration: 1, delay: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
-              className="mt-16 h-px w-24 bg-primary"
+              className="bg-primary mt-16 h-px w-24"
             />
           </div>
         </div>
@@ -515,15 +606,13 @@ export default function DemoV2QuestionnairePage(): React.JSX.Element {
 
                 {/* Error Display */}
                 {saveError && (
-                  <div className="p-4 bg-error/10 border border-error/20 rounded-lg">
-                    <p className="text-error text-sm">
-                      ⚠️ {saveError}
-                    </p>
+                  <div className="bg-error/10 border-error/20 rounded-lg border p-4">
+                    <p className="text-error text-sm">⚠️ {saveError}</p>
                   </div>
                 )}
 
                 {/* Navigation */}
-                <div className="flex justify-end items-center pt-8 border-t border-white/10">
+                <div className="flex items-center justify-end border-t border-white/10 pt-8">
                   <div className="flex items-center gap-3">
                     {currentSection > 1 && (
                       <QuestionnaireButton

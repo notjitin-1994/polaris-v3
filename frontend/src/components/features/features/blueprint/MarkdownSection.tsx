@@ -208,7 +208,10 @@ function convertSustainabilityPlanToMarkdown(data: any): string {
     if (data.maintenance_schedule.review_frequency) {
       md += `**Review Frequency:** ${data.maintenance_schedule.review_frequency}\n\n`;
     }
-    if (data.maintenance_schedule.update_triggers && data.maintenance_schedule.update_triggers.length > 0) {
+    if (
+      data.maintenance_schedule.update_triggers &&
+      data.maintenance_schedule.update_triggers.length > 0
+    ) {
       md += `**Update Triggers:**\n`;
       data.maintenance_schedule.update_triggers.forEach((trigger: string) => {
         md += `- ${trigger}\n`;

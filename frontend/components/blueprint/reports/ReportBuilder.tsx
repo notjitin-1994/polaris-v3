@@ -25,9 +25,7 @@ import {
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
-import {
-  useSortable,
-} from '@dnd-kit/sortable';
+import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import {
   Plus,
@@ -78,29 +76,20 @@ interface DraggableSection extends Section {
 }
 
 function SortableSection({ section }: { section: DraggableSection }) {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({ id: section.sortId });
-  
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+    id: section.sortId,
+  });
+
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
   };
-  
+
   return (
     <motion.div
       ref={setNodeRef}
       style={style}
-      className={cn(
-        glassCard.base,
-        'group relative p-4',
-        isDragging && 'opacity-50',
-      )}
+      className={cn(glassCard.base, 'group relative p-4', isDragging && 'opacity-50')}
       layout
       layoutId={section.sortId}
     >
@@ -111,19 +100,17 @@ function SortableSection({ section }: { section: DraggableSection }) {
           className={cn(
             'mt-0.5 cursor-grab touch-none rounded p-1',
             'text-text-secondary hover:text-foreground',
-            'hover:bg-white/10 active:cursor-grabbing',
+            'hover:bg-white/10 active:cursor-grabbing'
           )}
         >
           <GripVertical className="h-5 w-5" />
         </button>
-        
+
         <div className="flex-1">
-          <h4 className="font-medium text-foreground">{section.title}</h4>
-          <p className="text-xs text-text-secondary">
-            {section.type} section
-          </p>
+          <h4 className="text-foreground font-medium">{section.title}</h4>
+          <p className="text-text-secondary text-xs">{section.type} section</p>
         </div>
-        
+
         <button
           onClick={(e) => {
             e.stopPropagation();
@@ -131,9 +118,9 @@ function SortableSection({ section }: { section: DraggableSection }) {
           }}
           className={cn(
             'opacity-0 group-hover:opacity-100',
-            'rounded p-1 text-text-secondary',
-            'hover:bg-white/10 hover:text-error',
-            'transition-all',
+            'text-text-secondary rounded p-1',
+            'hover:text-error hover:bg-white/10',
+            'transition-all'
           )}
         >
           <X className="h-4 w-4" />
@@ -149,16 +136,16 @@ export function ReportBuilder({
   onSave,
   onCancel,
 }: ReportBuilderProps): React.JSX.Element {
-  const [reportSections, setReportSections] = useState<DraggableSection[]>(() => 
+  const [reportSections, setReportSections] = useState<DraggableSection[]>(() =>
     pinnedSections
-      .map(id => sections.find(s => s.id === id))
+      .map((id) => sections.find((s) => s.id === id))
       .filter(Boolean)
       .map((section, index) => ({
         ...section!,
         sortId: `section-${index}`,
       }))
   );
-  
+
   const [reportConfig, setReportConfig] = useState({
     name: '',
     description: '',
@@ -170,37 +157,37 @@ export function ReportBuilder({
       spacing: 'normal' as const,
     },
   });
-  
+
   const [activeId, setActiveId] = useState<string | null>(null);
   const [showPreview, setShowPreview] = useState(false);
   const [currentStep, setCurrentStep] = useState<'sections' | 'config' | 'theme'>('sections');
-  
+
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
     })
   );
-  
+
   const handleDragStart = (event: DragStartEvent) => {
     setActiveId(event.active.id as string);
   };
-  
+
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
-    
+
     if (active.id !== over?.id) {
       setReportSections((items) => {
         const oldIndex = items.findIndex((i) => i.sortId === active.id);
         const newIndex = items.findIndex((i) => i.sortId === over?.id);
-        
+
         return arrayMove(items, oldIndex, newIndex);
       });
     }
-    
+
     setActiveId(null);
   };
-  
+
   const addSection = (section: Section) => {
     const newSection: DraggableSection = {
       ...section,
@@ -208,34 +195,34 @@ export function ReportBuilder({
     };
     setReportSections([...reportSections, newSection]);
   };
-  
+
   const removeSection = (sortId: string) => {
-    setReportSections(reportSections.filter(s => s.sortId !== sortId));
+    setReportSections(reportSections.filter((s) => s.sortId !== sortId));
   };
-  
+
   const handleSave = () => {
     if (reportConfig.name && reportSections.length > 0) {
       onSave({
         name: reportConfig.name,
         description: reportConfig.description,
-        sections: reportSections.map(s => s.id),
+        sections: reportSections.map((s) => s.id),
         layout: reportConfig.layout,
         theme: reportConfig.theme,
       });
     }
   };
-  
+
   const steps = [
     { id: 'sections', label: 'Select Sections', icon: Layout },
     { id: 'config', label: 'Configure Report', icon: Settings },
     { id: 'theme', label: 'Customize Theme', icon: Palette },
   ];
-  
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-6"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-6 backdrop-blur-sm"
     >
       <motion.div
         initial={{ scale: 0.9, opacity: 0 }}
@@ -243,7 +230,7 @@ export function ReportBuilder({
         className={cn(
           glassPanel.floating,
           elevation.xl,
-          'relative h-full max-h-[90vh] w-full max-w-5xl overflow-hidden rounded-3xl',
+          'relative h-full max-h-[90vh] w-full max-w-5xl overflow-hidden rounded-3xl'
         )}
       >
         {/* Header */}
@@ -253,11 +240,11 @@ export function ReportBuilder({
               <h2 className={cn(typographyPresets.articleTitle, 'text-foreground')}>
                 Create Custom Report
               </h2>
-              <p className="mt-1 text-sm text-text-secondary">
+              <p className="text-text-secondary mt-1 text-sm">
                 Build a personalized report from your blueprint sections
               </p>
             </div>
-            
+
             <div className="flex items-center gap-2">
               <motion.button
                 {...microInteractions.buttonPress}
@@ -265,34 +252,34 @@ export function ReportBuilder({
                 className={cn(
                   componentStyles.button.base,
                   componentStyles.button.variants.ghost,
-                  componentStyles.button.sizes.sm,
+                  componentStyles.button.sizes.sm
                 )}
               >
                 <Eye className="h-4 w-4" />
                 <span>Preview</span>
               </motion.button>
-              
+
               <motion.button
                 {...microInteractions.buttonPress}
                 onClick={onCancel}
                 className={cn(
                   componentStyles.button.base,
                   componentStyles.button.variants.ghost,
-                  componentStyles.button.sizes.sm,
+                  componentStyles.button.sizes.sm
                 )}
               >
                 Cancel
               </motion.button>
             </div>
           </div>
-          
+
           {/* Steps */}
           <div className="mt-6 flex items-center gap-4">
             {steps.map((step, index) => {
               const Icon = step.icon;
               const isActive = currentStep === step.id;
-              const isCompleted = steps.findIndex(s => s.id === currentStep) > index;
-              
+              const isCompleted = steps.findIndex((s) => s.id === currentStep) > index;
+
               return (
                 <button
                   key={step.id}
@@ -304,21 +291,17 @@ export function ReportBuilder({
                       ? 'bg-primary/20 text-primary'
                       : isCompleted
                         ? 'text-success hover:bg-white/5'
-                        : 'text-text-secondary hover:bg-white/5',
+                        : 'text-text-secondary hover:bg-white/5'
                   )}
                 >
-                  {isCompleted ? (
-                    <Check className="h-4 w-4" />
-                  ) : (
-                    <Icon className="h-4 w-4" />
-                  )}
+                  {isCompleted ? <Check className="h-4 w-4" /> : <Icon className="h-4 w-4" />}
                   <span>{step.label}</span>
                 </button>
               );
             })}
           </div>
         </div>
-        
+
         {/* Content */}
         <div className="flex flex-1 overflow-hidden">
           {/* Main Content */}
@@ -334,12 +317,12 @@ export function ReportBuilder({
                 >
                   {/* Available Sections */}
                   <div>
-                    <h3 className={cn(typographyPresets.labelText, 'mb-4 text-foreground')}>
+                    <h3 className={cn(typographyPresets.labelText, 'text-foreground mb-4')}>
                       Available Sections
                     </h3>
                     <div className="space-y-2">
                       {sections
-                        .filter(s => !reportSections.some(rs => rs.id === s.id))
+                        .filter((s) => !reportSections.some((rs) => rs.id === s.id))
                         .map((section) => (
                           <motion.div
                             key={section.id}
@@ -347,29 +330,25 @@ export function ReportBuilder({
                             className={cn(
                               glassCard.base,
                               'cursor-pointer p-4',
-                              'hover:border-primary/30',
+                              'hover:border-primary/30'
                             )}
                             onClick={() => addSection(section)}
                           >
                             <div className="flex items-center justify-between">
                               <div>
-                                <h4 className="font-medium text-foreground">
-                                  {section.title}
-                                </h4>
-                                <p className="text-xs text-text-secondary">
-                                  {section.type}
-                                </p>
+                                <h4 className="text-foreground font-medium">{section.title}</h4>
+                                <p className="text-text-secondary text-xs">{section.type}</p>
                               </div>
-                              <Plus className="h-4 w-4 text-primary" />
+                              <Plus className="text-primary h-4 w-4" />
                             </div>
                           </motion.div>
                         ))}
                     </div>
                   </div>
-                  
+
                   {/* Report Sections */}
                   <div>
-                    <h3 className={cn(typographyPresets.labelText, 'mb-4 text-foreground')}>
+                    <h3 className={cn(typographyPresets.labelText, 'text-foreground mb-4')}>
                       Report Sections
                     </h3>
                     <DndContext
@@ -379,34 +358,28 @@ export function ReportBuilder({
                       onDragEnd={handleDragEnd}
                     >
                       <SortableContext
-                        items={reportSections.map(s => s.sortId)}
+                        items={reportSections.map((s) => s.sortId)}
                         strategy={verticalListSortingStrategy}
                       >
                         <div className="space-y-2">
                           {reportSections.map((section) => (
-                            <SortableSection
-                              key={section.sortId}
-                              section={section}
-                            />
+                            <SortableSection key={section.sortId} section={section} />
                           ))}
                         </div>
                       </SortableContext>
-                      
+
                       <DragOverlay>
                         {activeId ? (
                           <div className={cn(glassCard.premium, 'p-4')}>
-                            {reportSections.find(s => s.sortId === activeId)?.title}
+                            {reportSections.find((s) => s.sortId === activeId)?.title}
                           </div>
                         ) : null}
                       </DragOverlay>
                     </DndContext>
-                    
+
                     {reportSections.length === 0 && (
-                      <div className={cn(
-                        glassCard.base,
-                        'border-dashed p-8 text-center',
-                      )}>
-                        <p className="text-sm text-text-secondary">
+                      <div className={cn(glassCard.base, 'border-dashed p-8 text-center')}>
+                        <p className="text-text-secondary text-sm">
                           Add sections to build your report
                         </p>
                       </div>
@@ -414,7 +387,7 @@ export function ReportBuilder({
                   </div>
                 </motion.div>
               )}
-              
+
               {currentStep === 'config' && (
                 <motion.div
                   key="config"
@@ -435,29 +408,31 @@ export function ReportBuilder({
                       className={cn(
                         componentStyles.input.base,
                         componentStyles.input.variants.glass,
-                        componentStyles.input.sizes.md,
+                        componentStyles.input.sizes.md
                       )}
                     />
                   </div>
-                  
+
                   <div>
                     <label className={cn(typographyPresets.labelText, 'mb-2 block')}>
                       Description
                     </label>
                     <textarea
                       value={reportConfig.description}
-                      onChange={(e) => setReportConfig({ ...reportConfig, description: e.target.value })}
+                      onChange={(e) =>
+                        setReportConfig({ ...reportConfig, description: e.target.value })
+                      }
                       placeholder="Brief description of your report..."
                       rows={3}
                       className={cn(
                         componentStyles.input.base,
                         componentStyles.input.variants.glass,
                         componentStyles.input.sizes.md,
-                        'resize-none',
+                        'resize-none'
                       )}
                     />
                   </div>
-                  
+
                   <div>
                     <label className={cn(typographyPresets.labelText, 'mb-2 block')}>
                       Layout Style
@@ -470,27 +445,33 @@ export function ReportBuilder({
                       ].map((layout) => {
                         const Icon = layout.icon;
                         const isSelected = reportConfig.layout === layout.id;
-                        
+
                         return (
                           <button
                             key={layout.id}
-                            onClick={() => setReportConfig({ ...reportConfig, layout: layout.id as any })}
+                            onClick={() =>
+                              setReportConfig({ ...reportConfig, layout: layout.id as any })
+                            }
                             className={cn(
                               glassCard.base,
                               'flex flex-col items-center gap-2 p-4',
                               isSelected
                                 ? 'border-primary/50 bg-primary/10'
-                                : 'hover:border-white/20',
+                                : 'hover:border-white/20'
                             )}
                           >
-                            <Icon className={cn(
-                              'h-8 w-8',
-                              isSelected ? 'text-primary' : 'text-text-secondary',
-                            )} />
-                            <span className={cn(
-                              'text-sm font-medium',
-                              isSelected ? 'text-primary' : 'text-text-secondary',
-                            )}>
+                            <Icon
+                              className={cn(
+                                'h-8 w-8',
+                                isSelected ? 'text-primary' : 'text-text-secondary'
+                              )}
+                            />
+                            <span
+                              className={cn(
+                                'text-sm font-medium',
+                                isSelected ? 'text-primary' : 'text-text-secondary'
+                              )}
+                            >
                               {layout.label}
                             </span>
                           </button>
@@ -500,7 +481,7 @@ export function ReportBuilder({
                   </div>
                 </motion.div>
               )}
-              
+
               {currentStep === 'theme' && (
                 <motion.div
                   key="theme"
@@ -517,29 +498,33 @@ export function ReportBuilder({
                       <input
                         type="color"
                         value={reportConfig.theme.primaryColor}
-                        onChange={(e) => setReportConfig({
-                          ...reportConfig,
-                          theme: { ...reportConfig.theme, primaryColor: e.target.value },
-                        })}
+                        onChange={(e) =>
+                          setReportConfig({
+                            ...reportConfig,
+                            theme: { ...reportConfig.theme, primaryColor: e.target.value },
+                          })
+                        }
                         className="h-12 w-12 cursor-pointer rounded-lg border border-white/20"
                       />
                       <input
                         type="text"
                         value={reportConfig.theme.primaryColor}
-                        onChange={(e) => setReportConfig({
-                          ...reportConfig,
-                          theme: { ...reportConfig.theme, primaryColor: e.target.value },
-                        })}
+                        onChange={(e) =>
+                          setReportConfig({
+                            ...reportConfig,
+                            theme: { ...reportConfig.theme, primaryColor: e.target.value },
+                          })
+                        }
                         className={cn(
                           componentStyles.input.base,
                           componentStyles.input.variants.glass,
                           componentStyles.input.sizes.sm,
-                          'w-32',
+                          'w-32'
                         )}
                       />
                     </div>
                   </div>
-                  
+
                   <div>
                     <label className={cn(typographyPresets.labelText, 'mb-2 block')}>
                       Font Family
@@ -548,15 +533,17 @@ export function ReportBuilder({
                       {['Inter', 'Lora', 'JetBrains Mono'].map((font) => (
                         <button
                           key={font}
-                          onClick={() => setReportConfig({
-                            ...reportConfig,
-                            theme: { ...reportConfig.theme, fontFamily: font },
-                          })}
+                          onClick={() =>
+                            setReportConfig({
+                              ...reportConfig,
+                              theme: { ...reportConfig.theme, fontFamily: font },
+                            })
+                          }
                           className={cn(
                             'rounded-lg px-4 py-2 text-sm',
                             reportConfig.theme.fontFamily === font
                               ? 'bg-primary/20 text-primary'
-                              : 'bg-white/5 text-text-secondary hover:text-foreground',
+                              : 'text-text-secondary hover:text-foreground bg-white/5'
                           )}
                           style={{ fontFamily: font }}
                         >
@@ -565,24 +552,24 @@ export function ReportBuilder({
                       ))}
                     </div>
                   </div>
-                  
+
                   <div>
-                    <label className={cn(typographyPresets.labelText, 'mb-2 block')}>
-                      Spacing
-                    </label>
+                    <label className={cn(typographyPresets.labelText, 'mb-2 block')}>Spacing</label>
                     <div className="grid grid-cols-3 gap-2">
                       {(['tight', 'normal', 'relaxed'] as const).map((spacing) => (
                         <button
                           key={spacing}
-                          onClick={() => setReportConfig({
-                            ...reportConfig,
-                            theme: { ...reportConfig.theme, spacing },
-                          })}
+                          onClick={() =>
+                            setReportConfig({
+                              ...reportConfig,
+                              theme: { ...reportConfig.theme, spacing },
+                            })
+                          }
                           className={cn(
                             'rounded-lg px-4 py-2 text-sm capitalize',
                             reportConfig.theme.spacing === spacing
                               ? 'bg-primary/20 text-primary'
-                              : 'bg-white/5 text-text-secondary hover:text-foreground',
+                              : 'text-text-secondary hover:text-foreground bg-white/5'
                           )}
                         >
                           {spacing}
@@ -594,7 +581,7 @@ export function ReportBuilder({
               )}
             </AnimatePresence>
           </div>
-          
+
           {/* Preview Panel */}
           <AnimatePresence>
             {showPreview && (
@@ -602,23 +589,18 @@ export function ReportBuilder({
                 initial={{ x: 400, opacity: 0 }}
                 animate={{ x: 0, opacity: 1 }}
                 exit={{ x: 400, opacity: 0 }}
-                className={cn(
-                  glassPanel.sidebar,
-                  'w-96 border-l border-white/10 p-6',
-                )}
+                className={cn(glassPanel.sidebar, 'w-96 border-l border-white/10 p-6')}
               >
-                <h3 className={cn(typographyPresets.labelText, 'mb-4 text-foreground')}>
-                  Preview
-                </h3>
+                <h3 className={cn(typographyPresets.labelText, 'text-foreground mb-4')}>Preview</h3>
                 <div className={cn(glassCard.base, 'p-4')}>
-                  <h4 className="mb-2 font-medium text-foreground">
+                  <h4 className="text-foreground mb-2 font-medium">
                     {reportConfig.name || 'Untitled Report'}
                   </h4>
-                  <p className="mb-4 text-sm text-text-secondary">
+                  <p className="text-text-secondary mb-4 text-sm">
                     {reportConfig.description || 'No description'}
                   </p>
                   <div className="space-y-2">
-                    <p className="text-xs text-text-secondary">
+                    <p className="text-text-secondary text-xs">
                       {reportSections.length} sections • {reportConfig.layout} layout
                     </p>
                     <div className="flex items-center gap-2">
@@ -626,7 +608,7 @@ export function ReportBuilder({
                         className="h-4 w-4 rounded"
                         style={{ backgroundColor: reportConfig.theme.primaryColor }}
                       />
-                      <span className="text-xs text-text-secondary">
+                      <span className="text-text-secondary text-xs">
                         {reportConfig.theme.fontFamily} • {reportConfig.theme.spacing} spacing
                       </span>
                     </div>
@@ -636,19 +618,19 @@ export function ReportBuilder({
             )}
           </AnimatePresence>
         </div>
-        
+
         {/* Footer */}
         <div className="border-t border-white/10 p-6">
           <div className="flex items-center justify-between">
-            <div className="text-sm text-text-secondary">
+            <div className="text-text-secondary text-sm">
               {reportSections.length} sections selected
             </div>
-            
+
             <div className="flex items-center gap-4">
               {currentStep !== 'sections' && (
                 <button
                   onClick={() => {
-                    const currentIndex = steps.findIndex(s => s.id === currentStep);
+                    const currentIndex = steps.findIndex((s) => s.id === currentStep);
                     if (currentIndex > 0) {
                       setCurrentStep(steps[currentIndex - 1].id as typeof currentStep);
                     }
@@ -656,17 +638,17 @@ export function ReportBuilder({
                   className={cn(
                     componentStyles.button.base,
                     componentStyles.button.variants.ghost,
-                    componentStyles.button.sizes.md,
+                    componentStyles.button.sizes.md
                   )}
                 >
                   Back
                 </button>
               )}
-              
+
               {currentStep !== 'theme' ? (
                 <button
                   onClick={() => {
-                    const currentIndex = steps.findIndex(s => s.id === currentStep);
+                    const currentIndex = steps.findIndex((s) => s.id === currentStep);
                     if (currentIndex < steps.length - 1) {
                       setCurrentStep(steps[currentIndex + 1].id as typeof currentStep);
                     }
@@ -674,7 +656,7 @@ export function ReportBuilder({
                   className={cn(
                     componentStyles.button.base,
                     componentStyles.button.variants.primary,
-                    componentStyles.button.sizes.md,
+                    componentStyles.button.sizes.md
                   )}
                   disabled={currentStep === 'sections' && reportSections.length === 0}
                 >
@@ -686,7 +668,7 @@ export function ReportBuilder({
                   className={cn(
                     componentStyles.button.base,
                     componentStyles.button.variants.primary,
-                    componentStyles.button.sizes.md,
+                    componentStyles.button.sizes.md
                   )}
                   disabled={!reportConfig.name || reportSections.length === 0}
                 >

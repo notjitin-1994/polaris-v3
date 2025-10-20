@@ -27,7 +27,7 @@ describe('LogStore', () => {
       };
 
       store.add(entry);
-      
+
       const logs = store.getAll();
       expect(logs).toHaveLength(1);
       expect(logs[0].id).toBe('log_1');
@@ -62,7 +62,7 @@ describe('LogStore', () => {
       };
 
       store.add(entry);
-      
+
       const found = store.getById('log_specific');
       expect(found).toBeDefined();
       expect(found?.id).toBe('log_specific');
@@ -80,7 +80,7 @@ describe('LogStore', () => {
       });
 
       store.clear();
-      
+
       expect(store.count()).toBe(0);
     });
 
@@ -128,43 +128,43 @@ describe('LogStore', () => {
 
     it('should filter by log level', () => {
       const errorLogs = store.query({ level: 'error' });
-      expect(errorLogs.every(log => log.level === 'error')).toBe(true);
+      expect(errorLogs.every((log) => log.level === 'error')).toBe(true);
     });
 
     it('should filter by multiple log levels', () => {
       const logs = store.query({ level: ['error', 'warn'] });
-      expect(logs.every(log => log.level === 'error' || log.level === 'warn')).toBe(true);
+      expect(logs.every((log) => log.level === 'error' || log.level === 'warn')).toBe(true);
     });
 
     it('should filter by service', () => {
       const apiLogs = store.query({ service: 'api' });
-      expect(apiLogs.every(log => log.service === 'api')).toBe(true);
+      expect(apiLogs.every((log) => log.service === 'api')).toBe(true);
     });
 
     it('should filter by multiple services', () => {
       const logs = store.query({ service: ['api', 'database'] });
-      expect(logs.every(log => log.service === 'api' || log.service === 'database')).toBe(true);
+      expect(logs.every((log) => log.service === 'api' || log.service === 'database')).toBe(true);
     });
 
     it('should filter by userId', () => {
       const userLogs = store.query({ userId: 'user-1' });
-      expect(userLogs.every(log => log.metadata.userId === 'user-1')).toBe(true);
+      expect(userLogs.every((log) => log.metadata.userId === 'user-1')).toBe(true);
     });
 
     it('should filter by blueprintId', () => {
       const blueprintLogs = store.query({ blueprintId: 'blueprint-1' });
-      expect(blueprintLogs.every(log => log.metadata.blueprintId === 'blueprint-1')).toBe(true);
+      expect(blueprintLogs.every((log) => log.metadata.blueprintId === 'blueprint-1')).toBe(true);
     });
 
     it('should support search in message', () => {
       const logs = store.query({ search: 'Message 5' });
-      expect(logs.some(log => log.message.includes('Message 5'))).toBe(true);
+      expect(logs.some((log) => log.message.includes('Message 5'))).toBe(true);
     });
 
     it('should support pagination', () => {
       const page1 = store.query({ limit: 5, offset: 0 });
       const page2 = store.query({ limit: 5, offset: 5 });
-      
+
       expect(page1).toHaveLength(5);
       expect(page2).toHaveLength(5);
       expect(page1[0].id).not.toBe(page2[0].id);
@@ -173,12 +173,12 @@ describe('LogStore', () => {
     it('should filter by time range', () => {
       const now = new Date();
       const future = new Date(now.getTime() + 10000);
-      
+
       const logs = store.query({
         from: now.toISOString(),
         to: future.toISOString(),
       });
-      
+
       expect(logs.length).toBeGreaterThan(0);
     });
 
@@ -188,12 +188,13 @@ describe('LogStore', () => {
         service: 'api',
         userId: 'user-1',
       });
-      
-      expect(logs.every(log => 
-        log.level === 'error' && 
-        log.service === 'api' && 
-        log.metadata.userId === 'user-1'
-      )).toBe(true);
+
+      expect(
+        logs.every(
+          (log) =>
+            log.level === 'error' && log.service === 'api' && log.metadata.userId === 'user-1'
+        )
+      ).toBe(true);
     });
   });
 
@@ -258,7 +259,7 @@ describe('LogStore', () => {
     it('should export logs as JSON', () => {
       const json = store.exportJSON();
       const parsed = JSON.parse(json);
-      
+
       expect(Array.isArray(parsed)).toBe(true);
       expect(parsed).toHaveLength(1);
       expect(parsed[0].id).toBe('log_1');
@@ -266,7 +267,7 @@ describe('LogStore', () => {
 
     it('should export logs as CSV', () => {
       const csv = store.exportCSV();
-      
+
       expect(csv).toContain('ID,Timestamp,Level,Service,Event,Message');
       expect(csv).toContain('log_1');
       expect(csv).toContain('info');
@@ -276,7 +277,7 @@ describe('LogStore', () => {
 
     it('should export logs as plain text', () => {
       const txt = store.exportText();
-      
+
       expect(txt).toContain('[2025-01-01T00:00:00.000Z]');
       expect(txt).toContain('[INFO]');
       expect(txt).toContain('[api]');
@@ -299,7 +300,7 @@ describe('LogStore', () => {
 
       const json = store.exportJSON({ level: 'error' });
       const parsed = JSON.parse(json);
-      
+
       expect(parsed).toHaveLength(1);
       expect(parsed[0].level).toBe('error');
     });

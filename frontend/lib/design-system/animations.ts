@@ -30,7 +30,7 @@ export const orchestratedEntrance: Variants = {
     transition: {
       staggerChildren: 0.08,
       delayChildren: 0.05,
-      when: "beforeChildren",
+      when: 'beforeChildren',
     },
   },
 };
@@ -45,7 +45,7 @@ export const itemAnimations = {
       transition: { type: 'spring', ...springPresets.gentle },
     },
   },
-  
+
   fadeInScale: {
     hidden: { opacity: 0, scale: 0.9 },
     visible: {
@@ -54,7 +54,7 @@ export const itemAnimations = {
       transition: { type: 'spring', ...springPresets.snappy },
     },
   },
-  
+
   slideInLeft: {
     hidden: { opacity: 0, x: -40 },
     visible: {
@@ -63,7 +63,7 @@ export const itemAnimations = {
       transition: { type: 'spring', ...springPresets.smooth },
     },
   },
-  
+
   slideInRight: {
     hidden: { opacity: 0, x: 40 },
     visible: {
@@ -72,7 +72,7 @@ export const itemAnimations = {
       transition: { type: 'spring', ...springPresets.smooth },
     },
   },
-  
+
   rotateIn: {
     hidden: { opacity: 0, rotate: -10, scale: 0.9 },
     visible: {
@@ -82,10 +82,10 @@ export const itemAnimations = {
       transition: { type: 'spring', ...springPresets.elastic },
     },
   },
-  
+
   morphIn: {
-    hidden: { 
-      opacity: 0, 
+    hidden: {
+      opacity: 0,
       scale: 0.8,
       filter: 'blur(10px)',
     },
@@ -110,41 +110,41 @@ export const sectionTransitions = {
     exit: { opacity: 0 },
     transition: { duration: 0.3 },
   },
-  
+
   slideUp: {
     initial: { opacity: 0, y: 40 },
     animate: { opacity: 1, y: 0 },
     exit: { opacity: 0, y: -40 },
     transition: { type: 'spring', ...springPresets.smooth },
   },
-  
+
   slideHorizontal: {
     initial: (direction: number) => ({ opacity: 0, x: direction * 100 }),
     animate: { opacity: 1, x: 0 },
     exit: (direction: number) => ({ opacity: 0, x: direction * -100 }),
     transition: { type: 'spring', ...springPresets.snappy },
   },
-  
+
   zoom: {
     initial: { opacity: 0, scale: 0.8 },
     animate: { opacity: 1, scale: 1 },
     exit: { opacity: 0, scale: 1.2 },
     transition: { type: 'spring', ...springPresets.gentle },
   },
-  
+
   morph: {
-    initial: { 
-      opacity: 0, 
+    initial: {
+      opacity: 0,
       scale: 0.9,
       filter: 'blur(20px) brightness(0.8)',
     },
-    animate: { 
-      opacity: 1, 
+    animate: {
+      opacity: 1,
       scale: 1,
       filter: 'blur(0px) brightness(1)',
     },
-    exit: { 
-      opacity: 0, 
+    exit: {
+      opacity: 0,
       scale: 1.1,
       filter: 'blur(20px) brightness(1.2)',
     },
@@ -161,38 +161,38 @@ export const microInteractions = {
     whileTap: { scale: 0.95 },
     transition: { type: 'spring', ...springPresets.snappy },
   },
-  
+
   buttonHover: {
     whileHover: { scale: 1.05, y: -2 },
     transition: { type: 'spring', ...springPresets.gentle },
   },
-  
+
   cardHover: {
-    whileHover: { 
+    whileHover: {
       y: -8,
       scale: 1.02,
       transition: { type: 'spring', ...springPresets.smooth },
     },
   },
-  
+
   iconPulse: {
     animate: {
       scale: [1, 1.1, 1],
       transition: {
         duration: 2,
         repeat: Infinity,
-        ease: "easeInOut",
+        ease: 'easeInOut',
       },
     },
   },
-  
+
   shimmer: {
     animate: {
       backgroundPosition: ['200% 0', '-200% 0'],
       transition: {
         duration: 3,
         repeat: Infinity,
-        ease: "linear",
+        ease: 'linear',
       },
     },
   },
@@ -212,13 +212,13 @@ export const gestureAnimations = {
     opacity: 0,
     transition: { type: 'spring', ...springPresets.snappy },
   },
-  
+
   swipeRight: {
     x: 300,
     opacity: 0,
     transition: { type: 'spring', ...springPresets.snappy },
   },
-  
+
   pinchZoom: {
     scale: [1, 1.2, 1],
     transition: { type: 'spring', ...springPresets.elastic },
@@ -237,15 +237,22 @@ export function createAnimationVariant(
     stagger?: number;
   }
 ): Variants {
-  const { type = 'spring', preset = 'smooth', duration = 0.6, delay = 0, stagger = 0 } = options || {};
-  
+  const {
+    type = 'spring',
+    preset = 'smooth',
+    duration = 0.6,
+    delay = 0,
+    stagger = 0,
+  } = options || {};
+
   return {
     hidden: from,
     visible: {
       ...to,
-      transition: type === 'spring' 
-        ? { type, ...springPresets[preset], delay, staggerChildren: stagger }
-        : { type, duration, delay, ease: timingFunctions.smoothSpring, staggerChildren: stagger },
+      transition:
+        type === 'spring'
+          ? { type, ...springPresets[preset], delay, staggerChildren: stagger }
+          : { type, duration, delay, ease: timingFunctions.smoothSpring, staggerChildren: stagger },
     },
   };
 }
@@ -258,14 +265,14 @@ export const pageTransitions = {
     exit: { opacity: 0 },
     transition: { duration: 0.4 },
   },
-  
+
   slideUp: {
     initial: { opacity: 0, y: 100 },
     animate: { opacity: 1, y: 0 },
     exit: { opacity: 0, y: -100 },
     transition: { type: 'spring', ...springPresets.smooth },
   },
-  
+
   scale: {
     initial: { opacity: 0, scale: 0.8 },
     animate: { opacity: 1, scale: 1 },

@@ -359,9 +359,7 @@ describe('Blueprint Generation and Validation', () => {
           ],
         },
         resources: {
-          human_resources: [
-            { role: 'Instructional Designer', fte: 0.5, duration: '3 months' },
-          ],
+          human_resources: [{ role: 'Instructional Designer', fte: 0.5, duration: '3 months' }],
           budget: {
             currency: 'USD',
             items: [{ item: 'Content Development', amount: 50000 }],
@@ -435,4 +433,3 @@ describe('Blueprint Display Graceful Degradation', () => {
     expect(normalized.objectives.displayType).toBe('infographic');
   });
 });
-

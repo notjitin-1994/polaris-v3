@@ -99,22 +99,22 @@ export default function DemoDynamicV2Page(): React.JSX.Element {
   }, []);
 
   const handleAnswerChange = (questionId: string, value: unknown) => {
-    setAnswers(prev => ({
+    setAnswers((prev) => ({
       ...prev,
-      [questionId]: value
+      [questionId]: value,
     }));
   };
 
   const goToNextSection = () => {
     if (questionnaire && currentSection < questionnaire.sections.length - 1) {
-      setCurrentSection(prev => prev + 1);
+      setCurrentSection((prev) => prev + 1);
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
 
   const goToPreviousSection = () => {
     if (currentSection > 0) {
-      setCurrentSection(prev => prev - 1);
+      setCurrentSection((prev) => prev - 1);
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
@@ -126,9 +126,9 @@ export default function DemoDynamicV2Page(): React.JSX.Element {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-[#020C1B] flex items-center justify-center">
-        <div className="text-center space-y-4">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto" />
+      <div className="flex min-h-screen items-center justify-center bg-[#020C1B]">
+        <div className="space-y-4 text-center">
+          <div className="border-primary mx-auto h-12 w-12 animate-spin rounded-full border-b-2" />
           <p className="text-white/70">Loading questionnaire...</p>
         </div>
       </div>
@@ -137,9 +137,9 @@ export default function DemoDynamicV2Page(): React.JSX.Element {
 
   if (error || !questionnaire) {
     return (
-      <div className="min-h-screen bg-[#020C1B] flex items-center justify-center">
-        <div className="glass-card p-8 max-w-md">
-          <h2 className="text-xl font-bold text-error mb-4">Error Loading Questionnaire</h2>
+      <div className="flex min-h-screen items-center justify-center bg-[#020C1B]">
+        <div className="glass-card max-w-md p-8">
+          <h2 className="text-error mb-4 text-xl font-bold">Error Loading Questionnaire</h2>
           <p className="text-white/70">{error || 'Questionnaire not found'}</p>
         </div>
       </div>
@@ -147,7 +147,7 @@ export default function DemoDynamicV2Page(): React.JSX.Element {
   }
 
   const currentSectionData = questionnaire.sections[currentSection];
-  const progress = ((currentSection) / (questionnaire.sections.length - 1)) * 100;
+  const progress = (currentSection / (questionnaire.sections.length - 1)) * 100;
 
   return (
     <div className="min-h-screen bg-[#020C1B]">
@@ -187,8 +187,8 @@ export default function DemoDynamicV2Page(): React.JSX.Element {
               className="mb-12"
             >
               <p className="text-xl leading-relaxed text-white/70 sm:text-2xl lg:text-3xl">
-                <span className="font-medium text-primary">{questionnaire.metadata.scenario}</span>
-                {' '}- {questionnaire.metadata.description}
+                <span className="text-primary font-medium">{questionnaire.metadata.scenario}</span>{' '}
+                - {questionnaire.metadata.description}
               </p>
             </motion.div>
 
@@ -197,7 +197,7 @@ export default function DemoDynamicV2Page(): React.JSX.Element {
               initial={{ scaleX: 0 }}
               animate={{ scaleX: 1 }}
               transition={{ duration: 1, delay: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
-              className="mt-16 h-px w-24 bg-primary"
+              className="bg-primary mt-16 h-px w-24"
             />
           </div>
         </div>
@@ -249,31 +249,19 @@ export default function DemoDynamicV2Page(): React.JSX.Element {
             </AnimatePresence>
 
             {/* Navigation */}
-            <div className="flex justify-end items-center pt-8 border-t border-white/10">
+            <div className="flex items-center justify-end border-t border-white/10 pt-8">
               <div className="flex items-center gap-3">
                 {currentSection > 0 && (
-                  <QuestionnaireButton
-                    type="button"
-                    onClick={goToPreviousSection}
-                    variant="ghost"
-                  >
+                  <QuestionnaireButton type="button" onClick={goToPreviousSection} variant="ghost">
                     Previous
                   </QuestionnaireButton>
                 )}
                 {currentSection < questionnaire.sections.length - 1 ? (
-                  <QuestionnaireButton
-                    type="button"
-                    onClick={goToNextSection}
-                    variant="primary"
-                  >
+                  <QuestionnaireButton type="button" onClick={goToNextSection} variant="primary">
                     Next Section
                   </QuestionnaireButton>
                 ) : (
-                  <QuestionnaireButton
-                    type="button"
-                    onClick={handleSubmit}
-                    variant="primary"
-                  >
+                  <QuestionnaireButton type="button" onClick={handleSubmit} variant="primary">
                     Complete Questionnaire
                   </QuestionnaireButton>
                 )}

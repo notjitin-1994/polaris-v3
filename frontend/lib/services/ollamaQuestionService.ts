@@ -19,9 +19,10 @@ function convertToOllamaInput(context: QuestionGenerationContext): GenerationInp
   const { staticAnswers } = context;
 
   // Check if V2.0 format (3-section)
-  const isV20 = staticAnswers.section_1_role_experience && 
-                staticAnswers.section_2_organization && 
-                staticAnswers.section_3_learning_gap;
+  const isV20 =
+    staticAnswers.section_1_role_experience &&
+    staticAnswers.section_2_organization &&
+    staticAnswers.section_3_learning_gap;
 
   if (isV20) {
     // V2.0 (3-section) format
@@ -45,7 +46,9 @@ function convertToOllamaInput(context: QuestionGenerationContext): GenerationInp
       organization: staticAnswers.organization?.name || staticAnswers.organization || 'Unknown',
       learningGap:
         staticAnswers.learningGap?.description || staticAnswers.learningGap || 'Not specified',
-      resources: staticAnswers.resources ? JSON.stringify(staticAnswers.resources) : 'Not specified',
+      resources: staticAnswers.resources
+        ? JSON.stringify(staticAnswers.resources)
+        : 'Not specified',
       constraints: Array.isArray(staticAnswers.constraints)
         ? staticAnswers.constraints.join(', ')
         : staticAnswers.constraints || 'None',

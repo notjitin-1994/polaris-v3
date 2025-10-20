@@ -94,8 +94,8 @@ export function ActionsMenu({
         className={cn(
           'flex h-10 w-10 items-center justify-center rounded-xl',
           'text-text-secondary hover:text-foreground',
-          'hover:bg-white/10 transition-all duration-200',
-          isOpen && 'bg-white/10 text-foreground',
+          'transition-all duration-200 hover:bg-white/10',
+          isOpen && 'text-foreground bg-white/10'
         )}
         aria-label="Actions menu"
       >
@@ -112,26 +112,26 @@ export function ActionsMenu({
             transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
             onClick={(e) => e.stopPropagation()}
             className={cn(
-              'absolute right-0 top-full mt-2 w-64 z-[100]',
+              'absolute top-full right-0 z-[100] mt-2 w-64',
               'rounded-2xl border border-white/20',
               'bg-[#0a1628]/98 backdrop-blur-2xl',
               'shadow-2xl shadow-black/50',
-              'overflow-hidden',
+              'overflow-hidden'
             )}
           >
             {/* Gradient overlay */}
-            <div className="absolute inset-0 bg-gradient-to-br from-primary/[0.08] via-transparent to-secondary/[0.05] pointer-events-none" />
-            
-            <div className="relative p-3 space-y-1">
+            <div className="from-primary/[0.08] to-secondary/[0.05] pointer-events-none absolute inset-0 bg-gradient-to-br via-transparent" />
+
+            <div className="relative space-y-1 p-3">
               {/* Export Section */}
               <div className="relative">
                 <button
                   onClick={() => setShowExportMenu(!showExportMenu)}
                   className={cn(
                     'flex w-full items-center gap-3 rounded-xl px-4 py-2.5',
-                    'text-sm font-medium text-foreground',
-                    'hover:bg-white/8 transition-all duration-200',
-                    showExportMenu && 'bg-white/5',
+                    'text-foreground text-sm font-medium',
+                    'transition-all duration-200 hover:bg-white/8',
+                    showExportMenu && 'bg-white/5'
                   )}
                 >
                   <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/5">
@@ -140,8 +140,8 @@ export function ActionsMenu({
                   <span className="flex-1 text-left">Export</span>
                   <ChevronDown
                     className={cn(
-                      'h-4 w-4 text-text-secondary transition-transform duration-200',
-                      showExportMenu && 'rotate-180',
+                      'text-text-secondary h-4 w-4 transition-transform duration-200',
+                      showExportMenu && 'rotate-180'
                     )}
                   />
                 </button>
@@ -154,14 +154,14 @@ export function ActionsMenu({
                       animate={{ opacity: 1, height: 'auto' }}
                       exit={{ opacity: 0, height: 0 }}
                       transition={{ duration: 0.2 }}
-                      className="ml-3 mt-1 space-y-1 overflow-hidden border-l border-white/10 pl-3"
+                      className="mt-1 ml-3 space-y-1 overflow-hidden border-l border-white/10 pl-3"
                     >
                       <button
                         onClick={() => handleExport('pdf')}
                         className={cn(
                           'flex w-full items-center gap-3 rounded-lg px-3 py-2',
-                          'text-xs text-text-secondary hover:text-foreground',
-                          'hover:bg-white/8 transition-all duration-200',
+                          'text-text-secondary hover:text-foreground text-xs',
+                          'transition-all duration-200 hover:bg-white/8'
                         )}
                       >
                         <FileText className="h-4 w-4" />
@@ -171,8 +171,8 @@ export function ActionsMenu({
                         onClick={() => handleExport('word')}
                         className={cn(
                           'flex w-full items-center gap-3 rounded-lg px-3 py-2',
-                          'text-xs text-text-secondary hover:text-foreground',
-                          'hover:bg-white/8 transition-all duration-200',
+                          'text-text-secondary hover:text-foreground text-xs',
+                          'transition-all duration-200 hover:bg-white/8'
                         )}
                       >
                         <File className="h-4 w-4" />
@@ -182,8 +182,8 @@ export function ActionsMenu({
                         onClick={() => handleExport('ppt')}
                         className={cn(
                           'flex w-full items-center gap-3 rounded-lg px-3 py-2',
-                          'text-xs text-text-secondary hover:text-foreground',
-                          'hover:bg-white/8 transition-all duration-200',
+                          'text-text-secondary hover:text-foreground text-xs',
+                          'transition-all duration-200 hover:bg-white/8'
                         )}
                       >
                         <Presentation className="h-4 w-4" />
@@ -195,7 +195,7 @@ export function ActionsMenu({
               </div>
 
               {/* Divider */}
-              <div className="h-px bg-white/10 my-1" />
+              <div className="my-1 h-px bg-white/10" />
 
               {/* Share Section */}
               <div className="relative">
@@ -203,9 +203,9 @@ export function ActionsMenu({
                   onClick={() => setShowShareMenu(!showShareMenu)}
                   className={cn(
                     'flex w-full items-center gap-3 rounded-xl px-4 py-2.5',
-                    'text-sm font-medium text-foreground',
-                    'hover:bg-white/8 transition-all duration-200',
-                    showShareMenu && 'bg-white/5',
+                    'text-foreground text-sm font-medium',
+                    'transition-all duration-200 hover:bg-white/8',
+                    showShareMenu && 'bg-white/5'
                   )}
                 >
                   <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/5">
@@ -214,8 +214,8 @@ export function ActionsMenu({
                   <span className="flex-1 text-left">Share</span>
                   <ChevronDown
                     className={cn(
-                      'h-4 w-4 text-text-secondary transition-transform duration-200',
-                      showShareMenu && 'rotate-180',
+                      'text-text-secondary h-4 w-4 transition-transform duration-200',
+                      showShareMenu && 'rotate-180'
                     )}
                   />
                 </button>
@@ -228,7 +228,7 @@ export function ActionsMenu({
                       animate={{ opacity: 1, height: 'auto' }}
                       exit={{ opacity: 0, height: 0 }}
                       transition={{ duration: 0.2 }}
-                      className="ml-3 mt-1 space-y-1 overflow-hidden border-l border-white/10 pl-3"
+                      className="mt-1 ml-3 space-y-1 overflow-hidden border-l border-white/10 pl-3"
                     >
                       <button
                         onClick={handleCopyLink}
@@ -237,12 +237,12 @@ export function ActionsMenu({
                           'text-xs transition-all duration-200',
                           copied
                             ? 'text-success bg-success/10'
-                            : 'text-text-secondary hover:text-foreground hover:bg-white/8',
+                            : 'text-text-secondary hover:text-foreground hover:bg-white/8'
                         )}
                       >
                         {copied ? (
                           <>
-                            <Check className="h-4 w-4 text-success" />
+                            <Check className="text-success h-4 w-4" />
                             <span className="font-medium">Link copied!</span>
                           </>
                         ) : (
@@ -256,8 +256,8 @@ export function ActionsMenu({
                         onClick={handleShare}
                         className={cn(
                           'flex w-full items-center gap-3 rounded-lg px-3 py-2',
-                          'text-xs text-text-secondary hover:text-foreground',
-                          'hover:bg-white/8 transition-all duration-200',
+                          'text-text-secondary hover:text-foreground text-xs',
+                          'transition-all duration-200 hover:bg-white/8'
                         )}
                       >
                         <Link className="h-4 w-4" />
@@ -269,7 +269,7 @@ export function ActionsMenu({
               </div>
 
               {/* Divider */}
-              <div className="h-px bg-white/10 my-1" />
+              <div className="my-1 h-px bg-white/10" />
 
               {/* Settings */}
               <button
@@ -279,8 +279,8 @@ export function ActionsMenu({
                 }}
                 className={cn(
                   'flex w-full items-center gap-3 rounded-xl px-4 py-2.5',
-                  'text-sm font-medium text-text-secondary hover:text-foreground',
-                  'hover:bg-white/8 transition-all duration-200',
+                  'text-text-secondary hover:text-foreground text-sm font-medium',
+                  'transition-all duration-200 hover:bg-white/8'
                 )}
               >
                 <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/5">
@@ -295,4 +295,3 @@ export function ActionsMenu({
     </div>
   );
 }
-

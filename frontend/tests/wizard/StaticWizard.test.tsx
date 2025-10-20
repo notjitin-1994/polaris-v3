@@ -36,16 +36,17 @@ vi.mock('@/lib/supabase/client', () => ({
       }),
     }),
     auth: {
-      getSession: () => Promise.resolve({
-        data: {
-          session: {
-            user: mockUser,
-            access_token: 'mock-token',
-            refresh_token: 'mock-refresh-token',
-          }
-        },
-        error: null
-      }),
+      getSession: () =>
+        Promise.resolve({
+          data: {
+            session: {
+              user: mockUser,
+              access_token: 'mock-token',
+              refresh_token: 'mock-refresh-token',
+            },
+          },
+          error: null,
+        }),
       onAuthStateChange: () => ({ data: { subscription: { unsubscribe: vi.fn() } } }),
     },
   }),
@@ -169,11 +170,18 @@ describe('Static Questions Wizard', () => {
 
   it('shows loading states during save operations', async () => {
     // Mock a slower response to see loading state
-    global.fetch = vi.fn(() =>
-      new Promise(resolve => setTimeout(() => resolve({
-        ok: true,
-        json: () => Promise.resolve({ success: true, blueprintId: 'test-id' }),
-      }), 100))
+    global.fetch = vi.fn(
+      () =>
+        new Promise((resolve) =>
+          setTimeout(
+            () =>
+              resolve({
+                ok: true,
+                json: () => Promise.resolve({ success: true, blueprintId: 'test-id' }),
+              }),
+            100
+          )
+        )
     ) as any;
 
     render(<StaticWizardPage />, { wrapper: Wrapper });
@@ -215,9 +223,12 @@ describe('Static Questions Wizard', () => {
     fireEvent.change(roleSelect, { target: { value: 'Manager' } });
 
     // Wait for autosave to happen (it should happen after 2 seconds of no changes)
-    await waitFor(() => {
-      expect(screen.getByText(/Saving.../i)).toBeInTheDocument();
-    }, { timeout: 3000 });
+    await waitFor(
+      () => {
+        expect(screen.getByText(/Saving.../i)).toBeInTheDocument();
+      },
+      { timeout: 3000 }
+    );
 
     // After autosave completes, should show "Saved Xs ago"
     await waitFor(() => {
@@ -238,14 +249,17 @@ describe('Static Questions Wizard', () => {
     fireEvent.change(roleSelect, { target: { value: 'Manager' } });
 
     // Wait for autosave API call to be made
-    await waitFor(() => {
-      expect(global.fetch).toHaveBeenCalledWith(
-        '/api/questionnaire/save',
-        expect.objectContaining({
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-        })
-      );
-    }, { timeout: 3000 });
+    await waitFor(
+      () => {
+        expect(global.fetch).toHaveBeenCalledWith(
+          '/api/questionnaire/save',
+          expect.objectContaining({
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+          })
+        );
+      },
+      { timeout: 3000 }
+    );
   });
 });

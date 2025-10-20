@@ -63,7 +63,7 @@ describe('Client-Side Logging API', () => {
 
       // Verify log was stored
       const logs = logger.getStore().getAll();
-      const clientLog = logs.find(log => log.event === 'ui.error.captured');
+      const clientLog = logs.find((log) => log.event === 'ui.error.captured');
       expect(clientLog).toBeDefined();
       // userId might be undefined in the test environment due to mocking complexity
       // Just verify the log exists with the correct event
@@ -136,7 +136,7 @@ describe('Client-Side Logging API', () => {
 
       for (const level of levels) {
         logger.clear();
-        
+
         const request = new NextRequest('http://localhost:3000/api/logs/client', {
           method: 'POST',
           body: JSON.stringify({
@@ -151,9 +151,9 @@ describe('Client-Side Logging API', () => {
         expect(response.status).toBe(200);
 
         const logs = logger.getStore().getAll();
-        expect(logs.some(log => log.level === level)).toBe(true);
+        expect(logs.some((log) => log.level === level)).toBe(true);
       }
-      
+
       logger.setMinLevel('info'); // Reset to default
     });
 
@@ -162,7 +162,7 @@ describe('Client-Side Logging API', () => {
         method: 'POST',
         headers: {
           'user-agent': 'Mozilla/5.0 Chrome/91.0',
-          'referer': 'http://localhost:3000/dashboard',
+          referer: 'http://localhost:3000/dashboard',
         },
         body: JSON.stringify({
           level: 'error',
@@ -178,8 +178,8 @@ describe('Client-Side Logging API', () => {
       expect(response.status).toBe(200);
 
       const logs = logger.getStore().getAll();
-      const clientLog = logs.find(log => log.event === 'ui.error.captured');
-      
+      const clientLog = logs.find((log) => log.event === 'ui.error.captured');
+
       expect(clientLog?.metadata.userAgent).toBeDefined();
       expect(clientLog?.metadata.source).toBe('client');
       expect(clientLog?.metadata.componentStack).toBe('at Component (Component.tsx:10)');
@@ -194,9 +194,10 @@ describe('Client-Side Logging API', () => {
           message: 'Runtime error',
           metadata: {
             error: 'TypeError: Cannot read property "foo" of undefined',
-            errorStack: 'TypeError: Cannot read property "foo" of undefined\n' +
-                       '    at Object.render (Component.tsx:25:10)\n' +
-                       '    at renderWithHooks (react-dom.js:123:45)',
+            errorStack:
+              'TypeError: Cannot read property "foo" of undefined\n' +
+              '    at Object.render (Component.tsx:25:10)\n' +
+              '    at renderWithHooks (react-dom.js:123:45)',
           },
         }),
       });
@@ -205,8 +206,8 @@ describe('Client-Side Logging API', () => {
       expect(response.status).toBe(200);
 
       const logs = logger.getStore().getAll();
-      const errorLog = logs.find(log => log.event === 'ui.error.captured');
-      
+      const errorLog = logs.find((log) => log.event === 'ui.error.captured');
+
       expect(errorLog?.metadata.error).toContain('TypeError');
       expect(errorLog?.metadata.errorStack).toContain('Component.tsx:25');
     });
@@ -220,8 +221,8 @@ describe('Client-Side Logging API', () => {
           message: 'Component render error',
           metadata: {
             error: 'Error: Render failed',
-            componentStack: '    in ErrorComponent (at App.tsx:10)\n' +
-                           '    in ErrorBoundary (at App.tsx:5)',
+            componentStack:
+              '    in ErrorComponent (at App.tsx:10)\n' + '    in ErrorBoundary (at App.tsx:5)',
           },
         }),
       });
@@ -230,8 +231,8 @@ describe('Client-Side Logging API', () => {
       expect(response.status).toBe(200);
 
       const logs = logger.getStore().getAll();
-      const errorLog = logs.find(log => log.event === 'ui.error.captured');
-      
+      const errorLog = logs.find((log) => log.event === 'ui.error.captured');
+
       expect(errorLog?.metadata.componentStack).toContain('ErrorComponent');
       expect(errorLog?.metadata.componentStack).toContain('ErrorBoundary');
     });

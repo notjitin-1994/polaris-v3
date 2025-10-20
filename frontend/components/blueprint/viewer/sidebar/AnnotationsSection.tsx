@@ -7,13 +7,7 @@
 
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import {
-  MessageSquare,
-  ChevronDown,
-  Plus,
-  Trash2,
-  Edit2,
-} from 'lucide-react';
+import { MessageSquare, ChevronDown, Plus, Trash2, Edit2 } from 'lucide-react';
 import { cn, glassCard, microInteractions, componentStyles } from '@/lib/design-system';
 
 interface Annotation {
@@ -50,7 +44,7 @@ export function AnnotationsSection({
 
   // Get all annotations
   const allAnnotations = Object.entries(annotations).flatMap(([sectionId, notes]) =>
-    notes.map(note => ({ ...note, sectionId }))
+    notes.map((note) => ({ ...note, sectionId }))
   );
 
   const handleAddNote = () => {
@@ -79,24 +73,18 @@ export function AnnotationsSection({
         onClick={() => setIsExpanded(!isExpanded)}
         className={cn(
           'flex w-full items-center gap-2 rounded-lg px-3 py-2',
-          'text-sm font-medium text-foreground',
-          'hover:bg-white/5 transition-colors',
+          'text-foreground text-sm font-medium',
+          'transition-colors hover:bg-white/5'
         )}
       >
-        <div className={cn(
-          'flex h-7 w-7 items-center justify-center rounded-lg',
-          'bg-white/10',
-        )}>
-          <MessageSquare className="h-4 w-4 text-foreground" />
+        <div className={cn('flex h-7 w-7 items-center justify-center rounded-lg', 'bg-white/10')}>
+          <MessageSquare className="text-foreground h-4 w-4" />
         </div>
         <span className="flex-1 text-left">Annotations</span>
         <div className="flex items-center gap-1">
-          <span className="text-xs text-text-disabled">{allAnnotations.length}</span>
+          <span className="text-text-disabled text-xs">{allAnnotations.length}</span>
           <ChevronDown
-            className={cn(
-              'h-4 w-4 transition-transform duration-200',
-              isExpanded && 'rotate-180',
-            )}
+            className={cn('h-4 w-4 transition-transform duration-200', isExpanded && 'rotate-180')}
           />
         </div>
       </button>
@@ -124,13 +112,11 @@ export function AnnotationsSection({
                     componentStyles.input.base,
                     componentStyles.input.variants.glass,
                     componentStyles.input.sizes.sm,
-                    'resize-none w-full mb-2',
+                    'mb-2 w-full resize-none'
                   )}
                 />
                 <div className="flex items-center justify-between">
-                  <span className="text-[10px] text-text-disabled">
-                    {newNote.length}/500
-                  </span>
+                  <span className="text-text-disabled text-[10px]">{newNote.length}/500</span>
                   <motion.button
                     {...microInteractions.buttonPress}
                     onClick={handleAddNote}
@@ -139,8 +125,8 @@ export function AnnotationsSection({
                       'flex items-center gap-1 rounded-lg px-3 py-1.5',
                       'bg-primary/20 text-primary text-xs font-medium',
                       'hover:bg-primary/30',
-                      'disabled:opacity-50 disabled:cursor-not-allowed',
-                      'transition-colors',
+                      'disabled:cursor-not-allowed disabled:opacity-50',
+                      'transition-colors'
                     )}
                   >
                     <Plus className="h-3 w-3" />
@@ -154,14 +140,7 @@ export function AnnotationsSection({
             <div className="space-y-2">
               {allAnnotations.length > 0 ? (
                 allAnnotations.map((note) => (
-                  <motion.div
-                    key={note.id}
-                    layout
-                    className={cn(
-                      glassCard.base,
-                      'group p-3',
-                    )}
-                  >
+                  <motion.div key={note.id} layout className={cn(glassCard.base, 'group p-3')}>
                     {editingId === note.id ? (
                       <div>
                         <textarea
@@ -172,13 +151,13 @@ export function AnnotationsSection({
                             componentStyles.input.base,
                             componentStyles.input.variants.glass,
                             componentStyles.input.sizes.sm,
-                            'resize-none w-full mb-2',
+                            'mb-2 w-full resize-none'
                           )}
                         />
                         <div className="flex gap-2">
                           <button
                             onClick={() => handleSaveEdit(note.sectionId, note.id)}
-                            className="text-xs text-primary hover:underline"
+                            className="text-primary text-xs hover:underline"
                           >
                             Save
                           </button>
@@ -187,7 +166,7 @@ export function AnnotationsSection({
                               setEditingId(null);
                               setEditContent('');
                             }}
-                            className="text-xs text-text-secondary hover:underline"
+                            className="text-text-secondary text-xs hover:underline"
                           >
                             Cancel
                           </button>
@@ -195,24 +174,22 @@ export function AnnotationsSection({
                       </div>
                     ) : (
                       <>
-                        <p className="text-xs text-foreground mb-1">
-                          {note.content}
-                        </p>
+                        <p className="text-foreground mb-1 text-xs">{note.content}</p>
                         <div className="flex items-center justify-between">
-                          <span className="text-[10px] text-text-disabled">
+                          <span className="text-text-disabled text-[10px]">
                             {new Date(note.createdAt).toLocaleDateString()}
                           </span>
-                          <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <div className="flex items-center gap-1 opacity-0 transition-opacity group-hover:opacity-100">
                             <button
                               onClick={() => handleStartEdit(note)}
                               className="h-5 w-5 rounded p-0.5 hover:bg-white/10"
                               title="Edit"
                             >
-                              <Edit2 className="h-full w-full text-text-secondary" />
+                              <Edit2 className="text-text-secondary h-full w-full" />
                             </button>
                             <button
                               onClick={() => onDeleteAnnotation(note.sectionId, note.id)}
-                              className="h-5 w-5 rounded p-0.5 hover:bg-white/10 hover:text-error"
+                              className="hover:text-error h-5 w-5 rounded p-0.5 hover:bg-white/10"
                               title="Delete"
                             >
                               <Trash2 className="h-full w-full" />
@@ -225,10 +202,8 @@ export function AnnotationsSection({
                 ))
               ) : (
                 <div className="py-6 text-center">
-                  <MessageSquare className="mx-auto mb-2 h-8 w-8 text-text-disabled opacity-50" />
-                  <p className="text-xs text-text-disabled">
-                    No annotations yet
-                  </p>
+                  <MessageSquare className="text-text-disabled mx-auto mb-2 h-8 w-8 opacity-50" />
+                  <p className="text-text-disabled text-xs">No annotations yet</p>
                 </div>
               )}
             </div>
@@ -238,4 +213,3 @@ export function AnnotationsSection({
     </div>
   );
 }
-

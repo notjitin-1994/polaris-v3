@@ -731,7 +731,7 @@ export function BlueprintCard({
                 className={cn(
                   'flex items-center justify-center',
                   'h-10 w-10 rounded-lg',
-                  'border border-secondary/30 bg-secondary/10',
+                  'border-secondary/30 bg-secondary/10 border',
                   'text-secondary',
                   'transition-all duration-200'
                 )}

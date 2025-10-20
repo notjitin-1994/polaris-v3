@@ -10,4 +10,3 @@ export { LaserPointer } from './LaserPointer';
 export { PresenterToolbar } from './PresenterToolbar';
 
 export type { PresenterTool, DrawingSettings } from './PresenterViewWindow';
-

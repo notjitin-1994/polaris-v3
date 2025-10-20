@@ -32,7 +32,12 @@ const LLM_CONFIG = {
 // Load system prompt from file
 function loadSystemPrompt(): string {
   try {
-    const systemPromptPath = join(process.cwd(), 'lib', 'prompts', 'dynamic-questions-system-v2.txt');
+    const systemPromptPath = join(
+      process.cwd(),
+      'lib',
+      'prompts',
+      'dynamic-questions-system-v2.txt'
+    );
     return readFileSync(systemPromptPath, 'utf-8');
   } catch (error) {
     logger.error('system_prompt.load.failure', 'Failed to load dynamic-questions-system-v2.txt', {
@@ -78,7 +83,10 @@ export function buildUserPromptV2(staticAnswers: Record<string, any>): string {
   let prompt = template;
 
   // Section 1: Role & Experience
-  prompt = prompt.replace(/\{current_role\}/g, section1.current_role || section1.custom_role || 'Not specified');
+  prompt = prompt.replace(
+    /\{current_role\}/g,
+    section1.current_role || section1.custom_role || 'Not specified'
+  );
   prompt = prompt.replace(/\{years_in_role\}/g, String(section1.years_in_role || 0));
   prompt = prompt.replace(/\{previous_roles\}/g, section1.previous_roles || 'Not specified');
   prompt = prompt.replace(/\{industry_experience\}/g, formatArray(section1.industry_experience));
@@ -90,33 +98,49 @@ export function buildUserPromptV2(staticAnswers: Record<string, any>): string {
   prompt = prompt.replace(/\{industry_sector\}/g, section2.industry_sector || 'Not specified');
   prompt = prompt.replace(/\{organization_size\}/g, section2.organization_size || 'Not specified');
   prompt = prompt.replace(/\{geographic_regions\}/g, formatArray(section2.geographic_regions));
-  prompt = prompt.replace(/\{compliance_requirements\}/g, formatArray(section2.compliance_requirements));
-  prompt = prompt.replace(/\{data_sharing_policies\}/g, section2.data_sharing_policies || 'Not specified');
+  prompt = prompt.replace(
+    /\{compliance_requirements\}/g,
+    formatArray(section2.compliance_requirements)
+  );
+  prompt = prompt.replace(
+    /\{data_sharing_policies\}/g,
+    section2.data_sharing_policies || 'Not specified'
+  );
   prompt = prompt.replace(/\{security_clearance\}/g, section2.security_clearance || 'None');
-  prompt = prompt.replace(/\{legal_restrictions\}/g, section2.legal_restrictions || 'None specified');
+  prompt = prompt.replace(
+    /\{legal_restrictions\}/g,
+    section2.legal_restrictions || 'None specified'
+  );
 
   // Section 3: Learning Gap & Audience
-  prompt = prompt.replace(/\{learning_gap_description\}/g, section3.learning_gap_description || 'Not specified');
-  prompt = prompt.replace(/\{total_learners_range\}/g, section3.total_learners_range || 'Not specified');
-  prompt = prompt.replace(/\{current_knowledge_level\}/g, String(section3.current_knowledge_level || 3));
+  prompt = prompt.replace(
+    /\{learning_gap_description\}/g,
+    section3.learning_gap_description || 'Not specified'
+  );
+  prompt = prompt.replace(
+    /\{total_learners_range\}/g,
+    section3.total_learners_range || 'Not specified'
+  );
+  prompt = prompt.replace(
+    /\{current_knowledge_level\}/g,
+    String(section3.current_knowledge_level || 3)
+  );
   prompt = prompt.replace(/\{motivation_factors\}/g, formatArray(section3.motivation_factors));
   prompt = prompt.replace(/\{learning_location\}/g, formatArray(section3.learning_location));
   prompt = prompt.replace(/\{devices_used\}/g, formatArray(section3.devices_used));
   prompt = prompt.replace(/\{hours_per_week\}/g, section3.hours_per_week || 'Not specified');
   prompt = prompt.replace(/\{learning_deadline\}/g, section3.learning_deadline || 'Not specified');
-  
+
   // Budget available with currency and amount
   const budgetAmount = section3.budget_available?.amount || 0;
   const budgetCurrency = section3.budget_available?.currency || 'USD';
-  prompt = prompt.replace(/\{budget_available\}/g,
-    budgetAmount > 0
-      ? `${budgetCurrency} ${budgetAmount.toLocaleString()}`
-      : 'Not specified'
+  prompt = prompt.replace(
+    /\{budget_available\}/g,
+    budgetAmount > 0 ? `${budgetCurrency} ${budgetAmount.toLocaleString()}` : 'Not specified'
   );
 
   return prompt;
 }
-
 
 /**
  * Call LLM provider (Claude)
@@ -170,7 +194,7 @@ async function callPerplexity(systemPrompt: string, userPrompt: string): Promise
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${config.apiKey}`,
+        Authorization: `Bearer ${config.apiKey}`,
       },
       body: JSON.stringify({
         model: config.model,
@@ -206,26 +230,30 @@ async function callPerplexity(systemPrompt: string, userPrompt: string): Promise
  */
 function repairTruncatedJSON(jsonString: string): string {
   let repaired = jsonString;
-  
+
   // Count opening and closing brackets
   const openBraces = (repaired.match(/{/g) || []).length;
   const closeBraces = (repaired.match(/}/g) || []).length;
   const openBrackets = (repaired.match(/\[/g) || []).length;
   const closeBrackets = (repaired.match(/]/g) || []).length;
-  
+
   // If we have unclosed brackets, try to close them
   if (openBraces > closeBraces || openBrackets > closeBrackets) {
-    logger.warn('dynamic_questions.json.truncation_detected', 'JSON appears truncated, attempting to close', {
-      openBraces,
-      closeBraces,
-      openBrackets,
-      closeBrackets,
-    });
-    
+    logger.warn(
+      'dynamic_questions.json.truncation_detected',
+      'JSON appears truncated, attempting to close',
+      {
+        openBraces,
+        closeBraces,
+        openBrackets,
+        closeBrackets,
+      }
+    );
+
     // Remove any incomplete trailing content (partial string, property, etc.)
     // Find the last complete element
     let lastValidIdx = repaired.length;
-    
+
     // Look backwards for the last properly closed element
     for (let i = repaired.length - 1; i >= 0; i--) {
       const char = repaired[i];
@@ -239,16 +267,16 @@ function repairTruncatedJSON(jsonString: string): string {
         break;
       }
     }
-    
+
     repaired = repaired.substring(0, lastValidIdx);
-    
+
     // Remove trailing comma if present
     repaired = repaired.replace(/,\s*$/, '');
-    
+
     // Close unclosed brackets
     const bracketDiff = openBrackets - closeBrackets;
     const braceDiff = openBraces - closeBraces;
-    
+
     for (let i = 0; i < bracketDiff; i++) {
       repaired += ']';
     }
@@ -256,7 +284,7 @@ function repairTruncatedJSON(jsonString: string): string {
       repaired += '}';
     }
   }
-  
+
   return repaired;
 }
 
@@ -265,37 +293,37 @@ function repairTruncatedJSON(jsonString: string): string {
  */
 function repairJSON(jsonString: string): string {
   let repaired = jsonString;
-  
+
   // First, try to fix truncation issues
   repaired = repairTruncatedJSON(repaired);
-  
+
   // Fix unescaped quotes in strings (but not in property names)
   // This is a simplified approach - replace unescaped quotes in value positions
   repaired = repaired.replace(/: "([^"]*)"([^,\}\]\s])/g, (match, content, after) => {
     // If there's content after the closing quote without proper delimiter, it's likely malformed
     return `: "${content.replace(/"/g, '\\"')}"${after}`;
   });
-  
+
   // Fix missing commas between array elements or object properties
   repaired = repaired.replace(/"\s*\n\s*"/g, '",\n"');
   repaired = repaired.replace(/}\s*\n\s*{/g, '},\n{');
   repaired = repaired.replace(/]\s*\n\s*{/g, '],\n{');
   repaired = repaired.replace(/}\s*\n\s*\[/g, '},\n[');
-  
+
   // Fix trailing commas before closing brackets
   repaired = repaired.replace(/,(\s*[}\]])/g, '$1');
-  
+
   // Fix unescaped newlines in strings
   repaired = repaired.replace(/: "([^"]*)\n([^"]*?)"/g, (match, before, after) => {
     return `: "${before}\\n${after}"`;
   });
-  
+
   // Fix unescaped backslashes
   repaired = repaired.replace(/\\(?!["\\/bfnrtu])/g, '\\\\');
-  
+
   // Remove any control characters
   repaired = repaired.replace(/[\x00-\x1F\x7F]/g, '');
-  
+
   return repaired;
 }
 
@@ -328,22 +356,30 @@ function extractAndValidateJSON(content: string, attemptRepair: boolean = true):
     parsed = JSON.parse(jsonString);
   } catch (error) {
     parseError = error as Error;
-    
+
     if (attemptRepair) {
-      logger.warn('dynamic_questions.json.repair_attempt', 'Initial parse failed, attempting repair', {
-        error: parseError.message,
-        position: parseError.message.match(/position (\d+)/)?.[1],
-      });
+      logger.warn(
+        'dynamic_questions.json.repair_attempt',
+        'Initial parse failed, attempting repair',
+        {
+          error: parseError.message,
+          position: parseError.message.match(/position (\d+)/)?.[1],
+        }
+      );
 
       // Try repairing the JSON
       try {
         const repairedString = repairJSON(jsonString);
         parsed = JSON.parse(repairedString);
-        
-        logger.info('dynamic_questions.json.repair_success', 'Successfully repaired and parsed JSON', {
-          originalLength: jsonString.length,
-          repairedLength: repairedString.length,
-        });
+
+        logger.info(
+          'dynamic_questions.json.repair_success',
+          'Successfully repaired and parsed JSON',
+          {
+            originalLength: jsonString.length,
+            repairedLength: repairedString.length,
+          }
+        );
       } catch (repairError) {
         // If repair fails, throw original error with context
         logger.error('dynamic_questions.json.repair_failure', 'JSON repair attempt failed', {
@@ -352,7 +388,7 @@ function extractAndValidateJSON(content: string, attemptRepair: boolean = true):
           jsonPreview: jsonString.substring(0, 1000),
           errorPosition: parseError.message.match(/position (\d+)/)?.[1],
         });
-        
+
         throw new Error(`Invalid JSON from LLM (repair failed): ${parseError.message}`);
       }
     } else {
@@ -396,9 +432,11 @@ function extractAndValidateJSON(content: string, attemptRepair: boolean = true):
     // Validate and sanitize each question
     for (const question of section.questions) {
       if (!question.id || !question.label || !question.type) {
-        throw new Error(`Invalid question structure in section ${section.id}: ${JSON.stringify(question).substring(0, 200)}`);
+        throw new Error(
+          `Invalid question structure in section ${section.id}: ${JSON.stringify(question).substring(0, 200)}`
+        );
       }
-      
+
       // Sanitize string fields to remove control characters
       if (typeof question.label === 'string') {
         question.label = question.label.replace(/[\x00-\x1F\x7F]/g, '').trim();
@@ -430,9 +468,13 @@ export async function generateDynamicQuestionsV2(
   console.log('Blueprint ID:', blueprintId);
   console.log('Timestamp:', new Date().toISOString());
 
-  logger.info('dynamic_questions.generation.start', 'Starting V2 question generation with Perplexity → OpenAI fallback', {
-    blueprintId,
-  });
+  logger.info(
+    'dynamic_questions.generation.start',
+    'Starting V2 question generation with Perplexity → OpenAI fallback',
+    {
+      blueprintId,
+    }
+  );
 
   try {
     // Load prompts
@@ -441,8 +483,12 @@ export async function generateDynamicQuestionsV2(
 
     console.log('\n📄 Prompts loaded:');
     console.log('- System prompt:', systemPrompt.length, 'characters');
-    console.log('- User prompt:', userPrompt.length, 'characters (personalized with static answers)');
-    
+    console.log(
+      '- User prompt:',
+      userPrompt.length,
+      'characters (personalized with static answers)'
+    );
+
     logger.debug('dynamic_questions.prompts.loaded', 'Loaded prompts successfully', {
       blueprintId,
       systemPromptLength: systemPrompt.length,
@@ -458,22 +504,26 @@ export async function generateDynamicQuestionsV2(
       console.log('→ Model:', LLM_CONFIG.perplexity.model);
       console.log('→ Max Tokens:', LLM_CONFIG.perplexity.maxTokens);
       console.log('→ Temperature:', LLM_CONFIG.perplexity.temperature);
-      
+
       for (let attempt = 1; attempt <= LLM_CONFIG.retries + 1; attempt++) {
         try {
           console.log(`\n⏳ Attempt ${attempt}/${LLM_CONFIG.retries + 1}: Calling Perplexity...`);
-          
-          logger.info('dynamic_questions.perplexity.request', `Calling Perplexity (attempt ${attempt})`, {
-            blueprintId,
-            attemptNumber: attempt,
-            model: LLM_CONFIG.perplexity.model,
-          });
+
+          logger.info(
+            'dynamic_questions.perplexity.request',
+            `Calling Perplexity (attempt ${attempt})`,
+            {
+              blueprintId,
+              attemptNumber: attempt,
+              model: LLM_CONFIG.perplexity.model,
+            }
+          );
 
           responseContent = await callPerplexity(systemPrompt, userPrompt);
           usedProvider = 'perplexity';
 
           console.log('✅ Perplexity succeeded on attempt', attempt);
-          
+
           logger.info('dynamic_questions.perplexity.success', 'Perplexity generation successful', {
             blueprintId,
             attemptNumber: attempt,
@@ -481,13 +531,20 @@ export async function generateDynamicQuestionsV2(
 
           break; // Success, exit retry loop
         } catch (error) {
-          console.error(`❌ Attempt ${attempt} failed:`, error instanceof Error ? error.message : String(error));
-          
-          logger.warn('dynamic_questions.perplexity.error', `Perplexity attempt ${attempt} failed`, {
-            blueprintId,
-            error: error instanceof Error ? error.message : String(error),
-            attemptNumber: attempt,
-          });
+          console.error(
+            `❌ Attempt ${attempt} failed:`,
+            error instanceof Error ? error.message : String(error)
+          );
+
+          logger.warn(
+            'dynamic_questions.perplexity.error',
+            `Perplexity attempt ${attempt} failed`,
+            {
+              blueprintId,
+              error: error instanceof Error ? error.message : String(error),
+              attemptNumber: attempt,
+            }
+          );
 
           if (attempt < LLM_CONFIG.retries + 1) {
             const delay = Math.pow(2, attempt - 1) * 1000; // Exponential backoff
@@ -502,9 +559,13 @@ export async function generateDynamicQuestionsV2(
       }
     } else {
       console.log('\n⚠️  Perplexity API key not configured, skipping to fallback');
-      logger.warn('dynamic_questions.perplexity.skipped', 'Perplexity API key not configured, skipping to Claude', {
-        blueprintId,
-      });
+      logger.warn(
+        'dynamic_questions.perplexity.skipped',
+        'Perplexity API key not configured, skipping to Claude',
+        {
+          blueprintId,
+        }
+      );
     }
 
     // Fallback to Claude if Perplexity failed or unavailable
@@ -576,7 +637,10 @@ export async function generateDynamicQuestionsV2(
     console.log('✓ Response validated successfully');
 
     const duration = Date.now() - startTime;
-    const questionCount = result.sections.reduce((sum: number, s: any) => sum + s.questions.length, 0);
+    const questionCount = result.sections.reduce(
+      (sum: number, s: any) => sum + s.questions.length,
+      0
+    );
 
     console.log('\n✨ GENERATION COMPLETE');
     console.log('→ Provider Used:', usedProvider?.toUpperCase() || 'UNKNOWN');

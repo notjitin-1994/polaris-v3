@@ -40,17 +40,14 @@ export function AssessmentTypeStep(): React.JSX.Element {
           className={`min-h-24 w-full resize-none rounded-lg border-2 p-4 text-base transition-colors ${
             errors.constraints
               ? 'border-error/50 bg-error/5 focus-visible:border-error focus-visible:ring-error/50'
-              : 'focus-visible:border-secondary focus-visible:ring-secondary/50 border-neutral-300 bg-background'
+              : 'focus-visible:border-secondary focus-visible:ring-secondary/50 bg-background border-neutral-300'
           } placeholder:text-text-disabled text-foreground`}
           placeholder="e.g., Launch by Q4, mobile-first constraints, SCORM compliance, limited SME time, requires legal review"
           aria-invalid={!!errors.constraints}
           aria-describedby={errors.constraints ? 'constraints-error' : undefined}
         />
         {errors.constraints && (
-          <p
-            id="constraints-error"
-            className="flex items-center gap-1 text-sm text-error"
-          >
+          <p id="constraints-error" className="text-error flex items-center gap-1 text-sm">
             <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
               <path
                 fillRule="evenodd"

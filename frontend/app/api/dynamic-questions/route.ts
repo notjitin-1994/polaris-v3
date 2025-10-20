@@ -163,9 +163,10 @@ export async function POST(request: NextRequest): Promise<Response> {
         requestId,
       });
       return NextResponse.json(
-        { 
+        {
           error: 'Legacy questionnaire format not supported',
-          details: 'Please complete the new static questionnaire to use dynamic question generation.'
+          details:
+            'Please complete the new static questionnaire to use dynamic question generation.',
         },
         { status: 400 }
       );
@@ -202,8 +203,11 @@ export async function POST(request: NextRequest): Promise<Response> {
       result = await generateDynamicQuestionsV2(blueprintId, finalStaticAnswers);
       console.log('\n✅ Generation completed successfully!');
     } catch (genError) {
-      console.error('\n❌ Generation failed:', genError instanceof Error ? genError.message : String(genError));
-      
+      console.error(
+        '\n❌ Generation failed:',
+        genError instanceof Error ? genError.message : String(genError)
+      );
+
       logger.error('api.error', 'Question generation failed', {
         blueprintId,
         userId: user.id,
@@ -211,20 +215,17 @@ export async function POST(request: NextRequest): Promise<Response> {
         requestId,
         duration: Date.now() - startTime,
       });
-      
+
       // Reset status so user can retry
       console.log('→ Resetting blueprint status to "draft" for retry...');
-      await supabase
-        .from('blueprint_generator')
-        .update({ status: 'draft' })
-        .eq('id', blueprintId);
-      
+      await supabase.from('blueprint_generator').update({ status: 'draft' }).eq('id', blueprintId);
+
       console.log('========================================\n');
-      
+
       return NextResponse.json(
-        { 
+        {
           error: 'Failed to generate questions',
-          details: genError instanceof Error ? genError.message : String(genError)
+          details: genError instanceof Error ? genError.message : String(genError),
         },
         { status: 500 }
       );
@@ -239,12 +240,9 @@ export async function POST(request: NextRequest): Promise<Response> {
         hasSections: !!result?.sections,
         requestId,
       });
-      
-      await supabase
-        .from('blueprint_generator')
-        .update({ status: 'draft' })
-        .eq('id', blueprintId);
-      
+
+      await supabase.from('blueprint_generator').update({ status: 'draft' }).eq('id', blueprintId);
+
       return NextResponse.json(
         { error: 'Generated questions have invalid structure' },
         { status: 500 }
@@ -252,12 +250,15 @@ export async function POST(request: NextRequest): Promise<Response> {
     }
 
     // Save questions to database
-    const questionCount = result.sections.reduce((sum: number, s: any) => sum + s.questions.length, 0);
-    
+    const questionCount = result.sections.reduce(
+      (sum: number, s: any) => sum + s.questions.length,
+      0
+    );
+
     console.log('\n💾 Saving to database...');
     console.log('- Sections:', result.sections.length);
     console.log('- Total Questions:', questionCount);
-    
+
     dbLogger.info('database.save.start', 'Saving dynamic questions to database', {
       blueprintId,
       userId: user.id,

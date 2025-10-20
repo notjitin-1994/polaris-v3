@@ -21,13 +21,17 @@ interface ColorThemeProviderProps {
   children: React.ReactNode;
 }
 
-export function ColorThemeProvider({ colorTheme, children }: ColorThemeProviderProps): React.JSX.Element {
+export function ColorThemeProvider({
+  colorTheme,
+  children,
+}: ColorThemeProviderProps): React.JSX.Element {
   const themeId = `theme-${colorTheme.primary.replace(/[^\w]/g, '')}`;
-  
+
   return (
     <>
-      <style dangerouslySetInnerHTML={{
-        __html: `
+      <style
+        dangerouslySetInnerHTML={{
+          __html: `
           /* Keep body text white - HIGHEST PRIORITY */
           .${themeId} p,
           .${themeId} p.text-foreground,
@@ -598,12 +602,10 @@ export function ColorThemeProvider({ colorTheme, children }: ColorThemeProviderP
           .${themeId} [class*="bg-primary\\/"] {
             background-color: ${colorTheme.bg} !important;
           }
-        `
-      }} />
-      <div className={themeId}>
-        {children}
-      </div>
+        `,
+        }}
+      />
+      <div className={themeId}>{children}</div>
     </>
   );
 }
-

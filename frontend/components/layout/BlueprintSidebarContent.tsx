@@ -7,13 +7,7 @@
 
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import {
-  Pin,
-  EyeOff,
-  Eye,
-  ChevronDown,
-  Layers,
-} from 'lucide-react';
+import { Pin, EyeOff, Eye, ChevronDown, Layers } from 'lucide-react';
 import { AIAssistantSection } from '../blueprint/viewer/sidebar/AIAssistantSection';
 import { ReportsSection } from '../blueprint/viewer/sidebar/ReportsSection';
 import { AnnotationsSection } from '../blueprint/viewer/sidebar/AnnotationsSection';
@@ -70,9 +64,11 @@ export function BlueprintSidebarContent({
 
   // Group sections
   const groupedSections = {
-    pinned: sections.filter(s => pinnedSections.includes(s.id)),
-    visible: sections.filter(s => !pinnedSections.includes(s.id) && !hiddenSections.includes(s.id)),
-    hidden: sections.filter(s => hiddenSections.includes(s.id)),
+    pinned: sections.filter((s) => pinnedSections.includes(s.id)),
+    visible: sections.filter(
+      (s) => !pinnedSections.includes(s.id) && !hiddenSections.includes(s.id)
+    ),
+    hidden: sections.filter((s) => hiddenSections.includes(s.id)),
   };
 
   const renderSection = (section: Section) => {
@@ -95,28 +91,27 @@ export function BlueprintSidebarContent({
         layout
         className={cn(
           'group flex w-full items-center gap-2 rounded-lg px-3 py-2',
-          'text-left text-sm transition-all duration-200 cursor-pointer',
+          'cursor-pointer text-left text-sm transition-all duration-200',
           isActive
             ? 'bg-primary/20 text-primary font-medium'
-            : 'text-text-secondary hover:bg-white/5 hover:text-foreground',
+            : 'text-text-secondary hover:text-foreground hover:bg-white/5'
         )}
       >
         <span className="flex-1 truncate">{section.title}</span>
 
         {/* Action Buttons */}
-        <div className={cn(
-          'flex items-center gap-1',
-          'opacity-0 group-hover:opacity-100 transition-opacity',
-        )}>
+        <div
+          className={cn(
+            'flex items-center gap-1',
+            'opacity-0 transition-opacity group-hover:opacity-100'
+          )}
+        >
           <button
             onClick={(e) => {
               e.stopPropagation();
               onTogglePin(section.id);
             }}
-            className={cn(
-              'h-6 w-6 rounded p-1',
-              isPinned ? 'text-primary' : 'hover:bg-white/10',
-            )}
+            className={cn('h-6 w-6 rounded p-1', isPinned ? 'text-primary' : 'hover:bg-white/10')}
             title={isPinned ? 'Unpin' : 'Pin'}
           >
             <Pin className="h-full w-full" />
@@ -138,37 +133,36 @@ export function BlueprintSidebarContent({
   };
 
   return (
-    <nav className="flex h-full flex-col min-h-0 overflow-hidden" aria-label="Blueprint navigation">
+    <nav className="flex h-full min-h-0 flex-col overflow-hidden" aria-label="Blueprint navigation">
       {/* Header */}
       <div className="flex-shrink-0 border-b border-white/5 px-4 py-3">
-        <h3 className="text-sm font-semibold text-foreground">Blueprint Tools</h3>
+        <h3 className="text-foreground text-sm font-semibold">Blueprint Tools</h3>
       </div>
 
       {/* Scrollable Content */}
-      <div className="flex-1 overflow-y-auto px-4 py-4 space-y-6">
+      <div className="flex-1 space-y-6 overflow-y-auto px-4 py-4">
         {/* Sections */}
         <div>
           <button
             onClick={() => setExpandedSections(!expandedSections)}
             className={cn(
               'flex w-full items-center gap-2 rounded-lg px-3 py-2',
-              'text-sm font-medium text-foreground',
-              'hover:bg-white/5 transition-colors',
+              'text-foreground text-sm font-medium',
+              'transition-colors hover:bg-white/5'
             )}
           >
-            <div className={cn(
-              'flex h-7 w-7 items-center justify-center rounded-lg',
-              'bg-white/10',
-            )}>
+            <div
+              className={cn('flex h-7 w-7 items-center justify-center rounded-lg', 'bg-white/10')}
+            >
               <Layers className="h-4 w-4" />
             </div>
             <span className="flex-1 text-left">Sections</span>
             <div className="flex items-center gap-1">
-              <span className="text-xs text-text-disabled">{sections.length}</span>
+              <span className="text-text-disabled text-xs">{sections.length}</span>
               <ChevronDown
                 className={cn(
                   'h-4 w-4 transition-transform duration-200',
-                  expandedSections && 'rotate-180',
+                  expandedSections && 'rotate-180'
                 )}
               />
             </div>
@@ -186,34 +180,28 @@ export function BlueprintSidebarContent({
                 {/* Pinned Sections */}
                 {groupedSections.pinned.length > 0 && (
                   <div className="mb-4">
-                    <p className="mb-2 px-3 text-xs font-medium uppercase tracking-wider text-text-disabled">
+                    <p className="text-text-disabled mb-2 px-3 text-xs font-medium tracking-wider uppercase">
                       Pinned
                     </p>
-                    <div className="space-y-0.5">
-                      {groupedSections.pinned.map(renderSection)}
-                    </div>
+                    <div className="space-y-0.5">{groupedSections.pinned.map(renderSection)}</div>
                   </div>
                 )}
 
                 {/* All Sections */}
                 <div>
-                  <p className="mb-2 px-3 text-xs font-medium uppercase tracking-wider text-text-disabled">
+                  <p className="text-text-disabled mb-2 px-3 text-xs font-medium tracking-wider uppercase">
                     All Sections
                   </p>
-                  <div className="space-y-0.5">
-                    {groupedSections.visible.map(renderSection)}
-                  </div>
+                  <div className="space-y-0.5">{groupedSections.visible.map(renderSection)}</div>
                 </div>
 
                 {/* Hidden Sections */}
                 {groupedSections.hidden.length > 0 && (
                   <div className="mt-4">
-                    <p className="mb-2 px-3 text-xs font-medium uppercase tracking-wider text-text-disabled">
+                    <p className="text-text-disabled mb-2 px-3 text-xs font-medium tracking-wider uppercase">
                       Hidden
                     </p>
-                    <div className="space-y-0.5">
-                      {groupedSections.hidden.map(renderSection)}
-                    </div>
+                    <div className="space-y-0.5">{groupedSections.hidden.map(renderSection)}</div>
                   </div>
                 )}
               </motion.div>
@@ -251,4 +239,3 @@ export function BlueprintSidebarContent({
     </nav>
   );
 }
-

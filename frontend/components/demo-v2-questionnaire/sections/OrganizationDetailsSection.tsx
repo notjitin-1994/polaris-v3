@@ -91,13 +91,21 @@ export function OrganizationDetailsSection(): React.JSX.Element {
     register('section_2_organization.organization_name', {
       required: 'Organization name is required',
       minLength: { value: 2, message: 'Organization name must be at least 2 characters' },
-      maxLength: { value: 200, message: 'Organization name must be less than 200 characters' }
+      maxLength: { value: 200, message: 'Organization name must be less than 200 characters' },
     });
     register('section_2_organization.industry_sector', { required: 'Industry sector is required' });
-    register('section_2_organization.organization_size', { required: 'Organization size is required' });
-    register('section_2_organization.geographic_regions', { required: 'Please select at least one region' });
-    register('section_2_organization.compliance_requirements', { required: 'Please select at least one compliance requirement' });
-    register('section_2_organization.data_sharing_policies', { required: 'Data sharing policy is required' });
+    register('section_2_organization.organization_size', {
+      required: 'Organization size is required',
+    });
+    register('section_2_organization.geographic_regions', {
+      required: 'Please select at least one region',
+    });
+    register('section_2_organization.compliance_requirements', {
+      required: 'Please select at least one compliance requirement',
+    });
+    register('section_2_organization.data_sharing_policies', {
+      required: 'Data sharing policy is required',
+    });
     register('section_2_organization.security_clearance');
     register('section_2_organization.legal_restrictions');
   }, [register]);
@@ -123,7 +131,10 @@ export function OrganizationDetailsSection(): React.JSX.Element {
     setShowOtherIndustryInput(industry === 'Other');
 
     // Initialize custom industry value if it exists
-    if (industry !== 'Technology' && !INDUSTRY_SECTORS.some(sector => sector.value === industry)) {
+    if (
+      industry !== 'Technology' &&
+      !INDUSTRY_SECTORS.some((sector) => sector.value === industry)
+    ) {
       setCustomIndustryValue(industry);
     }
 
@@ -140,7 +151,10 @@ export function OrganizationDetailsSection(): React.JSX.Element {
       newRegions = selectedRegions.filter((r) => r !== region);
     }
     setSelectedRegions(newRegions);
-    setValue('section_2_organization.geographic_regions', newRegions, { shouldValidate: true, shouldDirty: true });
+    setValue('section_2_organization.geographic_regions', newRegions, {
+      shouldValidate: true,
+      shouldDirty: true,
+    });
   };
 
   const handleComplianceChange = (requirement: string, checked: boolean) => {
@@ -164,7 +178,10 @@ export function OrganizationDetailsSection(): React.JSX.Element {
         newCompliance = selectedCompliance.filter((c) => c !== requirement);
       }
       setSelectedCompliance(newCompliance);
-      setValue('section_2_organization.compliance_requirements', newCompliance, { shouldValidate: true, shouldDirty: true });
+      setValue('section_2_organization.compliance_requirements', newCompliance, {
+        shouldValidate: true,
+        shouldDirty: true,
+      });
     }
   };
 
@@ -174,7 +191,10 @@ export function OrganizationDetailsSection(): React.JSX.Element {
       // Add new custom compliance (allow multiple)
       const newCompliance = [...selectedCompliance, customCompliance];
       setSelectedCompliance(newCompliance);
-      setValue('section_2_organization.compliance_requirements', newCompliance, { shouldValidate: true, shouldDirty: true });
+      setValue('section_2_organization.compliance_requirements', newCompliance, {
+        shouldValidate: true,
+        shouldDirty: true,
+      });
       setCustomComplianceInput('');
       // Keep the input open for adding more entries
     }
@@ -189,9 +209,12 @@ export function OrganizationDetailsSection(): React.JSX.Element {
 
   const handleCustomComplianceRemove = (customValue: string) => {
     // Remove the specific custom compliance entry
-    const newCompliance = selectedCompliance.filter(c => c !== `Other: ${customValue}`);
+    const newCompliance = selectedCompliance.filter((c) => c !== `Other: ${customValue}`);
     setSelectedCompliance(newCompliance);
-    setValue('section_2_organization.compliance_requirements', newCompliance, { shouldValidate: true, shouldDirty: true });
+    setValue('section_2_organization.compliance_requirements', newCompliance, {
+      shouldValidate: true,
+      shouldDirty: true,
+    });
   };
 
   const handleCustomIndustrySubmit = () => {
@@ -248,7 +271,7 @@ export function OrganizationDetailsSection(): React.JSX.Element {
           <label className="text-foreground block text-[15px] leading-tight font-medium">
             Industry Sector *
           </label>
-          <span className="text-xs text-primary bg-primary/20 px-2 py-1 rounded-full border border-primary/30 shadow-md shadow-primary/25">
+          <span className="text-primary bg-primary/20 border-primary/30 shadow-primary/25 rounded-full border px-2 py-1 text-xs shadow-md">
             Select one
           </span>
         </div>
@@ -263,25 +286,29 @@ export function OrganizationDetailsSection(): React.JSX.Element {
                 type="button"
                 onClick={() => handleIndustryChange(sector.value)}
                 className={cn(
-                  'relative px-5 py-3 rounded-full text-sm font-medium transition-all duration-200 border-2',
+                  'relative rounded-full border-2 px-5 py-3 text-sm font-medium transition-all duration-200',
                   'hover:scale-105 active:scale-95',
                   isSelected
-                    ? 'bg-primary text-primary-foreground border-primary shadow-lg ring-2 ring-primary/40'
-                    : 'bg-transparent text-white/80 border-white/30 hover:bg-white/10 hover:border-white/50'
+                    ? 'bg-primary text-primary-foreground border-primary ring-primary/40 shadow-lg ring-2'
+                    : 'border-white/30 bg-transparent text-white/80 hover:border-white/50 hover:bg-white/10'
                 )}
               >
                 <span className="flex items-center gap-2">
-                  <span className={cn(
-                    'w-3 h-3 rounded-full border-2 transition-all duration-200',
-                    isSelected
-                      ? 'bg-teal-400 border-teal-400 shadow-sm'
-                      : 'border-white/60 bg-white/20'
-                  )}>
+                  <span
+                    className={cn(
+                      'h-3 w-3 rounded-full border-2 transition-all duration-200',
+                      isSelected
+                        ? 'border-teal-400 bg-teal-400 shadow-sm'
+                        : 'border-white/60 bg-white/20'
+                    )}
+                  >
                     {isSelected && (
-                      <span className="w-full h-full rounded-full bg-teal-400 scale-75 animate-pulse" />
+                      <span className="h-full w-full scale-75 animate-pulse rounded-full bg-teal-400" />
                     )}
                   </span>
-{sector.value === 'Other' && customIndustryValue ? customIndustryValue : sector.label}
+                  {sector.value === 'Other' && customIndustryValue
+                    ? customIndustryValue
+                    : sector.label}
                 </span>
               </button>
             );
@@ -290,20 +317,26 @@ export function OrganizationDetailsSection(): React.JSX.Element {
 
         {/* Custom Industry Input - only show when Other is selected */}
         {showOtherIndustryInput && (
-          <div className="flex items-center gap-3 p-3 bg-white/5 rounded-lg border border-white/10">
+          <div className="flex items-center gap-3 rounded-lg border border-white/10 bg-white/5 p-3">
             <input
               type="text"
-              value={customIndustryInput !== undefined ? customIndustryInput : customIndustryValue || ''}
+              value={
+                customIndustryInput !== undefined ? customIndustryInput : customIndustryValue || ''
+              }
               onChange={(e) => setCustomIndustryInput(e.target.value)}
               onKeyDown={handleCustomIndustryKeyDown}
-              placeholder={customIndustryValue ? `Currently: ${customIndustryValue}` : "Enter custom industry..."}
-              className="flex-1 px-3 py-2 text-sm bg-white/10 border border-white/20 rounded-md text-foreground placeholder:text-white/50 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30"
+              placeholder={
+                customIndustryValue
+                  ? `Currently: ${customIndustryValue}`
+                  : 'Enter custom industry...'
+              }
+              className="text-foreground focus:border-primary focus:ring-primary/30 flex-1 rounded-md border border-white/20 bg-white/10 px-3 py-2 text-sm placeholder:text-white/50 focus:ring-2 focus:outline-none"
             />
             <button
               type="button"
               onClick={handleCustomIndustrySubmit}
               disabled={!customIndustryInput?.trim()}
-              className="px-3 py-2 text-sm bg-primary text-primary-foreground rounded-md hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-md px-3 py-2 text-sm transition-colors disabled:cursor-not-allowed disabled:opacity-50"
             >
               {customIndustryValue ? 'Update' : 'Add'}
             </button>
@@ -313,7 +346,11 @@ export function OrganizationDetailsSection(): React.JSX.Element {
         {getIndustryError() && (
           <div className="animate-fade-in text-error flex items-start gap-2 text-[13px] font-medium">
             <svg className="mt-0.5 h-4 w-4 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+              <path
+                fillRule="evenodd"
+                d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                clipRule="evenodd"
+              />
             </svg>
             <span className="leading-tight">{getIndustryError()}</span>
           </div>
@@ -338,7 +375,7 @@ export function OrganizationDetailsSection(): React.JSX.Element {
           <label className="text-foreground block text-[15px] leading-tight font-medium">
             Geographic Regions *
           </label>
-          <span className="text-xs text-primary bg-primary/20 px-2 py-1 rounded-full border border-primary/30 shadow-md shadow-primary/25">
+          <span className="text-primary bg-primary/20 border-primary/30 shadow-primary/25 rounded-full border px-2 py-1 text-xs shadow-md">
             Select all that apply
           </span>
         </div>
@@ -351,17 +388,21 @@ export function OrganizationDetailsSection(): React.JSX.Element {
                 type="button"
                 onClick={() => handleRegionChange(region.value, !isSelected)}
                 className={cn(
-                  'relative px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 border',
+                  'relative rounded-lg border px-4 py-2 text-sm font-medium transition-all duration-200',
                   'hover:scale-105 active:scale-95',
                   isSelected
-                    ? 'bg-primary text-primary-foreground border-primary shadow-lg ring-2 ring-primary/30'
-                    : 'bg-white/10 text-white/80 border-white/20 hover:bg-white/20 hover:border-white/30'
+                    ? 'bg-primary text-primary-foreground border-primary ring-primary/30 shadow-lg ring-2'
+                    : 'border-white/20 bg-white/10 text-white/80 hover:border-white/30 hover:bg-white/20'
                 )}
               >
                 <span className="flex items-center gap-2">
                   {isSelected && (
-                    <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                    <svg className="h-3 w-3" fill="currentColor" viewBox="0 0 20 20">
+                      <path
+                        fillRule="evenodd"
+                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                        clipRule="evenodd"
+                      />
                     </svg>
                   )}
                   {region.label}
@@ -373,9 +414,15 @@ export function OrganizationDetailsSection(): React.JSX.Element {
         {errors.section_2_organization?.geographic_regions && (
           <div className="animate-fade-in text-error flex items-start gap-2 text-[13px] font-medium">
             <svg className="mt-0.5 h-4 w-4 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+              <path
+                fillRule="evenodd"
+                d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                clipRule="evenodd"
+              />
             </svg>
-            <span className="leading-tight">{errors.section_2_organization.geographic_regions.message}</span>
+            <span className="leading-tight">
+              {errors.section_2_organization.geographic_regions.message}
+            </span>
           </div>
         )}
       </div>
@@ -386,33 +433,38 @@ export function OrganizationDetailsSection(): React.JSX.Element {
           <label className="text-foreground block text-[15px] leading-tight font-medium">
             Compliance Requirements *
           </label>
-          <span className="text-xs text-primary bg-primary/20 px-2 py-1 rounded-full border border-primary/30 shadow-md shadow-primary/25">
+          <span className="text-primary bg-primary/20 border-primary/30 shadow-primary/25 rounded-full border px-2 py-1 text-xs shadow-md">
             Select all that apply
           </span>
         </div>
         <div className="flex flex-wrap gap-3">
           {/* Regular compliance requirements */}
           {COMPLIANCE_REQUIREMENTS.map((requirement) => {
-            const isSelected = requirement.value === 'Other'
-              ? showOtherComplianceInput
-              : selectedCompliance.includes(requirement.value);
+            const isSelected =
+              requirement.value === 'Other'
+                ? showOtherComplianceInput
+                : selectedCompliance.includes(requirement.value);
             return (
               <button
                 key={requirement.value}
                 type="button"
                 onClick={() => handleComplianceChange(requirement.value, !isSelected)}
                 className={cn(
-                  'relative px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 border',
+                  'relative rounded-lg border px-4 py-2 text-sm font-medium transition-all duration-200',
                   'hover:scale-105 active:scale-95',
                   isSelected
-                    ? 'bg-primary text-primary-foreground border-primary shadow-lg ring-2 ring-primary/30'
-                    : 'bg-white/10 text-white/80 border-white/20 hover:bg-white/20 hover:border-white/30'
+                    ? 'bg-primary text-primary-foreground border-primary ring-primary/30 shadow-lg ring-2'
+                    : 'border-white/20 bg-white/10 text-white/80 hover:border-white/30 hover:bg-white/20'
                 )}
               >
                 <span className="flex items-center gap-2">
                   {isSelected && (
-                    <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                    <svg className="h-3 w-3" fill="currentColor" viewBox="0 0 20 20">
+                      <path
+                        fillRule="evenodd"
+                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                        clipRule="evenodd"
+                      />
                     </svg>
                   )}
                   {requirement.label}
@@ -423,7 +475,7 @@ export function OrganizationDetailsSection(): React.JSX.Element {
 
           {/* Custom compliance requirements as bubbles */}
           {selectedCompliance
-            .filter(compliance => compliance.startsWith('Other: '))
+            .filter((compliance) => compliance.startsWith('Other: '))
             .map((customCompliance, index) => {
               const customValue = customCompliance.replace('Other: ', '');
               return (
@@ -431,11 +483,15 @@ export function OrganizationDetailsSection(): React.JSX.Element {
                   key={`custom-${index}`}
                   type="button"
                   onClick={() => handleCustomComplianceRemove(customValue)}
-                  className="relative px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 border bg-primary text-primary-foreground border-primary shadow-lg ring-2 ring-primary/30 hover:bg-primary/90"
+                  className="bg-primary text-primary-foreground border-primary ring-primary/30 hover:bg-primary/90 relative rounded-lg border px-4 py-2 text-sm font-medium shadow-lg ring-2 transition-all duration-200"
                 >
                   <span className="flex items-center gap-2">
-                    <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                    <svg className="h-3 w-3" fill="currentColor" viewBox="0 0 20 20">
+                      <path
+                        fillRule="evenodd"
+                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                        clipRule="evenodd"
+                      />
                     </svg>
                     {customValue}
                     <button
@@ -444,35 +500,44 @@ export function OrganizationDetailsSection(): React.JSX.Element {
                         e.stopPropagation();
                         handleCustomComplianceRemove(customValue);
                       }}
-                      className="ml-1 hover:bg-primary-foreground/20 rounded-full p-0.5 transition-colors"
+                      className="hover:bg-primary-foreground/20 ml-1 rounded-full p-0.5 transition-colors"
                     >
-                      <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      <svg
+                        className="h-3 w-3"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M6 18L18 6M6 6l12 12"
+                        />
                       </svg>
                     </button>
                   </span>
                 </button>
               );
             })}
-
         </div>
 
         {/* Custom Compliance Input */}
         {showOtherComplianceInput && (
-          <div className="flex items-center gap-3 p-3 bg-white/5 rounded-lg border border-white/10">
+          <div className="flex items-center gap-3 rounded-lg border border-white/10 bg-white/5 p-3">
             <input
               type="text"
               value={customComplianceInput}
               onChange={(e) => setCustomComplianceInput(e.target.value)}
               onKeyDown={handleCustomComplianceKeyDown}
               placeholder="Enter custom compliance requirement..."
-              className="flex-1 px-3 py-2 text-sm bg-white/10 border border-white/20 rounded-md text-foreground placeholder:text-white/50 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30"
+              className="text-foreground focus:border-primary focus:ring-primary/30 flex-1 rounded-md border border-white/20 bg-white/10 px-3 py-2 text-sm placeholder:text-white/50 focus:ring-2 focus:outline-none"
             />
             <button
               type="button"
               onClick={handleCustomComplianceSubmit}
               disabled={!customComplianceInput.trim()}
-              className="px-3 py-2 text-sm bg-primary text-primary-foreground rounded-md hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-md px-3 py-2 text-sm transition-colors disabled:cursor-not-allowed disabled:opacity-50"
             >
               Add
             </button>
@@ -482,9 +547,15 @@ export function OrganizationDetailsSection(): React.JSX.Element {
         {errors.section_2_organization?.compliance_requirements && (
           <div className="animate-fade-in text-error flex items-start gap-2 text-[13px] font-medium">
             <svg className="mt-0.5 h-4 w-4 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+              <path
+                fillRule="evenodd"
+                d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                clipRule="evenodd"
+              />
             </svg>
-            <span className="leading-tight">{errors.section_2_organization.compliance_requirements.message}</span>
+            <span className="leading-tight">
+              {errors.section_2_organization.compliance_requirements.message}
+            </span>
           </div>
         )}
       </div>
@@ -522,7 +593,6 @@ export function OrganizationDetailsSection(): React.JSX.Element {
         multiline
         rows={3}
       />
-
     </div>
   );
 }

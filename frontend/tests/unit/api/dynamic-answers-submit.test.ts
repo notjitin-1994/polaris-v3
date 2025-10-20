@@ -104,18 +104,18 @@ describe('Dynamic Answers Submit Endpoint', () => {
 
       expect(response.status).toBe(200);
       expect(data.success).toBe(true);
-      
+
       // Verify the update call did NOT include status='completed'
       const { createServerClient } = await import('@supabase/ssr');
       const mockSupabase = createServerClient('', '', {} as any);
       const updateCall = mockSupabase.from('blueprint_generator').update;
-      
+
       // The update should have been called
       expect(updateCall).toHaveBeenCalled();
-      
+
       // Get the arguments passed to update
       const updateArgs = (updateCall as any).mock.calls[0][0];
-      
+
       // CRITICAL: status should NOT be in the update
       expect(updateArgs).not.toHaveProperty('status');
       expect(updateArgs.dynamic_answers).toBeDefined();
@@ -198,13 +198,13 @@ describe('Dynamic Answers Submit Endpoint', () => {
       const response = await POST(request);
 
       expect(response.status).toBe(200);
-      
+
       const { createServerClient } = await import('@supabase/ssr');
       const mockSupabase = createServerClient('', '', {} as any);
       const updateCall = mockSupabase.from('blueprint_generator').update;
-      
+
       expect(updateCall).toHaveBeenCalled();
-      
+
       const updateArgs = (updateCall as any).mock.calls[0][0];
       expect(updateArgs.dynamic_answers).toEqual(expect.objectContaining(testAnswers));
     });
@@ -223,7 +223,7 @@ describe('Dynamic Answers Submit Endpoint', () => {
       const { createServerClient } = await import('@supabase/ssr');
       const mockSupabase = createServerClient('', '', {} as any);
       const updateCall = mockSupabase.from('blueprint_generator').update;
-      
+
       const updateArgs = (updateCall as any).mock.calls[0][0];
       expect(updateArgs.dynamic_answers).toBeDefined();
     });
@@ -233,7 +233,7 @@ describe('Dynamic Answers Submit Endpoint', () => {
     it('should handle database save errors gracefully', async () => {
       const { createServerClient } = await import('@supabase/ssr');
       const mockSupabase = createServerClient('', '', {} as any);
-      
+
       vi.mocked(mockSupabase.from('blueprint_generator').update as any).mockReturnValueOnce({
         eq: vi.fn(() => ({
           eq: vi.fn(() => ({ error: { message: 'Database error' } })),
@@ -256,7 +256,7 @@ describe('Dynamic Answers Submit Endpoint', () => {
     it('should handle blueprint not found error', async () => {
       const { createServerClient } = await import('@supabase/ssr');
       const mockSupabase = createServerClient('', '', {} as any);
-      
+
       vi.mocked(mockSupabase.from('blueprint_generator').select as any).mockReturnValueOnce({
         eq: vi.fn(() => ({
           single: vi.fn(() => ({
@@ -284,7 +284,7 @@ describe('Dynamic Answers Submit Endpoint', () => {
     it('should reject unauthenticated requests', async () => {
       const { createServerClient } = await import('@supabase/ssr');
       const mockSupabase = createServerClient('', '', {} as any);
-      
+
       vi.mocked(mockSupabase.auth.getUser).mockResolvedValueOnce({
         data: { user: null },
         error: { message: 'Not authenticated', name: 'AuthError', status: 401 },

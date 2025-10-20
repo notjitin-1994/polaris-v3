@@ -558,7 +558,10 @@
 @media (max-width: 767px) {
   .text-performance {
     /* Use system fonts primarily on mobile for faster loading */
-    font-family: system-ui, -apple-system, sans-serif;
+    font-family:
+      system-ui,
+      -apple-system,
+      sans-serif;
     font-feature-settings: normal; /* Disable ligatures for better performance */
     text-rendering: optimizeSpeed;
   }

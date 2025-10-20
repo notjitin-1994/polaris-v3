@@ -75,7 +75,7 @@ describe('Blueprint Viewer', () => {
 
       // Check that key sections are present (the content is mocked)
       expect(screen.getByText('Learning Objectives')).toBeInTheDocument();
-      
+
       // Verify view toggle is present
       expect(screen.getByText('Infographic Dashboard')).toBeInTheDocument();
       expect(screen.getByText('Markdown Document')).toBeInTheDocument();
@@ -86,7 +86,7 @@ describe('Blueprint Viewer', () => {
 
       // Initially in infographic view
       const markdownButton = screen.getByText('Markdown Document');
-      
+
       // Click to switch to markdown view
       fireEvent.click(markdownButton);
 
@@ -112,12 +112,12 @@ describe('Blueprint Viewer', () => {
         ...blueprintFixtures.minimal,
         learning_objectives: {
           ...blueprintFixtures.minimal.learning_objectives,
-          displayType: undefined as any
-        }
+          displayType: undefined as any,
+        },
       };
 
       render(<BlueprintViewer blueprint={blueprintWithoutDisplayTypes} />);
-      
+
       // Should render without crashing (defaults to markdown)
       expect(screen.getByText('Target Audience')).toBeInTheDocument();
     });
@@ -129,7 +129,7 @@ describe('Blueprint Viewer', () => {
 
       // Since we're mocking components, let's check the mocked output
       expect(screen.getByText('Learning Objectives')).toBeInTheDocument();
-      
+
       // In a real test, we would check for actual content
     });
 
@@ -160,7 +160,9 @@ describe('Blueprint Viewer', () => {
 
   describe.skip('Interactive Blueprint Dashboard', () => {
     it('should render the interactive dashboard with all sections', () => {
-      const { container } = render(<InteractiveBlueprintDashboard blueprint={blueprintFixtures.valid} />);
+      const { container } = render(
+        <InteractiveBlueprintDashboard blueprint={blueprintFixtures.valid} />
+      );
 
       // Check for dashboard elements - the component is rendered
       expect(container.querySelector('[class*="space-y"]')).toBeInTheDocument();
@@ -178,7 +180,9 @@ describe('Blueprint Viewer', () => {
     });
 
     it('should display progress indicators correctly', () => {
-      const { container } = render(<InteractiveBlueprintDashboard blueprint={blueprintFixtures.valid} />);
+      const { container } = render(
+        <InteractiveBlueprintDashboard blueprint={blueprintFixtures.valid} />
+      );
 
       // Verify the component renders without errors
       const dashboard = container.querySelector('[class*="min-h-screen"]');
@@ -230,7 +234,7 @@ describe('Blueprint Viewer', () => {
     it('should handle incomplete blueprint gracefully', () => {
       render(<BlueprintViewer blueprint={blueprintFixtures.incomplete as BlueprintJSON} />);
 
-      // Should render what's available without crashing  
+      // Should render what's available without crashing
       // The incomplete blueprint just renders what sections it has
       expect(screen.getByText('Executive Summary')).toBeInTheDocument();
     });
@@ -247,12 +251,12 @@ describe('Blueprint Viewer', () => {
         ...blueprintFixtures.minimal,
         learning_objectives: {
           ...blueprintFixtures.minimal.learning_objectives,
-          objectives: []
+          objectives: [],
         },
         content_outline: {
           ...blueprintFixtures.minimal.content_outline,
-          modules: []
-        }
+          modules: [],
+        },
       };
 
       render(<BlueprintViewer blueprint={blueprintWithEmptyArrays} />);

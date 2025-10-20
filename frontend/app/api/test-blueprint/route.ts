@@ -85,11 +85,7 @@ export async function POST(request: NextRequest): Promise<Response> {
         hours_per_week: '6-10',
         learning_location: ['Office/Workplace', 'Home'],
         devices_used: ['Desktop Computer', 'Laptop', 'Tablet'],
-        motivation_factors: [
-          'Career Advancement',
-          'Performance Improvement',
-          'Industry Trend',
-        ],
+        motivation_factors: ['Career Advancement', 'Performance Improvement', 'Industry Trend'],
         learning_deadline: '2025-12-31',
       },
     };
@@ -100,8 +96,7 @@ export async function POST(request: NextRequest): Promise<Response> {
         id: 's1',
         order: 1,
         title: 'Learning Objectives & Outcomes',
-        description:
-          'Define specific, measurable learning outcomes aligned with TechCorp context',
+        description: 'Define specific, measurable learning outcomes aligned with TechCorp context',
         questions: [
           {
             id: 's1_q1',
@@ -139,7 +134,7 @@ export async function POST(request: NextRequest): Promise<Response> {
           {
             id: 's1_q2',
             type: 'radio_pills',
-            label: 'What Bloom\'s taxonomy level should objectives target?',
+            label: "What Bloom's taxonomy level should objectives target?",
             options: [
               { value: 'understand', label: 'Understand', icon: '💡' },
               { value: 'apply', label: 'Apply', icon: '🔧' },
@@ -331,9 +326,7 @@ export async function POST(request: NextRequest): Promise<Response> {
             placeholder: '80%',
             required: true,
             helpText: 'Specify as percentage or point value',
-            validation: [
-              { rule: 'required', value: true, message: 'Provide passing criteria' },
-            ],
+            validation: [{ rule: 'required', value: true, message: 'Provide passing criteria' }],
             metadata: {},
           },
         ],
@@ -429,9 +422,7 @@ export async function POST(request: NextRequest): Promise<Response> {
             ],
             required: true,
             helpText: 'Select metrics aligned with business objectives',
-            validation: [
-              { rule: 'minSelections', value: 2, message: 'Select at least 2 KPIs' },
-            ],
+            validation: [{ rule: 'minSelections', value: 2, message: 'Select at least 2 KPIs' }],
             metadata: {},
           },
           {
@@ -548,9 +539,11 @@ export async function POST(request: NextRequest): Promise<Response> {
     });
 
     return NextResponse.json(
-      { error: 'Internal server error', details: error instanceof Error ? error.message : String(error) },
+      {
+        error: 'Internal server error',
+        details: error instanceof Error ? error.message : String(error),
+      },
       { status: 500 }
     );
   }
 }
-

@@ -51,7 +51,7 @@ class OfflineQueueManager {
     this.listeners.add(callback);
     // Immediately call with current status
     callback(this.isOnline);
-    
+
     return () => {
       this.listeners.delete(callback);
     };
@@ -79,7 +79,7 @@ class OfflineQueueManager {
     this.isOnline = true;
     this.notifyListeners();
     this.processQueue();
-    
+
     clientErrorTracker.captureInfo('Connection restored', {
       queuedRequests: this.queue.length,
     });
@@ -92,7 +92,7 @@ class OfflineQueueManager {
     console.log('[Offline Queue] Connection lost');
     this.isOnline = false;
     this.notifyListeners();
-    
+
     clientErrorTracker.captureWarning('Connection lost', {
       queuedRequests: this.queue.length,
     });
@@ -114,7 +114,7 @@ class OfflineQueueManager {
         method: 'HEAD',
         cache: 'no-store',
       });
-      
+
       const isConnected = response.ok;
       if (isConnected !== this.isOnline) {
         if (isConnected) {
@@ -207,7 +207,7 @@ class OfflineQueueManager {
         if (response.ok) {
           console.log('[Offline Queue] Request succeeded:', request.id);
           processedIds.push(request.id);
-          
+
           clientErrorTracker.captureInfo('Queued request succeeded', {
             queueId: request.id,
             url: request.url,
@@ -218,7 +218,7 @@ class OfflineQueueManager {
           if (request.retries >= MAX_RETRIES) {
             console.error('[Offline Queue] Request failed after max retries:', request.id);
             processedIds.push(request.id);
-            
+
             clientErrorTracker.captureError(
               new Error(`Failed to sync queued request after ${MAX_RETRIES} retries`),
               {
@@ -228,7 +228,10 @@ class OfflineQueueManager {
               }
             );
           } else {
-            console.log(`[Offline Queue] Request failed, will retry (${request.retries}/${MAX_RETRIES}):`, request.id);
+            console.log(
+              `[Offline Queue] Request failed, will retry (${request.retries}/${MAX_RETRIES}):`,
+              request.id
+            );
             await new Promise((resolve) => setTimeout(resolve, RETRY_DELAY));
           }
         }
@@ -237,13 +240,16 @@ class OfflineQueueManager {
         if (request.retries >= MAX_RETRIES) {
           console.error('[Offline Queue] Request error after max retries:', request.id, error);
           processedIds.push(request.id);
-          
+
           clientErrorTracker.captureError(error as Error, {
             queueId: request.id,
             url: request.url,
           });
         } else {
-          console.log(`[Offline Queue] Request error, will retry (${request.retries}/${MAX_RETRIES}):`, request.id);
+          console.log(
+            `[Offline Queue] Request error, will retry (${request.retries}/${MAX_RETRIES}):`,
+            request.id
+          );
           await new Promise((resolve) => setTimeout(resolve, RETRY_DELAY));
         }
       }
@@ -289,7 +295,7 @@ class OfflineQueueManager {
       if (stored) {
         this.queue = JSON.parse(stored);
         console.log(`[Offline Queue] Loaded ${this.queue.length} queued requests from storage`);
-        
+
         // Process queue if online
         if (this.isOnline) {
           setTimeout(() => this.processQueue(), 1000);

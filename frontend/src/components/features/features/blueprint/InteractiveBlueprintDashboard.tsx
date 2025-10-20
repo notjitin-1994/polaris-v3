@@ -268,80 +268,86 @@ export function InteractiveBlueprintDashboard({
     },
   };
 
-  const StatCard = React.useMemo(() => React.memo(({
-    icon: Icon,
-    label,
-    value,
-    suffix = '',
-    gradient,
-    delay = 0,
-  }: {
-    icon: React.ElementType;
-    label: string;
-    value: number;
-    suffix?: string;
-    gradient: string;
-    delay?: number;
-  }) => {
-    // Derive icon color from gradient
-    const iconColor = gradient.includes('primary')
-      ? 'text-primary'
-      : gradient.includes('secondary')
-        ? 'text-secondary'
-        : gradient.includes('success')
-          ? 'text-success'
-          : gradient.includes('warning')
-            ? 'text-warning'
-            : 'text-primary';
+  const StatCard = React.useMemo(
+    () =>
+      React.memo(
+        ({
+          icon: Icon,
+          label,
+          value,
+          suffix = '',
+          gradient,
+          delay = 0,
+        }: {
+          icon: React.ElementType;
+          label: string;
+          value: number;
+          suffix?: string;
+          gradient: string;
+          delay?: number;
+        }) => {
+          // Derive icon color from gradient
+          const iconColor = gradient.includes('primary')
+            ? 'text-primary'
+            : gradient.includes('secondary')
+              ? 'text-secondary'
+              : gradient.includes('success')
+                ? 'text-success'
+                : gradient.includes('warning')
+                  ? 'text-warning'
+                  : 'text-primary';
 
-    return (
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={hasAnimated ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-        transition={{ duration: 0.5, delay }}
-        whileHover={shouldReduceAnimations ? undefined : { scale: 1.02, y: -5 }}
-        className="group glass-card hover:border-primary/30 hover:shadow-primary/10 relative overflow-hidden rounded-2xl border border-white/10 p-6 transition-all duration-300 hover:shadow-2xl"
-      >
-        <div
-          className={`absolute inset-0 ${gradient} opacity-5 transition-opacity group-hover:opacity-10`}
-        />
-        <div className="relative z-10">
-          <div className="mb-4 flex items-start justify-between">
-            <div
-              className={`rounded-xl p-3 ${gradient} bg-opacity-20 transition-transform group-hover:scale-110`}
+          return (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={hasAnimated ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+              transition={{ duration: 0.5, delay }}
+              whileHover={shouldReduceAnimations ? undefined : { scale: 1.02, y: -5 }}
+              className="group glass-card hover:border-primary/30 hover:shadow-primary/10 relative overflow-hidden rounded-2xl border border-white/10 p-6 transition-all duration-300 hover:shadow-2xl"
             >
-              <Icon className={`drop-shadow-glow h-6 w-6 ${iconColor}`} />
-            </div>
-          </div>
-          <div className="space-y-2">
-            <p className="text-text-secondary text-sm font-medium">{label}</p>
-            <div className="flex items-baseline gap-1">
-              {mounted && hasAnimated ? (
-                shouldReduceAnimations ? (
-                  <span className="text-4xl font-bold text-white">
-                    {suffix === 'hrs' ? value.toFixed(1) : value.toLocaleString()}
-                  </span>
-                ) : (
-                  <CountUp
-                    start={0}
-                    end={value}
-                    duration={2}
-                    delay={delay}
-                    decimals={suffix === 'hrs' ? 1 : 0}
-                    className="text-4xl font-bold text-white"
-                    separator=","
-                  />
-                )
-              ) : (
-                <span className="text-4xl font-bold text-white">0</span>
-              )}
-              {suffix && <span className="text-primary text-xl font-medium">{suffix}</span>}
-            </div>
-          </div>
-        </div>
-      </motion.div>
-    );
-  }), [hasAnimated, mounted, shouldReduceAnimations]);
+              <div
+                className={`absolute inset-0 ${gradient} opacity-5 transition-opacity group-hover:opacity-10`}
+              />
+              <div className="relative z-10">
+                <div className="mb-4 flex items-start justify-between">
+                  <div
+                    className={`rounded-xl p-3 ${gradient} bg-opacity-20 transition-transform group-hover:scale-110`}
+                  >
+                    <Icon className={`drop-shadow-glow h-6 w-6 ${iconColor}`} />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <p className="text-text-secondary text-sm font-medium">{label}</p>
+                  <div className="flex items-baseline gap-1">
+                    {mounted && hasAnimated ? (
+                      shouldReduceAnimations ? (
+                        <span className="text-4xl font-bold text-white">
+                          {suffix === 'hrs' ? value.toFixed(1) : value.toLocaleString()}
+                        </span>
+                      ) : (
+                        <CountUp
+                          start={0}
+                          end={value}
+                          duration={2}
+                          delay={delay}
+                          decimals={suffix === 'hrs' ? 1 : 0}
+                          className="text-4xl font-bold text-white"
+                          separator=","
+                        />
+                      )
+                    ) : (
+                      <span className="text-4xl font-bold text-white">0</span>
+                    )}
+                    {suffix && <span className="text-primary text-xl font-medium">{suffix}</span>}
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          );
+        }
+      ),
+    [hasAnimated, mounted, shouldReduceAnimations]
+  );
 
   return (
     <motion.div
@@ -400,11 +406,11 @@ export function InteractiveBlueprintDashboard({
 
       {/* Section Navigator */}
       <motion.div variants={itemVariants}>
-        <div className="relative rounded-lg border border-neutral-200 bg-background">
+        <div className="bg-background relative rounded-lg border border-neutral-200">
           {/* All Sections Grid */}
           <div className="px-4 py-3">
-            <div className="text-xs font-medium text-primary mb-3">Quick Navigation</div>
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2">
+            <div className="text-primary mb-3 text-xs font-medium">Quick Navigation</div>
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-5">
               {sections.map((section, index) => {
                 const isExpanded = expandedSections.has(section.id);
                 return (
@@ -415,11 +421,13 @@ export function InteractiveBlueprintDashboard({
                     whileTap={{ scale: 0.98 }}
                     className={`relative flex items-center justify-center rounded-md px-3 py-2 text-center transition-all duration-150 ${
                       isExpanded
-                        ? 'bg-primary/15 text-primary border border-primary/20'
+                        ? 'bg-primary/15 text-primary border-primary/20 border'
                         : 'text-text-secondary/70 hover:text-text-secondary hover:bg-foreground/5'
                     }`}
                   >
-                    <span className={`text-xs leading-tight ${isExpanded ? 'font-medium' : 'font-normal'}`}>
+                    <span
+                      className={`text-xs leading-tight ${isExpanded ? 'font-medium' : 'font-normal'}`}
+                    >
                       {section.title}
                     </span>
                   </motion.button>
@@ -430,20 +438,26 @@ export function InteractiveBlueprintDashboard({
 
           {/* Progress Bar */}
           <div className="border-t border-white/5 px-4 py-2.5">
-            <div className="flex items-center justify-between text-xs text-text-secondary/80">
+            <div className="text-text-secondary/80 flex items-center justify-between text-xs">
               <span>{expandedSections.size} sections expanded</span>
-              <span className="font-medium text-primary/80">
-                {sections.length > 0 ? Math.round((expandedSections.size / sections.length) * 100) : 0}% explored
+              <span className="text-primary/80 font-medium">
+                {sections.length > 0
+                  ? Math.round((expandedSections.size / sections.length) * 100)
+                  : 0}
+                % explored
               </span>
             </div>
             <div className="mt-2 h-1 overflow-hidden rounded-full bg-white/8">
               <motion.div
                 initial={{ width: 0 }}
-                animate={{ 
-                  width: sections.length > 0 ? `${(expandedSections.size / sections.length) * 100}%` : '0%' 
+                animate={{
+                  width:
+                    sections.length > 0
+                      ? `${(expandedSections.size / sections.length) * 100}%`
+                      : '0%',
                 }}
                 transition={{ duration: 0.5, ease: 'easeOut' }}
-                className="bg-gradient-to-r from-primary to-primary/80 h-full rounded-full"
+                className="from-primary to-primary/80 h-full rounded-full bg-gradient-to-r"
               />
             </div>
           </div>

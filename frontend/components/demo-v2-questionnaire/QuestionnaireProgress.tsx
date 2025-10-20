@@ -23,7 +23,7 @@ export function QuestionnaireProgress({
   sections,
 }: QuestionnaireProgressProps): React.JSX.Element {
   const [isWhyThisMattersExpanded, setIsWhyThisMattersExpanded] = useState(false);
-  const progress = ((currentStep) / (totalSteps - 1)) * 100;
+  const progress = (currentStep / (totalSteps - 1)) * 100;
 
   return (
     <div className="animate-fade-in-up mb-10 space-y-6">
@@ -88,7 +88,7 @@ export function QuestionnaireProgress({
             <button
               type="button"
               onClick={() => setIsWhyThisMattersExpanded(!isWhyThisMattersExpanded)}
-              className="w-full flex items-center justify-between p-3 bg-primary/5 hover:bg-primary/10 rounded-lg border border-primary/10 transition-all duration-200 group"
+              className="bg-primary/5 hover:bg-primary/10 border-primary/10 group flex w-full items-center justify-between rounded-lg border p-3 transition-all duration-200"
             >
               <div className="flex items-center gap-2">
                 <span
@@ -100,12 +100,12 @@ export function QuestionnaireProgress({
                 >
                   💡
                 </span>
-                <span className="font-medium text-primary font-quicksand">
-                  {sections[currentStep]?.whyThisMatters?.title || "Why does this matter?"}
+                <span className="text-primary font-quicksand font-medium">
+                  {sections[currentStep]?.whyThisMatters?.title || 'Why does this matter?'}
                 </span>
               </div>
               <svg
-                className={`w-4 h-4 text-primary transition-transform duration-200 ${isWhyThisMattersExpanded ? 'rotate-180' : ''}`}
+                className={`text-primary h-4 w-4 transition-transform duration-200 ${isWhyThisMattersExpanded ? 'rotate-180' : ''}`}
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -113,7 +113,12 @@ export function QuestionnaireProgress({
                   filter: 'drop-shadow(0 0 4px rgba(167, 218, 219, 0.3))',
                 }}
               >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M19 9l-7 7-7-7"
+                />
               </svg>
             </button>
 

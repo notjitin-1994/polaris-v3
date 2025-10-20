@@ -7,15 +7,7 @@
 
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import {
-  FileText,
-  ChevronDown,
-  Plus,
-  Download,
-  Edit2,
-  Trash2,
-  Eye,
-} from 'lucide-react';
+import { FileText, ChevronDown, Plus, Download, Edit2, Trash2, Eye } from 'lucide-react';
 import { cn, glassCard, microInteractions } from '@/lib/design-system';
 import type { CustomReport } from '@/store/blueprintStore';
 
@@ -47,24 +39,20 @@ export function ReportsSection({
         onClick={() => setIsExpanded(!isExpanded)}
         className={cn(
           'flex w-full items-center gap-2 rounded-lg px-3 py-2',
-          'text-sm font-medium text-foreground',
-          'hover:bg-white/5 transition-colors',
+          'text-foreground text-sm font-medium',
+          'transition-colors hover:bg-white/5'
         )}
       >
-        <div className={cn(
-          'flex h-7 w-7 items-center justify-center rounded-lg',
-          'bg-secondary/20',
-        )}>
-          <FileText className="h-4 w-4 text-secondary" />
+        <div
+          className={cn('flex h-7 w-7 items-center justify-center rounded-lg', 'bg-secondary/20')}
+        >
+          <FileText className="text-secondary h-4 w-4" />
         </div>
         <span className="flex-1 text-left">Custom Reports</span>
         <div className="flex items-center gap-1">
-          <span className="text-xs text-text-disabled">{customReports.length}</span>
+          <span className="text-text-disabled text-xs">{customReports.length}</span>
           <ChevronDown
-            className={cn(
-              'h-4 w-4 transition-transform duration-200',
-              isExpanded && 'rotate-180',
-            )}
+            className={cn('h-4 w-4 transition-transform duration-200', isExpanded && 'rotate-180')}
           />
         </div>
       </button>
@@ -87,8 +75,8 @@ export function ReportsSection({
                 'flex w-full items-center justify-center gap-2 rounded-lg px-4 py-3',
                 'bg-secondary/10 text-secondary',
                 'hover:bg-secondary/20',
-                'border border-secondary/20',
-                'transition-all duration-200',
+                'border-secondary/20 border',
+                'transition-all duration-200'
               )}
             >
               <Plus className="h-4 w-4" />
@@ -104,43 +92,40 @@ export function ReportsSection({
                     layout
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
-                    className={cn(
-                      glassCard.base,
-                      'group p-3',
-                    )}
+                    className={cn(glassCard.base, 'group p-3')}
                   >
                     <div className="mb-2">
-                      <h4 className="text-sm font-medium text-foreground line-clamp-1">
+                      <h4 className="text-foreground line-clamp-1 text-sm font-medium">
                         {report.name}
                       </h4>
-                      <p className="mt-1 text-xs text-text-secondary line-clamp-2">
+                      <p className="text-text-secondary mt-1 line-clamp-2 text-xs">
                         {report.description}
                       </p>
                     </div>
 
                     <div className="flex items-center justify-between">
-                      <span className="text-xs text-text-disabled">
+                      <span className="text-text-disabled text-xs">
                         {report.sections.length} sections
                       </span>
 
-                      <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <div className="flex items-center gap-1 opacity-0 transition-opacity group-hover:opacity-100">
                         <button
                           onClick={() => console.log('Preview report:', report.id)}
                           className="h-6 w-6 rounded p-1 hover:bg-white/10"
                           title="Preview"
                         >
-                          <Eye className="h-full w-full text-text-secondary" />
+                          <Eye className="text-text-secondary h-full w-full" />
                         </button>
                         <button
                           onClick={() => console.log('Download report:', report.id)}
                           className="h-6 w-6 rounded p-1 hover:bg-white/10"
                           title="Download"
                         >
-                          <Download className="h-full w-full text-text-secondary" />
+                          <Download className="text-text-secondary h-full w-full" />
                         </button>
                         <button
                           onClick={() => onDeleteReport(report.id)}
-                          className="h-6 w-6 rounded p-1 hover:bg-white/10 hover:text-error"
+                          className="hover:text-error h-6 w-6 rounded p-1 hover:bg-white/10"
                           title="Delete"
                         >
                           <Trash2 className="h-full w-full" />
@@ -151,10 +136,8 @@ export function ReportsSection({
                 ))
               ) : (
                 <div className="py-6 text-center">
-                  <FileText className="mx-auto mb-2 h-8 w-8 text-text-disabled opacity-50" />
-                  <p className="text-xs text-text-disabled">
-                    No reports yet
-                  </p>
+                  <FileText className="text-text-disabled mx-auto mb-2 h-8 w-8 opacity-50" />
+                  <p className="text-text-disabled text-xs">No reports yet</p>
                 </div>
               )}
             </div>
@@ -164,4 +147,3 @@ export function ReportsSection({
     </div>
   );
 }
-

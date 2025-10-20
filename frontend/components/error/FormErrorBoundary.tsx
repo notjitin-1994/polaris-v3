@@ -43,36 +43,28 @@ export class FormErrorBoundary extends Component<Props, State> {
 
       return (
         <div
-          className="p-8 bg-error/10 border border-error/20 rounded-lg text-center space-y-4"
+          className="bg-error/10 border-error/20 space-y-4 rounded-lg border p-8 text-center"
           role="alert"
           aria-live="assertive"
         >
-          <div className="text-error text-xl font-semibold">
-            ⚠️ Something went wrong
-          </div>
+          <div className="text-error text-xl font-semibold">⚠️ Something went wrong</div>
           <p className="text-text-secondary">
             An unexpected error occurred while rendering this section.
           </p>
           {this.state.error && (
-            <details className="text-left text-sm text-text-secondary bg-black/20 p-4 rounded">
+            <details className="text-text-secondary rounded bg-black/20 p-4 text-left text-sm">
               <summary className="cursor-pointer">Error details</summary>
-              <pre className="mt-2 overflow-auto">
-                {this.state.error.message}
-              </pre>
+              <pre className="mt-2 overflow-auto">{this.state.error.message}</pre>
             </details>
           )}
-          <div className="flex gap-4 justify-center">
-            <QuestionnaireButton
-              type="button"
-              variant="primary"
-              onClick={this.handleReset}
-            >
+          <div className="flex justify-center gap-4">
+            <QuestionnaireButton type="button" variant="primary" onClick={this.handleReset}>
               Try Again
             </QuestionnaireButton>
             <QuestionnaireButton
               type="button"
               variant="secondary"
-              onClick={() => window.location.href = '/dashboard'}
+              onClick={() => (window.location.href = '/dashboard')}
             >
               Return to Dashboard
             </QuestionnaireButton>

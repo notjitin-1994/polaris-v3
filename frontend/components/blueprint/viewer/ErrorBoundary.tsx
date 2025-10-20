@@ -44,7 +44,7 @@ export class ViewerErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoun
       console.error('Blueprint Viewer Error:', error);
       console.error('Error Info:', errorInfo);
     }
-    
+
     this.setState({
       errorInfo,
     });
@@ -67,45 +67,40 @@ export class ViewerErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoun
 
       // Default error UI
       return (
-        <div className="flex min-h-screen items-center justify-center bg-background p-6">
+        <div className="bg-background flex min-h-screen items-center justify-center p-6">
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            className={cn(
-              glassCard.premium,
-              'max-w-md p-8 text-center',
-            )}
+            className={cn(glassCard.premium, 'max-w-md p-8 text-center')}
           >
-            <div className="mb-6 inline-flex h-16 w-16 items-center justify-center rounded-full bg-error/10">
-              <AlertCircle className="h-8 w-8 text-error" />
+            <div className="bg-error/10 mb-6 inline-flex h-16 w-16 items-center justify-center rounded-full">
+              <AlertCircle className="text-error h-8 w-8" />
             </div>
-            
-            <h2 className="mb-2 text-xl font-bold text-foreground">
-              Something went wrong
-            </h2>
-            
-            <p className="mb-6 text-sm text-text-secondary">
+
+            <h2 className="text-foreground mb-2 text-xl font-bold">Something went wrong</h2>
+
+            <p className="text-text-secondary mb-6 text-sm">
               The blueprint viewer encountered an error. Please try refreshing the page.
             </p>
-            
+
             {process.env.NODE_ENV === 'development' && this.state.error && (
               <details className="mb-6 text-left">
-                <summary className="cursor-pointer text-xs text-text-disabled">
+                <summary className="text-text-disabled cursor-pointer text-xs">
                   Error details
                 </summary>
-                <pre className="mt-2 max-h-40 overflow-auto rounded-lg bg-white/5 p-3 text-xs text-error">
+                <pre className="text-error mt-2 max-h-40 overflow-auto rounded-lg bg-white/5 p-3 text-xs">
                   {this.state.error.toString()}
                 </pre>
               </details>
             )}
-            
+
             <button
               onClick={this.handleReset}
               className={cn(
                 componentStyles.button.base,
                 componentStyles.button.variants.primary,
                 componentStyles.button.sizes.md,
-                'w-full',
+                'w-full'
               )}
             >
               <RefreshCw className="h-4 w-4" />

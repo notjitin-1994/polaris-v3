@@ -15,10 +15,7 @@ import { useBlueprintStore } from '@/store/blueprintStore';
 import { useBlueprintSidebar } from '@/contexts/BlueprintSidebarContext';
 import type { BlueprintJSON } from '../types';
 import type { AnyBlueprint } from '@/lib/ollama/schema';
-import {
-  orchestratedEntrance,
-  cn,
-} from '@/lib/design-system';
+import { orchestratedEntrance, cn } from '@/lib/design-system';
 
 interface BlueprintViewerProps {
   blueprintId: string;
@@ -90,7 +87,7 @@ export function BlueprintViewer({
 }: BlueprintViewerProps): React.JSX.Element {
   const containerRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({ container: containerRef });
-  
+
   // State management with Zustand
   const {
     viewMode,
@@ -120,17 +117,17 @@ export function BlueprintViewer({
     updateAnnotation,
     deleteAnnotation,
   } = useBlueprintStore();
-  
+
   // Command palette state
   const [showCommandPalette, setShowCommandPalette] = useState(false);
-  
+
   // Blueprint sidebar context
   const { setActiveBlueprintPage } = useBlueprintSidebar();
-  
+
   // Extract sections from blueprint data
   const sections = useMemo(() => {
     const allSections = [];
-    
+
     // Define proper order for blueprint sections
     const sectionOrder = [
       'executive_summary',
@@ -145,11 +142,11 @@ export function BlueprintViewer({
       'success_metrics',
       'sustainability_plan',
     ];
-    
+
     // Extract from BlueprintJSON format in proper order
     if ('metadata' in blueprintData) {
       // First, add sections in the defined order
-      sectionOrder.forEach(key => {
+      sectionOrder.forEach((key) => {
         if (key in blueprintData && typeof blueprintData[key] === 'object') {
           allSections.push({
             id: key,
@@ -159,14 +156,10 @@ export function BlueprintViewer({
           });
         }
       });
-      
+
       // Then add any additional sections not in the predefined order
       Object.entries(blueprintData).forEach(([key, value]) => {
-        if (
-          key !== 'metadata' && 
-          !sectionOrder.includes(key) && 
-          typeof value === 'object'
-        ) {
+        if (key !== 'metadata' && !sectionOrder.includes(key) && typeof value === 'object') {
           allSections.push({
             id: key,
             title: formatSectionTitle(key),
@@ -191,20 +184,20 @@ export function BlueprintViewer({
         }
       });
     }
-    
+
     return allSections;
   }, [blueprintData, markdown]);
-  
+
   // Filter visible sections
   const visibleSections = useMemo(() => {
-    return sections.filter(section => {
-      const matchesSearch = !searchQuery || 
-        section.title.toLowerCase().includes(searchQuery.toLowerCase());
+    return sections.filter((section) => {
+      const matchesSearch =
+        !searchQuery || section.title.toLowerCase().includes(searchQuery.toLowerCase());
       const notHidden = !hiddenSections.includes(section.id);
       return matchesSearch && notHidden;
     });
   }, [sections, searchQuery, hiddenSections]);
-  
+
   // Handler to exit presentation mode - call parent callback if provided, otherwise return to dashboard
   const exitPresentationMode = useCallback(() => {
     if (onExitPresentation) {
@@ -215,7 +208,7 @@ export function BlueprintViewer({
       setViewMode('dashboard');
     }
   }, [viewMode, setViewMode, onExitPresentation]);
-  
+
   // Keyboard shortcuts
   useKeyboardShortcuts({
     'cmd+k': () => setShowCommandPalette(true),
@@ -226,7 +219,7 @@ export function BlueprintViewer({
       const searchInput = document.querySelector('[data-search-input]') as HTMLInputElement;
       searchInput?.focus();
     },
-    'escape': () => {
+    escape: () => {
       if (viewMode === 'presentation') {
         exitPresentationMode();
       } else if (showCommandPalette) {
@@ -241,32 +234,35 @@ export function BlueprintViewer({
     '3': () => setViewMode('presentation'),
     '4': () => setViewMode('focus'),
   });
-  
+
   // Handle section navigation
-  const navigateToSection = useCallback((sectionId: string) => {
-    setActiveSection(sectionId);
-    const element = document.getElementById(sectionId);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-  }, [setActiveSection]);
-  
+  const navigateToSection = useCallback(
+    (sectionId: string) => {
+      setActiveSection(sectionId);
+      const element = document.getElementById(sectionId);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    },
+    [setActiveSection]
+  );
+
   // Track reading progress
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
-    
+
     const handleScroll = () => {
       const { scrollTop, scrollHeight, clientHeight } = container;
       const progress = (scrollTop / (scrollHeight - clientHeight)) * 100;
       // Update reading progress in store
       useBlueprintStore.setState({ readingProgress: Math.min(progress, 100) });
     };
-    
+
     container.addEventListener('scroll', handleScroll);
     return () => container.removeEventListener('scroll', handleScroll);
   }, []);
-  
+
   // Register blueprint sidebar data with context
   useEffect(() => {
     setActiveBlueprintPage(true, {
@@ -288,7 +284,7 @@ export function BlueprintViewer({
       onUpdateAnnotation: updateAnnotation,
       onDeleteAnnotation: deleteAnnotation,
     });
-    
+
     return () => {
       setActiveBlueprintPage(false);
     };
@@ -311,11 +307,11 @@ export function BlueprintViewer({
     updateAnnotation,
     deleteAnnotation,
   ]);
-  
+
   // Save preferences to localStorage
   useEffect(() => {
     if (!blueprintId || isPublicView) return;
-    
+
     const preferences = {
       viewMode,
       layoutMode,
@@ -325,7 +321,7 @@ export function BlueprintViewer({
       pinnedSections,
       hiddenSections,
     };
-    
+
     localStorage.setItem(`blueprint-prefs-${blueprintId}`, JSON.stringify(preferences));
   }, [
     blueprintId,
@@ -338,11 +334,11 @@ export function BlueprintViewer({
     hiddenSections,
     isPublicView,
   ]);
-  
+
   // Load preferences from localStorage
   useEffect(() => {
     if (!blueprintId || isPublicView || ignoreSavedPrefs) return;
-    
+
     const savedPrefs = localStorage.getItem(`blueprint-prefs-${blueprintId}`);
     if (savedPrefs) {
       try {
@@ -362,13 +358,13 @@ export function BlueprintViewer({
     if (!initialViewMode) return;
     setViewMode(initialViewMode);
   }, [initialViewMode, setViewMode]);
-  
+
   // Export handler
   const handleExport = useCallback(async (format: 'pdf' | 'word' | 'ppt') => {
     // Export implementation - placeholder for now
     console.log(`Exporting as ${format}`);
   }, []);
-  
+
   // Share handler
   const handleShare = useCallback(async () => {
     try {
@@ -377,7 +373,7 @@ export function BlueprintViewer({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ blueprintId }),
       });
-      
+
       if (response.ok) {
         const result = await response.json();
         if (result.shareUrl) {
@@ -388,22 +384,22 @@ export function BlueprintViewer({
       console.error('Share failed:', error);
     }
   }, [blueprintId]);
-  
+
   return (
     <motion.div
       ref={containerRef}
-      className="relative min-h-screen bg-background"
+      className="bg-background relative min-h-screen"
       initial="hidden"
       animate="visible"
       variants={orchestratedEntrance}
     >
       {/* Ambient background effects - Softer gradients */}
       <div className="pointer-events-none fixed inset-0">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/[0.015] via-transparent to-secondary/[0.015]" />
+        <div className="from-primary/[0.015] to-secondary/[0.015] absolute inset-0 bg-gradient-to-br via-transparent" />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(167,218,219,0.03),transparent_50%)]" />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,rgba(230,184,156,0.03),transparent_50%)]" />
       </div>
-      
+
       {/* Simplified Header - Hidden in presentation mode */}
       {viewMode !== 'presentation' && (
         <div className="sticky top-0 z-50">
@@ -419,12 +415,10 @@ export function BlueprintViewer({
           />
         </div>
       )}
-      
+
       {/* Main content area - Blueprint tools now in global sidebar */}
       <main className="relative flex flex-1">
-        <div className={cn(
-          'flex-1 transition-all duration-300',
-        )}>
+        <div className={cn('flex-1 transition-all duration-300')}>
           {/* Content renderer */}
           <ViewerContent
             blueprintData={blueprintData}
@@ -441,7 +435,7 @@ export function BlueprintViewer({
           />
         </div>
       </main>
-      
+
       {/* Command Palette */}
       <CommandPalette
         isOpen={showCommandPalette}
@@ -453,15 +447,15 @@ export function BlueprintViewer({
         onToggleMinimap={toggleMinimap}
         onToggleAnnotations={toggleAnnotations}
       />
-      
+
       {/* Reading progress bar */}
       <motion.div
-        className="fixed bottom-0 left-0 right-0 z-50 h-1 bg-white/10"
+        className="fixed right-0 bottom-0 left-0 z-50 h-1 bg-white/10"
         initial={{ scaleX: 0 }}
         animate={{ scaleX: scrollYProgress }}
         style={{ transformOrigin: 'left' }}
       >
-        <div className="h-full bg-gradient-to-r from-primary to-secondary" />
+        <div className="from-primary to-secondary h-full bg-gradient-to-r" />
       </motion.div>
     </motion.div>
   );
@@ -471,6 +465,6 @@ export function BlueprintViewer({
 function formatSectionTitle(key: string): string {
   return key
     .split('_')
-    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
     .join(' ');
 }

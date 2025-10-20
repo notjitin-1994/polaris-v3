@@ -102,11 +102,11 @@ export function CommandPalette({
   const [selectedIndex, setSelectedIndex] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
   const resultsRef = useRef<HTMLDivElement>(null);
-  
+
   // Build command list
   const commands: Command[] = [
     // Navigation commands
-    ...sections.map(section => ({
+    ...sections.map((section) => ({
       id: `nav-${section.id}`,
       title: `Go to ${section.title}`,
       description: section.type,
@@ -118,7 +118,7 @@ export function CommandPalette({
         onClose();
       },
     })),
-    
+
     // View mode commands
     {
       id: 'view-dashboard',
@@ -172,7 +172,7 @@ export function CommandPalette({
       },
       shortcut: '4',
     },
-    
+
     // Action commands
     {
       id: 'toggle-sidebar',
@@ -236,7 +236,7 @@ export function CommandPalette({
         onClose();
       },
     },
-    
+
     // AI commands
     {
       id: 'ai-summary',
@@ -251,28 +251,29 @@ export function CommandPalette({
       },
     },
   ];
-  
+
   // Set up fuzzy search
   const fuse = new Fuse(commands, {
     keys: ['title', 'description', 'keywords'],
     threshold: 0.3,
     includeScore: true,
   });
-  
+
   // Filter results
-  const results = query
-    ? fuse.search(query).map(result => result.item)
-    : commands;
-    
+  const results = query ? fuse.search(query).map((result) => result.item) : commands;
+
   // Group results by category
-  const groupedResults = results.reduce((acc, command) => {
-    if (!acc[command.category]) {
-      acc[command.category] = [];
-    }
-    acc[command.category].push(command);
-    return acc;
-  }, {} as Record<string, Command[]>);
-  
+  const groupedResults = results.reduce(
+    (acc, command) => {
+      if (!acc[command.category]) {
+        acc[command.category] = [];
+      }
+      acc[command.category].push(command);
+      return acc;
+    },
+    {} as Record<string, Command[]>
+  );
+
   // Category labels
   const categoryLabels = {
     navigation: 'Navigation',
@@ -281,20 +282,20 @@ export function CommandPalette({
     settings: 'Settings',
     ai: 'AI Tools',
   };
-  
+
   // Handle keyboard navigation
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (!isOpen) return;
-      
+
       switch (e.key) {
         case 'ArrowDown':
           e.preventDefault();
-          setSelectedIndex(prev => Math.min(prev + 1, results.length - 1));
+          setSelectedIndex((prev) => Math.min(prev + 1, results.length - 1));
           break;
         case 'ArrowUp':
           e.preventDefault();
-          setSelectedIndex(prev => Math.max(prev - 1, 0));
+          setSelectedIndex((prev) => Math.max(prev - 1, 0));
           break;
         case 'Enter':
           e.preventDefault();
@@ -308,11 +309,11 @@ export function CommandPalette({
           break;
       }
     };
-    
+
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isOpen, selectedIndex, results, onClose]);
-  
+
   // Reset state when opened
   useEffect(() => {
     if (isOpen) {
@@ -321,43 +322,41 @@ export function CommandPalette({
       inputRef.current?.focus();
     }
   }, [isOpen]);
-  
+
   // Scroll selected item into view
   useEffect(() => {
     if (resultsRef.current && results.length > 0) {
-      const selectedElement = resultsRef.current.querySelector(
-        `[data-index="${selectedIndex}"]`
-      );
+      const selectedElement = resultsRef.current.querySelector(`[data-index="${selectedIndex}"]`);
       selectedElement?.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
     }
   }, [selectedIndex, results.length]);
-  
+
   if (!isOpen) return <></>;
-  
+
   return (
     <AnimatePresence>
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 z-[100] flex items-start justify-center bg-black/50 backdrop-blur-sm pt-[10vh]"
+        className="fixed inset-0 z-[100] flex items-start justify-center bg-black/50 pt-[10vh] backdrop-blur-sm"
         onClick={onClose}
       >
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: -20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: -20 }}
-              transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-              onClick={(e) => e.stopPropagation()}
-              className={cn(
-                glassPanel.floating,
-                elevation.xl,
-                'w-[90%] max-w-3xl overflow-hidden rounded-2xl',
-              )}
-            >
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95, y: -20 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          exit={{ opacity: 0, scale: 0.95, y: -20 }}
+          transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+          onClick={(e) => e.stopPropagation()}
+          className={cn(
+            glassPanel.floating,
+            elevation.xl,
+            'w-[90%] max-w-3xl overflow-hidden rounded-2xl'
+          )}
+        >
           {/* Search Input */}
           <div className="relative border-b border-white/10 p-4">
-            <Search className="pointer-events-none absolute left-6 top-1/2 h-5 w-5 -translate-y-1/2 text-text-secondary" />
+            <Search className="text-text-secondary pointer-events-none absolute top-1/2 left-6 h-5 w-5 -translate-y-1/2" />
             <input
               ref={inputRef}
               type="text"
@@ -368,33 +367,27 @@ export function CommandPalette({
               }}
               placeholder="Type a command or search..."
               className={cn(
-                'w-full bg-transparent pl-12 pr-4',
-                'text-lg text-foreground placeholder:text-text-disabled',
-                'focus:outline-none',
+                'w-full bg-transparent pr-4 pl-12',
+                'text-foreground placeholder:text-text-disabled text-lg',
+                'focus:outline-none'
               )}
             />
           </div>
-          
+
           {/* Results */}
-          <div
-            ref={resultsRef}
-            className="max-h-[60vh] overflow-y-auto p-2"
-          >
+          <div ref={resultsRef} className="max-h-[60vh] overflow-y-auto p-2">
             {Object.entries(groupedResults).map(([category, commands]) => (
               <div key={category} className="mb-4">
-                <h3 className={cn(
-                  typographyPresets.labelText,
-                  'mb-2 px-3 text-text-secondary',
-                )}>
+                <h3 className={cn(typographyPresets.labelText, 'text-text-secondary mb-2 px-3')}>
                   {categoryLabels[category as keyof typeof categoryLabels]}
                 </h3>
-                
+
                 <div className="space-y-1">
                   {commands.map((command, index) => {
-                    const globalIndex = results.findIndex(r => r.id === command.id);
+                    const globalIndex = results.findIndex((r) => r.id === command.id);
                     const isSelected = globalIndex === selectedIndex;
                     const Icon = command.icon;
-                    
+
                     return (
                       <motion.button
                         key={command.id}
@@ -406,59 +399,54 @@ export function CommandPalette({
                           'text-left transition-all',
                           isSelected
                             ? 'bg-primary/20 text-foreground'
-                            : 'text-text-secondary hover:bg-white/5 hover:text-foreground',
+                            : 'text-text-secondary hover:text-foreground hover:bg-white/5'
                         )}
                       >
-                        <Icon className={cn(
-                          'h-5 w-5 flex-shrink-0',
-                          isSelected && 'text-primary',
-                        )} />
-                        
+                        <Icon
+                          className={cn('h-5 w-5 flex-shrink-0', isSelected && 'text-primary')}
+                        />
+
                         <div className="flex-1">
                           <div className="font-medium">{command.title}</div>
                           {command.description && (
-                            <div className="text-xs opacity-70">
-                              {command.description}
-                            </div>
+                            <div className="text-xs opacity-70">{command.description}</div>
                           )}
                         </div>
-                        
+
                         {command.shortcut && (
-                          <kbd className={cn(
-                            'inline-flex h-6 items-center gap-1 px-2',
-                            'text-xs font-medium',
-                            'rounded border',
-                            isSelected
-                              ? 'border-primary/30 bg-primary/10 text-primary'
-                              : 'border-white/10 bg-white/5 text-text-secondary',
-                          )}>
+                          <kbd
+                            className={cn(
+                              'inline-flex h-6 items-center gap-1 px-2',
+                              'text-xs font-medium',
+                              'rounded border',
+                              isSelected
+                                ? 'border-primary/30 bg-primary/10 text-primary'
+                                : 'text-text-secondary border-white/10 bg-white/5'
+                            )}
+                          >
                             {command.shortcut}
                           </kbd>
                         )}
-                        
-                        {isSelected && (
-                          <ArrowRight className="h-4 w-4 text-primary" />
-                        )}
+
+                        {isSelected && <ArrowRight className="text-primary h-4 w-4" />}
                       </motion.button>
                     );
                   })}
                 </div>
               </div>
             ))}
-            
+
             {results.length === 0 && (
               <div className="py-12 text-center">
                 <p className="text-text-secondary">No results found</p>
-                <p className="mt-1 text-sm text-text-disabled">
-                  Try a different search term
-                </p>
+                <p className="text-text-disabled mt-1 text-sm">Try a different search term</p>
               </div>
             )}
           </div>
-          
+
           {/* Footer */}
           <div className="border-t border-white/10 px-4 py-3">
-            <div className="flex items-center justify-between text-xs text-text-secondary">
+            <div className="text-text-secondary flex items-center justify-between text-xs">
               <div className="flex items-center gap-4">
                 <span className="flex items-center gap-1">
                   <kbd className="rounded bg-white/10 px-1">↑↓</kbd>
@@ -473,7 +461,7 @@ export function CommandPalette({
                   Close
                 </span>
               </div>
-              
+
               <span className="flex items-center gap-1">
                 <Command className="h-3 w-3" />
                 Command Palette

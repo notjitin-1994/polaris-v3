@@ -36,9 +36,9 @@ export function NewReportDialog({
     onCreateReport(report);
     onClose();
   };
-  
+
   if (!isOpen) return <></>;
-  
+
   return (
     <AnimatePresence>
       <ReportBuilder

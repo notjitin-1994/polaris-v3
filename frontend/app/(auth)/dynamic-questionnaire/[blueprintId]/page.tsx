@@ -14,11 +14,11 @@ import { QuestionnaireProgress } from '@/components/demo-v2-questionnaire/Questi
 import { QuestionnaireButton } from '@/components/demo-v2-questionnaire/QuestionnaireButton';
 import { FormErrorBoundary } from '@/components/error/FormErrorBoundary';
 import { cn } from '@/lib/utils';
-import { 
-  createDynamicSchema, 
-  validateSection, 
+import {
+  createDynamicSchema,
+  validateSection,
   calculateCompletionPercentage,
-  getSectionValidationStatus 
+  getSectionValidationStatus,
 } from '@/lib/validation/dynamicQuestionSchemaBuilder';
 import '@/styles/dynamic-questionnaire.css';
 
@@ -79,7 +79,11 @@ interface DynamicQuestionsData {
   };
 }
 
-function DynamicQuestionnaireContent({ params }: { params: Promise<{ blueprintId: string }> }): React.JSX.Element {
+function DynamicQuestionnaireContent({
+  params,
+}: {
+  params: Promise<{ blueprintId: string }>;
+}): React.JSX.Element {
   const { user } = useAuth();
   const router = useRouter();
   const [blueprintId, setBlueprintId] = useState<string | null>(null);
@@ -103,7 +107,7 @@ function DynamicQuestionnaireContent({ params }: { params: Promise<{ blueprintId
 
   // Initialize form with dynamic Zod validation
   const [dynamicSchema, setDynamicSchema] = useState<z.ZodSchema | null>(null);
-  
+
   // Create dynamic schema when questions data is loaded
   useEffect(() => {
     if (questionsData?.sections) {
@@ -118,7 +122,15 @@ function DynamicQuestionnaireContent({ params }: { params: Promise<{ blueprintId
     defaultValues: questionsData?.existingAnswers || {},
   });
 
-  const { handleSubmit, trigger, formState: { errors }, getValues, reset, watch, setValue } = methods;
+  const {
+    handleSubmit,
+    trigger,
+    formState: { errors },
+    getValues,
+    reset,
+    watch,
+    setValue,
+  } = methods;
 
   // Fetch dynamic questions and merge with sessionStorage
   useEffect(() => {
@@ -128,7 +140,7 @@ function DynamicQuestionnaireContent({ params }: { params: Promise<{ blueprintId
       try {
         setIsLoading(true);
         const response = await fetch(`/api/dynamic-questions/${blueprintId}`);
-        
+
         if (!response.ok) {
           if (response.status === 404) {
             setSaveError('Blueprint not found. Please start from the beginning.');
@@ -154,7 +166,7 @@ function DynamicQuestionnaireContent({ params }: { params: Promise<{ blueprintId
         const existingAnswers = data.existingAnswers || {};
         const validatedAnswers: Record<string, unknown> = {};
         let incompatibleCount = 0;
-        
+
         Object.entries(existingAnswers).forEach(([questionId, answer]) => {
           // Find the question
           let question = null;
@@ -162,20 +174,20 @@ function DynamicQuestionnaireContent({ params }: { params: Promise<{ blueprintId
             question = section.questions.find((q: Question) => q.id === questionId);
             if (question) break;
           }
-          
+
           if (!question) {
             // Question no longer exists (questions were regenerated)
             incompatibleCount++;
             return;
           }
-          
+
           // Validate answer matches question's option values
           if (question.options && question.options.length > 0) {
             const validValues = question.options.map((opt: any) => opt.value);
-            
+
             if (['checkbox_pills', 'checkbox_cards'].includes(question.type)) {
               if (Array.isArray(answer)) {
-                const validItems = answer.filter(val => validValues.includes(String(val)));
+                const validItems = answer.filter((val) => validValues.includes(String(val)));
                 if (validItems.length > 0) {
                   validatedAnswers[questionId] = validItems;
                 } else if (validItems.length !== answer.length) {
@@ -194,9 +206,11 @@ function DynamicQuestionnaireContent({ params }: { params: Promise<{ blueprintId
             validatedAnswers[questionId] = answer;
           }
         });
-        
+
         if (incompatibleCount > 0) {
-          setSaveError(`${incompatibleCount} previous answer${incompatibleCount > 1 ? 's were' : ' was'} cleared because the questions were updated. Please review and re-answer any empty fields.`);
+          setSaveError(
+            `${incompatibleCount} previous answer${incompatibleCount > 1 ? 's were' : ' was'} cleared because the questions were updated. Please review and re-answer any empty fields.`
+          );
           setTimeout(() => setSaveError(null), 8000);
         }
 
@@ -210,7 +224,7 @@ function DynamicQuestionnaireContent({ params }: { params: Promise<{ blueprintId
         if (sessionData) {
           try {
             const localAnswers = JSON.parse(sessionData);
-            
+
             // Validate sessionStorage answers too
             Object.entries(localAnswers).forEach(([questionId, answer]) => {
               let question = null;
@@ -218,16 +232,21 @@ function DynamicQuestionnaireContent({ params }: { params: Promise<{ blueprintId
                 question = section.questions.find((q: Question) => q.id === questionId);
                 if (question) break;
               }
-              
+
               if (question && question.options && question.options.length > 0) {
                 const validValues = question.options.map((opt: any) => opt.value);
-                
-                if (['checkbox_pills', 'checkbox_cards'].includes(question.type) && Array.isArray(answer)) {
-                  const validItems = answer.filter(val => validValues.includes(String(val)));
+
+                if (
+                  ['checkbox_pills', 'checkbox_cards'].includes(question.type) &&
+                  Array.isArray(answer)
+                ) {
+                  const validItems = answer.filter((val) => validValues.includes(String(val)));
                   if (validItems.length > 0) {
                     validatedAnswers[questionId] = validItems;
                   }
-                } else if (['radio_pills', 'radio_cards', 'toggle_switch'].includes(question.type)) {
+                } else if (
+                  ['radio_pills', 'radio_cards', 'toggle_switch'].includes(question.type)
+                ) {
                   if (typeof answer === 'string' && validValues.includes(answer)) {
                     validatedAnswers[questionId] = answer;
                   }
@@ -323,11 +342,11 @@ function DynamicQuestionnaireContent({ params }: { params: Promise<{ blueprintId
       }
 
       const result = await response.json();
-      
-        if (result.success) {
+
+      if (result.success) {
         setLastAutosave(new Date());
         hasUnsavedChangesRef.current = false;
-        
+
         // Clear sessionStorage backup after successful save
         sessionStorage.removeItem(sessionKey);
         sessionStorage.removeItem(sessionSectionKey);
@@ -386,29 +405,29 @@ function DynamicQuestionnaireContent({ params }: { params: Promise<{ blueprintId
   // Section navigation with validation
   const handleNext = async () => {
     if (!questionsData) return;
-    
+
     const currentSectionData = questionsData.sections[currentSection];
-    const sectionQuestionIds = currentSectionData.questions.map(q => q.id);
-    
+    const sectionQuestionIds = currentSectionData.questions.map((q) => q.id);
+
     // Trigger validation for all questions in current section
     const isValid = await trigger(sectionQuestionIds);
-    
+
     if (!isValid) {
       // Find first error field and scroll to it
-      const firstErrorField = sectionQuestionIds.find(id => errors[id]);
+      const firstErrorField = sectionQuestionIds.find((id) => errors[id]);
       if (firstErrorField) {
         const errorElement = document.getElementById(`question-${firstErrorField}`);
         if (errorElement) {
           errorElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
       }
-      
+
       // Show error message
       setSaveError('Please fix all errors before proceeding to the next section');
       setTimeout(() => setSaveError(null), 5000);
       return;
     }
-    
+
     if (currentSection < questionsData.sections.length - 1) {
       setCurrentSection((prev) => prev + 1);
       window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -447,22 +466,38 @@ function DynamicQuestionnaireContent({ params }: { params: Promise<{ blueprintId
       for (const rule of question.validation) {
         switch (rule.rule) {
           case 'minLength':
-            if (typeof value === 'string' && typeof rule.value === 'number' && value.length < rule.value) {
+            if (
+              typeof value === 'string' &&
+              typeof rule.value === 'number' &&
+              value.length < rule.value
+            ) {
               return rule.message;
             }
             break;
           case 'maxLength':
-            if (typeof value === 'string' && typeof rule.value === 'number' && value.length > rule.value) {
+            if (
+              typeof value === 'string' &&
+              typeof rule.value === 'number' &&
+              value.length > rule.value
+            ) {
               return rule.message;
             }
             break;
           case 'minSelections':
-            if (Array.isArray(value) && typeof rule.value === 'number' && value.length < rule.value) {
+            if (
+              Array.isArray(value) &&
+              typeof rule.value === 'number' &&
+              value.length < rule.value
+            ) {
               return rule.message;
             }
             break;
           case 'maxSelections':
-            if (Array.isArray(value) && typeof rule.value === 'number' && value.length > rule.value) {
+            if (
+              Array.isArray(value) &&
+              typeof rule.value === 'number' &&
+              value.length > rule.value
+            ) {
               return rule.message;
             }
             break;
@@ -476,27 +511,28 @@ function DynamicQuestionnaireContent({ params }: { params: Promise<{ blueprintId
   // Final submission with comprehensive validation
   const onSubmit = async (data: Record<string, unknown>) => {
     if (!blueprintId || !questionsData) return;
-    
+
     setSaveError(null);
-    
+
     console.log('🔍 Pre-submission validation starting...');
-    console.log('📊 Total questions:', questionsData.sections.flatMap(s => s.questions).length);
+    console.log('📊 Total questions:', questionsData.sections.flatMap((s) => s.questions).length);
     console.log('📝 Submitted answers:', Object.keys(data).length);
-    
+
     // Pre-validate: Check that all selection answers match valid option values
-    const optionMismatches: Array<{questionId: string; value: unknown; validValues: string[]}> = [];
-    
+    const optionMismatches: Array<{ questionId: string; value: unknown; validValues: string[] }> =
+      [];
+
     questionsData.sections.forEach((section) => {
       section.questions.forEach((question) => {
         const answer = data[question.id];
-        
+
         // For selection types, verify answer matches valid options
         if (question.options && question.options.length > 0) {
-          const validValues = question.options.map(opt => opt.value);
-          
+          const validValues = question.options.map((opt) => opt.value);
+
           if (['checkbox_pills', 'checkbox_cards'].includes(question.type)) {
             if (Array.isArray(answer)) {
-              const invalidItems = answer.filter(val => !validValues.includes(String(val)));
+              const invalidItems = answer.filter((val) => !validValues.includes(String(val)));
               if (invalidItems.length > 0) {
                 optionMismatches.push({
                   questionId: question.id,
@@ -517,21 +553,23 @@ function DynamicQuestionnaireContent({ params }: { params: Promise<{ blueprintId
         }
       });
     });
-    
+
     if (optionMismatches.length > 0) {
-      setSaveError(`Data error: ${optionMismatches.length} answer${optionMismatches.length > 1 ? 's don\'t' : ' doesn\'t'} match expected values. This usually means the question options changed. Please refresh the page to reload the latest questions.`);
+      setSaveError(
+        `Data error: ${optionMismatches.length} answer${optionMismatches.length > 1 ? "s don't" : " doesn't"} match expected values. This usually means the question options changed. Please refresh the page to reload the latest questions.`
+      );
       return;
     }
-    
+
     // Trigger validation for all fields
-    const allQuestionIds = questionsData.sections.flatMap(s => s.questions.map(q => q.id));
+    const allQuestionIds = questionsData.sections.flatMap((s) => s.questions.map((q) => q.id));
     const isValid = await trigger(allQuestionIds);
-    
+
     if (!isValid) {
       // Find sections with errors
       const sectionsWithErrors = new Set<number>();
       let errorCount = 0;
-      
+
       questionsData.sections.forEach((section, sectionIndex) => {
         section.questions.forEach((question) => {
           if (errors[question.id]) {
@@ -540,9 +578,11 @@ function DynamicQuestionnaireContent({ params }: { params: Promise<{ blueprintId
           }
         });
       });
-      
-      setSaveError(`Cannot submit: ${errorCount} field${errorCount > 1 ? 's have' : ' has'} validation errors across ${sectionsWithErrors.size} section${sectionsWithErrors.size > 1 ? 's' : ''}. Please review and correct them.`);
-      
+
+      setSaveError(
+        `Cannot submit: ${errorCount} field${errorCount > 1 ? 's have' : ' has'} validation errors across ${sectionsWithErrors.size} section${sectionsWithErrors.size > 1 ? 's' : ''}. Please review and correct them.`
+      );
+
       // Navigate to the first section with errors
       const firstSectionWithError = Math.min(...Array.from(sectionsWithErrors));
       if (firstSectionWithError !== currentSection) {
@@ -550,7 +590,7 @@ function DynamicQuestionnaireContent({ params }: { params: Promise<{ blueprintId
         setTimeout(() => {
           // Find first error field in that section
           const sectionQuestions = questionsData.sections[firstSectionWithError].questions;
-          const firstErrorField = sectionQuestions.find(q => errors[q.id]);
+          const firstErrorField = sectionQuestions.find((q) => errors[q.id]);
           if (firstErrorField) {
             const element = document.getElementById(`question-${firstErrorField.id}`);
             element?.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -559,13 +599,13 @@ function DynamicQuestionnaireContent({ params }: { params: Promise<{ blueprintId
       } else {
         // Find first error field in current section
         const currentSectionQuestions = questionsData.sections[currentSection].questions;
-        const firstErrorField = currentSectionQuestions.find(q => errors[q.id]);
+        const firstErrorField = currentSectionQuestions.find((q) => errors[q.id]);
         if (firstErrorField) {
           const element = document.getElementById(`question-${firstErrorField.id}`);
           element?.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
       }
-      
+
       return; // Block submission
     }
 
@@ -594,11 +634,13 @@ function DynamicQuestionnaireContent({ params }: { params: Promise<{ blueprintId
             errorData = { error: `HTTP ${response.status}: ${errorText}` };
           }
 
-          throw new Error(errorData.message || errorData.error || `Failed to submit answers (${response.status})`);
+          throw new Error(
+            errorData.message || errorData.error || `Failed to submit answers (${response.status})`
+          );
         }
 
         const result = await response.json();
-        
+
         if (!result.success) {
           throw new Error(result.error || 'Submission failed');
         }
@@ -617,11 +659,11 @@ function DynamicQuestionnaireContent({ params }: { params: Promise<{ blueprintId
       // Retry logic with exponential backoff
       while (attempt < maxRetries) {
         attempt++;
-        
+
         if (attempt > 1) {
           setSaveError(`Retrying submission (attempt ${attempt} of ${maxRetries})...`);
           const backoffDelay = Math.min(1000 * Math.pow(2, attempt - 1), 5000);
-          await new Promise(resolve => setTimeout(resolve, backoffDelay));
+          await new Promise((resolve) => setTimeout(resolve, backoffDelay));
         }
 
         const success = await attemptSubmit();
@@ -647,7 +689,7 @@ function DynamicQuestionnaireContent({ params }: { params: Promise<{ blueprintId
       setRetryCount(attempt);
       setSaveError(
         `${error instanceof Error ? error.message : 'Failed to submit answers'}. ` +
-        `Tried ${attempt} times. Your answers are saved locally. Click Submit to try again.`
+          `Tried ${attempt} times. Your answers are saved locally. Click Submit to try again.`
       );
       setIsSubmitting(false);
     }
@@ -702,9 +744,16 @@ function DynamicQuestionnaireContent({ params }: { params: Promise<{ blueprintId
   // Loading state
   if (isLoading || !questionsData || !blueprintId) {
     return (
-      <div className="flex items-center justify-center min-h-screen" role="status" aria-live="polite">
-        <div className="text-center space-y-4">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto" aria-hidden="true"></div>
+      <div
+        className="flex min-h-screen items-center justify-center"
+        role="status"
+        aria-live="polite"
+      >
+        <div className="space-y-4 text-center">
+          <div
+            className="border-primary mx-auto h-12 w-12 animate-spin rounded-full border-b-2"
+            aria-hidden="true"
+          ></div>
           <p className="text-text-secondary">Loading questionnaire...</p>
           <span className="sr-only">Please wait while we load your questionnaire</span>
         </div>
@@ -756,10 +805,9 @@ function DynamicQuestionnaireContent({ params }: { params: Promise<{ blueprintId
             >
               <p className="text-xl leading-relaxed text-white/70 sm:text-2xl lg:text-3xl">
                 Answer these{' '}
-                <span className="font-medium text-primary">personalized questions</span>{' '}
-                based on your{' '}
-                <span className="font-medium text-primary">unique context</span> and{' '}
-                <span className="font-medium text-primary">learning objectives</span>.
+                <span className="text-primary font-medium">personalized questions</span> based on
+                your <span className="text-primary font-medium">unique context</span> and{' '}
+                <span className="text-primary font-medium">learning objectives</span>.
               </p>
             </motion.div>
 
@@ -768,7 +816,7 @@ function DynamicQuestionnaireContent({ params }: { params: Promise<{ blueprintId
               initial={{ scaleX: 0 }}
               animate={{ scaleX: 1 }}
               transition={{ duration: 1, delay: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
-              className="mt-16 h-px w-24 bg-primary"
+              className="bg-primary mt-16 h-px w-24"
             />
           </div>
         </div>
@@ -797,60 +845,84 @@ function DynamicQuestionnaireContent({ params }: { params: Promise<{ blueprintId
                       description: section.description || '',
                     }))}
                   />
-                  
+
                   {/* Validation Status and Progress */}
                   {(() => {
-                    const sectionStatus = getSectionValidationStatus(questionsData.sections, getValues());
+                    const sectionStatus = getSectionValidationStatus(
+                      questionsData.sections,
+                      getValues()
+                    );
                     const currentSectionStatus = sectionStatus[currentSection];
-                    const overallCompletion = calculateCompletionPercentage(questionsData.sections, getValues());
-                    
+                    const overallCompletion = calculateCompletionPercentage(
+                      questionsData.sections,
+                      getValues()
+                    );
+
                     return (
-                      <div className="bg-paper/50 rounded-lg p-4 space-y-3">
+                      <div className="bg-paper/50 space-y-3 rounded-lg p-4">
                         <div className="flex items-center justify-between">
                           <div className="space-y-1">
-                            <h3 className="text-lg font-semibold text-foreground">
+                            <h3 className="text-foreground text-lg font-semibold">
                               {questionsData.sections[currentSection].title}
                             </h3>
                             {questionsData.sections[currentSection].description && (
-                              <p className="text-sm text-text-secondary">
+                              <p className="text-text-secondary text-sm">
                                 {questionsData.sections[currentSection].description}
                               </p>
                             )}
                           </div>
                           <div className="text-right">
-                            <div className="text-2xl font-bold text-primary">
+                            <div className="text-primary text-2xl font-bold">
                               {currentSectionStatus?.completionPercentage || 0}%
                             </div>
-                            <div className="text-xs text-text-secondary">Complete</div>
+                            <div className="text-text-secondary text-xs">Complete</div>
                           </div>
                         </div>
-                        
+
                         {/* Progress Bar */}
-                        <div className="w-full bg-neutral-200 rounded-full h-2 overflow-hidden">
-                          <div 
-                            className="h-full bg-primary transition-all duration-300 ease-out"
+                        <div className="h-2 w-full overflow-hidden rounded-full bg-neutral-200">
+                          <div
+                            className="bg-primary h-full transition-all duration-300 ease-out"
                             style={{ width: `${currentSectionStatus?.completionPercentage || 0}%` }}
                           />
                         </div>
-                        
+
                         {/* Status Messages */}
                         <div className="flex items-center justify-between text-sm">
                           <div>
-                            {Object.keys(errors).filter(id => 
-                              questionsData.sections[currentSection].questions.some(q => q.id === id)
+                            {Object.keys(errors).filter((id) =>
+                              questionsData.sections[currentSection].questions.some(
+                                (q) => q.id === id
+                              )
                             ).length > 0 ? (
                               <span className="text-error">
-                                {Object.keys(errors).filter(id => 
-                                  questionsData.sections[currentSection].questions.some(q => q.id === id)
-                                ).length} error{Object.keys(errors).filter(id => 
-                                  questionsData.sections[currentSection].questions.some(q => q.id === id)
-                                ).length !== 1 ? 's' : ''} to fix
+                                {
+                                  Object.keys(errors).filter((id) =>
+                                    questionsData.sections[currentSection].questions.some(
+                                      (q) => q.id === id
+                                    )
+                                  ).length
+                                }{' '}
+                                error
+                                {Object.keys(errors).filter((id) =>
+                                  questionsData.sections[currentSection].questions.some(
+                                    (q) => q.id === id
+                                  )
+                                ).length !== 1
+                                  ? 's'
+                                  : ''}{' '}
+                                to fix
                               </span>
                             ) : currentSectionStatus?.completionPercentage === 100 ? (
                               <span className="text-success">Section complete!</span>
                             ) : (
                               <span className="text-text-secondary">
-                                {questionsData.sections[currentSection].questions.filter(q => q.required).length} required fields
+                                {
+                                  questionsData.sections[currentSection].questions.filter(
+                                    (q) => q.required
+                                  ).length
+                                }{' '}
+                                required fields
                               </span>
                             )}
                           </div>
@@ -876,11 +948,11 @@ function DynamicQuestionnaireContent({ params }: { params: Promise<{ blueprintId
                         const fieldError = errors[question.id];
                         const isTouched = methods.formState.touchedFields[question.id];
                         const fieldValue = watch(question.id);
-                        
+
                         return (
-                          <motion.div 
-                            key={question.id} 
-                            id={`question-${question.id}`} 
+                          <motion.div
+                            key={question.id}
+                            id={`question-${question.id}`}
                             className="scroll-mt-24"
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
@@ -890,7 +962,7 @@ function DynamicQuestionnaireContent({ params }: { params: Promise<{ blueprintId
                               question={question}
                               value={fieldValue}
                               onChange={(value) => {
-                                methods.setValue(question.id, value, { 
+                                methods.setValue(question.id, value, {
                                   shouldTouch: true,
                                   shouldDirty: true,
                                   shouldValidate: true,
@@ -911,15 +983,13 @@ function DynamicQuestionnaireContent({ params }: { params: Promise<{ blueprintId
 
                   {/* Error Display - Only show submission errors */}
                   {saveError && (
-                    <div className="p-4 bg-error/10 border border-error/20 rounded-lg">
-                      <p className="text-error text-sm font-medium">
-                        ⚠️ {saveError}
-                      </p>
+                    <div className="bg-error/10 border-error/20 rounded-lg border p-4">
+                      <p className="text-error text-sm font-medium">⚠️ {saveError}</p>
                     </div>
                   )}
 
                   {/* Navigation */}
-                  <div className="flex justify-end items-center pt-8 border-t border-white/10">
+                  <div className="flex items-center justify-end border-t border-white/10 pt-8">
                     <div className="flex items-center gap-3">
                       {currentSection > 0 && (
                         <QuestionnaireButton
@@ -954,17 +1024,17 @@ function DynamicQuestionnaireContent({ params }: { params: Promise<{ blueprintId
                   </div>
 
                   {/* Autosave Status Indicator */}
-                  <div className="flex items-center justify-center text-xs text-text-secondary mt-4">
+                  <div className="text-text-secondary mt-4 flex items-center justify-center text-xs">
                     <div className="flex items-center gap-2">
                       {isAutosaving && (
                         <>
-                          <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
+                          <div className="bg-primary h-2 w-2 animate-pulse rounded-full"></div>
                           <span>Saving...</span>
                         </>
                       )}
                       {lastAutosave && !isAutosaving && (
                         <>
-                          <div className="w-2 h-2 bg-success rounded-full"></div>
+                          <div className="bg-success h-2 w-2 rounded-full"></div>
                           <span>
                             Saved {Math.floor((Date.now() - lastAutosave.getTime()) / 1000)}s ago
                           </span>

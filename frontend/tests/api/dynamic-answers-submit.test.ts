@@ -126,7 +126,7 @@ describe('POST /api/dynamic-answers/submit', () => {
   it('should return 400 if validation fails', async () => {
     const { createServerClient } = await import('@supabase/ssr');
     const { validateCompleteAnswers } = await import('@/lib/validation/dynamicQuestionSchemas');
-    
+
     const mockSupabase = (createServerClient as any)();
     mockSupabase.auth.getUser.mockResolvedValue({
       data: { user: { id: mockUserId } },
@@ -197,7 +197,7 @@ describe('POST /api/dynamic-answers/submit', () => {
   it('should successfully submit valid answers', async () => {
     const { createServerClient } = await import('@supabase/ssr');
     const { validateCompleteAnswers } = await import('@/lib/validation/dynamicQuestionSchemas');
-    
+
     const mockSupabase = (createServerClient as any)();
     mockSupabase.auth.getUser.mockResolvedValue({
       data: { user: { id: mockUserId } },
@@ -288,7 +288,7 @@ describe('POST /api/dynamic-answers/submit', () => {
   it('should merge with existing answers on submission', async () => {
     const { createServerClient } = await import('@supabase/ssr');
     const { validateCompleteAnswers } = await import('@/lib/validation/dynamicQuestionSchemas');
-    
+
     const mockSupabase = (createServerClient as any)();
     mockSupabase.auth.getUser.mockResolvedValue({
       data: { user: { id: mockUserId } },

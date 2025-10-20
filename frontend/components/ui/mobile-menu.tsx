@@ -271,102 +271,107 @@ export interface MobileMenuItemProps {
   'data-testid'?: string;
 }
 
-export const MobileMenuItem = React.forwardRef<HTMLButtonElement, MobileMenuItemProps>(function MobileMenuItemInternal({
-  children,
-  onClick,
-  disabled = false,
-  active = false,
-  badge,
-  icon,
-  className,
-  'data-testid': testId = 'mobile-menu-item',
-}, forwardedRef) {
-  const [isPressed, setIsPressed] = React.useState(false);
-  const haptic = useHapticFeedback({
-    config: {
-      mediumDuration: 20,
-      enabled: true,
+export const MobileMenuItem = React.forwardRef<HTMLButtonElement, MobileMenuItemProps>(
+  function MobileMenuItemInternal(
+    {
+      children,
+      onClick,
+      disabled = false,
+      active = false,
+      badge,
+      icon,
+      className,
+      'data-testid': testId = 'mobile-menu-item',
     },
-  });
+    forwardedRef
+  ) {
+    const [isPressed, setIsPressed] = React.useState(false);
+    const haptic = useHapticFeedback({
+      config: {
+        mediumDuration: 20,
+        enabled: true,
+      },
+    });
 
-  const handleTouchStart = React.useCallback(() => {
-    if (!disabled) {
-      setIsPressed(true);
-    }
-  }, [disabled]);
+    const handleTouchStart = React.useCallback(() => {
+      if (!disabled) {
+        setIsPressed(true);
+      }
+    }, [disabled]);
 
-  const handleTouchEnd = React.useCallback(() => {
-    setIsPressed(false);
-  }, []);
+    const handleTouchEnd = React.useCallback(() => {
+      setIsPressed(false);
+    }, []);
 
-  const handleClick = React.useCallback(() => {
-    if (!disabled && onClick) {
-      haptic.medium(); // Haptic feedback for item selection
-      onClick();
-    }
-  }, [disabled, onClick, haptic]);
+    const handleClick = React.useCallback(() => {
+      if (!disabled && onClick) {
+        haptic.medium(); // Haptic feedback for item selection
+        onClick();
+      }
+    }, [disabled, onClick, haptic]);
 
-  return (
-    <SheetClose asChild>
-      <Button
-        variant="ghost"
-        size="medium"
-        onClick={handleClick}
-        onTouchStart={handleTouchStart}
-        onTouchEnd={handleTouchEnd}
-        onMouseDown={handleTouchStart}
-        onMouseUp={handleTouchEnd}
-        onMouseLeave={handleTouchEnd}
-        disabled={disabled}
-        className={cn(
-          'relative min-h-[48px] w-full justify-start px-4 text-left font-normal',
-          'text-foreground hover:bg-foreground/5 hover:text-foreground',
-          'active:bg-foreground/10 active:scale-[0.98]',
-          'focus-visible:ring-secondary/50 focus-visible:ring-2 focus-visible:ring-offset-2',
-          active && 'bg-foreground/10 text-foreground font-medium',
-          disabled && 'cursor-not-allowed opacity-50',
-          className
-        )}
-        data-testid={testId}
-        data-touch-context="navigation"
-        style={{
-          transform: isPressed ? 'scale(0.98)' : undefined,
-          transition: 'transform 0.1s ease-out',
-        }}
-        ref={forwardedRef}
-      >
-        {/* Ripple effect */}
-        {isPressed && !disabled && (
-          <div
-            className="bg-foreground/5 absolute inset-0 animate-pulse rounded-lg"
-            data-testid={`${testId}-ripple`}
-          />
-        )}
-
-        <div className="flex min-h-[48px] w-full items-center gap-3">
-          {/* Icon */}
-          {icon && (
-            <div className="flex h-6 w-6 flex-shrink-0 items-center justify-center">{icon}</div>
+    return (
+      <SheetClose asChild>
+        <Button
+          variant="ghost"
+          size="medium"
+          onClick={handleClick}
+          onTouchStart={handleTouchStart}
+          onTouchEnd={handleTouchEnd}
+          onMouseDown={handleTouchStart}
+          onMouseUp={handleTouchEnd}
+          onMouseLeave={handleTouchEnd}
+          disabled={disabled}
+          className={cn(
+            'relative min-h-[48px] w-full justify-start px-4 text-left font-normal',
+            'text-foreground hover:bg-foreground/5 hover:text-foreground',
+            'active:bg-foreground/10 active:scale-[0.98]',
+            'focus-visible:ring-secondary/50 focus-visible:ring-2 focus-visible:ring-offset-2',
+            active && 'bg-foreground/10 text-foreground font-medium',
+            disabled && 'cursor-not-allowed opacity-50',
+            className
           )}
-
-          {/* Content */}
-          <div className="min-w-0 flex-1">{children}</div>
-
-          {/* Badge */}
-          {badge && (
+          data-testid={testId}
+          data-touch-context="navigation"
+          style={{
+            transform: isPressed ? 'scale(0.98)' : undefined,
+            transition: 'transform 0.1s ease-out',
+          }}
+          ref={forwardedRef}
+        >
+          {/* Ripple effect */}
+          {isPressed && !disabled && (
             <div
-              className={cn(
-                'flex-shrink-0 rounded-full px-2 py-1 text-xs font-medium',
-                'bg-primary text-primary-foreground',
-                'flex h-5 min-w-[20px] items-center justify-center'
-              )}
-              data-testid={`${testId}-badge`}
-            >
-              {badge}
-            </div>
+              className="bg-foreground/5 absolute inset-0 animate-pulse rounded-lg"
+              data-testid={`${testId}-ripple`}
+            />
           )}
-        </div>
-      </Button>
-    </SheetClose>
-  );
-});
+
+          <div className="flex min-h-[48px] w-full items-center gap-3">
+            {/* Icon */}
+            {icon && (
+              <div className="flex h-6 w-6 flex-shrink-0 items-center justify-center">{icon}</div>
+            )}
+
+            {/* Content */}
+            <div className="min-w-0 flex-1">{children}</div>
+
+            {/* Badge */}
+            {badge && (
+              <div
+                className={cn(
+                  'flex-shrink-0 rounded-full px-2 py-1 text-xs font-medium',
+                  'bg-primary text-primary-foreground',
+                  'flex h-5 min-w-[20px] items-center justify-center'
+                )}
+                data-testid={`${testId}-badge`}
+              >
+                {badge}
+              </div>
+            )}
+          </div>
+        </Button>
+      </SheetClose>
+    );
+  }
+);

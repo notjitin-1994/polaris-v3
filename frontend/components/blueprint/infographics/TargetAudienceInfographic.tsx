@@ -48,8 +48,12 @@ export function TargetAudienceInfographic({
             <div className="flex flex-wrap gap-2">
               {demographics.roles.map((role, index) => {
                 // Handle both string and object formats
-                const roleText = typeof role === 'string' ? role : role.role || role.name || String(role);
-                const roleKey = typeof role === 'string' ? role : role.role || role.name || `${index}-${roleText}`;
+                const roleText =
+                  typeof role === 'string' ? role : role.role || role.name || String(role);
+                const roleKey =
+                  typeof role === 'string'
+                    ? role
+                    : role.role || role.name || `${index}-${roleText}`;
 
                 return (
                   <motion.div
@@ -74,8 +78,12 @@ export function TargetAudienceInfographic({
             <div className="flex flex-wrap gap-2">
               {demographics.experience_levels.map((level, index) => {
                 // Handle both string and object formats
-                const levelText = typeof level === 'string' ? level : level.level || level.name || String(level);
-                const levelKey = typeof level === 'string' ? level : level.level || level.name || `${index}-${levelText}`;
+                const levelText =
+                  typeof level === 'string' ? level : level.level || level.name || String(level);
+                const levelKey =
+                  typeof level === 'string'
+                    ? level
+                    : level.level || level.name || `${index}-${levelText}`;
 
                 return (
                   <motion.div

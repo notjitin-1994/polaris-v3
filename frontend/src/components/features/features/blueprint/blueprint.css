@@ -11,7 +11,8 @@
 
 /* Animated Gradients */
 @keyframes gradient-shift {
-  0%, 100% {
+  0%,
+  100% {
     background-position: 0% 50%;
   }
   50% {
@@ -61,13 +62,14 @@
   position: absolute;
   bottom: 0;
   height: 3px;
-  background: linear-gradient(90deg, #a7dadb 0%, #4F46E5 100%);
+  background: linear-gradient(90deg, #a7dadb 0%, #4f46e5 100%);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* Pulse Animation for Badges */
 @keyframes pulse-glow {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 1;
     transform: scale(1);
   }
@@ -104,7 +106,7 @@
 
 /* Progress Bar Animations */
 .progress-fill {
-  background: linear-gradient(90deg, #a7dadb 0%, #7bc5c7 50%, #4F46E5 100%);
+  background: linear-gradient(90deg, #a7dadb 0%, #7bc5c7 50%, #4f46e5 100%);
   background-size: 200% 100%;
   animation: progress-shine 2s ease-in-out infinite;
 }
@@ -130,7 +132,8 @@
 
 /* Floating Animation */
 @keyframes float {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0px);
   }
   50% {
@@ -154,12 +157,12 @@
 }
 
 .blueprint-content::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, #a7dadb 0%, #4F46E5 100%);
+  background: linear-gradient(180deg, #a7dadb 0%, #4f46e5 100%);
   border-radius: 4px;
 }
 
 .blueprint-content::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(180deg, #7bc5c7 0%, #7C69F5 100%);
+  background: linear-gradient(180deg, #7bc5c7 0%, #7c69f5 100%);
 }
 
 /* Markdown Content Enhancements */

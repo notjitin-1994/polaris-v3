@@ -17,7 +17,7 @@ describe('Blueprint Generation Flow Integration', () => {
 
   beforeEach(async () => {
     supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    
+
     // Create test blueprint
     const { data, error } = await supabase
       .from('blueprint_generator')
@@ -61,7 +61,7 @@ describe('Blueprint Generation Flow Integration', () => {
       .select('*')
       .eq('id', testBlueprintId)
       .single();
-    
+
     expect(blueprint.data?.status).toBe('draft');
 
     // Step 2: Simulate dynamic questions generation
@@ -108,7 +108,7 @@ describe('Blueprint Generation Flow Integration', () => {
       .select('*')
       .eq('id', testBlueprintId)
       .single();
-    
+
     // CRITICAL ASSERTION: Status should NOT be 'completed'
     expect(blueprint.data?.status).not.toBe('completed');
     expect(blueprint.data?.dynamic_answers).toEqual({ s1_q1: 'Test answer' });
@@ -132,7 +132,7 @@ describe('Blueprint Generation Flow Integration', () => {
       .select('*')
       .eq('id', testBlueprintId)
       .single();
-    
+
     expect(blueprint.data?.status).toBe('completed');
     expect(blueprint.data?.blueprint_json).toBeDefined();
     expect(blueprint.data?.blueprint_json).not.toEqual({});
@@ -160,7 +160,7 @@ describe('Blueprint Generation Flow Integration', () => {
     });
 
     expect(generateResponse.ok).toBe(true);
-    
+
     // Verify generation actually happened (would take >60 seconds in real scenario)
     const data = await generateResponse.json();
     expect(data.success).toBe(true);
@@ -170,7 +170,9 @@ describe('Blueprint Generation Flow Integration', () => {
 
   it('should handle generation failures gracefully', async () => {
     // Mock the generation service to fail
-    const { blueprintGenerationService } = await import('@/lib/services/blueprintGenerationService');
+    const { blueprintGenerationService } = await import(
+      '@/lib/services/blueprintGenerationService'
+    );
     vi.mocked(blueprintGenerationService.generate).mockResolvedValueOnce({
       success: false,
       error: 'Claude API error',
@@ -208,7 +210,7 @@ describe('Blueprint Generation Flow Integration', () => {
       .select('status')
       .eq('id', testBlueprintId)
       .single();
-    
+
     expect(blueprint.data?.status).toBe('error');
   });
 
@@ -249,7 +251,7 @@ describe('Blueprint Generation Flow Integration', () => {
       .select('*')
       .eq('id', testBlueprintId)
       .single();
-    
+
     expect(blueprint.data?.static_answers).toEqual(staticAnswers);
     expect(blueprint.data?.dynamic_answers).toEqual(dynamicAnswers);
     expect(blueprint.data?.dynamic_questions).toBeDefined();
