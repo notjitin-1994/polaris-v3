@@ -16,36 +16,22 @@ export function ProgressIndicator({ currentIndex, onSelect }: ProgressProps): Re
       {/* Progress Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <div className="text-sm font-medium text-slate-700 dark:text-slate-300">
+          <div className="text-foreground text-sm font-medium">
             Step {currentIndex + 1} of {wizardSteps.length}
           </div>
         </div>
-        <div className="text-sm font-medium text-slate-500 dark:text-slate-400">
-          {percent}% complete
-        </div>
+        <div className="text-text-secondary text-sm font-medium">{percent}% complete</div>
       </div>
 
       {/* Progress Bar */}
       <div className="relative">
         <div className="h-2 w-full overflow-hidden rounded-full bg-white/5 shadow-inner">
           <div
-            className="bg-primary relative h-2 rounded-full transition-all duration-700 ease-out"
-            // One-off: Dynamic width for wizard step progress indicator
-            style={{
-              width: `${percent}%`,
-              boxShadow:
-                '0 0 16px rgba(167, 218, 219, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.3)',
-            }}
+            className={`bg-primary relative h-2 rounded-full transition-all duration-700 ease-out`}
+            style={{ width: `${percent}%` }}
           >
-            {/* Animated shimmer effect */}
-            <div
-              className="absolute inset-0 rounded-full"
-              style={{
-                background:
-                  'linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.3) 50%, transparent 100%)',
-                animation: 'shimmer 2s infinite',
-              }}
-            />
+            {/* Animated shimmer effect - simplified without gradient */}
+            <div className="absolute inset-0 animate-pulse rounded-full bg-white/20" />
           </div>
         </div>
         {/* Progress dots */}
@@ -55,8 +41,8 @@ export function ProgressIndicator({ currentIndex, onSelect }: ProgressProps): Re
               key={idx}
               className={`h-2 w-2 rounded-full border-2 transition-all duration-300 ${
                 idx <= currentIndex
-                  ? 'bg-primary-accent border-primary-accent-light shadow-[0_0_8px_rgba(167,218,219,0.6)]'
-                  : 'bg-background border-white/20'
+                  ? 'bg-primary-accent border-primary-accent-light shadow-lg'
+                  : 'bg-background border-neutral-300'
               }`}
             />
           ))}

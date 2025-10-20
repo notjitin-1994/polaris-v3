@@ -13,10 +13,10 @@ import { DynamicQuestionRenderer } from '@/components/demo-dynamicv2/DynamicQues
 import { QuestionnaireProgress } from '@/components/demo-v2-questionnaire/QuestionnaireProgress';
 import { QuestionnaireButton } from '@/components/demo-v2-questionnaire/QuestionnaireButton';
 import { FormErrorBoundary } from '@/components/error/FormErrorBoundary';
-import { cn } from '@/lib/utils';
+import { _cn } from '@/lib/utils';
 import {
   createDynamicSchema,
-  validateSection,
+  _validateSection,
   calculateCompletionPercentage,
   getSectionValidationStatus,
 } from '@/lib/validation/dynamicQuestionSchemaBuilder';
@@ -94,7 +94,7 @@ function DynamicQuestionnaireContent({
   const [isLoading, setIsLoading] = useState(true);
   const [lastAutosave, setLastAutosave] = useState<Date | null>(null);
   const [questionsData, setQuestionsData] = useState<DynamicQuestionsData | null>(null);
-  const [retryCount, setRetryCount] = useState(0);
+  const [_retryCount, _setRetryCount] = useState(0);
 
   const autosaveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const lastFormDataRef = useRef<string>('');
@@ -129,7 +129,7 @@ function DynamicQuestionnaireContent({
     getValues,
     reset,
     watch,
-    setValue,
+    _setValue,
   } = methods;
 
   // Fetch dynamic questions and merge with sessionStorage
@@ -556,7 +556,7 @@ function DynamicQuestionnaireContent({
 
     if (optionMismatches.length > 0) {
       setSaveError(
-        `Data error: ${optionMismatches.length} answer${optionMismatches.length > 1 ? "s don't" : " doesn't"} match expected values. This usually means the question options changed. Please refresh the page to reload the latest questions.`
+        `Data error: ${optionMismatches.length} answer${optionMismatches.length > 1 ? 's don&apos;t' : ' doesn&apos;t'} match expected values. This usually means the question options changed. Please refresh the page to reload the latest questions.`
       );
       return;
     }

@@ -1,6 +1,4 @@
 import type { GenerationInput } from '@/lib/ollama/schema';
-import fs from 'node:fs';
-import path from 'node:path';
 
 export type ModelConfig = {
   model: string;

@@ -7,7 +7,7 @@ interface Section {
   id: string;
   title: string;
   type: string;
-  content: any;
+  content: unknown;
 }
 
 interface BlueprintSidebarData {

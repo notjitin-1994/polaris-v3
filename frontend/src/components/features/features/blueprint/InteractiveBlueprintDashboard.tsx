@@ -8,15 +8,6 @@ import {
   BookOpen,
   Target,
   Layers,
-  Sparkles,
-  Calendar,
-  Shield,
-  TrendingUp,
-  Users,
-  DollarSign,
-  BarChart3,
-  ChevronDown,
-  ChevronUp,
   Maximize2,
   Minimize2,
   FileText,
@@ -269,8 +260,8 @@ export function InteractiveBlueprintDashboard({
   };
 
   const StatCard = React.useMemo(
-    () =>
-      React.memo(
+    () => {
+      const MetricCard = React.memo(
         ({
           icon: Icon,
           label,
@@ -366,13 +357,20 @@ export function InteractiveBlueprintDashboard({
             isPublicView={isPublicView}
           />
         </motion.div>
-      )}
+      );
 
-      {/* Enhanced Stats Grid */}
-      <motion.div
-        variants={containerVariants}
-        className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4"
-      >
+      MetricCard.displayName = 'MetricCard';
+
+      return MetricCard;
+    },
+    [hasAnimated, mounted, shouldReduceAnimations]
+  );
+
+  return (
+    <motion.div
+      variants={containerVariants}
+      className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4"
+    >
         <StatCard
           icon={Clock}
           label="Total Duration"
@@ -411,7 +409,7 @@ export function InteractiveBlueprintDashboard({
           <div className="px-4 py-3">
             <div className="text-primary mb-3 text-xs font-medium">Quick Navigation</div>
             <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-5">
-              {sections.map((section, index) => {
+              {sections.map((section) => {
                 const isExpanded = expandedSections.has(section.id);
                 return (
                   <motion.button
@@ -785,3 +783,4 @@ const ExpandableSection = React.forwardRef<
 });
 
 ExpandableSection.displayName = 'ExpandableSection';
+}

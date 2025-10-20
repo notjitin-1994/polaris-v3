@@ -69,19 +69,19 @@ export const AppLayout = memo(function AppLayout({
 
             {/* Mobile Menu Panel */}
             <motion.div
-              className="absolute top-0 right-0 flex h-full w-72 max-w-[85vw] flex-col border-l border-slate-200 bg-white p-3 shadow-2xl dark:border-slate-700 dark:bg-slate-900"
+              className="bg-background absolute top-0 right-0 flex h-full w-72 max-w-[85vw] flex-col border-l border-neutral-300 p-3 shadow-2xl"
               initial={{ x: '100%' }}
               animate={{ x: 0 }}
               exit={{ x: '100%' }}
               transition={{ type: 'spring', damping: 30, stiffness: 300 }}
             >
               {/* Mobile Menu Header */}
-              <div className="flex items-center justify-between border-b border-slate-200 px-1 py-2 dark:border-slate-700">
+              <div className="flex items-center justify-between border-b border-neutral-300 px-1 py-2">
                 <button
                   type="button"
                   onClick={() => setMobileMenuOpen(false)}
                   aria-label="Close menu"
-                  className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-slate-600 transition hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100"
+                  className="text-text-secondary hover:text-foreground inline-flex h-8 w-8 items-center justify-center rounded-lg transition"
                 >
                   <span className="text-lg">×</span>
                 </button>
@@ -106,10 +106,10 @@ export const AppLayout = memo(function AppLayout({
 
               {/* Mobile Menu Footer */}
               <div className="mt-auto">
-                <div className="border-t border-slate-200 px-1 py-2 dark:border-slate-700">
+                <div className="border-t border-neutral-300 px-1 py-2">
                   <div className="flex items-center gap-3 px-3 py-2">
                     <UserAvatar user={user} sizeClass="w-8 h-8" />
-                    <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                    <span className="text-foreground text-sm font-medium">
                       {user?.user_metadata?.first_name || user?.email || 'User'}
                     </span>
                   </div>

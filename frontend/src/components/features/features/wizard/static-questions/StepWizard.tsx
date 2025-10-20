@@ -21,8 +21,6 @@ import {
   ConstraintsStep,
   EvaluationStep,
 } from '@/components/wizard/static-questions/steps';
-import { QuestionnaireLayout } from '@/components/wizard/static-questions/QuestionnaireLayout';
-import { QuestionnaireCard } from '@/components/wizard/static-questions/QuestionnaireCard';
 import { QuestionnaireProgress } from '@/components/wizard/static-questions/QuestionnaireProgress';
 import { QuestionnaireButton } from '@/components/wizard/static-questions/QuestionnaireButton';
 import { useSession } from '@/hooks/useSession';

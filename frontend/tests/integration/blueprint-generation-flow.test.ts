@@ -13,7 +13,7 @@ const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'test-key
 describe('Blueprint Generation Flow Integration', () => {
   let supabase: ReturnType<typeof createClient>;
   let testBlueprintId: string;
-  let testUserId: string = 'test-user-' + Date.now();
+  const testUserId: string = 'test-user-' + Date.now();
 
   beforeEach(async () => {
     supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);

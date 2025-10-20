@@ -7,6 +7,9 @@ import { generateDynamicQuestionsV2 } from '@/src/lib/services/dynamicQuestionGe
 import { z } from 'zod';
 
 export const dynamic = 'force-dynamic';
+// Allow up to ~13.3 minutes (800 seconds) for complex question generation
+// Note: On Vercel, this requires Pro or Enterprise plan (max 800s for Pro plan)
+export const maxDuration = 800;
 
 // Schema for the request body
 const generateDynamicQuestionsSchema = z.object({

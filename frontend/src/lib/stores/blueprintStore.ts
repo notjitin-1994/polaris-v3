@@ -5,7 +5,6 @@ import { persist } from 'zustand/middleware';
 import type { Database } from '@/types/supabase';
 
 type BlueprintRow = Database['public']['Tables']['blueprint_generator']['Row'];
-type BlueprintInsert = Database['public']['Tables']['blueprint_generator']['Insert'];
 type BlueprintUpdate = Database['public']['Tables']['blueprint_generator']['Update'];
 import type { Blueprint } from '@/lib/ollama/schema';
 

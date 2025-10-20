@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { User, ArrowLeft, Calendar, MapPin, Clock } from 'lucide-react';
+import { ArrowLeft, Calendar } from 'lucide-react';
 import Link from 'next/link';
 import ProtectedRoute from '@/components/auth/ProtectedRoute';
 import { Footer } from '@/components/layout/Footer';
@@ -19,7 +19,7 @@ import { useUserProfile } from '@/lib/hooks/useUserProfile';
  */
 function ProfileContent() {
   const { user } = useAuth();
-  const { profile, loading } = useUserProfile();
+  const { profile, loading: _loading } = useUserProfile();
 
   // Format join date
   const joinDate = user?.created_at
@@ -71,7 +71,7 @@ function ProfileContent() {
           {/* User Avatar */}
           <div className="relative">
             <GlassCard className="h-20 w-20 p-1">
-              <div className="from-primary/20 to-secondary/20 border-primary/30 flex h-full w-full items-center justify-center rounded-full border bg-gradient-to-br">
+              <div className="border-primary/30 bg-primary/10 flex h-full w-full items-center justify-center rounded-full border">
                 <span className="text-primary text-2xl font-bold">{getUserInitials()}</span>
               </div>
             </GlassCard>

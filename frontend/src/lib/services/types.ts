@@ -1,5 +1,3 @@
-import { z } from 'zod';
-
 // Re-export StaticQuestionsFormValues from the wizard types
 export type { StaticQuestionsFormValues } from '@/components/wizard/static-questions/types';
 

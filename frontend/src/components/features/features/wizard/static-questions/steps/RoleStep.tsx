@@ -31,7 +31,7 @@ export function RoleStep(): React.JSX.Element {
   // Register the field
   useEffect(() => {
     register('role', { required: 'Role is required' });
-  }, [register]);
+  }, []); // Remove register from deps to avoid infinite re-renders
 
   const role = watch('role');
   const [selectedOption, setSelectedOption] = useState<string>('');

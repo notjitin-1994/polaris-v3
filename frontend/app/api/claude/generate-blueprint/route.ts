@@ -12,6 +12,10 @@ import { createServiceLogger } from '@/lib/logging';
 
 const logger = createServiceLogger('api');
 
+// Allow up to ~13.3 minutes (800 seconds) for Claude blueprint generation
+// Note: On Vercel, this requires Pro or Enterprise plan (max 800s for Pro plan)
+export const maxDuration = 800;
+
 export interface GenerateBlueprintRequest {
   model?: string;
   systemPrompt: string;

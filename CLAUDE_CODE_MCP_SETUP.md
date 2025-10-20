@@ -127,3 +127,4 @@ Now you have the same powerful MCP server capabilities in both Cursor and Claude
 - And much more!
 
 The configuration provides the same rich development environment across both tools.
+
