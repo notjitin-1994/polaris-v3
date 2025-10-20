@@ -399,14 +399,14 @@ export function InteractiveBlueprintDashboard({
         <MetricCard
           icon={BookOpen}
           label="Modules"
-          value={totalModules}
+          value={modules.length}
           gradient="bg-secondary/20"
           delay={0.2}
         />
         <MetricCard
           icon={Target}
           label="Learning Objectives"
-          value={totalObjectives}
+          value={objectives.length}
           gradient="bg-success/20"
           delay={0.3}
         />
