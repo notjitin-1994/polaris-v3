@@ -95,15 +95,47 @@ function GeneratingContent({ id }: { id: string }): React.JSX.Element {
         });
 
         // Call blueprint generation endpoint
-        const response = await fetch('/api/blueprints/generate', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
+        let response;
+        try {
+          logger.info('blueprint.generation.ui.making_request', 'Making API request', {
             blueprintId: id,
-          }),
-        });
+            endpoint: '/api/blueprints/generate',
+            method: 'POST',
+          });
+
+          response = await fetch('/api/blueprints/generate', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              blueprintId: id,
+            }),
+          });
+
+          logger.info('blueprint.generation.ui.response_received', 'API response received', {
+            blueprintId: id,
+            status: response.status,
+            statusText: response.statusText,
+          });
+        } catch (fetchError) {
+          // Network error, server unreachable, or other fetch-related issues
+          const errorMessage = `Network error: Unable to connect to generation server. Please check your internet connection and try again.`;
+          const errorDetails = {
+            blueprintId: id,
+            errorType: 'network_error',
+            errorMessage: (fetchError as Error).message,
+            duration: Date.now() - startTime,
+          };
+
+          logger.error(
+            'blueprint.generation.ui.network_error',
+            'Network error during blueprint generation',
+            errorDetails
+          );
+
+          throw new Error(errorMessage);
+        }
 
         if (!response.ok) {
           let errorMessage = 'Failed to generate blueprint';
@@ -156,6 +188,13 @@ function GeneratingContent({ id }: { id: string }): React.JSX.Element {
         }
 
         const result = await response.json();
+
+        logger.info('blueprint.generation.ui.response_parsed', 'Response parsed successfully', {
+          blueprintId: id,
+          hasBlueprint: !!result.blueprint,
+          hasMetadata: !!result.metadata,
+          metadataModel: result.metadata?.model,
+        });
 
         completed = true;
         stopIntervals();
