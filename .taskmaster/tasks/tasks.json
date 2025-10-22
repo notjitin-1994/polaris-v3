@@ -2,605 +2,625 @@
   "master": {
     "tasks": [
       {
-        "id": 1,
-        "title": "Extend Database Schema for Roles and Usage Tracking",
-        "description": "Update PostgreSQL (Supabase) schema to support subscription tiers, user roles, usage tracking, and audit logging as specified in the PRD.",
-        "details": "Create and apply a migration (e.g., `0026_add_subscription_and_roles.sql`) to add `subscription_tier`, `user_role`, `subscription_metadata`, `role_assigned_at`, and `role_assigned_by` columns to `user_profiles`. Add check constraints for valid tiers and roles. Create `user_usage_history` and `role_audit_log` tables with appropriate indexes and RLS policies. Use Supabase's built-in JSONB support for flexible metadata. Ensure all new columns and tables are documented. Use PostgreSQL 15+ for best JSONB performance. Seed test users for each tier.",
-        "testStrategy": "Test migrations on a clean database and verify rollback. Validate constraints and indexes. Test RLS policies by attempting to access other users' data. Verify test users exist for each tier. Use pgTAP or similar for database-level tests.",
+        "id": 11,
+        "title": "Install and Configure Vercel AI SDK Dependencies",
+        "description": "Set up the foundation by installing Vercel AI SDK v5.0.0, Anthropic provider, Ollama provider, and configure environment validation with exact version locking",
+        "details": "Install dependencies: ai@^5.0.0, @ai-sdk/anthropic@^1.0.0, ollama-ai-provider@^0.15.2, zod@^3.23.8. Create environment validation module that checks ANTHROPIC_API_KEY, OLLAMA_BASE_URL at startup. Set up package.json with exact versions locked. Create .env.example with required variables. Implement startup validation that fails fast if required env vars missing.",
+        "testStrategy": "Unit tests for environment validation, integration tests for dependency loading, verify all packages install correctly with locked versions, test startup failure scenarios with missing env vars",
         "priority": "high",
         "dependencies": [],
-        "status": "done",
-        "subtasks": []
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Install and Lock Exact Versions of Required Dependencies",
+            "description": "Install all required dependencies with exact version locking in package.json to ensure consistent behavior across environments.",
+            "dependencies": [],
+            "details": "Install the following packages with exact versions: ai@5.0.0, @ai-sdk/anthropic@1.0.0, ollama-ai-provider@0.15.2, zod@3.23.8. Update package.json to use exact version specifiers (remove ^ prefix). Add resolutions field in package.json to enforce exact versions. Document dependencies in README.md with version information and purpose. Create scripts for dependency validation at build time.",
+            "status": "pending",
+            "testStrategy": "Verify all packages install correctly with locked versions. Test build process to ensure dependencies are correctly resolved. Create snapshot test of package.json to detect unintended version changes."
+          },
+          {
+            "id": 2,
+            "title": "Set Up Environment Variables Configuration",
+            "description": "Create environment variable configuration files and documentation for required API keys and service URLs.",
+            "dependencies": [
+              1
+            ],
+            "details": "Create .env.example file with required variables: ANTHROPIC_API_KEY, OLLAMA_BASE_URL. Add detailed comments explaining each variable's purpose and format. Create .env.local for local development (gitignored). Add environment variable documentation to README.md. Implement dotenv configuration in next.config.js. Create environment type definitions with TypeScript for type safety.",
+            "status": "pending",
+            "testStrategy": "Create tests to verify environment variable loading. Test behavior with missing variables. Validate environment variable type checking with TypeScript."
+          },
+          {
+            "id": 3,
+            "title": "Implement Startup Validation with Fail-Fast Behavior",
+            "description": "Create a validation module that checks for required environment variables at application startup and fails immediately if any are missing.",
+            "dependencies": [
+              2
+            ],
+            "details": "Create src/utils/environmentValidation.ts module using zod to define and validate environment schema. Implement validateEnvironment() function that runs at application startup. Add detailed error messages for missing or invalid environment variables. Implement fail-fast behavior that prevents application startup if validation fails. Add logging for successful validation. Create custom error types for different validation failures.",
+            "status": "pending",
+            "testStrategy": "Unit tests for environment validation logic. Test all failure scenarios with missing or invalid environment variables. Test integration with application startup process. Verify error messages are clear and actionable."
+          }
+        ]
       },
       {
-        "id": 2,
-        "title": "Define TypeScript Types and Role Mappings",
-        "description": "Create TypeScript type definitions for subscription tiers, user roles, feature categories, and usage limits as specified in the PRD.",
-        "details": "Define `SubscriptionTier`, `UserRole`, `FeatureCategory`, `TierLimits`, `SubscriptionMetadata`, and `UserProfile` types in `/frontend/types/roles.ts`. Implement `ROLE_LIMITS` constant with detailed mappings for each tier. Update Supabase-generated types in `/frontend/types/supabase.ts` to include new tables and columns. Use TypeScript 5.0+ for best type safety. Ensure all types are exported and used consistently across the codebase.",
-        "testStrategy": "Write unit tests to verify all tiers and roles are defined, limits are correct, and type definitions compile without errors. Test type guards and utility functions. Use Jest or Vitest for type validation.",
+        "id": 12,
+        "title": "Create Provider Configuration Module with Triple-Fallback Logic",
+        "description": "Implement centralized provider configuration supporting Claude Sonnet 4 (primary), Claude Opus 4 (fallback), and Ollama Qwen3 (emergency) with circuit breaker pattern",
+        "details": "Create providerConfig.ts with ModelConfig interface defining provider settings (model names, max tokens, temperature, timeout). Implement FallbackStrategy with maxRetries: 3, backoffMultiplier: 1.5, circuit breaker threshold: 5 failures, reset timeout: 5 minutes. Configure Claude Sonnet 4 (claude-sonnet-4-20250514, 12k tokens, 0.2 temp, 60s timeout), Claude Opus 4 (claude-opus-4-20250514, 16k tokens, 0.2 temp, 90s timeout), Ollama Qwen3 (qwen3:32b, 12k tokens, 0.2 temp, 120s timeout). Add provider health monitoring.",
+        "testStrategy": "Unit tests for each provider configuration, test circuit breaker logic with simulated failures, verify timeout configurations, test fallback cascade with mocked provider failures",
         "priority": "high",
         "dependencies": [
-          1
+          11
         ],
         "status": "pending",
         "subtasks": [
           {
             "id": 1,
-            "title": "Define Core TypeScript Types for Subscription, Roles, and Features",
-            "description": "Create explicit TypeScript type definitions for SubscriptionTier, UserRole, FeatureCategory, SubscriptionMetadata, and UserProfile in /frontend/types/roles.ts, following PRD specifications and TypeScript 5.0+ best practices.",
+            "title": "Define Provider Configuration Interfaces and Model Settings",
+            "description": "Create the core interfaces and model configuration settings for all three providers with their specific parameters.",
             "dependencies": [],
-            "details": "Define each type with precise annotations, using interfaces for object shapes and type aliases for unions or complex structures. Document all types, avoid any, and prefer unknown for uncertain values. Export all types for consistent use across the codebase. Use strict typing and leverage TypeScript 5.0 features like const type parameters where appropriate.",
+            "details": "Create providerConfig.ts file with ModelConfig interface defining provider settings including model names, max tokens, temperature, and timeout. Implement specific configurations for Claude Sonnet 4 (claude-sonnet-4-20250514, 12k tokens, 0.2 temp, 60s timeout), Claude Opus 4 (claude-opus-4-20250514, 16k tokens, 0.2 temp, 90s timeout), and Ollama Qwen3 (qwen3:32b, 12k tokens, 0.2 temp, 120s timeout). Create provider selection logic and export a unified configuration object.",
             "status": "pending",
-            "testStrategy": "Write unit tests to verify each type compiles without errors and matches PRD requirements. Test type exports and imports across modules."
+            "testStrategy": "Unit tests for each provider configuration, verify correct parameter values, test provider selection logic with different scenarios."
           },
           {
             "id": 2,
-            "title": "Implement ROLE_LIMITS Constant and TierLimits Type with Detailed Mappings",
-            "description": "Define the TierLimits type and implement the ROLE_LIMITS constant, mapping each subscription tier to its feature limits and usage caps as specified in the PRD.",
+            "title": "Implement Circuit Breaker Pattern for Provider Resilience",
+            "description": "Create a circuit breaker implementation to prevent cascading failures and manage provider availability states.",
             "dependencies": [
               1
             ],
-            "details": "Create TierLimits to represent usage limits per feature category. Implement ROLE_LIMITS as a readonly object, mapping each SubscriptionTier to its corresponding TierLimits. Use utility types (Partial, Required, Readonly) for precision and immutability. Ensure all mappings are exhaustive and match PRD specs.",
+            "details": "Implement CircuitBreaker class with states (CLOSED, OPEN, HALF_OPEN), failure threshold of 5, and reset timeout of 5 minutes. Add failure tracking logic, state transition management, and automatic recovery. Integrate with provider configuration to track each provider's availability state independently. Implement circuit state persistence across application restarts. Add logging for circuit state changes and failure events.",
             "status": "pending",
-            "testStrategy": "Unit test ROLE_LIMITS to confirm all tiers and roles are defined and limits are correct. Validate that TierLimits and mappings are type-safe and immutable."
+            "testStrategy": "Unit tests for circuit breaker state transitions, test failure counting logic, verify reset timeout behavior, test integration with provider configuration, simulate failure scenarios to verify circuit opening and closing."
           },
           {
             "id": 3,
-            "title": "Update Supabase-Generated Types to Reflect New Tables and Columns",
-            "description": "Regenerate and extend Supabase type definitions in /frontend/types/supabase.ts to include new tables and columns for roles, subscriptions, and usage tracking.",
+            "title": "Create Fallback Strategy with Retry Logic and Backoff",
+            "description": "Implement the fallback cascade mechanism with retry logic, exponential backoff, and provider switching.",
             "dependencies": [
-              1
+              1,
+              2
             ],
-            "details": "Run Supabase CLI to regenerate types based on the latest database schema. Manually extend generated types if necessary to include custom fields or relationships not auto-detected. Ensure type definitions align with core types from subtask 1. Document any manual extensions for future maintenance.",
+            "details": "Implement FallbackStrategy class with maxRetries: 3 and backoffMultiplier: 1.5. Create provider switching logic to cascade from Claude Sonnet 4 to Claude Opus 4 to Ollama Qwen3 based on failures. Add exponential backoff implementation for retries with jitter to prevent thundering herd. Implement timeout handling for each provider attempt. Create error categorization to determine if errors are transient or permanent. Add detailed logging of fallback events and retry attempts.",
             "status": "pending",
-            "testStrategy": "Verify that all new tables and columns are present in the generated types. Test type compatibility with core application types. Check for compilation errors when integrating with existing code."
+            "testStrategy": "Unit tests for retry logic with mocked failures, verify backoff timing calculations, test provider switching cascade, verify error categorization logic, test timeout handling, simulate complete fallback scenarios."
           },
           {
             "id": 4,
-            "title": "Develop and Validate Type Guard Utilities and Unit Tests",
-            "description": "Write type guard functions and comprehensive unit tests to ensure type safety and correct runtime behavior for all new types and mappings.",
+            "title": "Develop Provider Health Monitoring System",
+            "description": "Create a monitoring system to track provider health, response times, and availability for proactive failure detection.",
             "dependencies": [
               1,
               2,
               3
             ],
-            "details": "Implement type guards (e.g., isSubscriptionTier, isUserRole) to validate data at runtime. Write Jest/Vitest unit tests covering all types, constants, and guards. Include negative test cases for invalid data. Ensure 100% type coverage in critical paths. Integrate tests into CI/CD.",
+            "details": "Implement ProviderHealthMonitor class to track success rates, response times, and error patterns for each provider. Add periodic health checks with lightweight requests. Create metrics collection for provider performance including p50/p95/p99 latencies. Implement early warning detection for degrading performance. Add dashboard data export for monitoring visualization. Create automatic provider preference adjustment based on health metrics. Implement alerting for sustained provider issues.",
             "status": "pending",
-            "testStrategy": "Test all type guards with valid and invalid inputs. Ensure type predicates narrow types correctly. Achieve high test coverage for type definitions and mappings. Run tests as part of PR and pre-deploy pipelines."
+            "testStrategy": "Unit tests for health metrics collection, test periodic health check mechanism, verify early warning detection logic, test metrics calculation accuracy, simulate degrading provider scenarios to verify detection."
           }
         ]
       },
       {
-        "id": 3,
-        "title": "Implement Backend Role Middleware and Usage Enforcement",
-        "description": "Build API middleware to enforce role-based feature access and usage limits on protected endpoints.",
-        "details": "Create `requireFeature` and `checkUsageLimits` middleware in `/frontend/lib/auth/roleMiddleware.ts`. Middleware should validate user role and subscription metadata, return 403/429 errors with upgrade URLs when limits are hit, and bypass checks for the developer role. Use Next.js API Routes (Edge or Node.js runtime). Increment usage counters atomically using Supabase’s `increment_usage` database function. Log all enforcement actions. Use structured logging (e.g., Pino or Winston) for auditability.",
-        "testStrategy": "Write integration tests for each API route, verifying enforcement for each tier and feature. Test limit exceeded and feature denied scenarios. Verify developer bypass works. Test concurrent usage increments for race conditions. Use Jest, Supertest, or similar.",
+        "id": 13,
+        "title": "Migrate and Centralize Zod Schemas",
+        "description": "Consolidate existing Zod validation schemas into centralized location and ensure compatibility with AI SDK response formats",
+        "details": "Create schemas/ directory with blueprintSchema.ts and questionSchema.ts. Migrate existing 800+ lines of validation logic to use centralized schemas. Ensure schemas validate AI SDK response formats. Add schema versioning for backward compatibility. Implement schema compilation validation at build time. Create schema utilities for normalization and transformation.",
+        "testStrategy": "Unit tests for each schema validation, test schema compilation at build time, verify backward compatibility with existing data formats, test schema normalization utilities",
+        "priority": "medium",
+        "dependencies": [
+          11
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Create Schema Directory Structure and Base Schemas",
+            "description": "Set up the schemas/ directory and implement the foundational blueprint and question schemas that will serve as the basis for the centralized validation system.",
+            "dependencies": [],
+            "details": "Create a schemas/ directory at the project root. Implement blueprintSchema.ts with core validation logic for blueprint data structures. Create questionSchema.ts with validation for question generation inputs and outputs. Ensure both schemas are compatible with AI SDK response formats. Add index.ts file to export all schemas. Set up proper TypeScript types and interfaces for schema objects.",
+            "status": "pending",
+            "testStrategy": "Unit tests for basic schema validation, verify type inference works correctly, test compatibility with sample AI SDK responses"
+          },
+          {
+            "id": 2,
+            "title": "Migrate Existing Validation Logic to Centralized Schemas",
+            "description": "Refactor the 800+ lines of existing validation logic to use the new centralized schema system while maintaining current functionality.",
+            "dependencies": [
+              1
+            ],
+            "details": "Identify all locations in the codebase using Zod validation. Refactor each validation instance to import and use the centralized schemas. Update any component-specific validation to extend the base schemas where needed. Ensure all edge cases from the existing validation are covered. Update imports across the codebase. Verify that validation behavior remains identical after migration. Document any schema-specific validation rules.",
+            "status": "pending",
+            "testStrategy": "Comprehensive tests comparing validation results before and after migration, regression testing for all validation scenarios, integration tests with components using the schemas"
+          },
+          {
+            "id": 3,
+            "title": "Implement Schema Versioning and Backward Compatibility",
+            "description": "Add versioning support to schemas to ensure backward compatibility as schemas evolve over time.",
+            "dependencies": [
+              1,
+              2
+            ],
+            "details": "Design a versioning strategy for schemas (e.g., v1, v2). Implement version metadata in each schema. Create compatibility layers that can transform between schema versions. Add utility functions to detect schema versions from data. Ensure older versions of schemas remain available for backward compatibility. Implement runtime version negotiation to handle data from different schema versions. Add documentation for version differences and migration paths.",
+            "status": "pending",
+            "testStrategy": "Test backward compatibility with historical data samples, verify version detection works correctly, test transformation between versions, integration tests with systems using different schema versions"
+          },
+          {
+            "id": 4,
+            "title": "Create Schema Utilities for Normalization and Transformation",
+            "description": "Develop utility functions for schema normalization, transformation, and build-time validation to ensure schema integrity.",
+            "dependencies": [
+              1,
+              2,
+              3
+            ],
+            "details": "Implement normalization utilities to standardize data formats (e.g., string casing, date formats). Create transformation utilities to convert between different schema representations. Add build-time schema compilation validation to catch schema errors during development. Implement schema composition utilities for creating derived schemas. Add schema documentation generation. Create helper functions for common validation patterns. Implement performance optimizations for validation of large data structures.",
+            "status": "pending",
+            "testStrategy": "Unit tests for each utility function, performance benchmarks for validation operations, test build-time validation with intentionally broken schemas, integration tests with the full validation pipeline"
+          }
+        ]
+      },
+      {
+        "id": 14,
+        "title": "Implement Question Generation Service with AI SDK",
+        "description": "Create questionGenerationService.ts using Vercel AI SDK with provider fallback logic to generate 10-section questionnaires in under 3 seconds",
+        "details": "Implement generateQuestions() function using AI SDK's generateObject() with structured output. Integrate triple-fallback logic from provider config. Add request deduplication using Map with correlation IDs. Implement timeout handling (3s max). Add comprehensive error boundaries. Create performance benchmarking with memory usage tracking (<512MB). Use Zod schemas for response validation. Add retry logic with exponential backoff.",
+        "testStrategy": "Unit tests for question generation with mocked providers, integration tests with real API calls, performance tests ensuring <3s response time, memory leak detection tests, test fallback scenarios from Claude to Ollama",
         "priority": "high",
         "dependencies": [
-          1,
-          2
+          12,
+          13
         ],
         "status": "pending",
         "subtasks": [
           {
             "id": 1,
-            "title": "Implement requireFeature Middleware for Role-Based Access",
-            "description": "Develop middleware to validate user roles and subscription metadata before allowing access to protected API endpoints. Return 403 for unauthorized roles and bypass checks for developers.",
-            "dependencies": [
-              2
-            ],
-            "details": "Create `requireFeature` in `/frontend/lib/auth/roleMiddleware.ts`. Validate the user's role and subscription tier against the requested feature. If unauthorized, return HTTP 403 with an upgrade URL. Always allow access for the developer role. Integrate with Next.js API Routes (Edge or Node.js runtime).",
+            "title": "Implement Core generateQuestions Function with AI SDK Integration",
+            "description": "Create the main generateQuestions() function using Vercel AI SDK's generateObject() with structured output and integrate the triple-fallback logic from provider configuration.",
+            "dependencies": [],
+            "details": "Create questionGenerationService.ts file with the main generateQuestions() function. Implement the function using AI SDK's generateObject() method to generate structured questionnaire output. Set up the triple-fallback logic to try different providers (Claude, GPT-4, Ollama) if the primary provider fails. Define and implement Zod schemas for validating the response structure of 10-section questionnaires. Ensure the function accepts necessary parameters like topic, difficulty level, and target audience.",
             "status": "pending",
-            "testStrategy": "Write integration tests for each API route, verifying enforcement per tier and feature. Test denied access and developer bypass. Use Jest/Supertest."
+            "testStrategy": "Unit test the generateQuestions function with mocked providers to verify correct output structure. Test the fallback logic by simulating primary provider failures. Verify Zod schema validation works correctly for both valid and invalid responses."
           },
           {
             "id": 2,
-            "title": "Implement checkUsageLimits Middleware for Subscription Enforcement",
-            "description": "Build middleware to check and enforce usage limits based on user subscription, returning 429 with upgrade URLs when limits are exceeded.",
-            "dependencies": [
-              2
-            ],
-            "details": "Create `checkUsageLimits` in `/frontend/lib/auth/roleMiddleware.ts`. Before processing the request, check the user's current usage against their subscription limits. If exceeded, return HTTP 429 with an upgrade URL. Bypass checks for developers. Ensure atomic increment of usage counters.",
-            "status": "pending",
-            "testStrategy": "Test limit exceeded scenarios, upgrade prompts, and developer bypass. Verify concurrent usage increments for race conditions. Use Jest/Supertest."
-          },
-          {
-            "id": 3,
-            "title": "Integrate Atomic Usage Counter Updates with Supabase",
-            "description": "Ensure usage counters are incremented atomically using Supabase's `increment_usage` database function to prevent race conditions.",
-            "dependencies": [],
-            "details": "Modify middleware to call Supabase's `increment_usage` function atomically when a feature is used. Handle database errors gracefully. Ensure the function is called before processing the request if usage limits are enforced.",
-            "status": "pending",
-            "testStrategy": "Test concurrent requests to verify atomicity and absence of race conditions. Use Jest/Supertest with mocked Supabase calls."
-          },
-          {
-            "id": 4,
-            "title": "Implement Structured Logging and Audit Integration",
-            "description": "Add structured logging for all enforcement actions to ensure auditability and operational transparency.",
-            "dependencies": [],
-            "details": "Integrate Pino or Winston for structured logging in middleware. Log all access denials, usage limit hits, and bypass actions with relevant metadata (user ID, role, feature, etc.). Ensure logs are queryable for audit purposes.",
-            "status": "pending",
-            "testStrategy": "Verify logs contain correct metadata for each enforcement action. Test log aggregation and queryability. Use Jest for unit tests on log output."
-          },
-          {
-            "id": 5,
-            "title": "Develop Comprehensive Integration and Concurrency Tests",
-            "description": "Create and execute integration and concurrency tests covering all middleware scenarios, including edge cases and race conditions.",
-            "dependencies": [
-              1,
-              2,
-              3,
-              4
-            ],
-            "details": "Write integration tests for each API route, covering all subscription tiers and features. Test denied access, limit enforcement, developer bypass, and concurrent usage increments. Include tests for logging and audit trails. Use Jest, Supertest, and concurrency testing tools.",
-            "status": "pending",
-            "testStrategy": "Run full integration test suite on PR and pre-deploy. Monitor for race conditions, correct error responses, and log completeness. Aim for 95%+ coverage on critical paths."
-          }
-        ]
-      },
-      {
-        "id": 4,
-        "title": "Develop React Hooks and Context for Role Awareness",
-        "description": "Create React hooks and context providers to expose role, tier, limits, and usage data to UI components.",
-        "details": "Implement `useUserRole` hook in `/frontend/lib/hooks/useUserRole.ts` to provide role, tier, limits, usage stats, and helper functions (`hasFeature`, `isUnderLimit`, `getUsagePercentage`). Use React Context for global access. Ensure hooks are optimized for performance (memoization, minimal re-renders). Use React 18+ with TypeScript for best DX.",
-        "testStrategy": "Write unit tests with mocked user data for each tier. Test hook return values, helper functions, and context propagation. Use React Testing Library and Jest/Vitest.",
-        "priority": "medium",
-        "dependencies": [
-          2
-        ],
-        "status": "pending",
-        "subtasks": [
-          {
-            "id": 1,
-            "title": "Implement useUserRole Hook in TypeScript",
-            "description": "Develop the useUserRole custom hook to provide role, tier, limits, usage stats, and helper functions.",
-            "dependencies": [],
-            "details": "Create /frontend/lib/hooks/useUserRole.ts. Define TypeScript interfaces for user role, tier, limits, and usage. Implement state management using useState or useReducer. Expose helper functions: hasFeature, isUnderLimit, getUsagePercentage. Ensure type safety and proper initialization for all state variables.",
-            "status": "pending",
-            "testStrategy": "Write unit tests for hook logic and helper functions using mocked user data for each tier. Validate return values and edge cases."
-          },
-          {
-            "id": 2,
-            "title": "Create React Context Provider for Role Awareness",
-            "description": "Build a React Context and provider to make user role, tier, limits, and usage globally accessible to UI components.",
+            "title": "Implement Request Deduplication and Correlation ID Tracking",
+            "description": "Add request deduplication mechanism using a Map with correlation IDs to prevent duplicate question generation requests and enable request tracking.",
             "dependencies": [
               1
             ],
-            "details": "Define a context with appropriate TypeScript types. Implement a provider component that uses useUserRole and supplies its values to children. Ensure context is accessible throughout the app and supports updates. Place provider at the top-level of the app tree for global access.",
+            "details": "Implement a request deduplication system using a Map data structure with correlation IDs as keys. Create a function to generate or accept correlation IDs for each request. Modify the generateQuestions function to check if a request with the same parameters is already in progress and return the existing promise instead of creating a new request. Implement a cleanup mechanism to remove completed requests from the Map after a certain period. Add logging with correlation IDs for request tracking and debugging.",
             "status": "pending",
-            "testStrategy": "Write integration tests to verify context propagation and correct data access in nested components."
+            "testStrategy": "Test deduplication by sending identical requests and verifying only one API call is made. Verify correlation IDs are properly generated and tracked throughout the request lifecycle. Test the cleanup mechanism to ensure the Map doesn't grow indefinitely."
           },
           {
             "id": 3,
-            "title": "Optimize Hooks and Context for Performance",
-            "description": "Ensure useUserRole and context provider are optimized for minimal re-renders and efficient memoization.",
+            "title": "Implement Timeout and Error Handling",
+            "description": "Add timeout handling to ensure requests complete within 3 seconds and implement comprehensive error boundaries for different failure scenarios.",
             "dependencies": [
               1,
               2
             ],
-            "details": "Apply React.memo, useMemo, and useCallback where appropriate. Profile hook and context usage to identify unnecessary re-renders. Refactor state and context updates to minimize propagation. Document optimization strategies and verify with React DevTools.",
+            "details": "Implement timeout handling using Promise.race with a 3-second timer to ensure requests don't exceed the time limit. Create custom error classes for different failure scenarios (TimeoutError, ProviderError, ValidationError, etc.). Implement comprehensive error boundaries that catch and properly handle different types of errors. Add detailed error logging with contextual information. Ensure proper resource cleanup on errors. Implement graceful degradation strategies for when all providers fail.",
             "status": "pending",
-            "testStrategy": "Use performance profiling tools and automated tests to confirm reduced re-renders and correct memoization."
+            "testStrategy": "Test timeout mechanism by creating artificially slow responses and verifying they're properly terminated. Test error handling for various failure scenarios including network errors, malformed responses, and validation failures. Verify error boundaries correctly catch and process all error types."
           },
           {
             "id": 4,
-            "title": "Write Unit and Integration Tests for Hooks and Context",
-            "description": "Develop comprehensive tests for useUserRole hook and context provider, covering all features and edge cases.",
+            "title": "Implement Performance Optimization and Memory Usage Tracking",
+            "description": "Optimize the question generation service for performance and implement memory usage tracking to ensure it stays under 512MB.",
             "dependencies": [
               1,
               2,
               3
             ],
-            "details": "Use React Testing Library and Jest/Vitest. Mock user data for different roles and tiers. Test hook return values, helper functions, and context propagation. Validate correct behavior under limit changes and feature gating.",
+            "details": "Create performance benchmarking utilities to measure response times and memory usage. Implement memory usage tracking using process.memoryUsage() or similar methods. Optimize the question generation process by minimizing unnecessary object creation and copying. Implement request batching if applicable to reduce overhead. Add performance metrics logging for monitoring. Create memory leak detection mechanisms. Optimize provider selection based on historical performance data.",
             "status": "pending",
-            "testStrategy": "Automated unit and integration tests for all exposed logic and context usage. Include coverage for edge cases and error handling."
-          }
-        ]
-      },
-      {
-        "id": 5,
-        "title": "Build Role-Aware UI Components and Feature Gates",
-        "description": "Create reusable React components to conditionally render UI based on user role and feature availability.",
-        "details": "Develop `<FeatureGate>`, `<UsageWidget>`, `<UpgradePrompt>`, and `<TierBadge>` components. Integrate these into existing UI for export buttons, generation actions, dashboard, and settings. Disable/hide features not available to the user’s tier. Show contextual upgrade CTAs. Ensure all restricted features have clear tooltips or upgrade modals. Use Tailwind CSS or similar for consistent styling.",
-        "testStrategy": "Write component tests for each tier, verifying correct rendering and interaction states. Test disabled states, upgrade prompts, and badge visibility. Use React Testing Library and visual regression tools.",
-        "priority": "medium",
-        "dependencies": [
-          4
-        ],
-        "status": "pending",
-        "subtasks": [
-          {
-            "id": 1,
-            "title": "Develop <FeatureGate> Component for Conditional Rendering",
-            "description": "Implement a reusable React component that conditionally renders its children based on user role and feature availability.",
-            "dependencies": [],
-            "details": "Create <FeatureGate> to accept props for required roles/features. Use context/hooks to determine if the current user meets the criteria. Render children if allowed, otherwise render fallback UI (e.g., tooltip or upgrade prompt). Ensure accessibility and consistent styling with Tailwind CSS.",
-            "status": "pending",
-            "testStrategy": "Write unit tests to verify correct rendering for each role and feature state. Test fallback UI and accessibility."
-          },
-          {
-            "id": 2,
-            "title": "Build <UsageWidget> Component for Usage and Limits Display",
-            "description": "Create a component that displays current usage, limits, and progress for the user's tier.",
-            "dependencies": [],
-            "details": "Implement <UsageWidget> to show usage stats (e.g., API calls, storage) using data from context/hooks. Display progress bars, thresholds, and alerts for approaching limits. Style with Tailwind CSS and ensure responsive design.",
-            "status": "pending",
-            "testStrategy": "Test rendering with various usage levels and tiers. Verify alerts at 80%, 90%, and 100% thresholds. Use visual regression tests."
-          },
-          {
-            "id": 3,
-            "title": "Implement <UpgradePrompt> Component for Upgrade CTAs",
-            "description": "Develop a component that prompts users to upgrade when they encounter restricted features.",
-            "dependencies": [],
-            "details": "Create <UpgradePrompt> to display contextual upgrade messaging and actions. Integrate with <FeatureGate> for restricted features. Support modal and inline variants. Ensure clear messaging and consistent styling.",
-            "status": "pending",
-            "testStrategy": "Test prompt appearance for restricted features and correct CTA actions. Verify modal and inline variants. Check accessibility."
-          },
-          {
-            "id": 4,
-            "title": "Create <TierBadge> Component for Tier Visualization",
-            "description": "Build a badge component that visually indicates the user's current subscription tier.",
-            "dependencies": [],
-            "details": "Implement <TierBadge> to display tier name, color, and icon. Use data from context/hooks. Ensure badges are used in dashboard, settings, and upgrade prompts. Style with Tailwind CSS for consistency.",
-            "status": "pending",
-            "testStrategy": "Test badge rendering for all tiers. Verify correct color, icon, and placement. Use visual regression tests."
+            "testStrategy": "Conduct performance tests to ensure the service generates questionnaires in under 3 seconds. Test memory usage under various load conditions to verify it stays below 512MB. Run stress tests with concurrent requests to identify potential bottlenecks or memory leaks. Benchmark different optimization strategies to measure their impact."
           },
           {
             "id": 5,
-            "title": "Integrate Components and Implement Visual Regression Tests",
-            "description": "Integrate all components into the existing UI and ensure correct feature gating, tooltips, and upgrade flows for each tier.",
+            "title": "Implement Retry Logic with Exponential Backoff",
+            "description": "Add retry mechanism with exponential backoff for handling transient failures from AI providers while maintaining the overall timeout constraint.",
             "dependencies": [
               1,
-              2,
-              3,
-              4
+              3
             ],
-            "details": "Replace legacy logic with new components in export buttons, generation actions, dashboard, and settings. Ensure all restricted features have tooltips or upgrade modals. Write visual regression and interaction tests for each tier and feature state.",
+            "details": "Implement a retry mechanism that attempts to recover from transient failures. Create an exponential backoff algorithm that increases wait time between retries while respecting the overall 3-second timeout constraint. Add jitter to the backoff algorithm to prevent thundering herd problems. Implement retry count limits and configure which error types are retryable. Add logging for retry attempts and outcomes. Ensure the retry logic works correctly with the provider fallback mechanism.",
             "status": "pending",
-            "testStrategy": "Run integration and visual regression tests across all user tiers and feature states. Verify correct rendering, gating, and upgrade flows."
+            "testStrategy": "Test retry logic with simulated transient failures to verify correct retry behavior. Verify exponential backoff increases wait times appropriately. Test that retries respect the overall timeout constraint. Verify the interaction between retries and provider fallback logic works correctly."
           }
         ]
       },
       {
-        "id": 6,
-        "title": "Implement Upgrade, Downgrade, and Cancellation Flows",
-        "description": "Develop user flows for changing subscription tiers, including upgrade, downgrade, and cancellation with grace periods.",
-        "details": "Create `/api/subscriptions/upgrade`, `/api/subscriptions/downgrade`, and related UI in `/app/(auth)/settings/billing`. Handle immediate limit updates, prorated billing (manual for MVP), grace periods, and read-only access to saved starmaps on downgrade/cancellation. Send confirmation emails for all tier changes. For MVP, use manual role assignment via admin; integrate Stripe later. Use Resend or similar for transactional emails.",
-        "testStrategy": "Test end-to-end flows for each tier transition. Verify data preservation, limit enforcement, and email delivery. Test grace period behavior and read-only access. Use Playwright or Cypress for E2E testing.",
+        "id": 15,
+        "title": "Update Question Generation API Route with Backward Compatibility",
+        "description": "Migrate /api/generate-questions endpoint to use new AI SDK service while maintaining backward compatibility and feature flag support",
+        "details": "Update /api/generate-questions route to use questionGenerationService. Implement feature flag check (NEXT_PUBLIC_USE_AI_SDK) to switch between old and new implementation. Maintain exact same response format for backward compatibility. Add correlation ID tracking for requests. Implement proper error handling with appropriate HTTP status codes. Add request/response logging for monitoring.",
+        "testStrategy": "Integration tests comparing old vs new API responses, test feature flag toggling, verify response format compatibility, test error scenarios and status codes, load testing with concurrent requests",
         "priority": "medium",
         "dependencies": [
-          1,
-          3
+          14
         ],
         "status": "pending",
         "subtasks": [
           {
             "id": 1,
-            "title": "Develop Backend API Endpoints for Upgrade and Downgrade",
-            "description": "Implement REST API endpoints for upgrading and downgrading user subscriptions, including manual role assignment and support for immediate limit updates and prorated billing.",
+            "title": "Integrate questionGenerationService with Feature Flag Support",
+            "description": "Update the /api/generate-questions endpoint to use the new questionGenerationService while implementing feature flag support to toggle between old and new implementations.",
             "dependencies": [],
-            "details": "Create `/api/subscriptions/upgrade` and `/api/subscriptions/downgrade` endpoints. Ensure endpoints handle manual admin role assignment, update subscription metadata, and support manual prorated billing logic for MVP. Log all actions for auditability.",
+            "details": "Modify the API route handler to import questionGenerationService. Implement conditional logic using the NEXT_PUBLIC_USE_AI_SDK feature flag to determine which implementation to use. Create a wrapper function that calls either the legacy implementation or the new service based on the flag value. Ensure the feature flag is properly read from environment variables. Document the integration approach and feature flag behavior.",
             "status": "pending",
-            "testStrategy": "Write integration tests for each endpoint. Simulate upgrade and downgrade requests, verify correct role assignment, metadata updates, and billing calculations. Test error handling for invalid transitions."
+            "testStrategy": "Unit tests for feature flag logic, integration tests comparing responses from both implementations, verify correct service is called based on feature flag value"
           },
           {
             "id": 2,
-            "title": "Implement Billing and Tier Management UI in Settings",
-            "description": "Build user interface components in the billing settings page to allow users to upgrade, downgrade, or cancel their subscription.",
+            "title": "Ensure Response Format Compatibility and Add Correlation ID Tracking",
+            "description": "Maintain backward compatibility by ensuring the new implementation returns the exact same response format as the old one, and implement correlation ID tracking for request tracing.",
             "dependencies": [
               1
             ],
-            "details": "Develop UI in `/app/(auth)/settings/billing` for displaying current tier, available actions, and confirmation dialogs. Integrate with backend endpoints for upgrade/downgrade. Show current limits and next billing information. Ensure clear feedback for each action.",
+            "details": "Create a response adapter that transforms the output from questionGenerationService to match the exact format of the legacy implementation. Implement correlation ID generation for each request using UUID v4. Pass correlation IDs to the questionGenerationService for request deduplication. Add correlation ID to response headers for client-side tracking. Create validation tests to verify response structure matches legacy format exactly.",
             "status": "pending",
-            "testStrategy": "Use Cypress or Playwright to test UI flows for all transitions. Verify correct API calls, UI state updates, and error messages. Test accessibility and responsiveness."
+            "testStrategy": "Schema validation tests for response format compatibility, verify correlation IDs are properly generated and passed through the system, test traceability of requests using correlation IDs"
           },
           {
             "id": 3,
-            "title": "Handle Immediate Limit Updates and Grace Period Logic",
-            "description": "Implement business logic for enforcing immediate usage limit changes and managing grace periods for downgrades and cancellations.",
+            "title": "Implement Error Handling and Request/Response Logging",
+            "description": "Add comprehensive error handling with appropriate HTTP status codes and implement request/response logging for monitoring and debugging.",
+            "dependencies": [
+              2
+            ],
+            "details": "Create error handling middleware that catches exceptions from both implementations. Map specific error types to appropriate HTTP status codes (400 for invalid input, 429 for rate limiting, 500 for server errors, etc.). Implement structured logging for requests and responses, including correlation IDs, timestamps, request parameters, response status, and execution time. Add redaction for sensitive data in logs. Configure log levels based on environment. Create monitoring hooks for error rate tracking.",
+            "status": "pending",
+            "testStrategy": "Test error scenarios to verify correct HTTP status codes are returned, validate log output format and content, verify sensitive information is properly redacted, test monitoring integration"
+          }
+        ]
+      },
+      {
+        "id": 16,
+        "title": "Implement Blueprint Generation Service with Streaming Support",
+        "description": "Create blueprintGenerationService.ts with Server-Sent Events streaming, 256-byte chunks, 1KB sliding window buffer, and 100ms throttled updates",
+        "details": "Implement generateBlueprint() using AI SDK's streamObject() for real-time streaming. Configure SSE with 256-byte chunks and 1KB sliding window buffer. Add 100ms throttle for partial updates. Implement 30s timeout with graceful cleanup. Add abort signal handling. Create stream validation and normalization layer. Implement backpressure handling. Add progress indicators with token count display.",
+        "testStrategy": "Unit tests for streaming logic with mocked streams, integration tests with real streaming responses, test abort signal handling, verify chunk size and buffer behavior, test backpressure scenarios, performance tests for stream start time (<500ms)",
+        "priority": "high",
+        "dependencies": [
+          12,
+          13
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Implement Core streamObject Integration for Real-time Streaming",
+            "description": "Integrate AI SDK's streamObject() function to enable real-time blueprint generation with proper event handling.",
+            "dependencies": [],
+            "details": "Create the generateBlueprint() function in blueprintGenerationService.ts that utilizes the AI SDK's streamObject() method. Implement event listeners for data chunks, errors, and completion. Set up the initial connection handling and ensure proper stream initialization. Include basic error handling for stream setup failures.",
+            "status": "pending",
+            "testStrategy": "Unit test the streamObject integration with mocked stream responses. Verify event handlers are properly set up and the function returns expected stream format. Test error scenarios during stream initialization."
+          },
+          {
+            "id": 2,
+            "title": "Configure SSE with Chunk Size and Buffer Management",
+            "description": "Implement Server-Sent Events configuration with 256-byte chunks and a 1KB sliding window buffer for efficient streaming.",
             "dependencies": [
               1
             ],
-            "details": "Update backend to enforce new limits immediately on upgrade and at the end of the grace period on downgrade/cancellation. Track grace period expiration and trigger state changes. Ensure limits are enforced via middleware and reflected in user experience.",
+            "details": "Configure the SSE connection to deliver data in 256-byte chunks. Implement a 1KB sliding window buffer to manage incoming data efficiently. Create buffer management logic to handle overflow conditions. Add chunk size validation to ensure compliance with the 256-byte requirement. Implement buffer state tracking for debugging purposes.",
             "status": "pending",
-            "testStrategy": "Write unit and integration tests for limit enforcement and grace period transitions. Simulate time-based events and verify correct access and restrictions."
+            "testStrategy": "Test chunk size enforcement with various input sizes. Verify buffer management with simulated high-volume data. Test edge cases like buffer overflow and undersized chunks. Measure buffer performance under load conditions."
+          },
+          {
+            "id": 3,
+            "title": "Implement Throttling and Partial Update Mechanism",
+            "description": "Add 100ms throttling for partial updates to optimize client-side rendering and reduce network overhead.",
+            "dependencies": [
+              2
+            ],
+            "details": "Implement a throttling mechanism that batches updates and sends them at 100ms intervals. Create a partial update system that tracks changes between throttle intervals. Develop a diff algorithm to identify and transmit only changed portions of the blueprint. Add configuration options for throttle timing adjustments. Implement event emission for partial updates to notify subscribers.",
+            "status": "pending",
+            "testStrategy": "Test throttle timing accuracy with high-precision timers. Verify partial update content contains only changed data. Test throttling under various load conditions. Measure performance impact of throttling on overall system responsiveness."
           },
           {
             "id": 4,
-            "title": "Integrate Confirmation Email Notifications for Tier Changes",
-            "description": "Send transactional emails to users confirming all subscription tier changes, using Resend or a similar provider.",
+            "title": "Add Timeout Handling and Abort Signal Integration",
+            "description": "Implement 30-second timeout with graceful cleanup and integrate abort signal handling for user-initiated cancellations.",
+            "dependencies": [
+              1
+            ],
+            "details": "Create a timeout mechanism that triggers after 30 seconds of inactivity or slow responses. Implement graceful cleanup procedures for timed-out connections including resource release. Add abort signal handling to allow client-side cancellation of blueprint generation. Implement proper error messaging for timeout and abort scenarios. Create event listeners for abort signals from the client.",
+            "status": "pending",
+            "testStrategy": "Test timeout behavior with artificially delayed responses. Verify resource cleanup after timeout or abort. Test abort signal propagation through the system. Measure resource usage before and after cleanup to verify no leaks."
+          },
+          {
+            "id": 5,
+            "title": "Implement Stream Validation, Normalization, and Backpressure Handling",
+            "description": "Create validation and normalization layer for stream data with backpressure handling to manage high-volume scenarios.",
+            "dependencies": [
+              2,
+              3
+            ],
+            "details": "Develop schema validation for incoming stream data using Zod or similar validation library. Implement data normalization to ensure consistent format regardless of source variations. Create backpressure detection and handling to prevent memory issues during high-volume streaming. Add adaptive throttling that responds to backpressure signals. Implement progress indicators with token count display to show streaming status to users.",
+            "status": "pending",
+            "testStrategy": "Test validation with valid and invalid stream data. Verify normalization with various input formats. Test backpressure handling with artificially created high-volume scenarios. Verify progress indicators accurately reflect streaming progress."
+          }
+        ]
+      },
+      {
+        "id": 17,
+        "title": "Create React Hooks for Real-time Blueprint Updates",
+        "description": "Develop custom React hooks to handle streaming blueprint updates with partial rendering and progress indicators",
+        "details": "Create useBlueprintStream() hook using EventSource for SSE connection. Implement useStreamingBlueprint() for state management of partial updates. Add progress tracking with token count display. Implement error boundary integration. Create partial blueprint rendering logic that updates UI every 100ms. Add connection state management (connecting, streaming, complete, error). Implement cleanup on component unmount.",
+        "testStrategy": "Unit tests for hook behavior with mocked streams, integration tests with real streaming data, test error boundary integration, verify cleanup on unmount, test partial rendering updates, performance tests for UI update frequency",
+        "priority": "medium",
+        "dependencies": [
+          16
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Implement useBlueprintStream hook with EventSource integration",
+            "description": "Create a custom React hook that establishes and manages an SSE connection using EventSource for real-time blueprint updates",
+            "dependencies": [],
+            "details": "Develop the useBlueprintStream() hook that initializes an EventSource connection to the server endpoint. Implement event listeners for 'message', 'open', 'error', and custom events. Handle connection establishment, message parsing, and basic error handling. Ensure the hook accepts configuration parameters like endpoint URL, headers, and retry options. Return the stream data, connection status, and error state from the hook.",
+            "status": "pending",
+            "testStrategy": "Unit test with mocked EventSource implementation. Test connection establishment, event handling, and error scenarios. Verify proper cleanup on unmount using React Testing Library's renderHook."
+          },
+          {
+            "id": 2,
+            "title": "Develop useStreamingBlueprint hook for state management",
+            "description": "Create a hook that manages the state of streaming blueprint data, handling partial updates and maintaining the complete blueprint state",
+            "dependencies": [
+              1
+            ],
+            "details": "Implement useStreamingBlueprint() hook that consumes the stream data from useBlueprintStream(). Create state management for the complete blueprint object, handling incremental updates. Implement efficient state merging logic to incorporate new chunks into the existing blueprint. Add debouncing mechanism to prevent excessive re-renders. Implement JSON parsing with error handling for malformed data. Return the current blueprint state, loading status, and error information.",
+            "status": "pending",
+            "testStrategy": "Test state updates with simulated stream data chunks. Verify correct merging of partial updates. Test error handling for malformed JSON. Measure render performance with different update frequencies."
+          },
+          {
+            "id": 3,
+            "title": "Implement progress tracking and partial rendering logic",
+            "description": "Add functionality to track streaming progress with token counts and implement partial rendering that updates the UI at controlled intervals",
+            "dependencies": [
+              2
+            ],
+            "details": "Extend the useStreamingBlueprint hook to track progress metrics including token count, percentage complete, and chunk count. Implement a throttling mechanism to update UI every 100ms regardless of chunk frequency. Create a buffer for incoming chunks that accumulates data between render cycles. Add token counting logic based on stream metadata or estimation algorithm. Implement progress indicator components that visualize completion percentage and token count.",
+            "status": "pending",
+            "testStrategy": "Test progress calculation accuracy with known token counts. Verify UI update frequency matches 100ms target using performance timing. Test buffer mechanism with varying chunk sizes and frequencies."
+          },
+          {
+            "id": 4,
+            "title": "Add connection state management and cleanup implementation",
+            "description": "Implement comprehensive connection state tracking and ensure proper resource cleanup on component unmount",
+            "dependencies": [
+              1,
+              2,
+              3
+            ],
+            "details": "Create an enum or state machine for connection states (connecting, streaming, complete, error). Implement state transitions based on EventSource events and error conditions. Add timeout handling for stalled connections. Integrate with React's error boundary system for graceful failure handling. Implement thorough cleanup on component unmount including closing EventSource connection, clearing timeouts, and canceling any pending operations. Add reconnection logic with exponential backoff for transient failures.",
+            "status": "pending",
+            "testStrategy": "Test all connection state transitions. Verify cleanup functions are called on unmount. Test integration with error boundaries. Simulate network failures to verify reconnection logic and backoff strategy."
+          }
+        ]
+      },
+      {
+        "id": 18,
+        "title": "Implement Comprehensive Monitoring and Metrics Collection",
+        "description": "Set up monitoring infrastructure with performance metrics, error tracking, provider health monitoring, and token usage analytics",
+        "details": "Create monitoring middleware for response time histograms, throughput counters, error rate gauges. Implement resource usage tracking (memory, CPU, active connections). Add business metrics (blueprints generated, questions generated, fallbacks triggered). Create provider health monitoring for Claude and Ollama availability. Implement token consumption tracking (input/output tokens, cost calculation). Set up alert configuration: P0 for all providers failing, P1 for >5% error rate, P2 for >20% response time degradation.",
+        "testStrategy": "Unit tests for metrics collection, integration tests with monitoring systems, test alert thresholds with simulated failures, verify metrics accuracy, test dashboard functionality",
+        "priority": "medium",
+        "dependencies": [
+          14,
+          16
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Implement Performance Metrics Middleware",
+            "description": "Create middleware for tracking response time histograms, throughput counters, and error rate gauges",
+            "dependencies": [],
+            "details": "Develop a middleware layer that intercepts API requests to collect performance metrics. Implement response time histograms with p50/p90/p99 percentiles, throughput counters for requests per second, and error rate gauges. Use Prometheus-compatible format for metrics export. Include request path and method as labels for granular analysis. Implement background aggregation job to prevent performance impact.",
+            "status": "pending",
+            "testStrategy": "Unit tests for middleware with mock requests, integration tests to verify metrics collection accuracy, load tests to ensure minimal performance overhead (<5ms per request), verify correct histogram bucket distribution"
+          },
+          {
+            "id": 2,
+            "title": "Build Resource Usage Tracking System",
+            "description": "Implement tracking for system resources including memory, CPU utilization, and active connections",
+            "dependencies": [
+              1
+            ],
+            "details": "Create a resource monitoring service that collects system-level metrics at 15-second intervals. Track memory usage (heap and RSS), CPU utilization percentage, active connection count, and event loop lag. Implement resource usage alerts for memory leaks (>90% heap usage) and CPU spikes (>80% sustained). Add process uptime tracking and restart counts. Store historical data with 1-hour retention for trend analysis.",
+            "status": "pending",
+            "testStrategy": "Unit tests for metric collection functions, integration tests with system resource simulation, memory leak detection tests, verify alert threshold triggers, test data retention policies"
+          },
+          {
+            "id": 3,
+            "title": "Implement Business Metrics Collection",
+            "description": "Add tracking for business-specific metrics including blueprints generated, questions generated, and fallbacks triggered",
+            "dependencies": [
+              1
+            ],
+            "details": "Create a business metrics collector that tracks application-specific events. Implement counters for blueprints generated (with success/failure breakdown), questions generated (with section counts), and fallback triggers (by provider type). Add latency tracking for each business operation. Implement user session tracking with anonymous IDs. Create daily/weekly aggregation reports. Add correlation between business metrics and system performance.",
+            "status": "pending",
+            "testStrategy": "Unit tests for business metric collection functions, integration tests with simulated user flows, verify metric aggregation accuracy, test report generation functionality, validate correlation analysis between metrics"
+          },
+          {
+            "id": 4,
+            "title": "Create Provider Health Monitoring System",
+            "description": "Implement health checks and availability monitoring for Claude and Ollama providers",
+            "dependencies": [
+              1
+            ],
+            "details": "Develop a provider health monitoring service that performs periodic health checks on Claude and Ollama APIs. Implement 30-second interval checks with simple prompt requests. Track response times, error rates, and availability percentage. Create provider status dashboard with historical uptime. Implement circuit breaker pattern to automatically disable failing providers. Add provider status notifications via webhook integration. Include provider-specific metrics like token rate limits.",
+            "status": "pending",
+            "testStrategy": "Unit tests for health check functions, integration tests with provider API mocks, test circuit breaker functionality, verify dashboard accuracy, test notification delivery, simulate provider failures to validate recovery"
+          },
+          {
+            "id": 5,
+            "title": "Implement Token Consumption Tracking and Alerts",
+            "description": "Create system for tracking input/output tokens, calculating costs, and configuring alerts based on thresholds",
+            "dependencies": [
+              3,
+              4
+            ],
+            "details": "Build a token consumption tracking service that monitors input and output tokens for each provider. Implement cost calculation based on provider-specific pricing models. Create token usage dashboards with daily/monthly aggregation. Set up alert configuration with priority levels: P0 for all providers failing, P1 for >5% error rate, P2 for >20% response time degradation. Add budget alerts for token consumption approaching limits. Implement cost optimization recommendations based on usage patterns.",
+            "status": "pending",
+            "testStrategy": "Unit tests for token counting and cost calculation, integration tests with real API responses, test alert threshold triggers, verify dashboard accuracy, validate budget alert functionality, test optimization recommendation logic"
+          }
+        ]
+      },
+      {
+        "id": 19,
+        "title": "Create Comprehensive Test Suite with 95% Coverage",
+        "description": "Implement unit, integration, and performance tests covering all provider scenarios, streaming behavior, and fallback logic with MSW for API mocking",
+        "details": "Create unit tests for all services with 95% coverage using Vitest. Implement integration tests for API endpoints with @testing-library/react. Set up MSW v2.4.0 for API mocking. Create performance benchmarks: question generation <3s, blueprint generation 7-10s, provider switch <150ms, stream start <1s. Test concurrency with 1, 10, 50, 100 simultaneous requests. Add memory leak detection tests. Create browser compatibility tests (Chrome, Firefox, Safari) and device tests (desktop, tablet, mobile).",
+        "testStrategy": "Automated test execution with coverage reporting, performance regression testing against baselines, load testing with 100 concurrent users, cross-browser testing automation, memory profiling during tests",
+        "priority": "high",
+        "dependencies": [
+          14,
+          16,
+          17,
+          18
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Set Up Unit Test Framework with Vitest",
+            "description": "Configure Vitest for unit testing with coverage reporting and establish test patterns for all services",
+            "dependencies": [],
+            "details": "Install Vitest and configure it with vitest.config.ts to target 95% code coverage. Set up test directory structure mirroring source code. Create test utilities for common testing patterns. Configure GitHub Actions for CI integration. Implement mock factories for common dependencies. Set up coverage reporting with HTML and JSON outputs. Create documentation for writing unit tests following project standards.",
+            "status": "pending",
+            "testStrategy": "Verify configuration by running sample tests across different service types. Ensure coverage reporting works correctly. Test CI pipeline integration."
+          },
+          {
+            "id": 2,
+            "title": "Implement Integration Tests for API Endpoints",
+            "description": "Create comprehensive integration tests for all API endpoints using @testing-library/react and establish test fixtures",
+            "dependencies": [
+              1
+            ],
+            "details": "Set up @testing-library/react for component testing. Create test fixtures for API responses. Implement tests for all API endpoints covering success and error scenarios. Test provider integration points. Create tests for streaming behavior with simulated delays. Implement tests for UI components that consume API data. Verify correct rendering of loading, error, and success states.",
+            "status": "pending",
+            "testStrategy": "Run tests against mocked API endpoints. Verify component rendering with different API response scenarios. Test error handling and loading states."
+          },
+          {
+            "id": 3,
+            "title": "Configure MSW v2.4.0 for API Mocking",
+            "description": "Set up Mock Service Worker for simulating API responses in tests with support for streaming responses",
             "dependencies": [
               1,
               2
             ],
-            "details": "Trigger email notifications on upgrade, downgrade, and cancellation actions. Use dynamic templates to include relevant details (tier, effective date, grace period). Ensure emails are sent reliably and logged for audit.",
+            "details": "Install MSW v2.4.0 and configure for both REST and streaming endpoints. Create handler files for each API endpoint. Implement mock responses for success, error, and edge cases. Set up streaming response simulation with configurable delays and chunked responses. Create documentation for extending mock handlers. Integrate MSW with test setup and teardown processes. Configure browser and node environments.",
             "status": "pending",
-            "testStrategy": "Mock email provider in tests. Verify emails are sent with correct content for each transition. Check logs for delivery status. Manually test with real email in staging."
+            "testStrategy": "Verify MSW correctly intercepts API calls. Test streaming response simulation. Ensure MSW works in both browser and Node environments."
           },
           {
-            "id": 5,
-            "title": "Implement Read-Only Access Logic for Downgraded or Cancelled Users",
-            "description": "Restrict access to saved starmaps to read-only mode for users who have downgraded or cancelled, after grace period ends.",
+            "id": 4,
+            "title": "Develop Performance Benchmark Tests",
+            "description": "Create performance tests to measure and validate response times for critical operations against defined benchmarks",
             "dependencies": [
               3
             ],
-            "details": "Update access control logic to check subscription status and enforce read-only mode on relevant resources. Ensure users are notified of access changes and cannot modify or create new starmaps after grace period.",
+            "details": "Implement performance tests for question generation (<3s), blueprint generation (7-10s), provider switching (<150ms), and stream start (<1s). Create baseline measurements for each metric. Set up performance regression detection. Implement automated reporting of performance metrics. Create visualization of performance trends over time. Configure CI to run performance tests on each PR and report regressions.",
             "status": "pending",
-            "testStrategy": "Write integration and E2E tests to verify read-only enforcement post-grace period. Attempt restricted actions and confirm correct error responses and UI messaging."
+            "testStrategy": "Run performance tests in isolated environments to minimize variance. Compare results against established baselines. Test with different network conditions to ensure robustness."
+          },
+          {
+            "id": 5,
+            "title": "Implement Concurrency and Memory Leak Detection Tests",
+            "description": "Create tests to verify system behavior under concurrent load and detect potential memory leaks during extended operations",
+            "dependencies": [
+              3,
+              4
+            ],
+            "details": "Implement concurrency tests with 1, 10, 50, and 100 simultaneous requests. Create test harness for simulating concurrent users. Measure response times and error rates under load. Implement memory profiling during extended test runs. Create memory leak detection tests using heap snapshots. Set up long-running tests (1+ hour) to detect gradual memory growth. Implement reporting of memory usage patterns.",
+            "status": "pending",
+            "testStrategy": "Run concurrency tests in controlled environments. Use memory profiling tools to analyze heap usage. Compare memory snapshots before and after test runs to identify leaks."
           },
           {
             "id": 6,
-            "title": "Test End-to-End Subscription Flows and Edge Cases",
-            "description": "Conduct comprehensive end-to-end testing of all subscription transitions, including upgrades, downgrades, cancellations, grace periods, and edge cases.",
+            "title": "Create Browser Compatibility and Device Tests",
+            "description": "Implement cross-browser and cross-device testing to ensure consistent functionality across Chrome, Firefox, Safari and desktop, tablet, mobile devices",
             "dependencies": [
-              1,
-              2,
-              3,
-              4,
-              5
-            ],
-            "details": "Develop E2E test scenarios covering all user flows, including rapid tier changes, expired grace periods, and failed email delivery. Validate data consistency, correct enforcement, and user experience across all transitions.",
-            "status": "pending",
-            "testStrategy": "Use Playwright or Cypress for E2E tests. Simulate all transitions and edge cases. Verify data, access, and notifications. Review logs for errors and audit trail completeness."
-          }
-        ]
-      },
-      {
-        "id": 7,
-        "title": "Create Developer Role Assignment and Admin Dashboard",
-        "description": "Build secure admin interfaces for assigning the developer role and auditing role changes.",
-        "details": "Implement `/api/admin/assign-role` endpoint (developer-only). Create an admin dashboard (`/app/(auth)/admin`) for user search, role assignment, and audit log viewing. Enforce developer-only access with middleware. Log all role changes to `role_audit_log`. Show developer mode indicators in the UI. Use Next.js App Router for route protection. Consider using TanStack Table for data grids.",
-        "testStrategy": "Test role assignment flow, audit logging, and admin access control. Verify developer actions are logged and non-developers are blocked. Use integration and E2E tests.",
-        "priority": "medium",
-        "dependencies": [
-          1,
-          3
-        ],
-        "status": "pending",
-        "subtasks": []
-      },
-      {
-        "id": 8,
-        "title": "Automate Monthly Usage Reset and Alerting",
-        "description": "Set up automated jobs to reset usage counters and send alerts when users approach limits.",
-        "details": "Create a Vercel Cron job or external scheduler to call `/api/cron/reset-usage` at midnight UTC. Implement `reset_monthly_usage` database function. Send in-app and email alerts at 80%, 90%, and 100% of limits. Use Resend for emails, and consider in-app notifications via Toast or similar. Ensure idempotency and error handling in cron jobs.",
-        "testStrategy": "Test cron job execution, usage reset accuracy, and alert triggering. Verify idempotency and failure recovery. Use manual triggers and monitor logs.",
-        "priority": "medium",
-        "dependencies": [
-          1
-        ],
-        "status": "pending",
-        "subtasks": [
-          {
-            "id": 1,
-            "title": "Set up Vercel Cron Job for Monthly Usage Reset",
-            "description": "Configure a Vercel Cron job to call `/api/cron/reset-usage` at midnight UTC every month, ensuring it only runs in production and is properly deployed.",
-            "dependencies": [],
-            "details": "Create or update the `vercel.json` file to include a cron job entry with path `/api/cron/reset-usage` and a monthly schedule (e.g., `0 0 1 * *` for the first of each month at midnight UTC). Deploy the project to production. Verify the cron job is active via Vercel’s dashboard and logs. Ensure the endpoint is idempotent and handles errors gracefully, logging outcomes for auditability[1][2][4].",
-            "status": "pending",
-            "testStrategy": "Manually trigger the endpoint to verify it executes as expected. Monitor Vercel logs for successful and failed runs. Test idempotency by calling the endpoint multiple times in quick succession and verifying no duplicate resets occur."
-          },
-          {
-            "id": 2,
-            "title": "Implement `reset_monthly_usage` Database Function",
-            "description": "Develop a PostgreSQL function to reset all user usage counters at the start of each billing cycle.",
-            "dependencies": [
-              1
-            ],
-            "details": "Write a Supabase/PostgreSQL function named `reset_monthly_usage` that atomically resets usage counters for all users, ensuring no partial updates. Include appropriate transaction handling and error logging. The function should be callable securely from your backend API. Document the function and its idempotency guarantees.",
-            "status": "pending",
-            "testStrategy": "Test the function directly in a development database, verifying all counters are reset and no errors occur. Simulate concurrent calls to check for race conditions. Verify idempotency by running the function multiple times and checking counters remain correct."
-          },
-          {
-            "id": 3,
-            "title": "Build Alerting Logic for In-App and Email Notifications",
-            "description": "Implement logic to send in-app (e.g., Toast) and email (via Resend) alerts when users reach 80%, 90%, and 100% of their usage limits.",
-            "dependencies": [
-              2
-            ],
-            "details": "Extend your backend to check user usage against limits on each relevant API call. At 80%, 90%, and 100% thresholds, trigger in-app notifications using a library like Toast and send emails via Resend. Ensure alerts are not duplicated within a billing cycle. Store alert history for audit purposes. Handle email and notification failures gracefully, with retries and logging.",
-            "status": "pending",
-            "testStrategy": "Manually trigger usage scenarios to verify alerts are sent at the correct thresholds. Check both in-app and email delivery. Test failure cases (e.g., email service down) and verify error handling and retries. Review alert history logs for completeness."
-          },
-          {
-            "id": 4,
-            "title": "Implement and Test Idempotency and Error Handling",
-            "description": "Ensure all automated jobs (cron and alerting) are idempotent and robust against failures, with comprehensive error handling and logging.",
-            "dependencies": [
-              1,
               2,
               3
             ],
-            "details": "Review all cron-triggered and alerting code paths for idempotency—calling them multiple times should not cause duplicate side effects. Implement retries, timeouts, and dead-letter queues for failed jobs. Log all errors and outcomes for monitoring. Document recovery procedures for common failure modes.",
+            "details": "Set up Playwright for automated browser testing. Configure tests to run on Chrome, Firefox, and Safari. Implement viewport adjustments for desktop, tablet, and mobile testing. Create visual regression tests for UI components. Test responsive behavior across different screen sizes. Verify touch interactions on mobile devices. Create device-specific test cases for known edge cases. Set up CI pipeline for cross-browser testing.",
             "status": "pending",
-            "testStrategy": "Simulate network failures, service outages, and duplicate invocations to verify idempotency and error recovery. Check logs for accurate error reporting. Verify that manual recovery steps (e.g., reprocessing failed jobs) work as documented. Use synthetic monitoring to catch regressions."
+            "testStrategy": "Run tests across multiple browsers and device profiles. Use visual comparison tools to detect rendering differences. Test with actual mobile devices for critical paths."
           }
         ]
       },
       {
-        "id": 9,
-        "title": "Implement Comprehensive Testing Strategy",
-        "description": "Define and implement a full testing pyramid covering unit, integration, E2E, security, and performance tests.",
-        "details": "Write unit tests for types, middleware, hooks, and components. Create integration tests for API routes and database functions. Develop E2E tests for user journeys, tier transitions, and admin flows. Include security tests for RLS, auth, and rate limiting. Add load testing with k6 or Artillery. Set up CI/CD with GitHub Actions, including coverage reporting and artifact uploads. Use Jest, Vitest, Playwright, and k6.",
-        "testStrategy": "Run full test suite on PR and pre-deploy. Monitor test coverage (aim for 80%+ overall, 95%+ on critical paths). Review security and performance test results. Use Codecov for coverage tracking.",
+        "id": 20,
+        "title": "Implement Feature Flag Rollout System and Deployment Strategy",
+        "description": "Create percentage-based feature flag system for gradual rollout with automatic rollback capabilities and legacy code cleanup",
+        "details": "Implement feature flag system with NEXT_PUBLIC_USE_AI_SDK environment variable. Create rollout configuration: Stage 1 (1%, 2 hours, enhanced monitoring, automatic rollback), Stage 2 (10%, 24 hours), Stage 3 (50%, 48 hours), Stage 4 (100%, permanent). Add automatic rollback triggers for error rate >5% or response time degradation >20%. Implement rollback procedure with <1 minute execution time. Create monitoring dashboard for rollout metrics. Plan legacy code removal after successful 100% rollout.",
+        "testStrategy": "Test feature flag toggling functionality, verify rollout percentage logic, test automatic rollback triggers, validate rollback execution time <1 minute, test monitoring dashboard accuracy, verify legacy code cleanup procedures",
         "priority": "medium",
         "dependencies": [
-          1,
-          2,
-          3,
-          4,
-          5,
-          6,
-          7,
-          8
+          19
         ],
         "status": "pending",
         "subtasks": [
           {
             "id": 1,
-            "title": "Develop Unit Tests for Types and Utilities",
-            "description": "Write comprehensive unit tests for TypeScript types, utility functions, and core logic modules.",
+            "title": "Implement percentage-based feature flag system",
+            "description": "Create a feature flag system that can selectively enable features for a specified percentage of users based on the NEXT_PUBLIC_USE_AI_SDK environment variable.",
             "dependencies": [],
-            "details": "Use Jest or Vitest to test all type definitions, type guards, and utility functions. Ensure all edge cases are covered and type safety is enforced. Place tests in a dedicated /tests/unit directory.",
+            "details": "Develop a feature flag service that uses consistent hashing to ensure users maintain the same experience across sessions. Implement a configuration system that accepts percentage values and user identifiers. Create helper functions to determine if a feature should be enabled for a specific user based on their identifier and the current rollout percentage. Ensure the system works with the NEXT_PUBLIC_USE_AI_SDK environment variable as the primary toggle.",
             "status": "pending",
-            "testStrategy": "Run unit tests locally and in CI. Check for 100% branch and line coverage on types and utilities. Fail builds if coverage drops below threshold."
+            "testStrategy": "Unit test the percentage calculation logic with various inputs. Test consistency of user assignment across multiple requests. Verify environment variable integration. Create integration tests to ensure feature flags work across the application."
           },
           {
             "id": 2,
-            "title": "Implement Integration Tests for API Routes and Database Functions",
-            "description": "Create integration tests to validate API endpoints and database interactions, ensuring correct behavior across system boundaries.",
+            "title": "Configure multi-stage rollout system with timing controls",
+            "description": "Implement the four-stage rollout configuration with timing controls for each stage and enhanced monitoring during initial rollout phases.",
             "dependencies": [
               1
             ],
-            "details": "Use Jest, Supertest, or Vitest to test API routes and database functions. Mock external dependencies where appropriate. Validate correct data flow, error handling, and role-based access. Store tests in /tests/integration.",
+            "details": "Create a rollout configuration system that supports the four defined stages: Stage 1 (1%, 2 hours), Stage 2 (10%, 24 hours), Stage 3 (50%, 48 hours), and Stage 4 (100%, permanent). Implement timing controls to automatically progress through stages based on elapsed time. Add enhanced monitoring hooks for the initial stages. Develop a configuration interface that allows easy modification of percentages and timing parameters. Ensure configuration can be updated without service restart.",
             "status": "pending",
-            "testStrategy": "Run integration tests in CI with a test database. Verify all endpoints and DB functions behave as expected under normal and edge conditions."
+            "testStrategy": "Test stage progression timing with mocked time. Verify percentage updates correctly apply at stage boundaries. Test configuration update mechanisms. Create integration tests that simulate a complete rollout cycle."
           },
           {
             "id": 3,
-            "title": "Develop End-to-End (E2E) Tests for User and Admin Flows",
-            "description": "Build E2E tests to simulate real user and admin journeys, covering critical workflows and tier transitions.",
-            "dependencies": [
-              2
-            ],
-            "details": "Use Playwright to automate browser-based tests for user sign-up, login, tier upgrades/downgrades, and admin actions. Cover both happy paths and failure scenarios. Place tests in /tests/e2e.",
-            "status": "pending",
-            "testStrategy": "Run E2E tests in CI on every PR and pre-deploy. Validate that all major user journeys complete successfully and UI state matches expectations."
-          },
-          {
-            "id": 4,
-            "title": "Add Security Tests for RLS, Authentication, and Rate Limiting",
-            "description": "Implement security-focused tests to verify Row-Level Security (RLS), authentication, and rate limiting protections.",
-            "dependencies": [
-              2
-            ],
-            "details": "Write tests to ensure RLS policies prevent unauthorized data access, authentication is enforced, and rate limits are respected. Use Jest or integration test tools. Include negative tests for bypass attempts.",
-            "status": "pending",
-            "testStrategy": "Run security tests in CI. Attempt to access restricted data and exceed rate limits. Confirm that unauthorized actions are blocked and logged."
-          },
-          {
-            "id": 5,
-            "title": "Conduct Performance and Load Testing with k6 or Artillery",
-            "description": "Set up and execute load tests to measure system performance and identify bottlenecks under stress.",
-            "dependencies": [
-              3,
-              4
-            ],
-            "details": "Use k6 or Artillery to simulate concurrent users and high-traffic scenarios. Test critical API endpoints and user flows. Analyze response times, error rates, and resource utilization.",
-            "status": "pending",
-            "testStrategy": "Run load tests before major releases. Monitor for latency, throughput, and error spikes. Document findings and regressions."
-          },
-          {
-            "id": 6,
-            "title": "Set Up CI/CD Pipeline with Automated Test Execution",
-            "description": "Configure GitHub Actions to automate test execution, coverage reporting, and artifact uploads on every PR and deployment.",
+            "title": "Implement automatic rollback triggers and procedures",
+            "description": "Create an automatic rollback system that monitors error rates and response times, triggering rollbacks when thresholds are exceeded.",
             "dependencies": [
               1,
-              2,
-              3,
-              4,
-              5
-            ],
-            "details": "Create workflows to run unit, integration, E2E, security, and load tests. Integrate with Codecov for coverage. Upload test artifacts and reports. Fail builds on test or coverage failures.",
-            "status": "pending",
-            "testStrategy": "Verify all tests run automatically in CI/CD. Ensure failed tests or low coverage block merges. Check that artifacts and reports are accessible."
-          },
-          {
-            "id": 7,
-            "title": "Implement Coverage Tracking and Artifact Reporting",
-            "description": "Integrate coverage tools and reporting to monitor test completeness and retain test artifacts for analysis.",
-            "dependencies": [
-              6
-            ],
-            "details": "Use Codecov or similar to track coverage metrics. Configure reporting thresholds (80%+ overall, 95%+ on critical paths). Store and upload test logs, screenshots, and reports as CI artifacts.",
-            "status": "pending",
-            "testStrategy": "Review coverage reports after each CI run. Ensure artifacts are uploaded and accessible for debugging. Alert on coverage drops or missing artifacts."
-          }
-        ]
-      },
-      {
-        "id": 10,
-        "title": "Deploy to Production with Monitoring and Runbooks",
-        "description": "Plan and execute a phased production rollout with monitoring, alerting, and operational documentation.",
-        "details": "Prepare production database migrations. Deploy to staging for internal beta. Roll out to 10% of production users, monitor for errors, then full rollout. Set up Vercel Analytics, error tracking (Sentry), and usage dashboards. Create runbooks for role assignment, troubleshooting, and rollback. Train support team on new features. Use gradual rollout strategies and feature flags if needed.",
-        "testStrategy": "Conduct smoke tests on production. Monitor error rates, usage patterns, and upgrade conversions. Verify monitoring dashboards and alerting. Review runbook completeness.",
-        "priority": "medium",
-        "dependencies": [
-          9
-        ],
-        "status": "pending",
-        "subtasks": [
-          {
-            "id": 1,
-            "title": "Plan and Prepare Production Database Migrations",
-            "description": "Design, review, and prepare all necessary production database migrations, ensuring reversibility and minimal downtime.",
-            "dependencies": [],
-            "details": "Generate SQL scripts for all schema changes, review for accuracy, and ensure they are reversible. Coordinate with DBAs for approval. Test migrations on staging and ensure backups are in place before production rollout. Document migration steps and rollback procedures.",
-            "status": "pending",
-            "testStrategy": "Apply migrations to a staging environment, verify schema and data integrity, and test rollback scripts. Review logs for errors and confirm successful migration."
-          },
-          {
-            "id": 2,
-            "title": "Deploy to Staging and Execute Phased Production Rollout",
-            "description": "Deploy the application to staging for internal beta, then perform a phased rollout to production users (starting with 10%).",
-            "dependencies": [
-              1
-            ],
-            "details": "Deploy the latest build to the staging environment and conduct internal testing. After successful validation, roll out to 10% of production users using deployment tools or feature flags. Monitor for issues before proceeding to full rollout.",
-            "status": "pending",
-            "testStrategy": "Run smoke and regression tests on staging. During phased rollout, monitor error rates and user feedback. Validate that only the intended user segment receives the update."
-          },
-          {
-            "id": 3,
-            "title": "Set Up Monitoring, Alerting, and Analytics",
-            "description": "Implement and configure monitoring, alerting, and analytics tools for production observability.",
-            "dependencies": [
               2
             ],
-            "details": "Integrate Vercel Analytics, set up Sentry for error tracking, and build usage dashboards. Configure alerting thresholds for critical errors and performance issues. Ensure dashboards are accessible to the team.",
+            "details": "Implement monitoring hooks that track error rates and response time metrics. Create trigger logic that automatically initiates rollbacks when error rate exceeds 5% or response time degrades by more than 20%. Develop a rollback procedure that can execute in under 1 minute, including updating feature flag configurations and notifying relevant systems. Add logging for all rollback events with detailed reason information. Implement a cool-down period after rollbacks before attempting re-deployment.",
             "status": "pending",
-            "testStrategy": "Trigger test errors and verify Sentry alerts. Simulate traffic to confirm analytics and dashboards update in real time. Review alert delivery and dashboard accuracy."
+            "testStrategy": "Test rollback triggers with simulated error conditions. Measure rollback execution time to verify <1 minute requirement. Test monitoring hook accuracy. Create integration tests that verify the entire rollback flow from detection to completion."
           },
           {
             "id": 4,
-            "title": "Create Runbooks and Operational Documentation",
-            "description": "Develop comprehensive runbooks for role assignment, troubleshooting, and rollback procedures.",
+            "title": "Create monitoring dashboard and legacy code cleanup plan",
+            "description": "Develop a monitoring dashboard for rollout metrics and create a comprehensive plan for removing legacy code after successful 100% rollout.",
             "dependencies": [
+              2,
               3
             ],
-            "details": "Document step-by-step procedures for common operational tasks, including role assignment, incident response, and rollback. Store documentation in a shared, version-controlled location. Review with engineering and support teams.",
+            "details": "Design and implement a monitoring dashboard that displays current rollout percentage, error rates, response times, and rollout stage information. Add historical views to track metrics over time during the rollout process. Create alerts for approaching threshold conditions. Develop a comprehensive plan for identifying and safely removing legacy code after successful 100% rollout, including code scanning tools, dependency analysis, and a phased removal approach with verification steps.",
             "status": "pending",
-            "testStrategy": "Conduct tabletop exercises using the runbooks. Validate that all steps are clear and actionable. Solicit feedback from support and engineering teams."
-          },
-          {
-            "id": 5,
-            "title": "Train Support Team on New Features and Operations",
-            "description": "Provide training to the support team on new features, operational procedures, and troubleshooting using the runbooks.",
-            "dependencies": [
-              4
-            ],
-            "details": "Organize training sessions and walkthroughs of new features and runbooks. Provide hands-on scenarios and Q&A. Ensure support staff can confidently handle common issues and escalate as needed.",
-            "status": "pending",
-            "testStrategy": "Assess support team readiness with practical exercises and quizzes. Review support tickets for correct handling of new features and procedures."
-          },
-          {
-            "id": 6,
-            "title": "Implement Feature Flags and Gradual Rollout Mechanisms",
-            "description": "Set up and configure feature flags and gradual rollout strategies to control feature exposure during deployment.",
-            "dependencies": [
-              1
-            ],
-            "details": "Integrate a feature flag system (if not already present). Configure flags for new features and rollout percentages. Use flags to manage exposure during phased rollout and enable quick rollback if issues arise.",
-            "status": "pending",
-            "testStrategy": "Test feature flag toggling in staging and production. Verify correct user segmentation and ability to roll back features instantly. Monitor for unintended exposure."
+            "testStrategy": "Test dashboard data accuracy and refresh rates. Verify alert functionality. Test legacy code identification tools on sample codebases. Create a validation plan for verifying application functionality after legacy code removal."
           }
         ]
       }
     ],
     "metadata": {
       "created": "2025-10-09T08:17:18.749Z",
-      "updated": "2025-10-09T08:17:18.749Z",
+      "updated": "2025-10-20T18:44:12.393Z",
       "description": "Tasks for master context"
     }
   },
