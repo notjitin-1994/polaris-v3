@@ -1,13 +1,13 @@
 /**
  * Claude Prompt Templates for Blueprint Generation
- * Strict prompt formatting according to PRD specifications
+ * Enhanced with strategic context intelligence and learning science integration
  */
 
 export interface BlueprintContext {
   blueprintId: string;
   userId: string;
-  staticAnswers: Record<string, any>;
-  dynamicAnswers: Record<string, any>;
+  staticAnswers: Record<string, unknown>;
+  dynamicAnswers: Record<string, unknown>;
   organization: string;
   role: string;
   industry: string;
@@ -62,7 +62,7 @@ SECTION-SPECIFIC REQUIREMENTS:
 10. Success Metrics: Baseline vs target values, measurement methods, timelines
 11. Sustainability: Specific review frequencies, update triggers, scaling considerations
 
-Be comprehensive yet concise. Every field should add value to the interactive dashboard.`;
+Be comprehensive yet concise. Every field should add value to interactive dashboard.`;
 
 /**
  * Detect if the input contains test/placeholder data
@@ -92,7 +92,7 @@ function isTestInput(context: BlueprintContext): boolean {
 
 /**
  * Build user prompt for blueprint generation
- * Enhanced version with test detection and structured data presentation
+ * Enhanced version with strategic context intelligence and learning science integration
  */
 export function buildBlueprintPrompt(context: BlueprintContext): string {
   const now = new Date();
@@ -101,7 +101,177 @@ export function buildBlueprintPrompt(context: BlueprintContext): string {
 
   const isTest = isTestInput(context);
 
-  const prompt = `Generate a comprehensive learning blueprint based on the following inputs:
+  // Enhanced context analysis functions
+  const analyzeStrategicContext = () => {
+    const staticAnswers = context.staticAnswers || {};
+    const _dynamicAnswers = context.dynamicAnswers || {};
+
+    // Extract key insights from questionnaire data
+    const orgSize = staticAnswers.organization_size || 'Unknown';
+    const _budgetResponsibility = staticAnswers.budget_responsibility || 'Unknown';
+    const teamSize = staticAnswers.team_size || 'Unknown';
+    const _industry = context.industry || 'Unknown';
+    const _role = context.role || 'Unknown';
+
+    // Assess organizational maturity
+    let orgMaturity = 'Startup';
+    if (orgSize.includes('1000+') || orgSize.includes('Enterprise')) orgMaturity = 'Enterprise';
+    else if (orgSize.includes('100-999') || orgSize.includes('Growth')) orgMaturity = 'Growth';
+    else if (orgSize.includes('10-99') || orgSize.includes('Established'))
+      orgMaturity = 'Established';
+
+    // Assess learning culture readiness
+    const motivationFactors = staticAnswers.motivation_factors || [];
+    const learningReadiness = motivationFactors.includes('Career advancement')
+      ? 'High'
+      : motivationFactors.includes('Skill development')
+        ? 'Medium'
+        : 'Low';
+
+    // Assess compliance complexity
+    const complianceRequirements = staticAnswers.compliance_requirements || [];
+    const complianceComplexity =
+      complianceRequirements.length > 3
+        ? 'High'
+        : complianceRequirements.length > 1
+          ? 'Medium'
+          : 'Low';
+
+    return {
+      orgMaturity,
+      learningReadiness,
+      complianceComplexity,
+      primaryBusinessChallenge:
+        staticAnswers.learning_gap_description || 'Skill development needed',
+      changeManagementCapacity: teamSize.includes('50+') ? 'High' : 'Medium',
+    };
+  };
+
+  const getIndustryIntelligence = (industry: string) => {
+    const industryMap: Record<string, { bestPractices: string[]; compliance: string[]; competitiveAdvantages: string[] }> = {
+      Technology: {
+        bestPractices: [
+          'Agile methodologies',
+          'Cloud architecture',
+          'DevOps culture',
+          'Continuous learning',
+        ],
+        compliance: ['SOC 2', 'GDPR', 'CCPA', 'Industry certifications'],
+        commonGaps: ['Cloud migration skills', 'Security awareness', 'Soft skills development'],
+        tools: ['AWS/Azure/GCP', 'Kubernetes', 'Jira', 'Slack', 'GitHub', 'Coursera for Business'],
+      },
+      Healthcare: {
+        bestPractices: [
+          'HIPAA compliance',
+          'Clinical workflows',
+          'Patient safety',
+          'Evidence-based practice',
+        ],
+        compliance: ['HIPAA', 'HITECH', 'Joint Commission', 'State medical boards'],
+        commonGaps: ['Electronic health records', 'Patient communication', 'Telehealth skills'],
+        tools: ['Epic Systems', 'Cerner', 'HIPAA-compliant LMS', 'Medical simulation platforms'],
+      },
+      'Financial Services': {
+        bestPractices: [
+          'Risk management',
+          'Regulatory compliance',
+          'Financial modeling',
+          'Audit trails',
+        ],
+        compliance: ['SOX', 'FINRA', 'PCI DSS', 'AML/KYC'],
+        commonGaps: ['Regulatory changes', 'Digital transformation', 'Cybersecurity awareness'],
+        tools: [
+          'Bloomberg Terminal',
+          'Regulatory compliance platforms',
+          'Risk management software',
+        ],
+      },
+      Manufacturing: {
+        bestPractices: [
+          'Lean manufacturing',
+          'Safety protocols',
+          'Quality control',
+          'Continuous improvement',
+        ],
+        compliance: ['OSHA', 'ISO certifications', 'Environmental regulations', 'Safety standards'],
+        commonGaps: ['Automation skills', 'Safety training', 'Quality management'],
+        tools: ['MES systems', 'Safety training platforms', 'Quality management software'],
+      },
+    };
+
+    return industryMap[industry] || industryMap['Technology'];
+  };
+
+  const getLearningScienceInsights = () => {
+    const staticAnswers = context.staticAnswers || {};
+    const currentKnowledge = parseInt(staticAnswers.current_knowledge_level) || 3;
+    const hoursPerWeek = staticAnswers.hours_per_week || '2-4 hours';
+    const motivationFactors = staticAnswers.motivation_factors || [];
+
+    return {
+      cognitiveLoad:
+        currentKnowledge <= 2 ? 'High scaffolding needed' : 'Moderate complexity acceptable',
+      retentionStrategy: hoursPerWeek.includes('1-2')
+        ? 'Microlearning with frequent reinforcement'
+        : 'Comprehensive modules with spaced repetition',
+      motivationArchitecture: motivationFactors.includes('Career advancement')
+        ? 'Goal-oriented with clear progression paths'
+        : 'Intrinsic motivation with mastery focus',
+      skillTransferContext: 'Immediate application opportunities with real-world projects',
+    };
+  };
+
+  const strategicContext = analyzeStrategicContext();
+  const industryIntelligence = getIndustryIntelligence(context.industry);
+  const learningScience = getLearningScienceInsights();
+
+  const prompt = `Generate a comprehensive learning blueprint based on following inputs:
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🎯 STRATEGIC CONTEXT SYNTHESIS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Primary Business Challenge: ${strategicContext.primaryBusinessChallenge}
+Organizational Maturity Level: ${strategicContext.orgMaturity}
+Learning Culture Readiness: ${strategicContext.learningReadiness}
+Compliance Complexity: ${strategicContext.complianceComplexity}
+Change Management Capacity: ${strategicContext.changeManagementCapacity}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🏭 INDUSTRY-SPECIFIC INTELLIGENCE FOR ${context.industry}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Industry Best Practices:
+${industryIntelligence.bestPractices.map((practice: string) => `- ${practice}`).join('\n')}
+
+Regulatory Compliance Requirements:
+${industryIntelligence.compliance.map((req: string) => `- ${req}`).join('\n')}
+
+Common Skill Gaps & Solutions:
+${industryIntelligence.commonGaps.map((gap: string) => `- ${gap}`).join('\n')}
+
+Industry-Standard Tools & Platforms:
+${industryIntelligence.tools.map((tool: string) => `- ${tool}`).join('\n')}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🧠 LEARNING SCIENCE FRAMEWORK
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Evidence-Based Design Principles:
+- Cognitive Load Considerations: ${learningScience.cognitiveLoad}
+- Retention Strategy: ${learningScience.retentionStrategy}
+- Motivation Architecture: ${learningScience.motivationArchitecture}
+- Skill Transfer Context: ${learningScience.skillTransferContext}
+
+Neuroscience Considerations:
+- Attention Span Optimization: Content chunking based on learner profile
+- Memory Consolidation: Spaced repetition with increasing intervals
+- Motivation Neuroscience: Dopamine-driven achievement systems
+- Social Learning Integration: Peer-to-peer knowledge transfer mechanisms
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📊 RAW INPUT DATA
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 ORGANIZATION CONTEXT:
 - Organization: ${context.organization}
@@ -153,27 +323,55 @@ Ensure the generated blueprint is:
 `
     : `
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🚀 IMPLEMENTATION INTELLIGENCE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Change Management Strategy:
+- Stakeholder Mapping: Based on organizational structure and role hierarchy
+- Communication Plan: Tailored to ${strategicContext.orgMaturity} organization culture
+- Risk Mitigation: Address ${strategicContext.complianceComplexity} compliance complexity
+- Success Metrics: Business-aligned KPIs with measurable ROI
+
+Resource Optimization:
+- Budget Allocation Strategy: Optimize for ${strategicContext.changeManagementCapacity} change management capacity
+- Technology Stack Recommendations: Industry-appropriate, scalable, and compliant
+- Human Resource Planning: FTE calculations based on team size and timeline
+- Vendor Selection Criteria: Compliance-first with integration capabilities
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 📋 BLUEPRINT GENERATION INSTRUCTIONS
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-Using ALL the context above, generate a comprehensive, personalized learning blueprint that:
+Using ALL context above, generate a comprehensive, personalized learning blueprint that:
 
-1. **Deeply Analyzes Context**: Extract and utilize insights from both static and dynamic questionnaire responses
-2. **Provides Specific Recommendations**: Reference actual tools, methodologies, and vendors appropriate for ${context.industry} industry
-3. **Respects All Constraints**: Consider compliance requirements, budget limits, timeline constraints, and organizational factors from the questionnaires
-4. **Maps Dynamic Responses to Blueprint Sections**: 
-   - Dynamic Section 1 (Learning Objectives & Outcomes) → learning_objectives section
-   - Dynamic Section 2 (Target Audience Analysis) → target_audience section
-   - Dynamic Section 3 (Content Scope & Structure) → content_outline section
-   - Dynamic Section 4 (Instructional Strategy & Methods) → instructional_strategy section
-   - Dynamic Section 5 (Learning Activities & Interactions) → content_outline learning_activities
-   - Dynamic Section 6 (Assessment & Evaluation) → assessment_strategy section
-   - Dynamic Section 7 (Resources & Materials) → resources section
-   - Dynamic Section 8 (Technology & Platform) → resources tools_and_platforms
-   - Dynamic Section 9 (Implementation & Rollout) → implementation_timeline section
-   - Dynamic Section 10 (Success Metrics & Continuous Improvement) → success_metrics section
-5. **Is Quantitative**: Include specific numbers, percentages, dates, budget figures, and measurable targets throughout
-6. **Is Actionable**: Provide implementation-ready guidance with concrete next steps, specific tools, and realistic timelines
+1. **Strategic Business Alignment**: Directly address the primary business challenge with measurable business impact
+2. **Industry-Specific Expertise**: Apply ${context.industry} best practices, compliance requirements, and industry-standard tools
+3. **Learning Science Integration**: Embed evidence-based principles for optimal knowledge retention and skill transfer
+4. **Data-Driven Personalization**: Use learner analytics and predictive insights for adaptive learning paths
+5. **Implementation Intelligence**: Provide change management strategies optimized for ${strategicContext.orgMaturity} organizations
+6. **Quantitative Precision**: Include specific metrics, timelines, budgets, and measurable targets throughout
+7. **Actionable Roadmap**: Deliver implementation-ready guidance with concrete next steps and resource requirements
+
+SECTION MAPPING REQUIREMENTS:
+- Dynamic Section 1 (Learning Objectives & Outcomes) → learning_objectives section with business-aligned metrics
+- Dynamic Section 2 (Target Audience Analysis) → target_audience section with demographic insights
+- Dynamic Section 3 (Content Scope & Structure) → content_outline section with learning science principles
+- Dynamic Section 4 (Instructional Strategy & Methods) → instructional_strategy section with industry-specific modalities
+- Dynamic Section 5 (Learning Activities & Interactions) → content_outline learning_activities with engagement strategies
+- Dynamic Section 6 (Assessment & Evaluation) → assessment_strategy section with Kirkpatrick's Four Levels
+- Dynamic Section 7 (Resources & Materials) → resources section with industry-standard tools
+- Dynamic Section 8 (Technology & Platform) → resources tools_and_platforms with compliance considerations
+- Dynamic Section 9 (Implementation & Rollout) → implementation_timeline section with change management
+- Dynamic Section 10 (Success Metrics & Continuous Improvement) → success_metrics section with business ROI
+
+QUALITY STANDARDS:
+- World-Class: Demonstrate expertise comparable to top-tier L&D consultancies
+- Brand-Aligned: Reflect ${context.organization} values and culture
+- Industry-Leading: Incorporate cutting-edge practices and innovations
+- Valuable: Deliver measurable business impact and ROI
+- Relevant: Address specific organizational challenges and constraints
+- Actionable: Provide immediate implementation steps with clear guidance
+- Useful: Create practical solutions that solve real business problems
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 `
@@ -378,7 +576,7 @@ CRITICAL REQUIREMENTS:
  * Extract learning objectives from dynamic answers
  * Handles various formats of objectives in the questionnaire
  */
-export function extractLearningObjectives(dynamicAnswers: Record<string, any>): string[] {
+export function extractLearningObjectives(dynamicAnswers: Record<string, unknown>): string[] {
   const objectives: string[] = [];
 
   // Try different possible keys where objectives might be stored

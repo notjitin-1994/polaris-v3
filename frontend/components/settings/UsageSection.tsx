@@ -26,18 +26,24 @@ export function UsageSection() {
   const currentUsage = useMemo(() => {
     if (!profile) {
       return {
-        generations: { used: 0, limit: 0, percentage: 0 },
-        savedStarmaps: { used: 0, limit: 0, percentage: 0 },
+        generations: { used: 0, limit: 0, percentage: 0, isUnlimited: false },
+        savedStarmaps: { used: 0, limit: 0, percentage: 0, isUnlimited: false },
       };
     }
 
-    const generationPercentage =
-      profile.blueprint_creation_limit > 0
+    // Handle unlimited limits (-1 means unlimited)
+    const isGenerationUnlimited = profile.blueprint_creation_limit === -1;
+    const isSavingUnlimited = profile.blueprint_saving_limit === -1;
+
+    const generationPercentage = isGenerationUnlimited
+      ? 0
+      : profile.blueprint_creation_limit > 0
         ? Math.round((profile.blueprint_creation_count / profile.blueprint_creation_limit) * 100)
         : 0;
 
-    const savingPercentage =
-      profile.blueprint_saving_limit > 0
+    const savingPercentage = isSavingUnlimited
+      ? 0
+      : profile.blueprint_saving_limit > 0
         ? Math.round((profile.blueprint_saving_count / profile.blueprint_saving_limit) * 100)
         : 0;
 
@@ -46,11 +52,13 @@ export function UsageSection() {
         used: profile.blueprint_creation_count,
         limit: profile.blueprint_creation_limit,
         percentage: generationPercentage,
+        isUnlimited: isGenerationUnlimited,
       },
       savedStarmaps: {
         used: profile.blueprint_saving_count,
         limit: profile.blueprint_saving_limit,
         percentage: savingPercentage,
+        isUnlimited: isSavingUnlimited,
       },
     };
   }, [profile]);
@@ -192,14 +200,24 @@ export function UsageSection() {
                     <div>
                       <p className="text-body text-foreground font-medium">Blueprint Generations</p>
                       <p className="text-caption text-text-secondary">
-                        {currentUsage.generations.used} of {currentUsage.generations.limit} used
+                        {currentUsage.generations.used} of{' '}
+                        {currentUsage.generations.isUnlimited
+                          ? '∞'
+                          : currentUsage.generations.limit}{' '}
+                        used
                       </p>
                     </div>
                   </div>
                   <span
-                    className={`text-body font-medium ${getUsageColor(currentUsage.generations.percentage)}`}
+                    className={`text-body font-medium ${
+                      currentUsage.generations.isUnlimited
+                        ? 'text-success'
+                        : getUsageColor(currentUsage.generations.percentage)
+                    }`}
                   >
-                    {currentUsage.generations.percentage}%
+                    {currentUsage.generations.isUnlimited
+                      ? 'Unlimited'
+                      : `${currentUsage.generations.percentage}%`}
                   </span>
                 </div>
 
@@ -221,15 +239,24 @@ export function UsageSection() {
                     <div>
                       <p className="text-body text-foreground font-medium">Saved Starmaps</p>
                       <p className="text-caption text-text-secondary">
-                        {currentUsage.savedStarmaps.used} of {currentUsage.savedStarmaps.limit}{' '}
+                        {currentUsage.savedStarmaps.used} of{' '}
+                        {currentUsage.savedStarmaps.isUnlimited
+                          ? '∞'
+                          : currentUsage.savedStarmaps.limit}{' '}
                         saved
                       </p>
                     </div>
                   </div>
                   <span
-                    className={`text-body font-medium ${getUsageColor(currentUsage.savedStarmaps.percentage)}`}
+                    className={`text-body font-medium ${
+                      currentUsage.savedStarmaps.isUnlimited
+                        ? 'text-success'
+                        : getUsageColor(currentUsage.savedStarmaps.percentage)
+                    }`}
                   >
-                    {currentUsage.savedStarmaps.percentage}%
+                    {currentUsage.savedStarmaps.isUnlimited
+                      ? 'Unlimited'
+                      : `${currentUsage.savedStarmaps.percentage}%`}
                   </span>
                 </div>
 

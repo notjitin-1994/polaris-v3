@@ -33,6 +33,12 @@ interface ValidationRule {
   message: string;
 }
 
+interface CurrencyConfig {
+  symbol?: string;
+  min?: number;
+  max?: number;
+}
+
 interface Question {
   id: string;
   label: string;
@@ -49,6 +55,7 @@ interface Question {
   min?: number;
   max?: number;
   currencySymbol?: string;
+  currencyConfig?: CurrencyConfig;
   step?: number;
 }
 
@@ -383,7 +390,7 @@ export function DynamicQuestionRenderer({
               onClick={() => handleChange(option.value)}
               className={cn(
                 'group relative rounded-xl px-5 py-3 text-sm font-semibold transition-all duration-300',
-                'touch-target flex items-center gap-2 border-2',
+                'touch-target inline-flex items-center gap-2 border-2',
                 'hover:scale-105 active:scale-95',
                 isSelected
                   ? 'from-primary/20 to-secondary/20 border-primary text-primary scale-105 bg-gradient-to-r shadow-[0_0_20px_rgba(167,218,219,0.4)]'
@@ -393,13 +400,13 @@ export function DynamicQuestionRenderer({
               {isSelected && (
                 <div className="from-primary/10 to-secondary/10 absolute inset-0 animate-pulse rounded-xl bg-gradient-to-r" />
               )}
-              <span className="relative flex items-center gap-2">
+              <span className="relative flex items-center gap-2 text-left">
                 {option.icon && <span className="text-lg">{option.icon}</span>}
                 {option.label}
               </span>
               {isSelected && (
                 <svg
-                  className="text-primary relative h-4 w-4"
+                  className="text-primary relative h-4 w-4 flex-shrink-0"
                   fill="currentColor"
                   viewBox="0 0 20 20"
                 >
@@ -460,7 +467,7 @@ export function DynamicQuestionRenderer({
                 disabled={isDisabled}
                 className={cn(
                   'group relative rounded-xl px-5 py-3 text-sm font-semibold transition-all duration-300',
-                  'touch-target border-2',
+                  'touch-target inline-flex items-center gap-2 border-2',
                   isDisabled ? 'cursor-not-allowed opacity-50' : 'hover:scale-105 active:scale-95',
                   isSelected
                     ? 'from-primary/20 to-secondary/20 border-primary text-primary scale-105 bg-gradient-to-r shadow-[0_0_20px_rgba(167,218,219,0.4)]'
@@ -470,10 +477,14 @@ export function DynamicQuestionRenderer({
                 {isSelected && (
                   <div className="from-primary/10 to-secondary/10 absolute inset-0 animate-pulse rounded-xl bg-gradient-to-r" />
                 )}
-                <span className="relative flex items-center gap-2">
+                <span className="relative flex items-center gap-2 text-left">
                   {option.label}
                   {isSelected && (
-                    <svg className="text-primary h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+                    <svg
+                      className="text-primary h-4 w-4 flex-shrink-0"
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                    >
                       <path
                         fillRule="evenodd"
                         d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
@@ -513,64 +524,85 @@ export function DynamicQuestionRenderer({
     );
   };
 
-  const renderRadioCards = () => (
-    <div className="grid gap-4">
-      {question.options?.map((option) => {
-        const isSelected = value === option.value;
-        return (
-          <button
-            key={option.value}
-            type="button"
-            onClick={() => handleChange(option.value)}
-            className={cn(
-              'group touch-target relative rounded-2xl p-5 text-left transition-all duration-300',
-              'border-2 hover:scale-[1.02] active:scale-[0.98]',
-              isSelected
-                ? 'from-primary/10 to-secondary/10 border-primary bg-gradient-to-br shadow-[0_0_24px_rgba(167,218,219,0.3)]'
-                : 'border-white/10 bg-white/5 hover:border-white/20 hover:bg-white/10 hover:shadow-xl'
-            )}
-          >
-            {isSelected && (
-              <div className="bg-primary/20 absolute top-3 right-3 flex h-8 w-8 items-center justify-center rounded-full">
-                <svg className="text-primary h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
-                  <path
-                    fillRule="evenodd"
-                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-              </div>
-            )}
-            <div className="flex items-start gap-4">
-              <div
-                className={cn(
-                  'mt-1 flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full border-2 transition-all duration-300',
-                  isSelected
-                    ? 'border-primary bg-primary/20'
-                    : 'border-white/20 group-hover:border-white/40'
-                )}
-              >
-                {isSelected && <div className="bg-primary h-3 w-3 animate-pulse rounded-full" />}
-              </div>
-              <div className="flex-1 pr-8">
+  const renderRadioCards = () => {
+    // Determine if options have descriptions - use different layouts
+    const hasDescriptions = question.options?.some((opt) => opt.description);
+
+    // Calculate if we should use flex (for variable width) or grid (for uniform cards)
+    // Use flex for short labels without descriptions, grid for everything else
+    const useFlexLayout = !hasDescriptions && question.options && question.options.length > 2;
+
+    return (
+      <div
+        className={cn(
+          'gap-3',
+          useFlexLayout
+            ? 'flex flex-wrap'
+            : hasDescriptions
+              ? 'grid grid-cols-1 md:grid-cols-2'
+              : 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3'
+        )}
+      >
+        {question.options?.map((option) => {
+          const isSelected = value === option.value;
+          return (
+            <button
+              key={option.value}
+              type="button"
+              onClick={() => handleChange(option.value)}
+              className={cn(
+                'group touch-target relative rounded-2xl text-left transition-all duration-300',
+                'border-2 hover:scale-[1.02] active:scale-[0.98]',
+                isSelected
+                  ? 'from-primary/10 to-secondary/10 border-primary bg-gradient-to-br shadow-[0_0_24px_rgba(167,218,219,0.3)]'
+                  : 'border-white/10 bg-white/5 hover:border-white/20 hover:bg-white/10 hover:shadow-xl',
+                hasDescriptions ? 'p-5' : 'p-4',
+                useFlexLayout ? 'flex-shrink-0 flex-grow-0' : ''
+              )}
+            >
+              <div className="flex w-full items-start gap-3">
                 <div
                   className={cn(
-                    'mb-2 text-base font-semibold transition-colors',
-                    isSelected ? 'text-primary' : 'text-white group-hover:text-white'
+                    'flex flex-shrink-0 items-center justify-center rounded-full border-2 transition-all duration-300',
+                    hasDescriptions ? 'mt-1 h-6 w-6' : 'mt-0.5 h-5 w-5',
+                    isSelected
+                      ? 'border-primary bg-primary/20'
+                      : 'border-white/20 group-hover:border-white/40'
                   )}
                 >
-                  {option.label}
+                  {isSelected && (
+                    <div
+                      className={cn(
+                        'bg-primary animate-pulse rounded-full',
+                        hasDescriptions ? 'h-3 w-3' : 'h-2.5 w-2.5'
+                      )}
+                    />
+                  )}
                 </div>
-                {option.description && (
-                  <div className="text-sm leading-relaxed text-white/60">{option.description}</div>
-                )}
+                <div className={cn('min-w-0 text-left', useFlexLayout ? '' : 'flex-1')}>
+                  <div
+                    className={cn(
+                      'text-left font-semibold transition-colors',
+                      hasDescriptions ? 'mb-1.5 text-base' : 'text-sm',
+                      useFlexLayout ? 'whitespace-nowrap' : '',
+                      isSelected ? 'text-primary' : 'text-white group-hover:text-white'
+                    )}
+                  >
+                    {option.label}
+                  </div>
+                  {option.description && (
+                    <div className="text-left text-sm leading-relaxed whitespace-normal text-white/60">
+                      {option.description}
+                    </div>
+                  )}
+                </div>
               </div>
-            </div>
-          </button>
-        );
-      })}
-    </div>
-  );
+            </button>
+          );
+        })}
+      </div>
+    );
+  };
 
   const renderCheckboxCards = () => {
     // Ensure selectedValues is always an array, never a string
@@ -592,9 +624,25 @@ export function DynamicQuestionRenderer({
     const canAddMore = !maxSelections || selectedValues.length < maxSelections;
     const canRemove = !minSelections || selectedValues.length > minSelections;
 
+    // Determine if options have descriptions - use different layouts
+    const hasDescriptions = question.options?.some((opt) => opt.description);
+
+    // Calculate if we should use flex (for variable width) or grid (for uniform cards)
+    // Use flex for short labels without descriptions, grid for everything else
+    const useFlexLayout = !hasDescriptions && question.options && question.options.length > 2;
+
     return (
       <div className="space-y-4">
-        <div className="grid gap-4">
+        <div
+          className={cn(
+            'gap-3',
+            useFlexLayout
+              ? 'flex flex-wrap'
+              : hasDescriptions
+                ? 'grid grid-cols-1 md:grid-cols-2'
+                : 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3'
+          )}
+        >
           {question.options?.map((option) => {
             const isSelected = selectedValues.includes(option.value);
             const isDisabled = !isSelected && !canAddMore;
@@ -614,30 +662,24 @@ export function DynamicQuestionRenderer({
                 }}
                 disabled={isDisabled}
                 className={cn(
-                  'group touch-target relative rounded-2xl p-5 text-left transition-all duration-300',
+                  'group touch-target relative rounded-2xl text-left transition-all duration-300',
                   isDisabled
                     ? 'cursor-not-allowed opacity-50'
                     : 'border-2 hover:scale-[1.02] active:scale-[0.98]',
                   isSelected
                     ? 'from-primary/10 to-secondary/10 border-primary bg-gradient-to-br shadow-[0_0_24px_rgba(167,218,219,0.3)]'
-                    : 'border-white/10 bg-white/5 hover:border-white/20 hover:bg-white/10 hover:shadow-xl'
+                    : 'border-white/10 bg-white/5 hover:border-white/20 hover:bg-white/10 hover:shadow-xl',
+                  // Conditional padding based on whether there's a description
+                  hasDescriptions ? 'p-5' : 'p-4',
+                  useFlexLayout ? 'flex-shrink-0 flex-grow-0' : ''
                 )}
               >
-                {isSelected && (
-                  <div className="bg-primary/20 absolute top-3 right-3 flex h-8 w-8 items-center justify-center rounded-lg">
-                    <svg className="text-primary h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
-                      <path
-                        fillRule="evenodd"
-                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
-                  </div>
-                )}
-                <div className="flex items-start gap-4">
+                <div className="flex w-full items-start gap-3">
+                  {/* Checkbox indicator */}
                   <div
                     className={cn(
-                      'mt-1 flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-lg border-2 transition-all duration-300',
+                      'flex flex-shrink-0 items-center justify-center rounded-lg border-2 transition-all duration-300',
+                      hasDescriptions ? 'mt-1 h-6 w-6' : 'mt-0.5 h-5 w-5',
                       isSelected
                         ? 'border-primary bg-primary'
                         : 'border-white/20 group-hover:border-white/40'
@@ -645,7 +687,7 @@ export function DynamicQuestionRenderer({
                   >
                     {isSelected && (
                       <svg
-                        className="h-4 w-4 text-white"
+                        className={cn('text-white', hasDescriptions ? 'h-4 w-4' : 'h-3 w-3')}
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
@@ -659,17 +701,21 @@ export function DynamicQuestionRenderer({
                       </svg>
                     )}
                   </div>
-                  <div className="flex-1 pr-8">
+
+                  {/* Content */}
+                  <div className={cn('min-w-0 text-left', useFlexLayout ? '' : 'flex-1')}>
                     <div
                       className={cn(
-                        'mb-2 text-base font-semibold transition-colors',
+                        'text-left font-semibold transition-colors',
+                        hasDescriptions ? 'mb-1.5 text-base' : 'text-sm',
+                        useFlexLayout ? 'whitespace-nowrap' : '',
                         isSelected ? 'text-primary' : 'text-white group-hover:text-white'
                       )}
                     >
                       {option.label}
                     </div>
                     {option.description && (
-                      <div className="text-sm leading-relaxed text-white/60">
+                      <div className="text-left text-sm leading-relaxed whitespace-normal text-white/60">
                         {option.description}
                       </div>
                     )}
@@ -713,44 +759,65 @@ export function DynamicQuestionRenderer({
       return <div className="text-error">Toggle switch requires exactly 2 options</div>;
     }
 
-    const [option1, option2] = options;
-    const isOption2Selected = value === option2.value;
+    // Determine which option represents "Yes/On" (positive state)
+    // Check if either option label matches common positive values
+    const positiveLabels = ['yes', 'on', 'true', 'enabled', 'active'];
+    const negativeLabels = ['no', 'off', 'false', 'disabled', 'inactive'];
+
+    let positiveOption = options[1]; // Default to second option
+    let negativeOption = options[0]; // Default to first option
+
+    // Check if we need to swap based on label content
+    const option1Lower = options[0].label.toLowerCase();
+    const option2Lower = options[1].label.toLowerCase();
+
+    if (positiveLabels.some((label) => option1Lower.includes(label))) {
+      positiveOption = options[0];
+      negativeOption = options[1];
+    } else if (negativeLabels.some((label) => option2Lower.includes(label))) {
+      positiveOption = options[0];
+      negativeOption = options[1];
+    }
+
+    const isPositiveSelected = value === positiveOption.value;
 
     return (
       <div className="flex items-center gap-4">
         <span
           className={cn(
             'text-sm font-medium transition-colors',
-            !isOption2Selected ? 'text-white' : 'text-white/40'
+            !isPositiveSelected ? 'text-white' : 'text-white/40'
           )}
         >
-          {option1.label}
+          {negativeOption.label}
         </span>
         <button
           type="button"
-          onClick={() => handleChange(isOption2Selected ? option1.value : option2.value)}
+          onClick={() =>
+            handleChange(isPositiveSelected ? negativeOption.value : positiveOption.value)
+          }
           className={cn(
             'relative inline-flex h-8 w-14 items-center rounded-full transition-colors duration-200',
-            isOption2Selected ? 'bg-primary' : 'bg-white/20'
+            isPositiveSelected ? 'bg-primary' : 'bg-white/20'
           )}
-          aria-label={`Toggle between ${option1.label} and ${option2.label}`}
-          aria-checked={isOption2Selected}
+          aria-label={`Toggle between ${negativeOption.label} and ${positiveOption.label}`}
+          aria-checked={isPositiveSelected}
           role="switch"
         >
           <span
             className={cn(
               'inline-block h-6 w-6 transform rounded-full bg-white shadow-lg transition-transform duration-200',
-              isOption2Selected ? 'translate-x-7' : 'translate-x-1'
+              isPositiveSelected ? 'translate-x-7' : 'translate-x-1'
             )}
           />
         </button>
         <span
           className={cn(
             'text-sm font-medium transition-colors',
-            isOption2Selected ? 'text-white' : 'text-white/40'
+            isPositiveSelected ? 'text-white' : 'text-white/40'
           )}
         >
-          {option2.label}
+          {positiveOption.label}
         </span>
       </div>
     );
@@ -920,7 +987,7 @@ export function DynamicQuestionRenderer({
               <span
                 className={cn(
                   'text-xs font-medium',
-                  currentLength > maxLength * 0.9 ? 'text-warning' : 'text-white/60'
+                  maxLength && currentLength > maxLength * 0.9 ? 'text-warning' : 'text-white/60'
                 )}
               >
                 {currentLength}

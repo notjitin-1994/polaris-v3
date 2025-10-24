@@ -24,8 +24,20 @@ export function UsageStatsCard({
   subscriptionTier,
   isLifetime = true,
 }: UsageStatsCardProps) {
-  const creationPercentage = creationLimit > 0 ? (creationCount / creationLimit) * 100 : 0;
-  const savingPercentage = savingLimit > 0 ? (savingCount / savingLimit) * 100 : 0;
+  // Handle unlimited limits (-1 means unlimited)
+  const isCreationUnlimited = creationLimit === -1;
+  const isSavingUnlimited = savingLimit === -1;
+
+  const creationPercentage = isCreationUnlimited
+    ? 0
+    : creationLimit > 0
+      ? (creationCount / creationLimit) * 100
+      : 0;
+  const savingPercentage = isSavingUnlimited
+    ? 0
+    : savingLimit > 0
+      ? (savingCount / savingLimit) * 100
+      : 0;
 
   const getProgressColor = (percentage: number) => {
     if (percentage >= 100) return 'from-primary to-primary';
@@ -35,6 +47,16 @@ export function UsageStatsCard({
   };
 
   const getStatusMessage = () => {
+    // Developer tier gets special badge
+    if (subscriptionTier === 'developer') {
+      return {
+        icon: Sparkles,
+        text: 'Developer - Unlimited',
+        color: 'text-orange-600',
+        bgColor: 'bg-gradient-to-r from-orange-500/10 to-red-500/10',
+      };
+    }
+
     if (subscriptionTier === 'free') {
       const totalUsed = creationCount + savingCount;
       const totalLimit = creationLimit + savingLimit;
@@ -118,18 +140,22 @@ export function UsageStatsCard({
             <div className="text-right">
               <p className="text-heading text-foreground font-bold">
                 {creationCount}{' '}
-                <span className="text-body text-text-secondary font-normal">/ {creationLimit}</span>
+                <span className="text-body text-text-secondary font-normal">
+                  / {isCreationUnlimited ? '∞' : creationLimit}
+                </span>
               </p>
               <p
                 className={`text-caption font-medium ${
-                  creationPercentage >= 100
-                    ? 'text-error'
-                    : creationPercentage >= 80
-                      ? 'text-warning'
-                      : 'text-success'
+                  isCreationUnlimited
+                    ? 'text-success'
+                    : creationPercentage >= 100
+                      ? 'text-error'
+                      : creationPercentage >= 80
+                        ? 'text-warning'
+                        : 'text-success'
                 }`}
               >
-                {creationPercentage.toFixed(0)}% used
+                {isCreationUnlimited ? 'Unlimited' : `${creationPercentage.toFixed(0)}% used`}
               </p>
             </div>
           </div>
@@ -173,18 +199,22 @@ export function UsageStatsCard({
             <div className="text-right">
               <p className="text-heading text-foreground font-bold">
                 {savingCount}{' '}
-                <span className="text-body text-text-secondary font-normal">/ {savingLimit}</span>
+                <span className="text-body text-text-secondary font-normal">
+                  / {isSavingUnlimited ? '∞' : savingLimit}
+                </span>
               </p>
               <p
                 className={`text-caption font-medium ${
-                  savingPercentage >= 100
-                    ? 'text-error'
-                    : savingPercentage >= 80
-                      ? 'text-warning'
-                      : 'text-success'
+                  isSavingUnlimited
+                    ? 'text-success'
+                    : savingPercentage >= 100
+                      ? 'text-error'
+                      : savingPercentage >= 80
+                        ? 'text-warning'
+                        : 'text-success'
                 }`}
               >
-                {savingPercentage.toFixed(0)}% used
+                {isSavingUnlimited ? 'Unlimited' : `${savingPercentage.toFixed(0)}% used`}
               </p>
             </div>
           </div>

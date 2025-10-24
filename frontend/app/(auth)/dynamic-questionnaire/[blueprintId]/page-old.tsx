@@ -1,73 +1,67 @@
 'use client';
 
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { FormProvider, useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
 import { motion, AnimatePresence } from 'framer-motion';
+import { FormProvider } from 'react-hook-form';
 import ProtectedRoute from '@/components/auth/ProtectedRoute';
 import { StandardHeader } from '@/components/layout/StandardHeader';
 import { useAuth } from '@/contexts/AuthContext';
-import { DynamicQuestionRenderer } from '@/components/demo-dynamicv2/DynamicQuestionRenderer';
-import { QuestionnaireProgress } from '@/components/demo-v2-questionnaire/QuestionnaireProgress';
-import { QuestionnaireButton } from '@/components/demo-v2-questionnaire/QuestionnaireButton';
 import { FormErrorBoundary } from '@/components/error/FormErrorBoundary';
-import { _cn } from '@/lib/utils';
+import { useDesignTokens } from '@/lib/design-system/hooks/useDesignTokens';
+import { ProgressIndicator as QuestionnaireProgress } from '@/components/questionnaire';
+
+// Import new questionnaire components (prefixed with _ as this is an old/reference file)
 import {
-  createDynamicSchema,
-  _validateSection,
-  calculateCompletionPercentage,
-  getSectionValidationStatus,
-} from '@/lib/validation/dynamicQuestionSchemaBuilder';
-import '@/styles/dynamic-questionnaire.css';
+  QuestionnaireProvider as _QuestionnaireProvider,
+  QuestionnaireLayout as _QuestionnaireLayout,
+  QuestionSection as _QuestionSection,
+  ProgressIndicator as _ProgressIndicator,
+  NavigationControls as _NavigationControls,
+  AutoSaveIndicator as _AutoSaveIndicator,
+  ValidationFeedback as _ValidationFeedback,
+  SaveProgressButton as _SaveProgressButton,
+  SuccessNotification as _SuccessNotification,
+} from '@/components/questionnaire';
 
-// Types from validation schema
-interface Question {
-  id: string;
-  label: string;
-  type: string;
-  required: boolean;
-  helpText?: string;
-  placeholder?: string;
-  options?: Array<{
-    value: string;
-    label: string;
-    description?: string;
-    icon?: string;
-  }>;
-  scaleConfig?: {
-    min: number;
-    max: number;
-    minLabel?: string;
-    maxLabel?: string;
-    labels?: string[];
-    step?: number;
-  };
-  sliderConfig?: {
-    min: number;
-    max: number;
-    step: number;
-    unit: string;
-    markers?: number[];
-  };
-  validation?: Array<{
-    rule: string;
-    value?: string | number | boolean;
-    message: string;
-  }>;
-}
+// Import accessibility components (prefixed with _ as this is an old/reference file)
+import {
+  SkipNavigation as _SkipNavigation,
+  MainContent as _MainContent,
+} from '@/components/questionnaire/accessibility/SkipNavigation';
+import { KeyboardHints as _KeyboardHints } from '@/components/questionnaire/accessibility/KeyboardHints';
 
-interface Section {
-  id: string;
-  title: string;
-  description?: string;
-  order: number;
-  questions: Question[];
-}
+// Import styles
+import '@/styles/design-system.css';
+import '@/styles/questionnaire-v2.css';
 
+// Types for questionnaire data
 interface DynamicQuestionsData {
-  sections: Section[];
+  sections: Array<{
+    id: string;
+    title: string;
+    description?: string;
+    order: number;
+    questions: Array<{
+      id: string;
+      label: string;
+      type: string;
+      required: boolean;
+      helpText?: string;
+      placeholder?: string;
+      options?: Array<{
+        value: string;
+        label: string;
+        description?: string;
+        icon?: string;
+      }>;
+      validation?: Array<{
+        rule: string;
+        value?: string | number | boolean;
+        message: string;
+      }>;
+    }>;
+  }>;
   existingAnswers: Record<string, unknown>;
   currentSection?: number;
   metadata?: {
@@ -79,6 +73,10 @@ interface DynamicQuestionsData {
   };
 }
 
+/**
+ * Refactored Dynamic Questionnaire Component
+ * Uses new component architecture for better maintainability
+ */
 function DynamicQuestionnaireContent({
   params,
 }: {
@@ -87,63 +85,42 @@ function DynamicQuestionnaireContent({
   const { user } = useAuth();
   const router = useRouter();
   const [blueprintId, setBlueprintId] = useState<string | null>(null);
-  const [currentSection, setCurrentSection] = useState(0);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isAutosaving, setIsAutosaving] = useState(false);
-  const [saveError, setSaveError] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [lastAutosave, setLastAutosave] = useState<Date | null>(null);
   const [questionsData, setQuestionsData] = useState<DynamicQuestionsData | null>(null);
-  const [_retryCount, _setRetryCount] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
+  const [_loadError, _setLoadError] = useState<string | null>(null);
+  const [_showSuccess, _setShowSuccess] = useState(false);
+  const [_successMessage, _setSuccessMessage] = useState('');
+  const [_validationMessages, _setValidationMessages] = useState<
+    Array<{
+      id: string;
+      type: 'error' | 'warning' | 'info' | 'success';
+      message: string;
+      field?: string;
+    }>
+  >([]);
 
-  const autosaveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const lastFormDataRef = useRef<string>('');
-  const hasUnsavedChangesRef = useRef(false);
+  // Apply design tokens
+  useDesignTokens();
 
   // Resolve params
   useEffect(() => {
     params.then((p) => setBlueprintId(p.blueprintId));
   }, [params]);
 
-  // Initialize form with dynamic Zod validation
-  const [dynamicSchema, setDynamicSchema] = useState<z.ZodSchema | null>(null);
-
-  // Create dynamic schema when questions data is loaded
-  useEffect(() => {
-    if (questionsData?.sections) {
-      const schema = createDynamicSchema(questionsData.sections);
-      setDynamicSchema(schema);
-    }
-  }, [questionsData?.sections]);
-
-  const methods = useForm<Record<string, unknown>>({
-    mode: 'onChange', // Track changes for auto-save and real-time validation
-    resolver: dynamicSchema ? zodResolver(dynamicSchema) : undefined,
-    defaultValues: questionsData?.existingAnswers || {},
-  });
-
-  const {
-    handleSubmit,
-    trigger,
-    formState: { errors },
-    getValues,
-    reset,
-    watch,
-    _setValue,
-  } = methods;
-
-  // Fetch dynamic questions and merge with sessionStorage
+  // Fetch questionnaire data
   useEffect(() => {
     if (!blueprintId) return;
 
     const fetchQuestions = async () => {
       try {
         setIsLoading(true);
+        setLoadError(null);
+
         const response = await fetch(`/api/dynamic-questions/${blueprintId}`);
 
         if (!response.ok) {
           if (response.status === 404) {
-            setSaveError('Blueprint not found. Please start from the beginning.');
+            setLoadError('Blueprint not found. Redirecting...');
             setTimeout(() => router.push('/dashboard'), 2000);
             return;
           }
@@ -152,143 +129,38 @@ function DynamicQuestionnaireContent({
 
         const data = await response.json();
 
-        // Edge case: No dynamic questions generated yet
+        // Check if questions exist
         if (!data.sections || data.sections.length === 0) {
-          setSaveError('No dynamic questions found. Generating questions now...');
+          setLoadError('No questions found. Generating...');
           setTimeout(() => router.push(`/loading/${blueprintId}`), 2000);
           return;
         }
 
-        setQuestionsData(data);
-
-        // Validate existing answers against current question definitions
-        // Clear incompatible answers (e.g., from regenerated questions)
-        const existingAnswers = data.existingAnswers || {};
-        const validatedAnswers: Record<string, unknown> = {};
-        let incompatibleCount = 0;
-
-        Object.entries(existingAnswers).forEach(([questionId, answer]) => {
-          // Find the question
-          let question = null;
-          for (const section of data.sections) {
-            question = section.questions.find((q: Question) => q.id === questionId);
-            if (question) break;
-          }
-
-          if (!question) {
-            // Question no longer exists (questions were regenerated)
-            incompatibleCount++;
-            return;
-          }
-
-          // Validate answer matches question's option values
-          if (question.options && question.options.length > 0) {
-            const validValues = question.options.map((opt: any) => opt.value);
-
-            if (['checkbox_pills', 'checkbox_cards'].includes(question.type)) {
-              if (Array.isArray(answer)) {
-                const validItems = answer.filter((val) => validValues.includes(String(val)));
-                if (validItems.length > 0) {
-                  validatedAnswers[questionId] = validItems;
-                } else if (validItems.length !== answer.length) {
-                  incompatibleCount++;
-                }
-              }
-            } else if (['radio_pills', 'radio_cards', 'toggle_switch'].includes(question.type)) {
-              if (typeof answer === 'string' && validValues.includes(answer)) {
-                validatedAnswers[questionId] = answer;
-              } else if (answer !== undefined) {
-                incompatibleCount++;
-              }
-            }
-          } else {
-            // Non-selection question, keep answer as is
-            validatedAnswers[questionId] = answer;
-          }
-        });
-
-        if (incompatibleCount > 0) {
-          setSaveError(
-            `${incompatibleCount} previous answer${incompatibleCount > 1 ? 's were' : ' was'} cleared because the questions were updated. Please review and re-answer any empty fields.`
-          );
-          setTimeout(() => setSaveError(null), 8000);
-        }
-
-        // Merge validated server answers with sessionStorage backup
-        const sessionKey = `dynamic-answers-${blueprintId}`;
-        const sessionSectionKey = `dynamic-section-${blueprintId}`;
+        // Merge with sessionStorage if available
+        const sessionKey = `questionnaire-${blueprintId}`;
         const sessionData = sessionStorage.getItem(sessionKey);
-        const sessionSectionData = sessionStorage.getItem(sessionSectionKey);
-        let mergedAnswers = validatedAnswers;
 
         if (sessionData) {
           try {
-            const localAnswers = JSON.parse(sessionData);
-
-            // Validate sessionStorage answers too
-            Object.entries(localAnswers).forEach(([questionId, answer]) => {
-              let question = null;
-              for (const section of data.sections) {
-                question = section.questions.find((q: Question) => q.id === questionId);
-                if (question) break;
-              }
-
-              if (question && question.options && question.options.length > 0) {
-                const validValues = question.options.map((opt: any) => opt.value);
-
-                if (
-                  ['checkbox_pills', 'checkbox_cards'].includes(question.type) &&
-                  Array.isArray(answer)
-                ) {
-                  const validItems = answer.filter((val) => validValues.includes(String(val)));
-                  if (validItems.length > 0) {
-                    validatedAnswers[questionId] = validItems;
-                  }
-                } else if (
-                  ['radio_pills', 'radio_cards', 'toggle_switch'].includes(question.type)
-                ) {
-                  if (typeof answer === 'string' && validValues.includes(answer)) {
-                    validatedAnswers[questionId] = answer;
-                  }
-                }
-              } else if (question) {
-                validatedAnswers[questionId] = answer;
-              }
-            });
-          } catch (error) {
-            // Failed to parse sessionStorage data
+            const saved = JSON.parse(sessionData);
+            data.existingAnswers = { ...data.existingAnswers, ...saved.answers };
+            data.currentSection = saved.currentSection || data.currentSection;
+          } catch (_e) {
+            // Invalid session data, ignore
           }
         }
 
-        mergedAnswers = validatedAnswers;
-
-        // Restore section: prioritize sessionStorage, then server data
-        let restoredSection = 0;
-        if (sessionSectionData) {
-          try {
-            restoredSection = parseInt(sessionSectionData, 10);
-          } catch (error) {
-            // Failed to parse session section
-          }
-        } else if (data.currentSection !== undefined) {
-          restoredSection = data.currentSection;
-        }
-
-        // Validate section index
-        if (restoredSection >= 0 && restoredSection < data.sections.length) {
-          setCurrentSection(restoredSection);
-        }
-
-        reset(mergedAnswers);
+        setQuestionsData(data);
       } catch (error) {
-        setSaveError('Failed to load questionnaire. Please try again.');
+        setLoadError('Failed to load questionnaire. Please try again.');
+        console.error('Error loading questionnaire:', error);
       } finally {
         setIsLoading(false);
       }
     };
 
     fetchQuestions();
-  }, [blueprintId, router, reset]);
+  }, [blueprintId, router]);
 
   // Debounced autosave with sessionStorage backup
   const debouncedAutosave = useCallback(async () => {
@@ -306,7 +178,7 @@ function DynamicQuestionnaireContent({
     try {
       sessionStorage.setItem(sessionKey, JSON.stringify(answers));
       sessionStorage.setItem(sessionSectionKey, currentSection.toString());
-    } catch (error) {
+    } catch (_error) {
       // Failed to save to sessionStorage
     }
 
@@ -330,11 +202,11 @@ function DynamicQuestionnaireContent({
 
       if (!response.ok) {
         const errorText = await response.text();
-        let errorData;
+        let _errorData;
         try {
-          errorData = JSON.parse(errorText);
+          _errorData = JSON.parse(errorText);
         } catch {
-          errorData = { error: errorText };
+          _errorData = { error: errorText };
         }
 
         // Don't throw, just log - data is safe in sessionStorage
@@ -351,7 +223,7 @@ function DynamicQuestionnaireContent({
         sessionStorage.removeItem(sessionKey);
         sessionStorage.removeItem(sessionSectionKey);
       }
-    } catch (error) {
+    } catch (_error) {
       // Don't show error to user for auto-save failures
       // Data is safe in sessionStorage
     } finally {
@@ -442,7 +314,7 @@ function DynamicQuestionnaireContent({
   };
 
   // Section jump navigation
-  const handleJumpToSection = (sectionIndex: number) => {
+  const _handleJumpToSection = (sectionIndex: number) => {
     if (sectionIndex >= 0 && sectionIndex < (questionsData?.sections.length || 0)) {
       setCurrentSection(sectionIndex);
       window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -450,7 +322,7 @@ function DynamicQuestionnaireContent({
   };
 
   // Import validation function from DynamicQuestionRenderer logic
-  const validateQuestionValue = (value: unknown, question: Question): string | null => {
+  const _validateQuestionValue = (value: unknown, question: Question): string | null => {
     // Required check
     if (question.required) {
       if (value === undefined || value === null || value === '') {
@@ -675,7 +547,7 @@ function DynamicQuestionnaireContent({
           const sessionSectionKey = `dynamic-section-${blueprintId}`;
           sessionStorage.removeItem(sessionKey);
           sessionStorage.removeItem(sessionSectionKey);
-          _setRetryCount(0);
+          setRetryCount(0);
 
           // Redirect to blueprint generation/view
           router.push(`/generating/${blueprintId}`);
@@ -686,7 +558,7 @@ function DynamicQuestionnaireContent({
       // All retries failed
       throw lastError || new Error('Submission failed after multiple attempts');
     } catch (error) {
-      _setRetryCount(attempt);
+      setRetryCount(attempt);
       setSaveError(
         `${error instanceof Error ? error.message : 'Failed to submit answers'}. ` +
           `Tried ${attempt} times. Your answers are saved locally. Click Submit to try again.`
@@ -762,7 +634,7 @@ function DynamicQuestionnaireContent({
   }
 
   const currentSectionData = questionsData.sections[currentSection];
-  const isFirstSection = currentSection === 0;
+  const _isFirstSection = currentSection === 0;
   const isLastSection = currentSection === questionsData.sections.length - 1;
 
   return (

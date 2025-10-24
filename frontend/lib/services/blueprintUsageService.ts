@@ -81,7 +81,8 @@ export class BlueprintUsageService {
   ): Promise<{ canCreate: boolean; reason?: string }> {
     const usage = await this.getBlueprintUsageInfo(supabase, userId);
 
-    if (usage.isExempt) {
+    // Check for exemption or unlimited access (-1 means unlimited)
+    if (usage.isExempt || usage.creationLimit === -1) {
       return { canCreate: true };
     }
 
@@ -104,7 +105,8 @@ export class BlueprintUsageService {
   ): Promise<{ canSave: boolean; reason?: string }> {
     const usage = await this.getBlueprintUsageInfo(supabase, userId);
 
-    if (usage.isExempt) {
+    // Check for exemption or unlimited access (-1 means unlimited)
+    if (usage.isExempt || usage.savingLimit === -1) {
       return { canSave: true };
     }
 

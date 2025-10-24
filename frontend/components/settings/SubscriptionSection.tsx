@@ -13,6 +13,7 @@ import {
   AlertTriangle,
   AlertCircle,
   RefreshCw,
+  Code,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { GlassCard } from '@/components/ui/GlassCard';
@@ -61,6 +62,21 @@ const subscriptionTiers = {
     ],
     icon: Zap,
     color: 'from-emerald-500 to-teal-500',
+  },
+  developer: {
+    name: 'Developer',
+    price: 0,
+    period: 'lifetime',
+    features: [
+      'Unlimited starmap generations',
+      'Unlimited saved starmaps',
+      'All export formats',
+      'Priority support',
+      'Early access to new features',
+      'API access',
+    ],
+    icon: Code,
+    color: 'from-orange-500 to-red-500',
   },
 };
 
@@ -188,10 +204,17 @@ export function SubscriptionSection() {
               >
                 <TierIcon className="h-6 w-6 text-white" />
               </div>
-              <div>
-                <h4 className="text-title text-foreground">{currentTier.name}</h4>
+              <div className="flex-1">
+                <div className="flex items-center gap-2">
+                  <h4 className="text-title text-foreground">{currentTier.name}</h4>
+                  {profile?.subscription_tier === 'developer' && (
+                    <span className="rounded-full bg-gradient-to-r from-orange-500 to-red-500 px-2 py-0.5 text-xs font-medium text-white">
+                      DEV
+                    </span>
+                  )}
+                </div>
                 <p className="text-body text-text-secondary">
-                  ${currentTier.price}/{currentTier.period}
+                  {currentTier.price === 0 ? 'Free' : `$${currentTier.price}`}/{currentTier.period}
                 </p>
               </div>
             </div>
@@ -246,7 +269,10 @@ export function SubscriptionSection() {
                     </span>
                     <span className="text-body text-text-secondary">
                       {' '}
-                      / {profile?.blueprint_creation_limit ?? 0}
+                      /{' '}
+                      {profile?.blueprint_creation_limit === -1
+                        ? '∞'
+                        : (profile?.blueprint_creation_limit ?? 0)}
                     </span>
                   </div>
                 </motion.div>
@@ -270,7 +296,10 @@ export function SubscriptionSection() {
                     </span>
                     <span className="text-body text-text-secondary">
                       {' '}
-                      / {profile?.blueprint_saving_limit ?? 0}
+                      /{' '}
+                      {profile?.blueprint_saving_limit === -1
+                        ? '∞'
+                        : (profile?.blueprint_saving_limit ?? 0)}
                     </span>
                   </div>
                 </motion.div>
@@ -476,15 +505,22 @@ export function SubscriptionSection() {
               <div className="bg-surface/30 rounded-lg p-3">
                 <p className="text-caption text-foreground mb-1 font-medium">Generation Limits</p>
                 <p className="text-caption text-text-secondary">
-                  Your current plan includes {profile?.blueprint_creation_limit || 0} blueprint
-                  generations
+                  Your current plan includes{' '}
+                  {profile?.blueprint_creation_limit === -1
+                    ? 'unlimited'
+                    : profile?.blueprint_creation_limit || 0}{' '}
+                  blueprint generations
                 </p>
               </div>
 
               <div className="bg-surface/30 rounded-lg p-3">
                 <p className="text-caption text-foreground mb-1 font-medium">Storage Limits</p>
                 <p className="text-caption text-text-secondary">
-                  Your current plan allows {profile?.blueprint_saving_limit || 0} saved starmaps
+                  Your current plan allows{' '}
+                  {profile?.blueprint_saving_limit === -1
+                    ? 'unlimited'
+                    : profile?.blueprint_saving_limit || 0}{' '}
+                  saved starmaps
                 </p>
               </div>
 
