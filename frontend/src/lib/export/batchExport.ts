@@ -1,5 +1,5 @@
 import JSZip from 'jszip';
-import { Blueprint } from '@/lib/ollama/schema';
+import { AnyBlueprint } from '@/lib/ollama/schema';
 import { DashboardData } from '@/types/dashboard';
 import {
   ExportFormat,
@@ -15,7 +15,7 @@ export class BatchExportService {
    * Export multiple blueprints in batch
    */
   async exportMultipleBlueprints(
-    blueprints: Blueprint[],
+    blueprints: AnyBlueprint[],
     options: BatchExportOptions,
     dashboardDataMap?: Map<string, DashboardData>
   ): Promise<ExportResult> {
@@ -23,6 +23,10 @@ export class BatchExportService {
       const zip = new JSZip();
       const results: ExportResult[] = [];
       const total = blueprints.length;
+
+      // Export in all requested formats
+      const formats: ExportFormat[] =
+        options.format === 'json' ? ['pdf', 'markdown', 'json', 'docx'] : [options.format];
 
       // Create a folder for each blueprint
       for (let i = 0; i < blueprints.length; i++) {
@@ -36,10 +40,6 @@ export class BatchExportService {
         if (!blueprintFolder) {
           throw new Error(`Failed to create folder for blueprint: ${blueprint.title}`);
         }
-
-        // Export in all requested formats
-        const formats: ExportFormat[] =
-          options.format === 'json' ? ['pdf', 'markdown', 'json', 'docx'] : [options.format];
 
         for (const format of formats) {
           const exportOptions: ExportOptions = {
@@ -73,7 +73,7 @@ export class BatchExportService {
         exportedAt: new Date().toISOString(),
         totalBlueprints: blueprints.length,
         successfulExports: results.length,
-        formats: formats,
+        formats,
         version: '1.0.0',
       };
 
@@ -88,6 +88,7 @@ export class BatchExportService {
         metadata: {
           title: options.zipFileName || 'blueprint-export',
           description: `Batch export of ${blueprints.length} blueprints`,
+          createdAt: new Date().toISOString(),
           exportedAt: new Date().toISOString(),
           version: '1.0.0',
         },
@@ -106,7 +107,7 @@ export class BatchExportService {
    * Export single blueprint in multiple formats
    */
   async exportBlueprintInAllFormats(
-    blueprint: Blueprint,
+    blueprint: AnyBlueprint,
     options: Partial<BatchExportOptions> = {},
     dashboardData?: DashboardData
   ): Promise<ExportResult> {
@@ -159,6 +160,7 @@ export class BatchExportService {
       metadata: {
         title: `${blueprint.title}-export`,
         description: `Multi-format export of ${blueprint.title}`,
+        createdAt: new Date().toISOString(),
         exportedAt: new Date().toISOString(),
         version: '1.0.0',
       },
@@ -170,7 +172,7 @@ export class BatchExportService {
    * Export dashboard data for multiple blueprints
    */
   async exportDashboardData(
-    blueprints: Blueprint[],
+    blueprints: AnyBlueprint[],
     dashboardDataMap: Map<string, DashboardData>,
     options: Partial<BatchExportOptions> = {}
   ): Promise<ExportResult> {
@@ -205,6 +207,7 @@ export class BatchExportService {
           success: true,
           metadata: {
             title: `${blueprint.title} Dashboard Data`,
+            createdAt: new Date().toISOString(),
             exportedAt: new Date().toISOString(),
             version: '1.0.0',
           },
@@ -230,6 +233,7 @@ export class BatchExportService {
         metadata: {
           title: 'dashboard-data-export',
           description: `Dashboard data export for ${blueprints.length} blueprints`,
+          createdAt: new Date().toISOString(),
           exportedAt: new Date().toISOString(),
           version: '1.0.0',
         },

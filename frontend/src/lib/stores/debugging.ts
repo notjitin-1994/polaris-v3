@@ -115,7 +115,7 @@ export class StateDebugger {
   static startPerformanceMonitoring(): void {
     if (!this.isDevelopment) return;
 
-    let frameCount = 0;
+    const _frameCount = 0;
     let lastTime = performance.now();
 
     const measurePerformance = () => {

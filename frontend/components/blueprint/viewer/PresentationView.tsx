@@ -214,6 +214,10 @@ export function PresentationView({
   const [mounted, setMounted] = useState(false);
   const [presenterWindow, setPresenterWindow] = useState<Window | null>(null);
 
+  // Touch gesture state
+  const [touchStart, setTouchStart] = useState<{ x: number; y: number } | null>(null);
+  const [touchEnd, setTouchEnd] = useState<{ x: number; y: number } | null>(null);
+
   // Drawing tools state
   const [activeTool, setActiveTool] = useState<PresentationTool>('none');
   const [drawingSettings, setDrawingSettings] = useState<PresentationDrawingSettings>({
@@ -839,6 +843,49 @@ export function PresentationView({
     };
   }, [presenterWindow]);
 
+  // Touch gesture handlers
+  const handleTouchStart = useCallback((e: React.TouchEvent) => {
+    setTouchEnd(null);
+    setTouchStart({
+      x: e.targetTouches[0].clientX,
+      y: e.targetTouches[0].clientY,
+    });
+  }, []);
+
+  const handleTouchMove = useCallback((e: React.TouchEvent) => {
+    setTouchEnd({
+      x: e.targetTouches[0].clientX,
+      y: e.targetTouches[0].clientY,
+    });
+  }, []);
+
+  const handleTouchEnd = useCallback(() => {
+    if (!touchStart || !touchEnd) return;
+
+    const deltaX = touchStart.x - touchEnd.x;
+    const deltaY = touchStart.y - touchEnd.y;
+    const minSwipeDistance = 50;
+
+    // Horizontal swipe (left/right navigation)
+    if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > minSwipeDistance) {
+      if (deltaX > 0) {
+        // Swiped left - next slide
+        goToNextSlide();
+      } else {
+        // Swiped right - previous slide
+        goToPrevSlide();
+      }
+    }
+
+    // Vertical swipe down to show grid
+    if (deltaY < -100 && Math.abs(deltaX) < 50) {
+      setShowGrid(true);
+    }
+
+    setTouchStart(null);
+    setTouchEnd(null);
+  }, [touchStart, touchEnd, goToNextSlide, goToPrevSlide]);
+
   // Keyboard shortcuts
   useKeyboardShortcuts({
     right: goToNextSlide,
@@ -920,13 +967,13 @@ export function PresentationView({
                 {...microInteractions.buttonPress}
                 onClick={handleExit}
                 className={cn(
-                  'flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg',
-                  'text-text-secondary hover:text-foreground',
-                  'transition-all duration-200 hover:bg-white/10'
+                  'flex h-10 min-h-[44px] w-10 min-w-[44px] flex-shrink-0 items-center justify-center rounded-lg',
+                  'text-text-secondary hover:text-foreground active:scale-95',
+                  'touch-manipulation transition-all duration-200 hover:bg-white/10'
                 )}
                 aria-label="Exit presentation"
               >
-                <ArrowLeft className="h-5 w-5" />
+                <ArrowLeft className="h-5 w-5 sm:h-4 sm:w-4" />
               </motion.button>
 
               {/* Slide Title with accent */}
@@ -948,7 +995,7 @@ export function PresentationView({
 
                 {/* Title in teal */}
                 <h1
-                  className="truncate text-lg font-bold text-[rgb(167,218,219)]"
+                  className="truncate text-sm font-bold text-[rgb(167,218,219)] sm:text-base md:text-lg"
                   style={{
                     textShadow: '0 0 20px rgba(167, 218, 219, 0.3)',
                   }}
@@ -960,7 +1007,7 @@ export function PresentationView({
 
             {/* Right: Slide counter */}
             <div className="flex flex-shrink-0 items-center gap-2">
-              <div className="text-text-secondary text-sm font-medium">
+              <div className="text-text-secondary text-xs font-medium sm:text-sm">
                 <span className="text-foreground font-semibold">{currentSlide + 1}</span>
                 <span className="mx-1">/</span>
                 <span>{slides.length}</span>
@@ -975,7 +1022,10 @@ export function PresentationView({
         {/* Slides Container */}
         <div
           ref={slideContainerRef}
-          className="relative z-10 flex-1 overflow-y-auto px-4 pt-6 pb-24 sm:px-8 lg:px-12"
+          className="relative z-10 flex-1 touch-manipulation overflow-y-auto px-4 pt-6 pb-24 sm:px-8 lg:px-12"
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
         >
           <AnimatePresence mode="wait">
             <PresentationSlide key={currentSlide} colorTheme={slides[currentSlide]?.colorTheme}>

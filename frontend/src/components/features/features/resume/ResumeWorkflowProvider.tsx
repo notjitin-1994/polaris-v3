@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useUIStore } from '@/lib/stores/uiStore';
 import { useBlueprintStore } from '@/lib/stores/blueprintStore';
-import { ResumeWorkflowManager, resumeWorkflowIntegration } from '@/lib/stores/resumeWorkflow';
+import { resumeWorkflowIntegration } from '@/lib/stores/resumeWorkflow';
 import { ResumeDialog } from './ResumeDialog';
 
 interface ResumeWorkflowProviderProps {

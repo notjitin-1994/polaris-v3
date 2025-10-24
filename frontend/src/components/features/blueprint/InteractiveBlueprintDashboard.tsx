@@ -436,7 +436,9 @@ export function InteractiveBlueprintDashboard({
         </motion.div>
       )}
 
-      <StatCard />
+      <StatCard>
+        <div />
+      </StatCard>
 
       {/* Section Navigator */}
       <motion.div variants={itemVariants}>
@@ -722,7 +724,7 @@ const ExpandableSection = React.forwardRef<
 >(({ section, isExpanded, onToggle, children, isPublicView = false }, ref) => {
   const Icon = section.icon;
 
-  const handleModify = (e: React.MouseEvent) => {
+  const handleModify = (e: React.MouseEvent | React.KeyboardEvent) => {
     e.stopPropagation();
     console.log(`Modify ${section.title}`);
   };
@@ -732,20 +734,24 @@ const ExpandableSection = React.forwardRef<
       ref={ref}
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3, ease: 'easeOut' }}
       className="glass-card overflow-hidden rounded-2xl border border-white/10 transition-all"
     >
       {/* Section Header - Always Visible, Clickable */}
       <button
         onClick={onToggle}
-        className="flex w-full items-center justify-between p-6 text-left transition-all hover:bg-white/5"
+        className="flex w-full touch-manipulation items-center justify-between p-4 text-left transition-all hover:bg-white/5 active:bg-white/10 sm:p-6"
+        type="button"
       >
         <div className="flex min-w-0 flex-1 items-center gap-4">
-          <div className={`rounded-xl p-3 ${section.gradient}`}>
-            <Icon className={`h-6 w-6 ${section.iconColor}`} />
+          <div className={`rounded-xl p-2.5 ${section.gradient} sm:p-3`}>
+            <Icon className={`h-5 w-5 ${section.iconColor} sm:h-6 sm:w-6`} />
           </div>
           <div>
-            <h3 className="text-xl font-bold text-white">{section.title}</h3>
-            <p className="text-text-secondary text-sm">{section.description}</p>
+            <h3 className="text-base font-bold text-white sm:text-lg md:text-xl">
+              {section.title}
+            </h3>
+            <p className="text-text-secondary text-xs sm:text-sm">{section.description}</p>
           </div>
         </div>
 
@@ -772,7 +778,7 @@ const ExpandableSection = React.forwardRef<
                 e.stopPropagation();
                 handleModify(e);
               }}
-              className="pressable border-primary bg-primary/10 text-primary hover:bg-primary/20 hover:border-primary inline-flex h-8 w-8 cursor-pointer items-center justify-center rounded-full border-2 transition-all hover:shadow-[0_0_25px_rgba(167,218,219,0.8)]"
+              className="pressable border-primary bg-primary/10 text-primary hover:bg-primary/20 hover:border-primary inline-flex h-9 min-h-[44px] w-9 min-w-[44px] cursor-pointer touch-manipulation items-center justify-center rounded-full border-2 transition-all hover:shadow-[0_0_25px_rgba(167,218,219,0.8)] active:scale-95"
               title="Modify with AI"
               aria-label="Modify section with AI"
               role="button"
@@ -793,9 +799,9 @@ const ExpandableSection = React.forwardRef<
           <motion.div
             animate={{ rotate: isExpanded ? 180 : 0 }}
             transition={{ duration: 0.3 }}
-            className="rounded-full bg-white/5 p-2"
+            className="rounded-full bg-white/5 p-2 sm:p-2.5"
           >
-            <ChevronDown className="text-text-secondary h-5 w-5" />
+            <ChevronDown className="text-text-secondary h-4 w-4 sm:h-5 sm:w-5" />
           </motion.div>
         </div>
       </button>
@@ -810,7 +816,7 @@ const ExpandableSection = React.forwardRef<
             transition={{ duration: 0.3, ease: 'easeInOut' }}
             className="overflow-hidden"
           >
-            <div className="border-t border-white/10 p-6">{children}</div>
+            <div className="border-t border-white/10 p-4 sm:p-6">{children}</div>
           </motion.div>
         )}
       </AnimatePresence>

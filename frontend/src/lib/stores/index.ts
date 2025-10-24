@@ -74,7 +74,7 @@ export function useStoreComposition() {
       },
 
       // Create new blueprint with UI feedback
-      createBlueprint: (blueprintData: any) => {
+      createBlueprint: (_blueprintData: any) => {
         uiStore.setGlobalLoading(true);
         uiStore.addNotification({
           type: 'info',

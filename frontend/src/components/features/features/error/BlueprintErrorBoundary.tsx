@@ -57,7 +57,7 @@ export class BlueprintErrorBoundary extends Component<Props, State> {
           <h3 className="text-heading text-foreground mb-2">Error Displaying Section</h3>
 
           <p className="text-body text-text-secondary mx-auto mb-4 max-w-md">
-            This section couldn't be displayed due to an error. The rest of your blueprint is
+            This section couldn&apos;t be displayed due to an error. The rest of your blueprint is
             unaffected.
           </p>
 

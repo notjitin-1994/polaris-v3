@@ -9,6 +9,7 @@ import React, { useEffect, useState } from 'react';
 import { use } from 'react';
 import { PresenterViewWindow } from '@/components/blueprint/viewer/presenter/PresenterViewWindow';
 import { getSupabaseBrowserClient } from '@/lib/supabase/client';
+import type { Blueprint } from '@/lib/ollama/schema';
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -30,7 +31,7 @@ interface SlideData {
 
 export default function PresenterPage({ params }: PageProps) {
   const { id } = use(params);
-  const [blueprintData, setBlueprintData] = useState<any>(null);
+  const [blueprintData, setBlueprintData] = useState<Blueprint | null>(null);
   const [slidesData, setSlidesData] = useState<SlideData[]>([]);
   const [currentSlide, setCurrentSlide] = useState(0);
   const [totalSlides, setTotalSlides] = useState(0);
@@ -106,7 +107,7 @@ export default function PresenterPage({ params }: PageProps) {
 
   if (loading) {
     return (
-      <div className="flex h-screen items-center justify-center bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950">
+      <div className="bg-background flex h-screen items-center justify-center">
         <div className="text-center">
           <div className="border-primary mx-auto mb-4 h-12 w-12 animate-spin rounded-full border-4 border-t-transparent" />
           <p className="text-lg text-white">Loading presenter view...</p>
@@ -117,7 +118,7 @@ export default function PresenterPage({ params }: PageProps) {
 
   if (!blueprintData) {
     return (
-      <div className="flex h-screen items-center justify-center bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950">
+      <div className="bg-background flex h-screen items-center justify-center">
         <div className="text-center">
           <p className="text-lg text-white">Failed to load blueprint</p>
         </div>

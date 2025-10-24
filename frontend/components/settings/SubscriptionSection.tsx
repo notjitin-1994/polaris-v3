@@ -52,8 +52,8 @@ const subscriptionTiers = {
     price: 79,
     period: 'month',
     features: [
-      '50 starmap generations per month',
-      '50 saved starmaps (roll over 12 months)',
+      '40 starmap generations per month',
+      '20 saved starmaps (240/year with rollover)',
       'All export formats',
       'Priority chat support',
       'Custom template creation',

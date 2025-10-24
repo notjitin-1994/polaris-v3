@@ -7,7 +7,6 @@ import { Header } from './Header';
 import { Brand } from './Brand';
 import { NavSection, type NavItem } from './NavSection';
 import { UserAvatar } from './UserAvatar';
-import { IconSidebarToggle } from './icons';
 import { useAuth } from '@/contexts/AuthContext';
 
 interface AppLayoutProps {

@@ -2126,9 +2126,9 @@ describe('Role Type System', () => {
     expect(ROLE_LIMITS.developer.features).toContain('admin_dashboard');
   });
   
-  test('Voyager has unlimited generations but limited saved starmaps', () => {
-    expect(ROLE_LIMITS.voyager.max_generations_monthly).toBe('unlimited');
-    expect(ROLE_LIMITS.voyager.max_saved_starmaps).toBe(50);
+  test('Voyager has 40 generations and 20 saved starmaps', () => {
+    expect(ROLE_LIMITS.voyager.max_generations_monthly).toBe(40);
+    expect(ROLE_LIMITS.voyager.max_saved_starmaps).toBe(20);
   });
   
   test('All tiers have valid processing priorities', () => {

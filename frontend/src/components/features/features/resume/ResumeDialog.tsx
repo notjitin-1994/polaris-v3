@@ -1,8 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useUIStore, uiSelectors } from '@/lib/stores/uiStore';
-import { useBlueprintStore } from '@/lib/stores/blueprintStore';
 import { ResumeWorkflowManager, resumeUIHelpers } from '@/lib/stores/resumeWorkflow';
 import type { ResumeData } from '@/lib/stores/types';
 
@@ -110,8 +108,11 @@ function ResumeItem({ item, onResume, onStartFresh }: ResumeItemProps) {
             </div>
             <div className="h-2 w-full rounded-full bg-white/10">
               <div
-                className={`h-2 rounded-full bg-${progressColor}-500 transition-all duration-300`}
-                style={{ width: `${item.progress}%` }}
+                className={`h-2 rounded-full transition-all duration-300`}
+                style={{
+                  width: `${item.progress}%`,
+                  backgroundColor: `var(--progress-${progressColor})`,
+                }}
               />
             </div>
           </div>

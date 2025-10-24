@@ -13,36 +13,36 @@ const quickActions = [
     title: 'Create New Starmap',
     description: 'Start a new learning journey',
     href: '/static-wizard',
-    color: 'from-blue-500 to-cyan-600',
-    bgColor: 'bg-blue-500/10',
-    borderColor: 'border-blue-500/20',
+    color: 'from-primary to-primary',
+    bgColor: 'bg-primary/10',
+    borderColor: 'border-primary/20',
   },
   {
     icon: Compass,
     title: 'Browse Templates',
     description: 'Explore ready-made blueprints',
     href: '/templates',
-    color: 'from-purple-500 to-indigo-600',
-    bgColor: 'bg-purple-500/10',
-    borderColor: 'border-purple-500/20',
+    color: 'from-primary to-primary',
+    bgColor: 'bg-primary/10',
+    borderColor: 'border-primary/20',
   },
   {
     icon: FileText,
     title: 'My Starmaps',
     description: 'View your saved blueprints',
     href: '/my-starmaps',
-    color: 'from-emerald-500 to-teal-600',
-    bgColor: 'bg-emerald-500/10',
-    borderColor: 'border-emerald-500/20',
+    color: 'from-primary to-primary',
+    bgColor: 'bg-primary/10',
+    borderColor: 'border-primary/20',
   },
   {
     icon: Settings,
     title: 'Settings',
     description: 'Manage your account',
     href: '/settings',
-    color: 'from-gray-500 to-slate-600',
-    bgColor: 'bg-gray-500/10',
-    borderColor: 'border-gray-500/20',
+    color: 'from-primary to-primary',
+    bgColor: 'bg-primary/10',
+    borderColor: 'border-primary/20',
   },
 ];
 
@@ -51,8 +51,8 @@ export function QuickActionsCard() {
     <GlassCard className="h-full p-6 sm:p-8">
       {/* Header */}
       <div className="mb-6 flex items-center gap-3">
-        <div className="from-primary to-secondary flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br">
-          <Rocket className="h-5 w-5 text-white" />
+        <div className="from-primary to-primary flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br">
+          <Rocket className="h-5 w-5 text-black" />
         </div>
         <div>
           <h3 className="text-title text-foreground font-bold">Quick Actions</h3>
@@ -79,7 +79,7 @@ export function QuickActionsCard() {
                     <div
                       className={`h-10 w-10 rounded-lg bg-gradient-to-br ${action.color} flex items-center justify-center shadow-lg transition-shadow group-hover:shadow-xl`}
                     >
-                      <Icon className="h-5 w-5 text-white" />
+                      <Icon className="h-5 w-5 text-black" />
                     </div>
                     <div className="flex-1">
                       <h4 className="text-body text-foreground group-hover:text-primary mb-1 font-semibold transition-colors">

@@ -2,7 +2,7 @@
  * Dynamic Questions API Tests
  */
 
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect } from 'vitest';
 
 describe('Dynamic Questions API', () => {
   describe('POST /api/dynamic-questions', () => {

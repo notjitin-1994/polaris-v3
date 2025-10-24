@@ -222,7 +222,7 @@ export const storageUtils = {
               localStorage.removeItem(key);
             }
           }
-        } catch (error) {
+        } catch {
           // If we can't parse the item, remove it
           localStorage.removeItem(key);
         }

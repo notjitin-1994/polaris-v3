@@ -111,7 +111,7 @@ export function StandardHeader({
       {/* Subtle background effects */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
         <SwirlBackground count={12} minSize={32} maxSize={64} opacityMin={0.02} opacityMax={0.06} />
-        <div className="bg-primary/[0.02] absolute inset-0" />
+        <div className="bg-primary/5 absolute inset-0" />
       </div>
 
       {/* Content */}
@@ -166,9 +166,7 @@ export function StandardHeader({
               </p>
             )}
 
-            {showDecorativeLine && (
-              <div aria-hidden="true" className="bg-primary/60 mt-4 h-px w-12" />
-            )}
+            {showDecorativeLine && <div aria-hidden="true" className="bg-primary mt-4 h-px w-12" />}
           </div>
 
           {/* Right side: Controls */}

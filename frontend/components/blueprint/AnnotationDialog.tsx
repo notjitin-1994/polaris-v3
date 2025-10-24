@@ -34,7 +34,7 @@ export function AnnotationDialog({
     try {
       await onSave(note);
       onClose();
-    } catch (error) {
+    } catch {
       // Failed to save annotation
     } finally {
       setIsSaving(false);

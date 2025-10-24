@@ -437,8 +437,8 @@ BEGIN
           );
         WHEN 'voyager' THEN
           v_tier_limits := jsonb_build_object(
-            'max_generations_monthly', -1, -- unlimited
-            'max_saved_starmaps', 50
+            'max_generations_monthly', 40,
+            'max_saved_starmaps', 20
           );
         WHEN 'crew' THEN
           v_tier_limits := jsonb_build_object(

@@ -31,7 +31,7 @@ export function ThemeProvider({
   storageKey = 'smartslate-theme',
 }: ThemeProviderProps) {
   const [theme, setThemeState] = useState<Theme>(defaultTheme);
-  const [mounted, setMounted] = useState(false);
+  const [, setMounted] = useState(false);
 
   // Apply theme by updating CSS classes only
   const applyTheme = (newTheme: Theme) => {

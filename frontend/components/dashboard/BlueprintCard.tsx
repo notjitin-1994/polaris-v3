@@ -140,7 +140,7 @@ export function BlueprintCard({
       <motion.div
         className={cn(
           'relative overflow-hidden rounded-2xl transition-all duration-300',
-          'glass-card lg:h-[28rem h-[28rem] border sm:h-[28rem]', // Optimized height for streamlined content
+          'glass-card h-[32rem] border sm:h-[32rem] lg:h-[32rem]', // Optimized height for aesthetic data display
           isSelected && isSelectionMode
             ? 'border-primary bg-primary/5 shadow-primary/20 shadow-lg'
             : isHovered
@@ -204,7 +204,7 @@ export function BlueprintCard({
         {/* Card Content */}
         <div
           className={cn(
-            'relative flex h-full flex-col space-y-4',
+            'relative flex h-full flex-col space-y-5',
             isSelectionMode ? 'p-6 pl-12' : 'p-6'
           )}
         >
@@ -302,7 +302,7 @@ export function BlueprintCard({
             transition={{ delay: index * 0.08 + 0.5, duration: 0.4 }}
           >
             {/* Highlight Container - Increased Height */}
-            <div className="glass border-primary/20 min-h-[140px] rounded-xl border p-5 shadow-lg transition-all duration-300 hover:shadow-xl">
+            <div className="glass border-primary/20 min-h-[160px] rounded-xl border p-5 shadow-lg transition-all duration-300 hover:shadow-xl">
               {/* Executive Summary Icon & Label */}
               <div className="mb-4 flex items-center gap-3">
                 <div className="bg-primary/20 flex h-8 w-8 items-center justify-center rounded-full">

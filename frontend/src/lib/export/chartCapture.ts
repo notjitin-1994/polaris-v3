@@ -1,8 +1,7 @@
 import html2canvas from 'html2canvas';
-import { ChartExportOptions } from './types';
 
 export class ChartCaptureService {
-  private defaultOptions: ChartExportOptions = {
+  private defaultOptions = {
     width: 800,
     height: 400,
     quality: 0.95,
@@ -13,10 +12,7 @@ export class ChartCaptureService {
   /**
    * Capture a single chart element as base64 image
    */
-  async captureChart(
-    chartElement: HTMLElement,
-    options: Partial<ChartExportOptions> = {}
-  ): Promise<string> {
+  async captureChart(chartElement: HTMLElement, options: Partial<any> = {}): Promise<string> {
     const captureOptions = { ...this.defaultOptions, ...options };
 
     try {
@@ -24,8 +20,7 @@ export class ChartCaptureService {
       await this.waitForAnimations(chartElement);
 
       const canvas = await html2canvas(chartElement, {
-        scale: 2, // Higher resolution
-        backgroundColor: captureOptions.backgroundColor,
+        background: captureOptions.backgroundColor,
         logging: false,
         useCORS: true,
         allowTaint: true,
@@ -101,8 +96,4 @@ export class ChartCaptureService {
   /**
    * Check if element is visible and ready for capture
    */
-  private isElementReady(element: HTMLElement): boolean {
-    const rect = element.getBoundingClientRect();
-    return rect.width > 0 && rect.height > 0 && element.offsetParent !== null;
-  }
 }

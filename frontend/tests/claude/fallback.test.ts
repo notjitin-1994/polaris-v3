@@ -7,7 +7,6 @@ import {
   shouldFallbackToOpus,
   shouldFallbackToOllama,
   FallbackTrigger,
-  type FallbackDecision,
 } from '@/lib/claude/fallback';
 import { ClaudeApiError } from '@/lib/claude/client';
 import { ValidationError } from '@/lib/claude/validation';

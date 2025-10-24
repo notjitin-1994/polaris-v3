@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Zap, Save, TrendingUp, AlertCircle, Crown, Sparkles } from 'lucide-react';
+import { Zap, Save, TrendingUp, AlertCircle, Crown, Sparkles, Star, Activity } from 'lucide-react';
 import { GlassCard } from '@/components/ui/GlassCard';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
@@ -28,10 +28,10 @@ export function UsageStatsCard({
   const savingPercentage = savingLimit > 0 ? (savingCount / savingLimit) * 100 : 0;
 
   const getProgressColor = (percentage: number) => {
-    if (percentage >= 100) return 'from-red-500 to-rose-600';
-    if (percentage >= 80) return 'from-orange-500 to-amber-600';
-    if (percentage >= 50) return 'from-blue-500 to-cyan-600';
-    return 'from-emerald-500 to-teal-600';
+    if (percentage >= 100) return 'from-primary to-primary';
+    if (percentage >= 80) return 'from-primary to-primary';
+    if (percentage >= 50) return 'from-primary to-primary';
+    return 'from-primary to-primary';
   };
 
   const getStatusMessage = () => {
@@ -76,7 +76,7 @@ export function UsageStatsCard({
   return (
     <GlassCard className="relative h-full overflow-hidden p-6 sm:p-8">
       {/* Background gradient decoration */}
-      <div className="from-primary/5 to-secondary/5 absolute top-0 right-0 -z-10 h-64 w-64 rounded-full bg-gradient-to-br blur-3xl" />
+      <div className="from-primary/5 to-primary/10 absolute top-0 right-0 -z-10 h-64 w-64 rounded-full bg-gradient-to-br blur-3xl" />
 
       {/* Header */}
       <div className="mb-6 flex items-start justify-between">
@@ -105,8 +105,8 @@ export function UsageStatsCard({
         >
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-cyan-600 shadow-lg shadow-blue-500/20">
-                <Zap className="h-5 w-5 text-white" />
+              <div className="from-primary to-primary shadow-primary/20 flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br shadow-lg">
+                <Star className="h-5 w-5 text-black" />
               </div>
               <div>
                 <p className="text-body text-foreground font-semibold">Starmaps Created</p>
@@ -160,8 +160,8 @@ export function UsageStatsCard({
         >
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-purple-500 to-indigo-600 shadow-lg shadow-purple-500/20">
-                <Save className="h-5 w-5 text-white" />
+              <div className="from-primary to-primary shadow-primary/20 flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br shadow-lg">
+                <Activity className="h-5 w-5 text-black" />
               </div>
               <div>
                 <p className="text-body text-foreground font-semibold">Starmaps Saved</p>
@@ -214,7 +214,7 @@ export function UsageStatsCard({
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4 }}
-            className="from-primary/10 to-secondary/10 border-primary/20 mt-6 rounded-xl border bg-gradient-to-r p-4"
+            className="from-primary/10 to-primary/20 border-primary/30 mt-6 rounded-xl border bg-gradient-to-r p-4"
           >
             <div className="mb-3 flex items-start gap-3">
               <TrendingUp className="text-primary mt-0.5 h-5 w-5 flex-shrink-0" />

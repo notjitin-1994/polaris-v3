@@ -31,7 +31,7 @@ const faqData: FAQItem[] = [
   {
     question: 'Is there a maximum number of Starmaps I can save?',
     answer:
-      'Yes, to ensure system performance: Explorer can save up to 5 Starmaps (60 with rollover over 12 months), Navigator up to 10 Starmaps (120 with 12-month accumulation), and Voyager up to 40 saved Starmaps (480 with 12-month accumulation). Team plans have shared pools: Crew (5/user), Fleet (10/user), Armada (unlimited/user).',
+      'Yes, to ensure system performance: Explorer can save up to 5 Starmaps (60 with rollover over 12 months), Navigator up to 10 Starmaps (120 with 12-month accumulation), and Voyager up to 20 saved Starmaps (240 with 12-month accumulation). Team plans have shared pools: Crew (5/user), Fleet (10/user), Armada (50/user).',
     category: 'features',
   },
   {
@@ -55,7 +55,7 @@ const faqData: FAQItem[] = [
   {
     question: 'Can I export my Starmaps?',
     answer:
-      "All plans include export to PDF. Navigator and above can export to Word and PDF formats with advanced formatting. We're also working on API access for Voyager users to integrate with other tools in your workflow.",
+      'All plans include export to PDF. Navigator and above can export to Word and PDF formats with advanced formatting. We&apos;re also working on API access for Voyager users to integrate with other tools in your workflow.',
     category: 'features',
   },
 ];
@@ -208,7 +208,7 @@ export function PricingFAQ({ className = '' }: PricingFAQProps) {
         viewport={{ once: true }}
         className="mt-16 text-center"
       >
-        <p className="text-text-secondary mb-6">Still have questions? We're here to help</p>
+        <p className="text-text-secondary mb-6">Still have questions? We&apos;re here to help</p>
         <a
           href="mailto:support@smartslate.io"
           className="bg-background/60 text-foreground hover:border-primary/30 hover:bg-background/80 group inline-flex items-center gap-2 rounded-xl border border-neutral-200 px-6 py-3 text-sm font-medium transition-all duration-200 dark:border-neutral-800"

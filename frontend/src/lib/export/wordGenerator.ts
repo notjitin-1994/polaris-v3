@@ -5,16 +5,9 @@ import {
   TextRun,
   HeadingLevel,
   AlignmentType,
-  Table,
-  TableRow,
-  TableCell,
-  WidthType,
   BorderStyle,
-  ShadingType,
-  convertInchesToTwip,
   PageBreak,
   NumberFormat,
-  LevelFormat,
   ImageRun,
   Header,
   Footer,
@@ -113,7 +106,6 @@ export class WordGenerator {
       // Create document with branded styling and headers/footers
       const doc = new Document({
         creator: 'SmartSlate',
-        company: 'SmartSlate',
         title: data.metadata.title,
         description: data.metadata.description,
         sections: [
@@ -241,6 +233,7 @@ export class WordGenerator {
                 width: 180,
                 height: 180,
               },
+              type: 'png',
             }),
           ],
           alignment: AlignmentType.CENTER,
@@ -393,7 +386,7 @@ export class WordGenerator {
         children: [
           new TextRun({
             text: 'Powered by SmartSlate',
-            italic: true,
+            italics: true,
             color: this.textSecondary,
             size: 20,
           }),
@@ -547,16 +540,30 @@ export class WordGenerator {
     level: HeadingLevel = HeadingLevel.HEADING_1,
     pageBreakBefore: boolean = false
   ): Paragraph {
-    const sizes = {
-      [HeadingLevel.HEADING_1]: 36,
-      [HeadingLevel.HEADING_2]: 28,
-      [HeadingLevel.HEADING_3]: 24,
+    const getSize = (level: any): number => {
+      switch (level) {
+        case HeadingLevel.HEADING_1:
+          return 36;
+        case HeadingLevel.HEADING_2:
+          return 28;
+        case HeadingLevel.HEADING_3:
+          return 24;
+        default:
+          return 24;
+      }
     };
 
-    const colors = {
-      [HeadingLevel.HEADING_1]: this.brandTeal,
-      [HeadingLevel.HEADING_2]: this.brandTealLight,
-      [HeadingLevel.HEADING_3]: this.brandIndigo,
+    const getColor = (level: any): string => {
+      switch (level) {
+        case HeadingLevel.HEADING_1:
+          return this.brandTeal;
+        case HeadingLevel.HEADING_2:
+          return this.brandTealLight;
+        case HeadingLevel.HEADING_3:
+          return this.brandIndigo;
+        default:
+          return this.brandTeal;
+      }
     };
 
     return new Paragraph({
@@ -564,8 +571,8 @@ export class WordGenerator {
         new TextRun({
           text,
           bold: true,
-          size: sizes[level] || 24,
-          color: colors[level] || this.brandTeal,
+          size: getSize(level),
+          color: getColor(level),
           font: 'Quicksand',
         }),
       ],

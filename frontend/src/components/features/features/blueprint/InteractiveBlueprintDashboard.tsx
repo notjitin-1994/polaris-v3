@@ -103,8 +103,7 @@ export function InteractiveBlueprintDashboard({
       iconColor: 'text-success',
       description: `${objectives.length} measurable objectives`,
       defaultExpanded: true,
-    }
-  }
+    };
 
   if (blueprint.target_audience) {
     sections.push({

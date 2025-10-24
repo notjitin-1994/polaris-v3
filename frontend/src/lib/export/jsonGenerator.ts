@@ -1,6 +1,5 @@
 import { AnyBlueprint, isFullBlueprint } from '@/lib/ollama/schema';
-import { DashboardData } from '@/types/dashboard';
-import { ExportData, ExportOptions, ExportResult, ExportMetadata } from './types';
+import { ExportData, ExportOptions, ExportResult } from './types';
 
 export class JSONGenerator {
   /**

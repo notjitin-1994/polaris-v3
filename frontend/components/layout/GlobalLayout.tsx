@@ -30,11 +30,10 @@ export const GlobalLayout = memo(function GlobalLayout({
   const { user, signOut } = useAuth();
   const pathname = usePathname();
 
-  // Don't show global layout for auth pages, public share pages, and pricing page
+  // Don't show global layout for auth pages and public share pages
   const isAuthPage = pathname?.startsWith('/login') || pathname?.startsWith('/signup');
   const isPublicSharePage = pathname?.startsWith('/share/');
-  const isPricingPage = pathname === '/pricing';
-  if (isAuthPage || isPublicSharePage || isPricingPage) {
+  if (isAuthPage || isPublicSharePage) {
     return <>{children}</>;
   }
 
@@ -85,7 +84,7 @@ export const GlobalLayout = memo(function GlobalLayout({
   }
 
   // Pages that handle their own headers and layout
-  const pagesWithOwnHeaders = ['/', '/static-wizard', '/generating', '/blueprint', '/pricing'];
+  const pagesWithOwnHeaders = ['/', '/static-wizard', '/generating', '/blueprint'];
 
   const shouldShowHeader = !pagesWithOwnHeaders.some((path) => pathname?.startsWith(path));
   const shouldShowFooter = !pagesWithOwnHeaders.some((path) => pathname?.startsWith(path));

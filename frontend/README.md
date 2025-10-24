@@ -40,7 +40,11 @@ Visit [http://localhost:3000](http://localhost:3000) to see the application.
 - **Styling**: Tailwind CSS v4
 - **State Management**: Zustand + React Hook Form
 - **Database**: PostgreSQL via Supabase
-- **AI Providers**: Claude (Anthropic), Perplexity, Ollama
+- **AI Integration**: Vercel AI SDK v5.0.0 with triple-fallback support
+  - `ai@5.0.0` - Core AI SDK framework
+  - `@ai-sdk/anthropic@1.0.0` - Claude Sonnet 4 / Opus 4
+  - `ollama-ai-provider@0.15.2` - Local Ollama (Qwen3:32b)
+  - `zod@3.25.76` - Schema validation
 - **Testing**: Vitest + React Testing Library
 - **Deployment**: Vercel
 
@@ -121,25 +125,31 @@ SUPABASE_DB_PASSWORD=your-database-password
 SUPABASE_REGION=us-east-1
 
 # ========================================
-# AI Providers
+# AI Providers (Vercel AI SDK v5.0.0)
 # ========================================
+# Required: Anthropic API Key for Claude models
+# Get from: https://console.anthropic.com/
 ANTHROPIC_API_KEY=your-anthropic-api-key
+
+# Required: Ollama Base URL for local fallback
+# Default: http://localhost:11434
+OLLAMA_BASE_URL=http://localhost:11434
+
+# Optional: Enable AI SDK (default: false for gradual rollout)
+NEXT_PUBLIC_USE_AI_SDK=false
+
+# Optional: AI SDK Configuration
+AI_SDK_LOG_LEVEL=info
+AI_SDK_TIMEOUT_MS=60000
+AI_SDK_MAX_RETRIES=3
+
+# Legacy AI API Keys (for backward compatibility)
 PERPLEXITY_API_KEY=your-perplexity-api-key
 OPENAI_API_KEY=your-openai-api-key
-
-# Optional AI API Keys
 GOOGLE_API_KEY=your-google-api-key
 XAI_API_KEY=your-xai-api-key
 OPENROUTER_API_KEY=your-openrouter-api-key
 MISTRAL_API_KEY=your-mistral-api-key
-
-# Azure OpenAI (if using)
-AZURE_OPENAI_API_KEY=your-azure-api-key
-AZURE_OPENAI_ENDPOINT=your-azure-endpoint
-
-# Ollama (if using local models)
-OLLAMA_API_KEY=your-ollama-api-key
-OLLAMA_BASE_URL=http://localhost:11434/api
 
 # ========================================
 # Optional Configuration

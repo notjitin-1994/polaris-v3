@@ -73,7 +73,7 @@ function DashboardContent() {
                 transition={{ duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94] }}
                 className="mb-8"
               >
-                <h1 className="font-heading lg:text-10xl text-7xl font-bold tracking-tight text-white sm:text-8xl md:text-9xl">
+                <h1 className="font-heading text-4xl font-bold tracking-tight text-white sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl">
                   <span>Welcome back, </span>
                   <span className="text-primary">{getFirstName()}</span>
                   <span className="text-white/80">.</span>
@@ -87,7 +87,7 @@ function DashboardContent() {
                 transition={{ duration: 0.8, delay: 0.2, ease: [0.25, 0.46, 0.45, 0.94] }}
                 className="mb-12"
               >
-                <p className="text-xl leading-relaxed text-white/70 sm:text-2xl lg:text-3xl">
+                <p className="text-base leading-relaxed text-white/70 sm:text-lg md:text-xl lg:text-2xl">
                   Your mission control — <span className="text-primary font-medium">chart</span>{' '}
                   learning starmaps, <span className="text-primary font-medium">orchestrate</span>{' '}
                   your constellations,
@@ -104,7 +104,8 @@ function DashboardContent() {
                 transition={{ duration: 1, delay: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
                 className="mt-16 h-px w-24"
                 style={{
-                  background: 'linear-gradient(to right, transparent, #a7dadb, transparent)',
+                  background:
+                    'linear-gradient(to right, transparent, var(--primary-accent), transparent)',
                 }}
               />
             </div>
@@ -112,7 +113,7 @@ function DashboardContent() {
         </section>
 
         {/* Dashboard Content */}
-        <div className="page-enter animate-fade-in-up animate-delay-75 relative z-10 mx-auto max-w-7xl px-4 py-6 pb-32 sm:px-6 lg:px-8">
+        <div className="page-enter animate-fade-in-up animate-delay-75 relative z-10 mx-auto max-w-7xl px-4 py-4 pb-24 sm:px-6 sm:py-6 sm:pb-32 lg:px-8">
           {/* Top Row - Stats and Actions (Equal Width) */}
           <div className="mb-6 grid grid-cols-1 gap-6 lg:grid-cols-2">
             {/* Usage Stats */}

@@ -61,11 +61,11 @@ export function RecentBlueprintsCard() {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'completed':
-        return 'text-success bg-success/10 border-success/20';
+        return 'text-primary bg-primary/10 border-primary/20';
       case 'generating':
-        return 'text-info bg-info/10 border-info/20';
+        return 'text-primary bg-primary/10 border-primary/20';
       case 'error':
-        return 'text-error bg-error/10 border-error/20';
+        return 'text-primary bg-primary/10 border-primary/20';
       default:
         return 'text-text-secondary bg-neutral-200/50 border-neutral-300';
     }
@@ -76,8 +76,8 @@ export function RecentBlueprintsCard() {
       {/* Header */}
       <div className="mb-6 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-purple-500 to-indigo-600">
-            <FileText className="h-5 w-5 text-white" />
+          <div className="from-primary to-primary flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br">
+            <FileText className="h-5 w-5 text-black" />
           </div>
           <div>
             <h3 className="text-title text-foreground font-bold">Recent Starmaps</h3>

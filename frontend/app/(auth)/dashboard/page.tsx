@@ -102,10 +102,7 @@ function DashboardContent() {
                 initial={{ scaleX: 0 }}
                 animate={{ scaleX: 1 }}
                 transition={{ duration: 1, delay: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
-                className="mt-16 h-px w-24"
-                style={{
-                  background: 'linear-gradient(to right, transparent, #a7dadb, transparent)',
-                }}
+                className="bg-primary mt-16 h-px w-24"
               />
             </div>
           </div>

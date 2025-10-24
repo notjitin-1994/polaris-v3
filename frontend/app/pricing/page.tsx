@@ -19,7 +19,7 @@ type PersonalPlan = {
   priceMonthly: number;
   maxConstellationsPerMonth: number;
   maxStarmapGenerations: number | 'unlimited';
-  maxStarmaps: number;
+  maxStarmaps: number | 'unlimited';
   features: string[];
   highlighted?: string[];
   popular?: boolean;
@@ -36,7 +36,7 @@ type TeamPlan = {
   maxSeats: number;
   maxConstellationsPerUserPerMonth: number;
   maxStarmapGenerationsPerUser: number | 'unlimited';
-  maxStarmapsPerUser: number;
+  maxStarmapsPerUser: number | 'unlimited';
   features: string[];
   highlighted?: string[];
 };
@@ -66,13 +66,13 @@ const personalPlans: PersonalPlan[] = [
     priceMonthly: 39,
     maxConstellationsPerMonth: 50,
     maxStarmapGenerations: 20,
-    maxStarmaps: 10,
+    maxStarmaps: 20,
     features: [
       'Everything in Explorer',
       'Save $1.85 per generation (49% cheaper)',
       'Priority support (24h response)',
     ],
-    highlighted: ['20 generations/month', '10 saved (rolls over 12 months)'],
+    highlighted: ['20 generations/month', '20 saved (rolls over 12 months)'],
     popular: true,
   },
   {
@@ -84,7 +84,7 @@ const personalPlans: PersonalPlan[] = [
     maxStarmapGenerations: 40,
     maxStarmaps: 40,
     features: ['Everything in Navigator', 'Save $1.78 per generation (47% cheaper)'],
-    highlighted: ['40 generations/month', '40 saved (rolls over 12 months)'],
+    highlighted: ['40 generations/month', '40 saved (480/year with rollover)'],
     badge: 'PROFESSIONAL',
   },
 ];
@@ -227,7 +227,7 @@ export default function PricingPage(): React.JSX.Element {
   // Track active section for navigation
   useEffect(() => {
     const handleScroll = () => {
-      const sections = ['personal', 'team', 'enterprise', 'faq'];
+      const sections = ['personal', 'team', 'faq'];
       const scrollPosition = window.scrollY + 200;
 
       for (const sectionId of sections) {
@@ -337,7 +337,6 @@ export default function PricingPage(): React.JSX.Element {
             {[
               { id: 'personal', label: 'Personal' },
               { id: 'team', label: 'Teams' },
-              { id: 'enterprise', label: 'Enterprise' },
               { id: 'faq', label: 'FAQ' },
             ].map((section, index) => (
               <motion.li
@@ -416,7 +415,7 @@ export default function PricingPage(): React.JSX.Element {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="font-heading mb-6 text-5xl leading-tight font-bold sm:text-6xl lg:text-7xl"
+            className="font-heading mb-6 text-3xl leading-tight font-bold sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl"
           >
             <span className="text-foreground">Choose Your Journey</span>
             <br />
@@ -427,7 +426,7 @@ export default function PricingPage(): React.JSX.Element {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.3 }}
-            className="text-text-secondary mx-auto mb-4 max-w-2xl text-lg"
+            className="text-text-secondary mx-auto mb-4 max-w-2xl text-sm sm:text-base md:text-lg"
           >
             Transform your thoughts into powerful{' '}
             <span className="text-primary font-medium">Starmaps</span> with AI-powered intelligence
@@ -437,7 +436,7 @@ export default function PricingPage(): React.JSX.Element {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.4 }}
-            className="text-text-disabled mb-12 text-sm"
+            className="text-text-disabled mb-8 text-xs sm:text-sm md:mb-12"
           >
             Join <AnimatedCounter value={10000} />+ creators exploring new frontiers
           </motion.p>
@@ -449,7 +448,7 @@ export default function PricingPage(): React.JSX.Element {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
           >
-            <div className="from-surface/80 to-surface/60 relative inline-flex items-center rounded-2xl border border-neutral-200/30 bg-gradient-to-r p-1.5 shadow-2xl shadow-black/10 backdrop-blur-lg dark:border-neutral-700/30">
+            <div className="from-surface/80 to-surface/60 relative inline-flex h-11 items-center rounded-2xl border border-neutral-200/30 bg-gradient-to-r p-1 shadow-2xl shadow-black/10 backdrop-blur-lg sm:h-12 dark:border-neutral-700/30">
               {/* Enhanced discount badge */}
               <motion.div
                 className="from-success to-success-dark border-success/30 absolute -top-2.5 right-2 z-20 inline-flex items-center gap-1.5 rounded-full border bg-gradient-to-r px-3 py-1.5 text-xs font-bold text-white shadow-lg"
@@ -478,64 +477,47 @@ export default function PricingPage(): React.JSX.Element {
                 </span>
               </motion.div>
 
-              {/* Improved sliding background with gradient */}
-              <motion.div
-                className="from-primary/20 via-primary/15 to-secondary/20 border-primary/30 absolute inset-1 rounded-xl border bg-gradient-to-r shadow-inner"
-                initial={false}
-                animate={{
-                  x: billing === 'monthly' ? '2px' : 'calc(50% - 2px)',
-                  width: 'calc(50% - 4px)',
-                  scale: billing === 'annual' ? [1, 1.02, 1] : 1,
-                }}
-                transition={{
-                  type: 'spring',
-                  stiffness: 400,
-                  damping: 30,
-                  scale: { duration: 0.3 },
-                }}
-              />
-
-              <motion.button
-                type="button"
-                className={`relative z-10 rounded-lg px-6 py-3 text-sm font-semibold transition-all duration-300 ${
-                  billing === 'monthly'
-                    ? 'text-foreground bg-white/10 shadow-lg backdrop-blur-sm'
-                    : 'text-text-secondary hover:text-foreground hover:bg-white/5'
-                }`}
-                onClick={() => setBilling('monthly')}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-              >
-                <motion.span
+              {/* Fixed sliding background */}
+              <div className="absolute inset-0 flex p-1">
+                <motion.div
+                  className="from-primary/20 via-primary/15 to-secondary/20 border-primary/30 h-full w-1/2 rounded-xl border bg-gradient-to-r shadow-inner"
+                  initial={false}
                   animate={{
-                    color: billing === 'monthly' ? 'var(--foreground)' : 'var(--text-secondary)',
+                    x: billing === 'monthly' ? 0 : '100%',
                   }}
-                  transition={{ duration: 0.2 }}
+                  transition={{
+                    type: 'spring',
+                    stiffness: 500,
+                    damping: 35,
+                  }}
+                />
+              </div>
+
+              <div className="relative z-10 flex w-full">
+                <button
+                  type="button"
+                  className={`flex-1 touch-manipulation rounded-xl px-4 py-2 text-xs font-semibold transition-all duration-300 sm:px-6 sm:text-sm ${
+                    billing === 'monthly'
+                      ? 'text-foreground'
+                      : 'text-text-secondary hover:text-foreground'
+                  }`}
+                  onClick={() => setBilling('monthly')}
                 >
                   Monthly
-                </motion.span>
-              </motion.button>
+                </button>
 
-              <motion.button
-                type="button"
-                className={`relative z-10 rounded-lg px-6 py-3 text-sm font-semibold transition-all duration-300 ${
-                  billing === 'annual'
-                    ? 'text-foreground bg-white/10 shadow-lg backdrop-blur-sm'
-                    : 'text-text-secondary hover:text-foreground hover:bg-white/5'
-                }`}
-                onClick={() => setBilling('annual')}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-              >
-                <motion.span
-                  animate={{
-                    color: billing === 'annual' ? 'var(--foreground)' : 'var(--text-secondary)',
-                  }}
-                  transition={{ duration: 0.2 }}
+                <button
+                  type="button"
+                  className={`flex-1 touch-manipulation rounded-xl px-4 py-2 text-xs font-semibold transition-all duration-300 sm:px-6 sm:text-sm ${
+                    billing === 'annual'
+                      ? 'text-foreground'
+                      : 'text-text-secondary hover:text-foreground'
+                  }`}
+                  onClick={() => setBilling('annual')}
                 >
                   Annual
-                </motion.span>
-              </motion.button>
+                </button>
+              </div>
             </div>
 
             {/* Enhanced savings display */}
@@ -567,7 +549,7 @@ export default function PricingPage(): React.JSX.Element {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.6 }}
-            className="mt-12 flex flex-wrap items-center justify-center gap-8 text-sm"
+            className="mt-8 flex flex-wrap items-center justify-center gap-4 text-xs sm:mt-12 sm:gap-8 sm:text-sm"
           >
             {[
               { icon: 'check', text: 'No credit card required' },
@@ -579,9 +561,9 @@ export default function PricingPage(): React.JSX.Element {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.7 + index * 0.1 }}
-                className="flex items-center gap-2.5"
+                className="flex items-center gap-2"
               >
-                <div className="bg-primary/10 flex h-5 w-5 items-center justify-center rounded-full">
+                <div className="bg-primary/10 flex h-4 w-4 items-center justify-center rounded-full sm:h-5 sm:w-5">
                   {item.icon === 'check' && (
                     <svg
                       className="text-primary h-3 w-3"
@@ -625,9 +607,9 @@ export default function PricingPage(): React.JSX.Element {
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.8 }}
-          className="mx-auto mb-24 max-w-5xl"
+          className="mx-auto mb-16 max-w-5xl sm:mb-24"
         >
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 sm:gap-4">
             {[
               {
                 icon: (
@@ -692,13 +674,15 @@ export default function PricingPage(): React.JSX.Element {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.9 + index * 0.1 }}
-                className="bg-background/60 hover:border-primary/20 flex flex-col items-center rounded-xl border border-neutral-200/50 p-6 text-center backdrop-blur-sm transition-all dark:border-neutral-800/50"
+                className="bg-background/60 hover:border-primary/20 flex flex-col items-center rounded-xl border border-neutral-200/50 p-4 text-center backdrop-blur-sm transition-all sm:p-6 dark:border-neutral-800/50"
               >
-                <div className="bg-primary/10 text-primary mb-3 flex h-10 w-10 items-center justify-center rounded-full">
+                <div className="bg-primary/10 text-primary mb-2 flex h-8 w-8 items-center justify-center rounded-full sm:mb-3 sm:h-10 sm:w-10">
                   {benefit.icon}
                 </div>
-                <h3 className="text-foreground mb-2 text-sm font-semibold">{benefit.title}</h3>
-                <p className="text-text-secondary text-xs">{benefit.text}</p>
+                <h3 className="text-foreground mb-1 text-xs font-semibold sm:mb-2 sm:text-sm">
+                  {benefit.title}
+                </h3>
+                <p className="text-text-secondary text-xs leading-relaxed">{benefit.text}</p>
               </motion.div>
             ))}
           </div>
@@ -832,7 +816,7 @@ export default function PricingPage(): React.JSX.Element {
                                 {plan.maxStarmaps === 'unlimited'
                                   ? '∞'
                                   : billing === 'annual'
-                                    ? plan.maxStarmaps * 12
+                                    ? (plan.maxStarmaps as number) * 12
                                     : plan.maxStarmaps}
                               </span>
                               <span className="text-text-secondary text-base font-semibold">
@@ -890,7 +874,7 @@ export default function PricingPage(): React.JSX.Element {
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="mb-12"
+            className="mx-auto mb-12 max-w-7xl px-4 sm:px-6 lg:px-8"
           >
             <SeatSelector
               value={teamSeats}
@@ -898,7 +882,6 @@ export default function PricingPage(): React.JSX.Element {
               min={1}
               max={20}
               recommendedRange={{ min: 5, max: 8 }}
-              className="mx-auto max-w-2xl"
             />
           </motion.div>
 
@@ -936,32 +919,39 @@ export default function PricingPage(): React.JSX.Element {
                 >
                   {/* Custom content for team pricing */}
                   <div className="space-y-5">
-                    <div className="from-surface/60 to-surface/40 relative rounded-2xl border border-neutral-200/40 bg-gradient-to-br p-5">
-                      <div className="mb-3 flex items-center justify-between">
-                        <span className="text-text-secondary text-sm font-semibold">
-                          Total for {teamSeats} seats{billing === 'annual' ? ' (yearly)' : ''}:
-                        </span>
-                        <span className="text-foreground text-xl font-black">
-                          ${billing === 'annual' ? total * 12 : total}/
-                          {billing === 'annual' ? 'yr' : 'mo'}
-                        </span>
+                    <div className="from-primary/10 via-primary/5 to-secondary/10 border-primary/30 relative rounded-2xl border-2 bg-gradient-to-br p-6 shadow-lg">
+                      <div className="mb-2 text-center">
+                        <div className="text-text-secondary mb-3 text-sm font-semibold tracking-wide uppercase">
+                          Total for {teamSeats} seats{billing === 'annual' ? ' (yearly)' : ''}
+                        </div>
+                        <div className="text-foreground mb-4 text-5xl font-black tracking-tight">
+                          $
+                          {billing === 'annual'
+                            ? (total * 12).toLocaleString()
+                            : total.toLocaleString()}
+                          <span className="text-text-secondary text-2xl font-bold">
+                            /{billing === 'annual' ? 'yr' : 'mo'}
+                          </span>
+                        </div>
                       </div>
                       {billing === 'annual' && savings > 0 && (
-                        <div className="bg-success/10 border-success/20 inline-flex items-center gap-2 rounded-full border px-3 py-1.5">
-                          <svg
-                            className="text-success h-3.5 w-3.5"
-                            fill="currentColor"
-                            viewBox="0 0 20 20"
-                          >
-                            <path
-                              fillRule="evenodd"
-                              d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                              clipRule="evenodd"
-                            />
-                          </svg>
-                          <span className="text-success text-xs font-bold">
-                            Save ${savings.toLocaleString()} annually
-                          </span>
+                        <div className="flex justify-center">
+                          <div className="bg-success/10 border-success/30 inline-flex items-center gap-2 rounded-full border px-4 py-2">
+                            <svg
+                              className="text-success h-4 w-4"
+                              fill="currentColor"
+                              viewBox="0 0 20 20"
+                            >
+                              <path
+                                fillRule="evenodd"
+                                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                clipRule="evenodd"
+                              />
+                            </svg>
+                            <span className="text-success text-sm font-bold">
+                              Save ${savings.toLocaleString()} annually
+                            </span>
+                          </div>
                         </div>
                       )}
                     </div>
@@ -1035,7 +1025,7 @@ export default function PricingPage(): React.JSX.Element {
                               {plan.maxStarmapsPerUser === 'unlimited'
                                 ? '∞'
                                 : billing === 'annual'
-                                  ? plan.maxStarmapsPerUser * 12
+                                  ? (plan.maxStarmapsPerUser as number) * 12
                                   : plan.maxStarmapsPerUser}
                             </span>
                             <span className="text-text-secondary text-base font-semibold">
@@ -1052,244 +1042,6 @@ export default function PricingPage(): React.JSX.Element {
                 </PricingCard>
               );
             })}
-          </motion.div>
-        </section>
-
-        {/* Enterprise section */}
-        <section id="enterprise" className="mt-24 scroll-mt-24 sm:mt-32 lg:mt-40">
-          <motion.div
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            className="relative"
-          >
-            {/* Minimal background accent */}
-            <div className="pointer-events-none absolute inset-0 overflow-hidden rounded-3xl">
-              <div
-                className="absolute inset-0"
-                style={{
-                  backgroundImage: `radial-gradient(circle at 1px 1px, var(--primary-accent) 1px, transparent 1px)`,
-                  backgroundSize: '48px 48px',
-                  opacity: 0.05,
-                }}
-              />
-            </div>
-
-            <div className="bg-background/40 relative rounded-3xl border border-neutral-200/50 p-12 backdrop-blur-sm lg:p-16 dark:border-neutral-800/50">
-              {/* Refined title section */}
-              <div className="mb-16 text-center">
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  className="bg-primary/5 border-primary/10 mb-6 inline-flex items-center gap-2 rounded-full border px-3 py-1"
-                >
-                  <svg className="text-primary h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                  </svg>
-                  <span className="text-foreground text-sm font-medium">Enterprise</span>
-                </motion.div>
-
-                <h2 className="font-heading mb-4 text-4xl font-bold sm:text-5xl">
-                  <span className="gradient-text-cosmic">Infinite Horizons</span>
-                </h2>
-                <p className="text-text-secondary mx-auto max-w-2xl text-lg">
-                  Mission-critical infrastructure for organizations at scale
-                </p>
-              </div>
-
-              {/* 3-column layout */}
-              <div className="grid grid-cols-1 gap-8 lg:grid-cols-3 lg:gap-12">
-                {/* Features column - refined icons */}
-                <div className="space-y-5">
-                  <h3 className="font-heading text-foreground mb-8 text-xl font-semibold">
-                    Enterprise Features
-                  </h3>
-
-                  {[
-                    {
-                      icon: (
-                        <svg
-                          className="h-5 w-5"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                          strokeWidth={2}
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                          />
-                        </svg>
-                      ),
-                      title: 'Unlimited Everything',
-                      description: 'Unlimited starmap generations and storage',
-                    },
-                    {
-                      icon: (
-                        <svg
-                          className="h-5 w-5"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                          strokeWidth={2}
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
-                          />
-                        </svg>
-                      ),
-                      title: 'Advanced Security',
-                      description: 'SSO/SAML, SCIM, audit logs, compliance',
-                    },
-                    {
-                      icon: (
-                        <svg
-                          className="h-5 w-5"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                          strokeWidth={2}
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z"
-                          />
-                        </svg>
-                      ),
-                      title: 'Dedicated Support',
-                      description: '24/7 priority with 99.9% uptime SLA',
-                    },
-                    {
-                      icon: (
-                        <svg
-                          className="h-5 w-5"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                          strokeWidth={2}
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01"
-                          />
-                        </svg>
-                      ),
-                      title: 'Custom Infrastructure',
-                      description: 'Dedicated servers and white-label options',
-                    },
-                  ].map((feature, index) => (
-                    <motion.div
-                      key={index}
-                      initial={{ opacity: 0, x: -20 }}
-                      whileInView={{ opacity: 1, x: 0 }}
-                      viewport={{ once: true }}
-                      transition={{ delay: index * 0.1 }}
-                      className="hover:bg-primary/5 flex gap-4 rounded-xl p-4 transition-colors"
-                    >
-                      <div className="bg-primary/10 text-primary flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg">
-                        {feature.icon}
-                      </div>
-                      <div>
-                        <h4 className="text-foreground mb-1 text-sm font-semibold">
-                          {feature.title}
-                        </h4>
-                        <p className="text-text-secondary text-sm leading-relaxed">
-                          {feature.description}
-                        </p>
-                      </div>
-                    </motion.div>
-                  ))}
-                </div>
-
-                {/* Benefits column - minimal checkmarks */}
-                <div className="space-y-4">
-                  <h3 className="font-heading text-foreground mb-8 text-xl font-semibold">
-                    What's Included
-                  </h3>
-
-                  <div className="space-y-3">
-                    {[
-                      'Volume discounts for 20+ seats',
-                      'Custom contract terms',
-                      'Dedicated success manager',
-                      'Quarterly business reviews',
-                      'Custom integrations & API',
-                      'Advanced analytics',
-                      'Multi-region data residency',
-                      'Team training & onboarding',
-                    ].map((benefit, index) => (
-                      <motion.div
-                        key={index}
-                        initial={{ opacity: 0, x: 20 }}
-                        whileInView={{ opacity: 1, x: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ delay: index * 0.05 }}
-                        className="text-text-secondary flex items-start gap-2.5 text-sm"
-                      >
-                        <svg
-                          className="text-primary/60 mt-0.5 h-4 w-4 flex-shrink-0"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                          strokeWidth={2.5}
-                        >
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                        </svg>
-                        <span>{benefit}</span>
-                      </motion.div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Contact column - minimal and clean */}
-                <div className="lg:pl-8">
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    className="bg-background/60 flex h-full flex-col justify-center rounded-2xl border border-neutral-200/50 p-8 text-center backdrop-blur-sm dark:border-neutral-800/50"
-                  >
-                    <div className="mb-8">
-                      <span className="text-text-disabled text-sm font-medium">Starting at</span>
-                      <div className="mt-3 flex items-baseline justify-center gap-1">
-                        <span className="text-foreground text-4xl font-bold">$49</span>
-                        <span className="text-text-secondary text-sm">/seat/month</span>
-                      </div>
-                      <p className="text-text-disabled mt-2 text-sm">
-                        Custom limits & volume discounts
-                      </p>
-                    </div>
-
-                    <div className="mb-8 space-y-3">
-                      <a
-                        href="mailto:sales@smartslate.io"
-                        className="bg-secondary hover:shadow-secondary/25 focus-visible:ring-secondary/50 block w-full rounded-xl px-6 py-3.5 text-sm font-medium text-white shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
-                      >
-                        Contact Sales
-                      </a>
-
-                      <button
-                        type="button"
-                        className="bg-background/60 text-foreground hover:border-primary/30 hover:bg-background/80 focus-visible:ring-primary/50 w-full rounded-xl border border-neutral-200 px-6 py-3.5 text-sm font-medium transition-all duration-200 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none dark:border-neutral-800"
-                      >
-                        Schedule Demo
-                      </button>
-                    </div>
-
-                    <div className="bg-success/10 border-success/20 text-success inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-sm">
-                      <div className="bg-success h-1.5 w-1.5 rounded-full" />
-                      <span className="font-medium">Avg response: 2h</span>
-                    </div>
-                  </motion.div>
-                </div>
-              </div>
-            </div>
           </motion.div>
         </section>
 
@@ -1456,10 +1208,10 @@ export default function PricingPage(): React.JSX.Element {
             <p className="text-text-disabled border-t border-neutral-200/50 pt-4 text-xs leading-relaxed dark:border-neutral-800/50">
               <strong className="text-foreground">Rollover Policy:</strong> Starmap accumulation is
               available on all paid plans while subscription is active. Monthly allocations per
-              user: Explorer/Crew (5 gen/5 saved), Navigator/Fleet (20 gen/10 saved), Voyager/Armada
-              (40 gen/40 saved). Saved starmaps roll over monthly for up to 12 months, then reset to
-              0. Upon cancellation, users have 30 days to access saved Starmaps. See Terms of
-              Service for full details.
+              user: Explorer/Crew (5 gen/5 saved), Navigator/Fleet (20 gen/10 saved), Voyager (40
+              gen/20 saved), Armada (50 gen/50 saved). Saved starmaps roll over monthly for up to 12
+              months, then reset to 0. Upon cancellation, users have 30 days to access saved
+              Starmaps. See Terms of Service for full details.
             </p>
             <div className="flex items-center justify-center gap-2 pt-6 pb-8">
               <div className="bg-primary/50 h-1.5 w-1.5 rounded-full" />

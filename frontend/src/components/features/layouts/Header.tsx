@@ -20,7 +20,6 @@ interface HeaderProps {
 export const Header = memo(function Header({
   title,
   subtitle,
-  showMobileMenu = false,
   onMobileMenuToggle,
   className = '',
 }: HeaderProps) {

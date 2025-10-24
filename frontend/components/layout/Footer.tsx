@@ -15,7 +15,7 @@ interface FooterLinkProps {
 
 const FooterLink = ({ href, children, external = false }: FooterLinkProps) => {
   const linkClass = cn(
-    'text-white/60 transition-colors duration-200 hover:text-white',
+    'hover:text-primary text-white/60 transition-colors duration-200',
     'text-sm font-medium',
     'block py-1'
   );
@@ -48,9 +48,9 @@ const SocialIcon = ({ href, icon, label }: SocialIconProps) => (
     rel="noopener noreferrer"
     className={cn(
       'flex h-10 w-10 items-center justify-center',
-      'rounded-lg border border-white/10',
-      'text-white/60 hover:border-white/20 hover:text-white',
-      'bg-white/5 hover:bg-white/10',
+      'border-primary/20 rounded-lg border',
+      'hover:border-primary/40 hover:text-primary text-white/60',
+      'bg-primary/5 hover:bg-primary/10',
       'transition-all duration-200',
       'touch-target-sm'
     )}
@@ -66,7 +66,7 @@ export function Footer(): React.JSX.Element {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="relative mt-auto border-t border-white/10 bg-slate-900/95 backdrop-blur-sm">
+    <footer className="border-primary/20 relative mt-auto border-t bg-slate-900/95 backdrop-blur-sm">
       <div className="relative mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8 lg:py-16">
         <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5">
           {/* Company Info */}
@@ -173,7 +173,7 @@ export function Footer(): React.JSX.Element {
         </div>
 
         {/* Bottom Section */}
-        <div className="mt-12 border-t border-white/10 pt-8">
+        <div className="border-primary/20 mt-12 border-t pt-8">
           <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
             <div className="flex items-center gap-2 text-sm text-white/60">
               <span>© {currentYear} SmartSlate. All rights reserved.</span>

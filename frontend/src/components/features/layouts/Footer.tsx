@@ -80,7 +80,6 @@ export function Footer(): React.JSX.Element {
                   height={95}
                   quality={100}
                   loading="lazy"
-                  style={{ height: 'auto' }}
                 />
               </Link>
             </div>
@@ -124,7 +123,7 @@ export function Footer(): React.JSX.Element {
               <FooterLink href="/features">Features</FooterLink>
               <FooterLink href="/pricing">Pricing</FooterLink>
               <FooterLink href="/templates">Templates</FooterLink>
-              <FooterLink href="/updates">What's New</FooterLink>
+              <FooterLink href="/updates">What&apos;s New</FooterLink>
               <FooterLink href="/demo">Request Demo</FooterLink>
             </nav>
           </div>

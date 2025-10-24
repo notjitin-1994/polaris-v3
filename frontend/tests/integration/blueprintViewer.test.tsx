@@ -125,7 +125,7 @@ describe('Blueprint Viewer', () => {
 
   describe('Section Display Types', () => {
     it('should render infographic sections correctly', () => {
-      const { container } = render(<BlueprintViewer blueprint={blueprintFixtures.valid} />);
+      render(<BlueprintViewer blueprint={blueprintFixtures.valid} />);
 
       // Since we're mocking components, let's check the mocked output
       expect(screen.getByText('Learning Objectives')).toBeInTheDocument();
@@ -134,7 +134,7 @@ describe('Blueprint Viewer', () => {
     });
 
     it('should render timeline sections correctly', () => {
-      const { container } = render(<BlueprintViewer blueprint={blueprintFixtures.valid} />);
+      render(<BlueprintViewer blueprint={blueprintFixtures.valid} />);
 
       // Check for timeline sections in mocked output
       const timelineSections = screen.getAllByTestId('timeline-section');
@@ -142,7 +142,7 @@ describe('Blueprint Viewer', () => {
     });
 
     it('should render table sections correctly', () => {
-      const { container } = render(<BlueprintViewer blueprint={blueprintFixtures.valid} />);
+      render(<BlueprintViewer blueprint={blueprintFixtures.valid} />);
 
       // Check for table sections in mocked output
       const tableSections = screen.getAllByTestId('table-section');
@@ -150,7 +150,7 @@ describe('Blueprint Viewer', () => {
     });
 
     it('should render markdown sections correctly', () => {
-      const { container } = render(<BlueprintViewer blueprint={blueprintFixtures.valid} />);
+      render(<BlueprintViewer blueprint={blueprintFixtures.valid} />);
 
       // Check for markdown sections in mocked output
       const markdownSections = screen.getAllByTestId('markdown-section');
@@ -303,7 +303,7 @@ describe('Blueprint Viewer', () => {
     });
 
     it('should preserve scroll position when switching views', async () => {
-      const { container } = render(<BlueprintViewer blueprint={blueprintFixtures.valid} />);
+      render(<BlueprintViewer blueprint={blueprintFixtures.valid} />);
 
       // Scroll down
       window.scrollTo(0, 500);

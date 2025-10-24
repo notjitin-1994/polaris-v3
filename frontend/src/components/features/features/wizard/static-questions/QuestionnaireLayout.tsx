@@ -30,8 +30,8 @@ function createSeededRng(seed: number) {
 
 export function QuestionnaireLayout({
   children,
-  currentStep,
-  totalSteps,
+  currentStep: _currentStep,
+  totalSteps: _totalSteps,
 }: QuestionnaireLayoutProps): React.JSX.Element {
   const [viewport, setViewport] = useState<{ width: number; height: number }>({
     width: 0,

@@ -21,6 +21,9 @@ node_modules/
 # Cursor MCP configuration (contains API keys)
 .cursor/mcp.json
 
+# Claude Code MCP configuration (contains API keys)
+.claude.json
+
 # Additional environment patterns
 .env.development
 .env.production

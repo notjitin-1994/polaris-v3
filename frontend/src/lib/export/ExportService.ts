@@ -9,7 +9,6 @@ import {
   BatchExportOptions,
   ExportHistoryEntry,
   ExportServiceConfig,
-  ChartExportOptions,
 } from './types';
 
 export class ExportService {
@@ -88,7 +87,7 @@ export class ExportService {
    * Export multiple blueprints in batch
    */
   public async exportBatch(
-    blueprints: Blueprint[],
+    blueprints: AnyBlueprint[],
     options: BatchExportOptions,
     dashboardDataMap?: Map<string, DashboardData>
   ): Promise<ExportResult> {
@@ -177,8 +176,8 @@ export class ExportService {
         try {
           const charts = await chartCapture.captureDashboardCharts();
           data.charts = charts;
-        } catch (error) {
-          console.warn('Failed to capture charts, proceeding without them:', error);
+        } catch {
+          console.warn('Failed to capture charts, proceeding without them');
         }
       }
 
@@ -291,6 +290,7 @@ export class ExportService {
       return {
         title,
         description,
+        createdAt: new Date().toISOString(),
         exportedAt: new Date().toISOString(),
         version: '1.0.0',
         ...customMetadata,
@@ -300,6 +300,7 @@ export class ExportService {
     return {
       title: canonical.title,
       description: canonical.overview,
+      createdAt: new Date().toISOString(),
       exportedAt: new Date().toISOString(),
       version: '1.0.0',
       ...customMetadata,
@@ -356,7 +357,8 @@ export class ExportService {
     zipFileName?: string
   ): Promise<ExportResult> {
     try {
-      const { JSZip } = await import('jszip');
+      const JSZipModule = await import('jszip');
+      const JSZip = JSZipModule.default;
       const zip = new JSZip();
 
       // Add each successful export to the ZIP
@@ -393,6 +395,7 @@ export class ExportService {
         metadata: {
           title: zipFileName || 'batch-export',
           description: `Batch export containing ${successCount} files`,
+          createdAt: new Date().toISOString(),
           exportedAt: new Date().toISOString(),
           version: '1.0.0',
         },
@@ -440,8 +443,8 @@ export class ExportService {
 
     try {
       localStorage.setItem('export_history', JSON.stringify(this.history));
-    } catch (error) {
-      console.warn('Failed to save export history:', error);
+    } catch {
+      console.warn('Failed to save export history');
     }
   }
 }
