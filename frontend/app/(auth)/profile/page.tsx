@@ -98,11 +98,11 @@ function ProfileContent() {
                   <div
                     className={cn(
                       'text-caption rounded-full px-2 py-1 font-medium',
-                      profile.subscription_tier === 'explorer' &&
+                      profile.subscription_tier === 'free' &&
                         'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300',
-                      profile.subscription_tier === 'navigator' &&
+                      profile.subscription_tier === 'explorer' &&
                         'bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300',
-                      profile.subscription_tier === 'voyager' &&
+                      profile.subscription_tier === 'navigator' &&
                         'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300',
                       profile.subscription_tier === 'developer' &&
                         'bg-orange-100 text-orange-700 dark:bg-orange-900 dark:text-orange-300'

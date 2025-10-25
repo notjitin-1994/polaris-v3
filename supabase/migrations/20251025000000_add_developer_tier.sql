@@ -5,11 +5,12 @@
 
 BEGIN;
 
--- Set developer tier for not.jitin@gmail.com
+-- Set developer role for not.jitin@gmail.com
 -- This gives unlimited starmap generations and saves
+-- Note: Developer is now a role, not a tier
 UPDATE user_profiles
 SET
-  subscription_tier = 'developer',
+  subscription_tier = 'free',  -- Developers use free tier but have unlimited access via role
   user_role = 'developer',
   blueprint_creation_limit = -1, -- -1 means unlimited
   blueprint_saving_limit = -1,   -- -1 means unlimited
@@ -20,7 +21,7 @@ SET
       'true'::jsonb
     ),
     '{exemption_reason}',
-    '"Developer tier - unlimited access"'::jsonb
+    '"Developer role - unlimited access"'::jsonb
   ),
   subscription_metadata = jsonb_set(
     jsonb_set(
@@ -33,7 +34,7 @@ SET
       '-1'::jsonb
     ),
     '{tier_name}',
-    '"developer"'::jsonb
+    '"free"'::jsonb  -- Developer uses free tier
   ),
   role_assigned_at = NOW()
 WHERE user_id IN (SELECT id FROM auth.users WHERE email = 'not.jitin@gmail.com');

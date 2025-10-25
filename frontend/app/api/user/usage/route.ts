@@ -70,7 +70,7 @@ export async function GET(req: NextRequest): Promise<NextResponse<UserUsageRespo
       });
     }
 
-    const subscriptionTier = profile?.subscription_tier || 'explorer';
+    const subscriptionTier = profile?.subscription_tier || 'free';
 
     logger.info('user.usage.success', 'Usage info retrieved successfully', {
       userId,

@@ -1,6 +1,6 @@
 {
 	"meta": {
-		"generatedAt": "2025-10-20T18:48:58.066Z",
+		"generatedAt": "2025-10-25T08:47:45.131Z",
 		"tasksAnalyzed": 10,
 		"totalTasks": 10,
 		"analysisCount": 10,
@@ -10,84 +10,84 @@
 	},
 	"complexityAnalysis": [
 		{
-			"taskId": 11,
-			"taskTitle": "Install and Configure Vercel AI SDK Dependencies",
-			"complexityScore": 3,
-			"recommendedSubtasks": 3,
-			"expansionPrompt": "Break down the installation and configuration of Vercel AI SDK dependencies into subtasks covering: 1) Package installation with exact version locking, 2) Environment variable setup and validation, and 3) Startup validation implementation with fail-fast behavior.",
-			"reasoning": "This task has relatively low complexity as it involves standard dependency installation and basic environment validation. The technical challenges are minimal, requiring package installation, environment variable setup, and simple validation logic. The task is foundational but straightforward, with clear requirements and no complex integrations. Testing is also straightforward with basic unit and integration tests."
-		},
-		{
-			"taskId": 12,
-			"taskTitle": "Create Provider Configuration Module with Triple-Fallback Logic",
-			"complexityScore": 7,
-			"recommendedSubtasks": 4,
-			"expansionPrompt": "Break down the provider configuration module implementation into subtasks covering: 1) Core provider configuration interfaces and model settings, 2) Circuit breaker pattern implementation, 3) Fallback strategy with retry logic and backoff, and 4) Provider health monitoring system.",
-			"reasoning": "This task has high complexity due to the implementation of sophisticated fallback logic and circuit breaker patterns. It requires careful configuration of three different AI providers with specific parameters, error handling, and resilience patterns. The circuit breaker implementation adds significant complexity, as does the need to monitor provider health. Testing will be challenging, requiring simulation of various failure scenarios and verification of the fallback cascade."
-		},
-		{
-			"taskId": 13,
-			"taskTitle": "Migrate and Centralize Zod Schemas",
+			"taskId": 1,
+			"taskTitle": "Set up Vercel AI SDK Provider Configuration",
 			"complexityScore": 6,
 			"recommendedSubtasks": 4,
-			"expansionPrompt": "Break down the Zod schema migration into subtasks covering: 1) Schema directory structure and base schema creation, 2) Migration of existing validation logic, 3) Schema versioning and backward compatibility implementation, and 4) Schema utilities for normalization and transformation.",
-			"reasoning": "This task involves migrating 800+ lines of validation logic, which indicates substantial complexity. Creating a centralized schema system requires careful design to ensure backward compatibility and proper validation of AI SDK response formats. The schema versioning and build-time validation add additional complexity. The task requires deep understanding of the existing validation logic and careful refactoring to maintain compatibility."
+			"expansionPrompt": "Break down provider setup into individual configuration files with proper TypeScript types, environment validation, and error handling for each AI provider (Anthropic, Perplexity, Ollama)",
+			"reasoning": "Medium-high complexity due to need for three different provider configurations, TypeScript type safety requirements, environment validation, and ensuring compatibility with existing Ollama client. Requires understanding of AI SDK patterns and proper abstraction."
 		},
 		{
-			"taskId": 14,
-			"taskTitle": "Implement Question Generation Service with AI SDK",
-			"complexityScore": 8,
+			"taskId": 2,
+			"taskTitle": "Migrate Zod Schemas for AI SDK Compatibility",
+			"complexityScore": 7,
 			"recommendedSubtasks": 5,
-			"expansionPrompt": "Break down the question generation service implementation into subtasks covering: 1) Core generateQuestions function with AI SDK integration, 2) Request deduplication and correlation ID tracking, 3) Timeout and error handling implementation, 4) Performance optimization and memory usage tracking, and 5) Retry logic with exponential backoff.",
-			"reasoning": "This task has high complexity due to the integration with the AI SDK for structured output generation, implementation of triple-fallback logic, and strict performance requirements (3s max response time). The request deduplication, comprehensive error boundaries, memory usage tracking, and retry logic with exponential backoff all add significant complexity. Testing will be challenging, requiring mocked providers, real API calls, performance testing, and memory leak detection."
+			"expansionPrompt": "Create comprehensive schema migration covering all 27+ question types, blueprint sections, and AI SDK experimental_output compatibility with proper TypeScript inference and validation",
+			"reasoning": "High complexity due to extensive schema requirements (27+ question types, 10 sections, complex nested structures), AI SDK compatibility requirements, and need for backward compatibility with existing data formats. Critical foundation piece."
 		},
 		{
-			"taskId": 15,
-			"taskTitle": "Update Question Generation API Route with Backward Compatibility",
+			"taskId": 3,
+			"taskTitle": "Build Question Generation Service with Streaming",
+			"complexityScore": 8,
+			"recommendedSubtasks": 6,
+			"expansionPrompt": "Implement streaming question generation service with AI SDK streamObject, proper fallback logic, telemetry tracking, and migration from existing prompt building systems",
+			"reasoning": "High complexity involving streaming implementation, fallback logic, prompt migration, telemetry integration, and replacing complex existing logic. Requires deep understanding of AI SDK streaming patterns and error handling."
+		},
+		{
+			"taskId": 4,
+			"taskTitle": "Build Blueprint Generation Service with Streaming",
+			"complexityScore": 8,
+			"recommendedSubtasks": 6,
+			"expansionPrompt": "Create streaming blueprint generation service using Perplexity via custom OpenAI adapter, with context extraction, fallback handling, and backward compatibility for legacy formats",
+			"reasoning": "High complexity similar to Task 3 but with additional challenges of custom Perplexity adapter, context extraction from multiple answer formats, and replacing triple-fallback system with simplified approach."
+		},
+		{
+			"taskId": 5,
+			"taskTitle": "Update API Routes for Streaming Support",
+			"complexityScore": 6,
+			"recommendedSubtasks": 4,
+			"expansionPrompt": "Migrate API routes to support Server-Sent Events streaming while maintaining exact backward compatibility, authentication patterns, and existing validation logic",
+			"reasoning": "Medium-high complexity due to SSE implementation, backward compatibility requirements, and need to preserve existing API contracts while adding streaming capability. Integration complexity with new services."
+		},
+		{
+			"taskId": 6,
+			"taskTitle": "Create Streaming UI Components",
+			"complexityScore": 7,
+			"recommendedSubtasks": 5,
+			"expansionPrompt": "Build real-time progress UI components with EventSource management, visual progress indicators, error states, and proper cleanup for Server-Sent Events consumption",
+			"reasoning": "High complexity involving EventSource management, real-time UI updates, animation integration with Framer Motion, error boundary handling, and proper connection lifecycle management. Frontend streaming is inherently complex."
+		},
+		{
+			"taskId": 7,
+			"taskTitle": "Implement Feature Flags and Configuration",
 			"complexityScore": 5,
 			"recommendedSubtasks": 3,
-			"expansionPrompt": "Break down the API route update into subtasks covering: 1) Integration of questionGenerationService with feature flag support, 2) Response format compatibility and correlation ID tracking, and 3) Error handling and request/response logging implementation.",
-			"reasoning": "This task has moderate complexity as it involves updating an existing API route to use the new service while maintaining backward compatibility. The feature flag implementation adds some complexity, as does ensuring the exact same response format. Error handling with appropriate HTTP status codes and request/response logging are standard practices but require careful implementation. Testing will focus on comparing old vs new responses and verifying feature flag behavior."
+			"expansionPrompt": "Create feature flag system for gradual rollout with environment controls, percentage-based user cohorts, and admin interface for real-time flag management",
+			"reasoning": "Medium complexity for feature flag implementation, percentage rollout logic, and admin interface. Well-established patterns exist but requires careful integration with existing routing logic."
 		},
 		{
-			"taskId": 16,
-			"taskTitle": "Implement Blueprint Generation Service with Streaming Support",
+			"taskId": 8,
+			"taskTitle": "Write Comprehensive Test Suite",
 			"complexityScore": 9,
-			"recommendedSubtasks": 5,
-			"expansionPrompt": "Break down the blueprint generation service implementation into subtasks covering: 1) Core streamObject integration for real-time streaming, 2) SSE configuration with chunk size and buffer management, 3) Throttling and partial update implementation, 4) Timeout handling and abort signal integration, and 5) Stream validation, normalization, and backpressure handling.",
-			"reasoning": "This task has very high complexity due to the implementation of real-time streaming with specific requirements for chunk sizes, buffer management, and throttled updates. The streaming architecture requires careful handling of backpressure, abort signals, and timeouts. The stream validation and normalization layer adds additional complexity. Testing will be challenging, requiring mocked streams, real streaming responses, and verification of chunk size and buffer behavior."
+			"recommendedSubtasks": 7,
+			"expansionPrompt": "Create extensive test coverage including unit tests, integration tests, performance benchmarks, streaming functionality tests, and automated regression detection for the entire AI SDK migration",
+			"reasoning": "Very high complexity due to comprehensive testing requirements across multiple layers (unit, integration, performance), streaming functionality testing, fallback scenario testing, and need for 85%+ coverage across complex AI integration logic."
 		},
 		{
-			"taskId": 17,
-			"taskTitle": "Create React Hooks for Real-time Blueprint Updates",
-			"complexityScore": 7,
+			"taskId": 9,
+			"taskTitle": "Create Migration Utilities and Monitoring",
+			"complexityScore": 6,
 			"recommendedSubtasks": 4,
-			"expansionPrompt": "Break down the React hooks implementation into subtasks covering: 1) useBlueprintStream hook with EventSource integration, 2) useStreamingBlueprint hook for state management, 3) Progress tracking and partial rendering logic, and 4) Connection state management and cleanup implementation.",
-			"reasoning": "This task has high complexity as it involves creating custom React hooks to handle streaming data with specific UI update requirements. The implementation requires careful state management for partial updates, progress tracking, and connection states. The integration with error boundaries and cleanup on component unmount adds complexity. Testing will be challenging, requiring mocked streams, real streaming data, and verification of UI update frequency."
+			"expansionPrompt": "Build migration validation tools, performance monitoring infrastructure, structured logging, and health check systems for smooth transition and ongoing monitoring",
+			"reasoning": "Medium-high complexity involving validation logic, telemetry integration, monitoring infrastructure, and alert systems. Requires careful design for production monitoring and debugging capabilities."
 		},
 		{
-			"taskId": 18,
-			"taskTitle": "Implement Comprehensive Monitoring and Metrics Collection",
-			"complexityScore": 8,
-			"recommendedSubtasks": 5,
-			"expansionPrompt": "Break down the monitoring implementation into subtasks covering: 1) Performance metrics middleware (response time, throughput, error rates), 2) Resource usage tracking system, 3) Business metrics collection, 4) Provider health monitoring, and 5) Token consumption tracking and alert configuration.",
-			"reasoning": "This task has high complexity due to the comprehensive nature of the monitoring requirements. It involves implementing various types of metrics (performance, resource usage, business metrics), provider health monitoring, and token consumption tracking. The alert configuration with different priority levels adds complexity. Testing will require integration with monitoring systems and simulation of various failure scenarios to verify alert thresholds."
-		},
-		{
-			"taskId": 19,
-			"taskTitle": "Create Comprehensive Test Suite with 95% Coverage",
-			"complexityScore": 10,
-			"recommendedSubtasks": 6,
-			"expansionPrompt": "Break down the test suite implementation into subtasks covering: 1) Unit test framework setup with Vitest, 2) Integration tests for API endpoints, 3) MSW setup for API mocking, 4) Performance benchmark tests, 5) Concurrency and memory leak detection tests, and 6) Browser compatibility and device tests.",
-			"reasoning": "This task has maximum complexity as it involves creating a comprehensive test suite with 95% coverage across multiple test types (unit, integration, performance). The requirements include testing all provider scenarios, streaming behavior, and fallback logic. Setting up MSW for API mocking, creating performance benchmarks, testing concurrency with up to 100 simultaneous requests, and implementing cross-browser/device testing all add significant complexity. The task depends on multiple other complex tasks being completed first."
-		},
-		{
-			"taskId": 20,
-			"taskTitle": "Implement Feature Flag Rollout System and Deployment Strategy",
-			"complexityScore": 8,
-			"recommendedSubtasks": 4,
-			"expansionPrompt": "Break down the feature flag rollout system into subtasks covering: 1) Feature flag implementation with percentage-based rollout, 2) Rollout stage configuration and monitoring, 3) Automatic rollback trigger implementation, and 4) Monitoring dashboard and legacy code cleanup planning.",
-			"reasoning": "This task has high complexity due to the sophisticated rollout strategy with multiple stages and automatic rollback capabilities. The percentage-based feature flag system requires careful implementation to ensure consistent user experiences. The automatic rollback triggers based on error rates and response time degradation add significant complexity. The requirement for rollback execution in under 1 minute adds time constraints. Testing will involve verifying rollout percentage logic and rollback triggers."
+			"taskId": 10,
+			"taskTitle": "Deploy and Clean Up Legacy Code",
+			"complexityScore": 4,
+			"recommendedSubtasks": 3,
+			"expansionPrompt": "Execute gradual production deployment with monitoring, validate system performance, and safely remove legacy code after validation period",
+			"reasoning": "Medium complexity for deployment orchestration, gradual rollout monitoring, and systematic legacy code removal. Well-defined process but requires careful validation and monitoring."
 		}
 	]
 }

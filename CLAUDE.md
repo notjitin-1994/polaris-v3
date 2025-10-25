@@ -82,6 +82,12 @@ Each AI provider has:
 - `blueprint_creation_limit` / `blueprint_saving_limit` - Tier limits
 - `usage_metadata` (JSONB) - Flexible usage data
 
+**Tier Display Naming Convention**:
+- Default tier (explorer) → "Free Tier Member" in UI
+- Paid tiers (navigator, voyager, etc.) → "[Tier Name] Member" (e.g., "Navigator Member")
+- Developer tier → "Developer"
+- Use `getTierDisplayName()` from `@/lib/utils/tierDisplay` for consistent naming
+
 **Security**: All tables use Row Level Security (RLS) policies. Users can only access their own data.
 
 **Migrations**: Located in `supabase/migrations/`, named sequentially (e.g., `0003_blueprint_generator.sql`). Always include rollback logic.

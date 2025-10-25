@@ -8,12 +8,14 @@
     "db:reset": "supabase db reset",
     "db:push": "supabase db push",
     "db:status": "supabase status",
-    "db:migrations:new": "supabase migration new"
+    "db:migrations:new": "supabase migration new",
+    "admin:grant-access": "tsx scripts/grant-admin-access.ts"
   },
   "bin": {
     "dev-mcp": "scripts/dev-mcp/server.ts"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.76.1",
     "husky": "^9.1.7",
     "lint-staged": "^16.2.0",
     "pg": "^8.16.3"
@@ -22,8 +24,10 @@
   "devDependencies": {
     "@modelcontextprotocol/sdk": "^1.18.1",
     "@types/node": "^24.5.2",
+    "dotenv": "^17.2.3",
     "glob": "^11.0.3",
     "node-fetch": "^3.3.2",
-    "supabase": "^2.47.2"
+    "supabase": "^2.47.2",
+    "tsx": "^4.20.6"
   }
 }

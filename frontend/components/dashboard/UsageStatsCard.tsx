@@ -6,6 +6,7 @@ import { Zap, Save, TrendingUp, AlertCircle, Crown, Sparkles, Star, Activity } f
 import { GlassCard } from '@/components/ui/GlassCard';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
+import { getTierDisplayNameShort, isFreeTier } from '@/lib/utils/tierDisplay';
 
 interface UsageStatsCardProps {
   creationCount: number;
@@ -57,7 +58,7 @@ export function UsageStatsCard({
       };
     }
 
-    if (subscriptionTier === 'free') {
+    if (isFreeTier(subscriptionTier)) {
       const totalUsed = creationCount + savingCount;
       const totalLimit = creationLimit + savingLimit;
 
@@ -78,7 +79,7 @@ export function UsageStatsCard({
       } else {
         return {
           icon: Sparkles,
-          text: 'Free lifetime starmaps',
+          text: getTierDisplayNameShort(subscriptionTier),
           color: 'text-success',
           bgColor: 'bg-success/10',
         };
@@ -86,7 +87,7 @@ export function UsageStatsCard({
     }
     return {
       icon: Crown,
-      text: 'Premium Member',
+      text: getTierDisplayNameShort(subscriptionTier),
       color: 'text-primary',
       bgColor: 'bg-primary/10',
     };
@@ -105,8 +106,8 @@ export function UsageStatsCard({
         <div>
           <h3 className="text-title text-foreground mb-2 font-bold">Usage Statistics</h3>
           <p className="text-caption text-text-secondary">
-            {isLifetime && subscriptionTier === 'free'
-              ? 'Lifetime allocation for free tier'
+            {isLifetime && isFreeTier(subscriptionTier)
+              ? 'Lifetime allocation for Free Tier Members'
               : 'Your current usage and limits'}
           </p>
         </div>
@@ -238,7 +239,7 @@ export function UsageStatsCard({
       </div>
 
       {/* Action Section */}
-      {subscriptionTier === 'free' &&
+      {isFreeTier(subscriptionTier) &&
         (creationCount >= creationLimit || savingCount >= savingLimit) && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -253,7 +254,7 @@ export function UsageStatsCard({
                   Unlock More Starmaps
                 </h4>
                 <p className="text-caption text-text-secondary">
-                  Upgrade to a premium plan for unlimited starmaps and advanced features.
+                  Upgrade to a premium membership for unlimited starmaps and advanced features.
                 </p>
               </div>
             </div>
@@ -267,7 +268,7 @@ export function UsageStatsCard({
         )}
 
       {/* Info for free users with available slots */}
-      {subscriptionTier === 'free' && creationCount < creationLimit && (
+      {isFreeTier(subscriptionTier) && creationCount < creationLimit && (
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}

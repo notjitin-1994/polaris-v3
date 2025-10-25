@@ -148,7 +148,10 @@ export function buildBlueprintPrompt(context: BlueprintContext): string {
   };
 
   const getIndustryIntelligence = (industry: string) => {
-    const industryMap: Record<string, { bestPractices: string[]; compliance: string[]; competitiveAdvantages: string[] }> = {
+    const industryMap: Record<
+      string,
+      { bestPractices: string[]; compliance: string[]; competitiveAdvantages: string[] }
+    > = {
       Technology: {
         bestPractices: [
           'Agile methodologies',

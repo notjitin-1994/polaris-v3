@@ -10,6 +10,7 @@ import { TierBadge } from './UsageBadge';
 import { useUsageStats } from '@/lib/hooks/useUsageStats';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
+import { isFreeTier as checkIsFreeTier } from '@/lib/utils/tierDisplay';
 
 /**
  * Enhanced Usage Stats Display Component
@@ -69,7 +70,7 @@ export function UsageStatsDisplay({ className }: { className?: string }) {
     return null;
   }
 
-  const isFreeTier = usage.subscriptionTier === 'free' || usage.subscriptionTier === 'explorer';
+  const isFreeTier = checkIsFreeTier(usage.subscriptionTier);
   const showUpgrade = isFreeTier && (isCreationLimitReached || isSavingLimitReached);
 
   return (
@@ -82,7 +83,9 @@ export function UsageStatsDisplay({ className }: { className?: string }) {
         <div>
           <h3 className="text-title text-foreground mb-2 font-bold">Usage Statistics</h3>
           <p className="text-caption text-text-secondary">
-            {isFreeTier ? 'Lifetime allocation for free tier' : 'Your current usage and limits'}
+            {isFreeTier
+              ? 'Lifetime allocation for Free Tier Members'
+              : 'Your current usage and limits'}
           </p>
         </div>
         <TierBadge tier={usage.subscriptionTier} isExempt={usage.isExempt} />
@@ -180,7 +183,7 @@ export function UsageStatsDisplay({ className }: { className?: string }) {
                 Unlock Unlimited Access
               </h4>
               <p className="text-caption text-text-secondary">
-                Upgrade to premium for unlimited blueprints and advanced features.
+                Upgrade to a premium membership for unlimited blueprints and advanced features.
               </p>
             </div>
           </div>
@@ -253,7 +256,7 @@ export function CompactUsageDisplay({ className }: { className?: string }) {
     );
   }
 
-  const isFreeTier = usage.subscriptionTier === 'free' || usage.subscriptionTier === 'explorer';
+  const isFreeTier = checkIsFreeTier(usage.subscriptionTier);
 
   if (!isFreeTier) {
     return (

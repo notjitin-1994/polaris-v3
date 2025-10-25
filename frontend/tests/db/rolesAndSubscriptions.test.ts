@@ -98,8 +98,8 @@ describeMaybe('db/rolesAndSubscriptions (integration)', () => {
         .single();
 
       expect(error).toBeNull();
-      expect(data?.subscription_tier).toBe('explorer');
-      expect(data?.user_role).toBe('explorer');
+      expect(data?.subscription_tier).toBe('free');
+      expect(data?.user_role).toBe('user');
     });
 
     it('accepts valid subscription tiers', async () => {
@@ -253,7 +253,7 @@ describeMaybe('db/rolesAndSubscriptions (integration)', () => {
         .from('user_profiles')
         .update({
           subscription_tier: 'navigator',
-          user_role: 'navigator',
+          user_role: 'user',
           subscription_metadata: {
             usage: {
               generations_this_month: 10,
@@ -303,7 +303,7 @@ describeMaybe('db/rolesAndSubscriptions (integration)', () => {
       await serviceClient
         .from('user_profiles')
         .update({
-          user_role: 'voyager',
+          user_role: 'user',
           role_assigned_by: adminUserId,
         })
         .eq('user_id', testUserId);
@@ -367,7 +367,7 @@ describeMaybe('db/rolesAndSubscriptions (integration)', () => {
           user_id: testUserId,
           period_start: periodStart.toISOString(),
           period_end: periodEnd.toISOString(),
-          subscription_tier: 'explorer',
+          subscription_tier: 'free',
           starmaps_generated: 5,
           starmaps_saved: 3,
           exports_pdf: 2,
@@ -381,7 +381,7 @@ describeMaybe('db/rolesAndSubscriptions (integration)', () => {
       expect(error).toBeNull();
       expect(data).toBeDefined();
       expect(data?.starmaps_generated).toBe(5);
-      expect(data?.subscription_tier).toBe('explorer');
+      expect(data?.subscription_tier).toBe('free');
     });
 
     it('enforces unique constraint on user_id and period_start', async () => {
@@ -394,7 +394,7 @@ describeMaybe('db/rolesAndSubscriptions (integration)', () => {
         user_id: testUserId,
         period_start: periodStart.toISOString(),
         period_end: periodEnd.toISOString(),
-        subscription_tier: 'explorer',
+        subscription_tier: 'free',
         starmaps_generated: 5,
       });
 
@@ -403,7 +403,7 @@ describeMaybe('db/rolesAndSubscriptions (integration)', () => {
         user_id: testUserId,
         period_start: periodStart.toISOString(),
         period_end: periodEnd.toISOString(),
-        subscription_tier: 'explorer',
+        subscription_tier: 'free',
         starmaps_generated: 10,
       });
 
@@ -482,14 +482,14 @@ describeMaybe('db/rolesAndSubscriptions (integration)', () => {
           user_id: regularUserId,
           period_start: new Date().toISOString(),
           period_end: new Date().toISOString(),
-          subscription_tier: 'explorer',
+          subscription_tier: 'free',
           starmaps_generated: 5,
         },
         {
           user_id: developerUserId,
           period_start: new Date().toISOString(),
           period_end: new Date().toISOString(),
-          subscription_tier: 'developer',
+          subscription_tier: 'free',
           starmaps_generated: 100,
         },
       ]);

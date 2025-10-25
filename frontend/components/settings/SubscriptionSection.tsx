@@ -18,6 +18,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { GlassCard } from '@/components/ui/GlassCard';
 import { useUserProfile } from '@/lib/hooks/useUserProfile';
+import { getTierDisplayName, getTierDisplayNameShort, getTierInfo } from '@/lib/utils/tierDisplay';
 
 // Subscription tier definitions based on the PRD tiers
 const subscriptionTiers = {
@@ -93,10 +94,13 @@ export function SubscriptionSection() {
     return profile.subscription_metadata as Record<string, any>;
   }, [profile]);
 
-  const currentTierKey = (profile?.subscription_tier ||
-    'explorer') as keyof typeof subscriptionTiers;
+  const currentTierKey = (profile?.subscription_tier || 'free') as keyof typeof subscriptionTiers;
   const currentTier = subscriptionTiers[currentTierKey] || subscriptionTiers.explorer;
   const TierIcon = currentTier.icon;
+
+  // Get display names using the new utility
+  const currentTierDisplayName = getTierDisplayName(profile?.subscription_tier);
+  const currentTierInfo = getTierInfo(profile?.subscription_tier);
 
   const handleUpgrade = async (targetTier: keyof typeof subscriptionTiers) => {
     if (targetTier === currentTierKey) return;
@@ -206,7 +210,7 @@ export function SubscriptionSection() {
               </div>
               <div className="flex-1">
                 <div className="flex items-center gap-2">
-                  <h4 className="text-title text-foreground">{currentTier.name}</h4>
+                  <h4 className="text-title text-foreground">{currentTierDisplayName}</h4>
                   {profile?.subscription_tier === 'developer' && (
                     <span className="rounded-full bg-gradient-to-r from-orange-500 to-red-500 px-2 py-0.5 text-xs font-medium text-white">
                       DEV
@@ -222,17 +226,17 @@ export function SubscriptionSection() {
             {/* Subscription Status */}
             <div className="mb-6 grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <p className="text-caption text-text-secondary">Tier</p>
+                <p className="text-caption text-text-secondary">Membership</p>
                 <div className="flex items-center gap-2">
-                  <span className="text-body text-foreground font-medium capitalize">
-                    {profile?.subscription_tier || 'explorer'}
+                  <span className="text-body text-foreground font-medium">
+                    {getTierDisplayNameShort(profile?.subscription_tier)}
                   </span>
                 </div>
               </div>
               <div className="space-y-2">
                 <p className="text-caption text-text-secondary">Role</p>
-                <p className="text-body text-foreground capitalize">
-                  {profile?.user_role || 'explorer'}
+                <p className="text-body text-foreground">
+                  {getTierDisplayNameShort(profile?.user_role)}
                 </p>
               </div>
             </div>

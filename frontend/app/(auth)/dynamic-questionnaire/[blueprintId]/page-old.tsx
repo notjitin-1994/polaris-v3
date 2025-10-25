@@ -1,9 +1,9 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FormProvider } from 'react-hook-form';
+import { FormProvider, useForm, useFormContext, useFormState } from 'react-hook-form';
 import ProtectedRoute from '@/components/auth/ProtectedRoute';
 import { StandardHeader } from '@/components/layout/StandardHeader';
 import { useAuth } from '@/contexts/AuthContext';
@@ -23,6 +23,8 @@ import {
   SaveProgressButton as _SaveProgressButton,
   SuccessNotification as _SuccessNotification,
 } from '@/components/questionnaire';
+import { QuestionnaireButton } from '@/components/demo-v2-questionnaire/QuestionnaireButton';
+import { DynamicQuestionRenderer } from '@/components/demo-dynamicv2/DynamicQuestionRenderer';
 
 // Import accessibility components (prefixed with _ as this is an old/reference file)
 import {
@@ -34,6 +36,27 @@ import { KeyboardHints as _KeyboardHints } from '@/components/questionnaire/acce
 // Import styles
 import '@/styles/design-system.css';
 import '@/styles/questionnaire-v2.css';
+
+// Types
+interface Question {
+  id: string;
+  label: string;
+  type: string;
+  required: boolean;
+  helpText?: string;
+  placeholder?: string;
+  options?: Array<{
+    value: string;
+    label: string;
+    description?: string;
+    icon?: string;
+  }>;
+  validation?: Array<{
+    rule: string;
+    value?: string | number | boolean;
+    message: string;
+  }>;
+}
 
 // Types for questionnaire data
 interface DynamicQuestionsData {
@@ -99,6 +122,22 @@ function DynamicQuestionnaireContent({
     }>
   >([]);
 
+  // Form state
+  const methods = useForm();
+  const { getValues, watch, trigger, handleSubmit } = methods;
+  const { errors } = useFormState();
+  const [currentSection, setCurrentSection] = useState(0);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isAutosaving, setIsAutosaving] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
+  const [lastAutosave, setLastAutosave] = useState<Date | null>(null);
+  const [retryCount, setRetryCount] = useState(0);
+
+  // Refs
+  const autosaveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const lastFormDataRef = useRef<string>('');
+  const hasUnsavedChangesRef = useRef(false);
+
   // Apply design tokens
   useDesignTokens();
 
@@ -114,13 +153,13 @@ function DynamicQuestionnaireContent({
     const fetchQuestions = async () => {
       try {
         setIsLoading(true);
-        setLoadError(null);
+        _setLoadError(null);
 
         const response = await fetch(`/api/dynamic-questions/${blueprintId}`);
 
         if (!response.ok) {
           if (response.status === 404) {
-            setLoadError('Blueprint not found. Redirecting...');
+            _setLoadError('Blueprint not found. Redirecting...');
             setTimeout(() => router.push('/dashboard'), 2000);
             return;
           }
@@ -131,7 +170,7 @@ function DynamicQuestionnaireContent({
 
         // Check if questions exist
         if (!data.sections || data.sections.length === 0) {
-          setLoadError('No questions found. Generating...');
+          _setLoadError('No questions found. Generating...');
           setTimeout(() => router.push(`/loading/${blueprintId}`), 2000);
           return;
         }
@@ -152,7 +191,7 @@ function DynamicQuestionnaireContent({
 
         setQuestionsData(data);
       } catch (error) {
-        setLoadError('Failed to load questionnaire. Please try again.');
+        _setLoadError('Failed to load questionnaire. Please try again.');
         console.error('Error loading questionnaire:', error);
       } finally {
         setIsLoading(false);
@@ -610,7 +649,7 @@ function DynamicQuestionnaireContent({
     }
 
     // If valid, proceed with the existing submit flow
-    handleSubmit(onSubmit)();
+    methods.handleSubmit(onSubmit)();
   };
 
   // Loading state
@@ -698,8 +737,20 @@ function DynamicQuestionnaireContent({
       <main className="w-full px-4 py-8 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-6xl">
           <FormErrorBoundary>
-            <FormProvider {...methods}>
-              <form onSubmit={handleSubmit(onSubmit)}>
+            <_QuestionnaireProvider
+              initialData={{
+                sections: questionsData.sections,
+                existingAnswers: questionsData.existingAnswers || {},
+                currentSection: currentSection,
+                blueprintId: blueprintId,
+              }}
+              onSubmit={onSubmit}
+              onSave={async (data) => {
+                // Auto-save functionality
+                console.log('Saving progress:', data);
+              }}
+            >
+              <form onSubmit={methods.handleSubmit(onSubmit)}>
                 {/* Main Questionnaire Card */}
                 <motion.div
                   initial={{ opacity: 0, y: 30 }}
@@ -708,26 +759,39 @@ function DynamicQuestionnaireContent({
                   className="glass-card space-y-8 p-8 md:p-10"
                 >
                   {/* Progress Indicator */}
-                  <QuestionnaireProgress
-                    currentStep={currentSection}
-                    totalSteps={questionsData.sections.length}
-                    sections={questionsData.sections.map((section, idx) => ({
-                      id: idx + 1,
-                      title: section.title,
-                      description: section.description || '',
-                    }))}
-                  />
+                  <QuestionnaireProgress />
 
                   {/* Validation Status and Progress */}
                   {(() => {
-                    const sectionStatus = getSectionValidationStatus(
-                      questionsData.sections,
-                      getValues()
-                    );
+                    // Simple validation status calculation
+                    const sectionStatus = questionsData.sections.map((section, idx) => {
+                      const sectionQuestions = section.questions;
+                      const answers = getValues();
+                      const completedQuestions = sectionQuestions.filter((q) => {
+                        const value = answers[q.id];
+                        return q.required
+                          ? value !== undefined && value !== null && value !== ''
+                          : true;
+                      });
+                      return {
+                        completionPercentage: Math.round(
+                          (completedQuestions.length / sectionQuestions.length) * 100
+                        ),
+                      };
+                    });
                     const currentSectionStatus = sectionStatus[currentSection];
-                    const overallCompletion = calculateCompletionPercentage(
-                      questionsData.sections,
-                      getValues()
+                    const overallCompletion = Math.round(
+                      questionsData.sections.reduce((acc, section) => {
+                        const sectionQuestions = section.questions;
+                        const answers = getValues();
+                        const completedQuestions = sectionQuestions.filter((q) => {
+                          const value = answers[q.id];
+                          return q.required
+                            ? value !== undefined && value !== null && value !== ''
+                            : true;
+                        });
+                        return acc + (completedQuestions.length / sectionQuestions.length) * 100;
+                      }, 0) / questionsData.sections.length
                     );
 
                     return (
@@ -919,7 +983,7 @@ function DynamicQuestionnaireContent({
                   </div>
                 </motion.div>
               </form>
-            </FormProvider>
+            </_QuestionnaireProvider>
           </FormErrorBoundary>
         </div>
       </main>

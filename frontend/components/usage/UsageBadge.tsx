@@ -4,6 +4,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Zap, Save, AlertCircle, CheckCircle, Crown } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { getTierDisplayNameShort, getTierInfo } from '@/lib/utils/tierDisplay';
 
 interface UsageBadgeProps {
   current: number;
@@ -166,56 +167,44 @@ export function TierBadge({
   isExempt?: boolean;
   className?: string;
 }) {
-  const getTierInfo = () => {
-    if (isExempt) {
-      return {
-        label: 'Lifetime Access',
+  const tierDisplayInfo = getTierInfo(tier);
+  const displayLabel = isExempt ? 'Lifetime Access' : tierDisplayInfo.shortName;
+
+  // Icon selection based on tier
+  const Icon = isExempt || tierDisplayInfo.isPaid ? Crown : Zap;
+
+  // Color scheme based on tier
+  const colorScheme = isExempt
+    ? {
         color: 'text-primary',
         bg: 'bg-primary/10',
         border: 'border-primary/30',
-        icon: Crown,
-      };
-    }
-
-    switch (tier.toLowerCase()) {
-      case 'premium':
-      case 'pro':
-        return {
-          label: 'Premium',
+      }
+    : tierDisplayInfo.isPaid
+      ? {
           color: 'text-secondary',
           bg: 'bg-secondary/10',
           border: 'border-secondary/30',
-          icon: Crown,
-        };
-      case 'free':
-      case 'explorer':
-      default:
-        return {
-          label: 'Free Tier',
+        }
+      : {
           color: 'text-text-secondary',
           bg: 'bg-neutral-100',
           border: 'border-neutral-200',
-          icon: Zap,
         };
-    }
-  };
-
-  const tierInfo = getTierInfo();
-  const Icon = tierInfo.icon;
 
   return (
     <div
       className={cn(
         'inline-flex items-center gap-2 rounded-full border px-3 py-1.5',
         'text-caption font-medium',
-        tierInfo.bg,
-        tierInfo.border,
-        tierInfo.color,
+        colorScheme.bg,
+        colorScheme.border,
+        colorScheme.color,
         className
       )}
     >
       <Icon className="h-3.5 w-3.5" />
-      <span>{tierInfo.label}</span>
+      <span>{displayLabel}</span>
     </div>
   );
 }

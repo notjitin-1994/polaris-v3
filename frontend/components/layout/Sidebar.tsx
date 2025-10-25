@@ -83,8 +83,22 @@ export function Sidebar({ user, onSignOut }: SidebarProps) {
     return name.charAt(0).toUpperCase() + name.slice(1);
   };
 
+  // Check if user is admin/developer
+  const isAdmin = profile?.user_role === 'developer';
+
   const collapsedQuickItems = [
     { title: 'Dashboard', icon: IconApps, path: '/' },
+    ...(isAdmin
+      ? [
+          {
+            title: 'Admin',
+            icon: IconSettings,
+            path: '/admin',
+            badge: 'Admin',
+            badgeType: 'admin' as const,
+          },
+        ]
+      : []),
     { title: 'Explore', icon: IconEye, path: '/explore', badge: 'Coming Soon', disabled: true },
     { title: 'Learning', icon: IconSun, path: '/learning', badge: 'Coming Soon', disabled: true },
   ];
@@ -147,35 +161,43 @@ export function Sidebar({ user, onSignOut }: SidebarProps) {
               <h2 className="text-primary mb-2 px-3 text-[5px] font-bold tracking-wider uppercase">
                 Quick Access
               </h2>
-              {collapsedQuickItems.map(({ title, icon: Icon, path, badge, disabled }) => {
-                const isActive = pathname === path;
-                return (
-                  <button
-                    key={title}
-                    type="button"
-                    onClick={() => !disabled && router.push(path)}
-                    disabled={disabled}
-                    className={`group focus-visible:ring-secondary/50 flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200 focus-visible:ring-2 focus-visible:ring-offset-2 ${
-                      isActive
-                        ? 'bg-primary/10 text-primary shadow-sm'
-                        : disabled
-                          ? 'text-text-disabled cursor-not-allowed'
-                          : 'text-text-secondary hover:text-foreground hover:bg-foreground/5 active:scale-[0.98]'
-                    } `}
-                  >
-                    <Icon className="h-5 w-5 shrink-0" />
-                    <span className="flex-1 truncate text-left">{title}</span>
-                    {badge && (
-                      <span className="border-primary/40 bg-primary/10 text-primary shadow-primary/20 inline-flex shrink-0 items-center rounded-full border px-2.5 py-0.5 text-[10px] font-semibold tracking-wide uppercase shadow transition-all duration-200">
-                        {badge}
-                      </span>
-                    )}
-                    {isActive && !disabled && (
-                      <div className="bg-primary absolute top-1/2 right-0 h-8 w-1 -translate-y-1/2 rounded-l-full" />
-                    )}
-                  </button>
-                );
-              })}
+              {collapsedQuickItems.map(
+                ({ title, icon: Icon, path, badge, badgeType, disabled }) => {
+                  const isActive = pathname === path;
+                  return (
+                    <button
+                      key={title}
+                      type="button"
+                      onClick={() => !disabled && router.push(path)}
+                      disabled={disabled}
+                      className={`group focus-visible:ring-secondary/50 flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200 focus-visible:ring-2 focus-visible:ring-offset-2 ${
+                        isActive
+                          ? 'bg-primary/10 text-primary shadow-sm'
+                          : disabled
+                            ? 'text-text-disabled cursor-not-allowed'
+                            : 'text-text-secondary hover:text-foreground hover:bg-foreground/5 active:scale-[0.98]'
+                      } `}
+                    >
+                      <Icon className="h-5 w-5 shrink-0" />
+                      <span className="flex-1 truncate text-left">{title}</span>
+                      {badge && (
+                        <span
+                          className={`inline-flex shrink-0 items-center rounded-full border px-2.5 py-0.5 text-[10px] font-semibold tracking-wide uppercase shadow transition-all duration-200 ${
+                            badgeType === 'admin'
+                              ? 'border-indigo-500/40 bg-indigo-500/10 text-indigo-400 shadow-indigo-500/20'
+                              : 'border-primary/40 bg-primary/10 text-primary shadow-primary/20'
+                          }`}
+                        >
+                          {badge}
+                        </span>
+                      )}
+                      {isActive && !disabled && (
+                        <div className="bg-primary absolute top-1/2 right-0 h-8 w-1 -translate-y-1/2 rounded-l-full" />
+                      )}
+                    </button>
+                  );
+                }
+              )}
             </div>
 
             {/* Product Links */}
