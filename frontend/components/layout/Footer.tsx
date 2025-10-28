@@ -3,8 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { motion } from 'framer-motion';
-import { Twitter, Linkedin, Github, Youtube, Heart } from 'lucide-react';
+import { Heart } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface FooterLinkProps {
@@ -35,33 +34,6 @@ const FooterLink = ({ href, children, external = false }: FooterLinkProps) => {
   );
 };
 
-interface SocialIconProps {
-  href: string;
-  icon: React.ReactNode;
-  label: string;
-}
-
-const SocialIcon = ({ href, icon, label }: SocialIconProps) => (
-  <motion.a
-    href={href}
-    target="_blank"
-    rel="noopener noreferrer"
-    className={cn(
-      'flex h-10 w-10 items-center justify-center',
-      'border-primary/20 rounded-lg border',
-      'hover:border-primary/40 hover:text-primary text-white/60',
-      'bg-primary/5 hover:bg-primary/10',
-      'transition-all duration-200',
-      'touch-target-sm'
-    )}
-    whileHover={{ scale: 1.05 }}
-    whileTap={{ scale: 0.95 }}
-    aria-label={label}
-  >
-    {icon}
-  </motion.a>
-);
-
 export function Footer(): React.JSX.Element {
   const currentYear = new Date().getFullYear();
 
@@ -72,74 +44,56 @@ export function Footer(): React.JSX.Element {
           {/* Company Info */}
           <div className="lg:col-span-1">
             <div className="mb-6">
-              <Link href="/" className="inline-block transition-opacity hover:opacity-90">
+              <a
+                href="https://www.smartslate.io/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-block transition-opacity hover:opacity-90"
+              >
                 <Image
                   src="/logo.png"
-                  alt="SmartSlate Logo"
+                  alt="Smartslate Logo"
                   width={378}
                   height={95}
                   quality={100}
                   loading="lazy"
                   style={{ height: 'auto' }}
                 />
-              </Link>
+              </a>
             </div>
 
             <p className="mb-6 text-sm leading-relaxed text-white/60">
-              Revolutionizing the way the world learns through innovative educational technology and
-              AI-powered personalized learning experiences.
+              Revolutionizing the way the world learns through innovative educational technology.
             </p>
-
-            {/* Social Media */}
-            <div className="flex items-center gap-3">
-              <SocialIcon
-                href="https://twitter.com/smartslate"
-                icon={<Twitter className="h-4 w-4" />}
-                label="Follow us on Twitter"
-              />
-              <SocialIcon
-                href="https://linkedin.com/company/smartslate"
-                icon={<Linkedin className="h-4 w-4" />}
-                label="Connect with us on LinkedIn"
-              />
-              <SocialIcon
-                href="https://github.com/smartslate"
-                icon={<Github className="h-4 w-4" />}
-                label="View our GitHub repository"
-              />
-              <SocialIcon
-                href="https://youtube.com/@smartslate"
-                icon={<Youtube className="h-4 w-4" />}
-                label="Watch our videos on YouTube"
-              />
-            </div>
           </div>
 
-          {/* Product Links */}
+          {/* Products */}
           <div>
             <h3 className="mb-4 text-sm font-semibold tracking-wider text-white uppercase">
-              Product
+              Products
             </h3>
             <nav className="space-y-1">
-              <FooterLink href="/features">Features</FooterLink>
-              <FooterLink href="/pricing">Pricing</FooterLink>
-              <FooterLink href="/templates">Templates</FooterLink>
-              <FooterLink href="/updates">What's New</FooterLink>
-              <FooterLink href="/demo">Request Demo</FooterLink>
+              <FooterLink href="https://www.smartslate.io/features" external>
+                Solara: Features
+              </FooterLink>
+              <FooterLink href="https://www.smartslate.io/pricing" external>
+                Solara: Pricing
+              </FooterLink>
             </nav>
           </div>
 
-          {/* Resources */}
+          {/* Services */}
           <div>
             <h3 className="mb-4 text-sm font-semibold tracking-wider text-white uppercase">
-              Resources
+              Services
             </h3>
             <nav className="space-y-1">
-              <FooterLink href="/blog">Blog</FooterLink>
-              <FooterLink href="/tutorials">Tutorials</FooterLink>
-              <FooterLink href="/docs">Documentation</FooterLink>
-              <FooterLink href="/support">Help Center</FooterLink>
-              <FooterLink href="/community">Community</FooterLink>
+              <FooterLink href="https://www.smartslate.io/ignite" external>
+                Ignite
+              </FooterLink>
+              <FooterLink href="https://www.smartslate.io/products" external>
+                Strategic Skills Architecture
+              </FooterLink>
             </nav>
           </div>
 
@@ -149,11 +103,18 @@ export function Footer(): React.JSX.Element {
               Company
             </h3>
             <nav className="space-y-1">
-              <FooterLink href="/about">About Us</FooterLink>
-              <FooterLink href="/careers">Careers</FooterLink>
-              <FooterLink href="/contact">Contact</FooterLink>
-              <FooterLink href="/partners">Partners</FooterLink>
-              <FooterLink href="/press">Press Kit</FooterLink>
+              <FooterLink href="https://www.smartslate.io/difference" external>
+                About Us
+              </FooterLink>
+              <FooterLink href="https://www.smartslate.io/careers" external>
+                Careers
+              </FooterLink>
+              <FooterLink href="https://www.smartslate.io/contact" external>
+                Contact
+              </FooterLink>
+              <FooterLink href="https://www.smartslate.io/partner" external>
+                Partners
+              </FooterLink>
             </nav>
           </div>
 
@@ -163,11 +124,15 @@ export function Footer(): React.JSX.Element {
               Legal
             </h3>
             <nav className="space-y-1">
-              <FooterLink href="/legal/privacy">Privacy Policy</FooterLink>
-              <FooterLink href="/legal/terms">Terms of Service</FooterLink>
-              <FooterLink href="/legal/cookies">Cookie Policy</FooterLink>
-              <FooterLink href="/legal/gdpr">GDPR Compliance</FooterLink>
-              <FooterLink href="/security">Security</FooterLink>
+              <FooterLink href="https://www.smartslate.io/legal/privacy" external>
+                Privacy Policy
+              </FooterLink>
+              <FooterLink href="https://www.smartslate.io/legal/terms" external>
+                Terms of Service
+              </FooterLink>
+              <FooterLink href="https://www.smartslate.io/cookies" external>
+                Cookie Policy
+              </FooterLink>
             </nav>
           </div>
         </div>
@@ -176,7 +141,7 @@ export function Footer(): React.JSX.Element {
         <div className="border-primary/20 mt-12 border-t pt-8">
           <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
             <div className="flex items-center gap-2 text-sm text-white/60">
-              <span>© {currentYear} SmartSlate. All rights reserved.</span>
+              <span>© {currentYear} Smartslate. All rights reserved.</span>
             </div>
 
             <div className="flex items-center gap-1 text-sm text-white/60">
