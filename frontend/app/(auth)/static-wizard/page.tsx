@@ -667,8 +667,15 @@ function StaticWizardContent(): React.JSX.Element {
 
       if (!response.ok) {
         let errorText = '';
+        let errorData = null;
         try {
           errorText = await response.text();
+          // Try to parse as JSON
+          try {
+            errorData = JSON.parse(errorText);
+          } catch {
+            // Not JSON, keep as text
+          }
         } catch (e) {
           errorText = 'Failed to read response body';
         }
@@ -681,6 +688,13 @@ function StaticWizardContent(): React.JSX.Element {
           url: response.url,
           headers: Object.fromEntries(response.headers.entries()),
         });
+
+        // Handle 429 (limit exceeded)
+        if (response.status === 429 && errorData?.limitExceeded) {
+          setSaveError(errorData.error || 'Blueprint creation limit reached');
+          return null; // Return null to stop the flow gracefully
+        }
+
         throw new Error(`HTTP error! status: ${response.status} - ${errorText || 'Unknown error'}`);
       }
 

@@ -16,6 +16,7 @@ BEGIN;
 -- ============================================================================
 
 -- Store current user data for rollback
+DROP TABLE IF EXISTS temp_user_profiles_backup;
 CREATE TEMP TABLE temp_user_profiles_backup AS
 SELECT user_id, user_role, subscription_tier, subscription_metadata
 FROM public.user_profiles;

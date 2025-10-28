@@ -4,15 +4,19 @@ import { motion } from 'framer-motion';
 import ProtectedRoute from '@/components/auth/ProtectedRoute';
 import { Footer } from '@/components/layout/Footer';
 import { UsageStatsCard } from '@/components/dashboard/UsageStatsCard';
-import { QuickActionsCard } from '@/components/dashboard/QuickActionsCard';
+import { QuickActionsCardWithLimits } from '@/components/dashboard/QuickActionsCardWithLimits';
 import { RecentBlueprintsCard } from '@/components/dashboard/RecentBlueprintsCard';
 import { useUserProfile } from '@/lib/hooks/useUserProfile';
+import { useUserUsage } from '@/lib/hooks/useUserUsage';
 import { useAuth } from '@/contexts/AuthContext';
 import { StandardHeader } from '@/components/layout/StandardHeader';
 
 function DashboardContent() {
   const { user } = useAuth();
-  const { profile, loading } = useUserProfile();
+  const { profile, loading: profileLoading } = useUserProfile();
+  const { usage, loading: usageLoading } = useUserUsage();
+
+  const loading = profileLoading || usageLoading;
 
   // Get first name for welcome message
   const getFirstName = () => {
@@ -123,11 +127,11 @@ function DashboardContent() {
               transition={{ delay: 0.8, duration: 0.5 }}
             >
               <UsageStatsCard
-                creationCount={profile?.blueprint_creation_count || 0}
-                creationLimit={profile?.blueprint_creation_limit || 2}
-                savingCount={profile?.blueprint_saving_count || 0}
-                savingLimit={profile?.blueprint_saving_limit || 2}
-                subscriptionTier={profile?.subscription_tier || 'free'}
+                creationCount={usage?.creationCount || 0}
+                creationLimit={usage?.creationLimit || 2}
+                savingCount={usage?.savingCount || 0}
+                savingLimit={usage?.savingLimit || 2}
+                subscriptionTier={usage?.subscriptionTier || profile?.subscription_tier || 'free'}
                 isLifetime={isLifetimeTier}
               />
             </motion.div>
@@ -138,7 +142,7 @@ function DashboardContent() {
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.8, duration: 0.5 }}
             >
-              <QuickActionsCard />
+              <QuickActionsCardWithLimits />
             </motion.div>
           </div>
 

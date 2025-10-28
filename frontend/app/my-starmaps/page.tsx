@@ -27,9 +27,13 @@ import { BlueprintCard } from '@/components/dashboard/BlueprintCard';
 import { BlueprintFilters } from '@/components/dashboard/BlueprintFilters';
 import { BlueprintUsageDisplay } from '@/components/dashboard/BlueprintUsageDisplay';
 import { BlueprintUsageService } from '@/lib/services/blueprintUsageService';
+import { useBlueprintLimits } from '@/lib/hooks/useBlueprintLimits';
+import { UpgradePromptModal } from '@/components/modals/UpgradePromptModal';
+import { cn } from '@/lib/utils';
 
 function DashboardContent() {
   const { user, signOut: _signOut } = useAuth();
+  const router = useRouter();
   const [blueprints, setBlueprints] = useState<BlueprintRow[]>([]);
   const [filteredBlueprints, setFilteredBlueprints] = useState<BlueprintRow[]>([]);
   const [loading, setLoading] = useState(true);
@@ -48,7 +52,8 @@ function DashboardContent() {
     blueprintId?: string;
     blueprintName?: string;
   }>({ isOpen: false, type: 'single' });
-  const router = useRouter();
+  const [showUpgradePrompt, setShowUpgradePrompt] = useState(false);
+  const { canCreate, isAtCreationLimit } = useBlueprintLimits();
 
   const BLUEPRINTS_PER_PAGE = 4;
   const totalPages = Math.ceil(filteredBlueprints.length / BLUEPRINTS_PER_PAGE);
@@ -103,6 +108,13 @@ function DashboardContent() {
 
   const handleCreateBlueprint = useCallback(async () => {
     if (!user?.id || creating) return;
+
+    // Check if at limit - show upgrade modal immediately
+    if (isAtCreationLimit) {
+      setShowUpgradePrompt(true);
+      return;
+    }
+
     setCreating(true);
     const supabase = getSupabaseBrowserClient();
 
@@ -214,7 +226,7 @@ function DashboardContent() {
     } finally {
       setCreating(false);
     }
-  }, [user?.id, creating, router]);
+  }, [user?.id, creating, router, isAtCreationLimit]);
 
   const handleRenameBlueprint = useCallback(
     async (newTitle: string) => {
@@ -310,20 +322,39 @@ function DashboardContent() {
     }
 
     try {
-      const supabase = getSupabaseBrowserClient();
-      const { error } = await supabase
-        .from('blueprint_generator')
-        .delete()
-        .in('id', blueprintIdsToDelete)
-        .eq('user_id', user.id);
+      console.log('[handleConfirmDelete] Starting deletion for blueprints:', blueprintIdsToDelete);
 
-      if (error) {
-        console.error('Delete error:', error);
-        alert('Failed to delete blueprint(s). Please try again.');
-        return;
-      }
+      // Soft delete blueprints using the API endpoint
+      const deletePromises = blueprintIdsToDelete.map(async (id) => {
+        console.log(`[handleConfirmDelete] Deleting blueprint ${id}`);
 
-      // Remove from local state
+        const response = await fetch(`/api/blueprints/${id}`, {
+          method: 'DELETE',
+        });
+
+        console.log(`[handleConfirmDelete] Response for ${id}:`, {
+          status: response.status,
+          statusText: response.statusText,
+          ok: response.ok,
+        });
+
+        if (!response.ok) {
+          const data = await response.json();
+          console.error(`[handleConfirmDelete] Error response for ${id}:`, data);
+          throw new Error(data.error || 'Failed to delete blueprint');
+        }
+
+        const result = await response.json();
+        console.log(`[handleConfirmDelete] Success response for ${id}:`, result);
+        return result;
+      });
+
+      // Wait for all deletions to complete
+      await Promise.all(deletePromises);
+
+      console.log('[handleConfirmDelete] All deletions completed successfully');
+
+      // Remove from local state (soft-deleted blueprints won't show in future queries)
       setBlueprints((prev) => prev.filter((bp) => !blueprintIdsToDelete.includes(bp.id)));
 
       // Clear selection if in bulk mode
@@ -332,10 +363,11 @@ function DashboardContent() {
         setIsSelectionMode(false);
       }
 
-      console.log('Blueprint(s) deleted successfully:', blueprintIdsToDelete);
+      console.log('Blueprint(s) soft-deleted successfully:', blueprintIdsToDelete);
     } catch (err) {
-      console.error('Error deleting blueprint(s):', err);
-      alert('Failed to delete blueprint(s). Please try again.');
+      console.error('[handleConfirmDelete] Error deleting blueprint(s):', err);
+      console.error('[handleConfirmDelete] Error stack:', (err as Error).stack);
+      alert(`Failed to delete blueprint(s): ${(err as Error).message}. Please try again.`);
     }
   }, [user?.id, deletionDialog, selectedBlueprints]);
 
@@ -423,6 +455,14 @@ function DashboardContent() {
       (user?.email as string) ||
       '';
     return rawName.toString().trim().split(' ')[0];
+  };
+
+  const handleUpgradeClick = () => {
+    router.push('/pricing');
+  };
+
+  const handleUpgradeCancel = () => {
+    setShowUpgradePrompt(false);
   };
 
   const dashboardTitle = 'My Starmaps';
@@ -561,11 +601,25 @@ function DashboardContent() {
 
                     <Button
                       onClick={handleCreateBlueprint}
-                      disabled={creating}
-                      className="btn-primary pressable"
+                      disabled={creating || isAtCreationLimit}
+                      className={cn(
+                        'btn-primary pressable',
+                        isAtCreationLimit && 'cursor-not-allowed opacity-50'
+                      )}
+                      title={
+                        isAtCreationLimit
+                          ? "You've reached your limit. Click to upgrade."
+                          : undefined
+                      }
                     >
                       <Plus className="h-4 w-4" aria-hidden="true" />
-                      <span>{creating ? 'Creating…' : 'New Blueprint'}</span>
+                      <span>
+                        {creating
+                          ? 'Creating…'
+                          : isAtCreationLimit
+                            ? 'Limit Reached'
+                            : 'New Blueprint'}
+                      </span>
                     </Button>
                   </div>
                 </div>
@@ -600,11 +654,25 @@ function DashboardContent() {
                     </p>
                     <Button
                       onClick={handleCreateBlueprint}
-                      disabled={creating}
-                      className="btn-primary pressable"
+                      disabled={creating || isAtCreationLimit}
+                      className={cn(
+                        'btn-primary pressable',
+                        isAtCreationLimit && 'cursor-not-allowed opacity-50'
+                      )}
+                      title={
+                        isAtCreationLimit
+                          ? "You've reached your limit. Click to upgrade."
+                          : undefined
+                      }
                     >
                       <Plus className="h-4 w-4" aria-hidden="true" />
-                      <span>{creating ? 'Creating…' : 'Create Your First Blueprint'}</span>
+                      <span>
+                        {creating
+                          ? 'Creating…'
+                          : isAtCreationLimit
+                            ? 'Limit Reached - Upgrade'
+                            : 'Create Your First Blueprint'}
+                      </span>
                     </Button>
                   </div>
                 ) : (
@@ -757,6 +825,14 @@ function DashboardContent() {
             variant="destructive"
             itemName="blueprint"
             itemCount={deletionDialog.type === 'bulk' ? selectedBlueprints.size : 1}
+          />
+
+          {/* Upgrade Prompt Modal */}
+          <UpgradePromptModal
+            isOpen={showUpgradePrompt}
+            onClose={handleUpgradeCancel}
+            onUpgrade={handleUpgradeClick}
+            userId={user?.id}
           />
         </div>
       </div>

@@ -6,7 +6,7 @@
 import { createServiceLogger } from '@/lib/logging';
 import { Section, Question } from '@/lib/dynamic-form/schema';
 
-const logger = createServiceLogger('perplexity');
+const logger = createServiceLogger('ollama'); // Using ollama as fallback service type
 
 // Perplexity API configuration
 const PERPLEXITY_CONFIG = {

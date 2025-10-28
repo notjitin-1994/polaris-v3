@@ -7,6 +7,7 @@ import ProtectedRoute from '@/components/auth/ProtectedRoute';
 import { Footer } from '@/components/layout/Footer';
 import { ProfileSection } from '@/components/settings/ProfileSection';
 import { SubscriptionSection } from '@/components/settings/SubscriptionSection';
+import { UsageDetailPanel } from '@/components/settings/UsageDetailPanel';
 import { PreferencesSettings } from '@/components/settings/PreferencesSettings';
 import { NotificationsSettings } from '@/components/settings/NotificationsSettings';
 import { SecuritySettings } from '@/components/settings/SecuritySettings';
@@ -65,6 +66,7 @@ function SettingsContent() {
       >
         <ProfileSection />
         <SubscriptionSection />
+        <UsageDetailPanel />
         <PreferencesSettings />
         <NotificationsSettings />
         <SecuritySettings />

@@ -335,14 +335,14 @@ describe('Claude Validation', () => {
         resources: {
           human_resources: [],
           budget: { total: 50000 },
-          // Missing displayType
+          // Missing displayType - should be inferred as 'table' because it has budget and human_resources
         },
       };
 
       const result = validateAndNormalizeBlueprint(JSON.stringify(complexBlueprint));
 
       expect(result.learning_objectives.displayType).toBe('infographic');
-      expect(result.resources.displayType).toBe('markdown');
+      expect(result.resources.displayType).toBe('table'); // Corrected: resources should be 'table'
     });
   });
 

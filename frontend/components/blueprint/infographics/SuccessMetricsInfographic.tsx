@@ -1,6 +1,6 @@
 /**
  * Success Metrics Infographic Component
- * World-class, industry-leading metric visualization with sophisticated design
+ * Modern, legible design with light neutral background and high contrast text
  */
 
 'use client';
@@ -28,11 +28,11 @@ export function SuccessMetricsInfographic({
           animate={{ opacity: 1, y: 0 }}
           className="flex items-center justify-center"
         >
-          <div className="bg-primary/10 border-primary/20 inline-flex items-center gap-3 rounded-full border px-6 py-3 backdrop-blur-sm">
-            <div className="bg-primary/20 rounded-full p-1.5">
-              <Calendar className="text-primary h-4 w-4" />
+          <div className="inline-flex items-center gap-3 rounded-full border border-gray-200 bg-gray-50 px-6 py-3 shadow-sm">
+            <div className="rounded-full bg-teal-100 p-1.5">
+              <Calendar className="h-4 w-4 text-teal-600" />
             </div>
-            <span className="text-primary font-semibold">Reporting: {reportingCadence}</span>
+            <span className="font-semibold text-gray-900">Reporting: {reportingCadence}</span>
           </div>
         </motion.div>
       )}
@@ -45,29 +45,26 @@ export function SuccessMetricsInfographic({
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: index * 0.1, duration: 0.6, ease: 'easeOut' }}
-            whileHover={{ y: -8, scale: 1.02 }}
-            className="group flex min-h-[400px]"
+            whileHover={{ y: -4, scale: 1.01 }}
+            className="group"
           >
-            <div className="glass-card hover:glass-strong hover:border-primary/20 relative flex-1 overflow-hidden rounded-2xl border border-white/10 transition-all duration-500 hover:shadow-2xl">
-              {/* Subtle background gradient */}
-              <div className="from-primary/5 to-primary/10 absolute inset-0 bg-gradient-to-br via-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
-
+            <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm transition-all duration-300 hover:shadow-lg">
               {/* Content Container */}
-              <div className="relative z-10 p-8">
+              <div className="p-8">
                 {/* Header Section */}
                 <div className="mb-6 flex items-start justify-between">
                   <div className="flex-1">
-                    <div className="bg-primary/10 text-primary mb-3 inline-flex items-center gap-2 rounded-full px-4 py-2 text-xs font-semibold tracking-wider uppercase">
+                    <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-teal-200 bg-teal-50 px-4 py-2 text-xs font-semibold tracking-wider text-teal-700 uppercase">
                       <BarChart3 className="h-3 w-3" />
                       KPI METRIC
                     </div>
-                    <h3 className="text-foreground text-xl leading-tight font-bold">
+                    <h3 className="text-xl leading-tight font-bold text-gray-900">
                       {metric.metric}
                     </h3>
                   </div>
                   <motion.div
                     whileHover={{ rotate: 15, scale: 1.1 }}
-                    className="bg-success/10 text-success group-hover:bg-success/20 rounded-full p-2 transition-colors"
+                    className="rounded-full bg-green-50 p-2 text-green-600 transition-colors group-hover:bg-green-100"
                   >
                     <TrendingUp className="h-5 w-5" />
                   </motion.div>
@@ -77,77 +74,77 @@ export function SuccessMetricsInfographic({
                 <div className="mb-8">
                   {/* Metric Header */}
                   <div className="mb-4 flex items-center justify-between">
-                    <div className="text-text-secondary text-xs font-medium tracking-wider uppercase">
+                    <div className="text-xs font-medium tracking-wider text-gray-600 uppercase">
                       Performance Comparison
                     </div>
-                    <div className="bg-primary/10 text-primary rounded-full px-3 py-1 text-xs font-semibold">
+                    <div className="rounded-full border border-teal-200 bg-teal-50 px-3 py-1 text-xs font-semibold text-teal-700">
                       KPI TRACKING
                     </div>
                   </div>
 
                   {/* Integrated Current/Target Display */}
                   <motion.div
-                    className="from-surface/50 to-surface/30 relative overflow-hidden rounded-2xl bg-gradient-to-r p-1"
+                    className="rounded-2xl border border-gray-200 bg-gray-50 p-1"
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: index * 0.1 + 0.3 }}
                   >
                     <div className="relative flex">
                       {/* Current Value Section */}
-                      <div className="bg-surface/80 border-primary/20 relative flex-1 rounded-l-xl border-r p-6">
-                        <div className="text-text-secondary mb-2 text-xs font-medium tracking-wider uppercase">
+                      <div className="relative flex-1 rounded-l-xl border-r border-gray-200 bg-white p-6">
+                        <div className="mb-2 text-xs font-medium tracking-wider text-gray-600 uppercase">
                           Current
                         </div>
                         <motion.div
-                          className="text-foreground text-2xl font-bold"
+                          className="text-2xl font-bold text-gray-900"
                           initial={{ opacity: 0 }}
                           animate={{ opacity: 1 }}
                           transition={{ delay: index * 0.1 + 0.4 }}
                         >
                           {metric.current_baseline}
                         </motion.div>
-                        <div className="text-text-secondary mt-1 text-xs">Baseline performance</div>
+                        <div className="mt-1 text-xs text-gray-500">Baseline performance</div>
                       </div>
 
                       {/* Comparison Indicator */}
-                      <div className="bg-primary/20 border-primary/40 flex w-16 items-center justify-center border-r border-l">
+                      <div className="flex w-16 items-center justify-center border-r border-l border-teal-200 bg-teal-50">
                         <motion.div
                           initial={{ scale: 0 }}
                           animate={{ scale: 1 }}
                           transition={{ delay: index * 0.1 + 0.35, duration: 0.5, ease: 'backOut' }}
-                          className="bg-primary text-primary-foreground rounded-full p-2"
+                          className="rounded-full bg-teal-600 p-2 text-white"
                         >
                           <TrendingUp className="h-4 w-4" />
                         </motion.div>
                       </div>
 
                       {/* Target Value Section */}
-                      <div className="bg-primary/15 border-primary/30 relative flex-1 rounded-r-xl border-l p-6">
-                        <div className="text-primary mb-2 text-xs font-medium tracking-wider uppercase">
+                      <div className="relative flex-1 rounded-r-xl border-l border-teal-200 bg-teal-50 p-6">
+                        <div className="mb-2 text-xs font-medium tracking-wider text-teal-700 uppercase">
                           Target
                         </div>
                         <motion.div
-                          className="text-primary text-2xl font-bold"
+                          className="text-2xl font-bold text-teal-700"
                           initial={{ opacity: 0 }}
                           animate={{ opacity: 1 }}
                           transition={{ delay: index * 0.1 + 0.5 }}
                         >
                           {metric.target}
                         </motion.div>
-                        <div className="text-primary/80 mt-1 text-xs">Goal achievement</div>
+                        <div className="mt-1 text-xs text-teal-600">Goal achievement</div>
                       </div>
                     </div>
                   </motion.div>
 
                   {/* Progress Indicator */}
                   <motion.div
-                    className="bg-primary/20 relative mt-4 h-2 overflow-hidden rounded-full"
+                    className="relative mt-4 h-2 overflow-hidden rounded-full bg-gray-200"
                     initial={{ scaleX: 0 }}
                     animate={{ scaleX: 1 }}
                     transition={{ delay: index * 0.1 + 0.6, duration: 0.8, ease: 'easeOut' }}
                   >
                     <motion.div
-                      className="from-primary/40 to-primary h-full rounded-full bg-gradient-to-r"
+                      className="h-full rounded-full bg-teal-600"
                       initial={{ width: '0%' }}
                       animate={{ width: '100%' }}
                       transition={{ delay: index * 0.1 + 0.7, duration: 1.2, ease: 'easeOut' }}
@@ -156,38 +153,34 @@ export function SuccessMetricsInfographic({
                 </div>
 
                 {/* Measurement Details - Redesigned */}
-                <div className="space-y-4 rounded-xl bg-white/5 p-4">
+                <div className="space-y-4 rounded-xl border border-gray-100 bg-gray-50 p-4">
                   <div className="flex items-center gap-3">
-                    <div className="bg-primary/20 text-primary rounded-lg p-1.5">
+                    <div className="rounded-lg bg-teal-100 p-1.5 text-teal-600">
                       <Activity className="h-4 w-4" />
                     </div>
                     <div className="flex-1">
-                      <div className="text-text-secondary text-xs font-medium">
-                        Measurement Method
-                      </div>
-                      <div className="text-foreground text-sm font-medium">
+                      <div className="text-xs font-medium text-gray-600">Measurement Method</div>
+                      <div className="text-sm font-medium text-gray-900">
                         {metric.measurement_method}
                       </div>
                     </div>
                   </div>
 
                   <div className="flex items-center gap-3">
-                    <div className="bg-primary/20 text-primary rounded-lg p-1.5">
+                    <div className="rounded-lg bg-teal-100 p-1.5 text-teal-600">
                       <Target className="h-4 w-4" />
                     </div>
                     <div className="flex-1">
-                      <div className="text-text-secondary text-xs font-medium">
-                        Evaluation Timeline
-                      </div>
-                      <div className="text-foreground text-sm font-medium">{metric.timeline}</div>
+                      <div className="text-xs font-medium text-gray-600">Evaluation Timeline</div>
+                      <div className="text-sm font-medium text-gray-900">{metric.timeline}</div>
                     </div>
                   </div>
                 </div>
               </div>
 
-              {/* Animated accent line */}
+              {/* Subtle accent line */}
               <motion.div
-                className="from-primary/60 to-primary absolute bottom-0 left-0 h-1 w-full bg-gradient-to-r"
+                className="absolute bottom-0 left-0 h-1 w-full bg-teal-600"
                 initial={{ scaleX: 0 }}
                 animate={{ scaleX: 1 }}
                 transition={{ delay: index * 0.1 + 0.5, duration: 0.8, ease: 'easeOut' }}

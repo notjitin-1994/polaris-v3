@@ -38,6 +38,18 @@
         "-y",
         "@modelcontextprotocol/server-memory"
       ]
+    },
+    "typescript-language-server": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-typescript-language-server",
+        "--tsserver-path",
+        "/usr/local/bin/tsserver"
+      ],
+      "env": {
+        "NODE_ENV": "production"
+      }
     }
   }
 }

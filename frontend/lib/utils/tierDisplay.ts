@@ -252,27 +252,27 @@ export function getTierInfo(tier: string | null | undefined) {
       shortName: 'Crew',
       color: 'from-pink-500 to-rose-500',
       isPaid: true,
-      description: '60 blueprint generations and saves per month',
-      maxGenerations: 60,
-      maxSaved: 60,
+      description: '10 blueprint generations and saves per month',
+      maxGenerations: 10,
+      maxSaved: 10,
     },
     fleet: {
       displayName: 'Fleet Member',
       shortName: 'Fleet',
       color: 'from-violet-500 to-purple-500',
       isPaid: true,
-      description: '80 blueprint generations and saves per month',
-      maxGenerations: 80,
-      maxSaved: 80,
+      description: '30 blueprint generations and saves per month',
+      maxGenerations: 30,
+      maxSaved: 30,
     },
     armada: {
       displayName: 'Armada Member',
       shortName: 'Armada',
       color: 'from-slate-600 to-slate-800',
       isPaid: true,
-      description: '100 blueprint generations and saves per month',
-      maxGenerations: 100,
-      maxSaved: 100,
+      description: '60 blueprint generations and saves per month',
+      maxGenerations: 60,
+      maxSaved: 60,
     },
   };
 
@@ -340,11 +340,11 @@ export function getTierMaxGenerations(tier: string | null | undefined): number {
     case 'voyager':
       return 40;
     case 'crew':
-      return 60;
+      return 10;
     case 'fleet':
-      return 80;
+      return 30;
     case 'armada':
-      return 100;
+      return 60;
     default:
       return 2;
   }
@@ -374,11 +374,11 @@ export function getTierMaxSaved(tier: string | null | undefined): number {
     case 'voyager':
       return 40;
     case 'crew':
-      return 60;
+      return 10;
     case 'fleet':
-      return 80;
+      return 30;
     case 'armada':
-      return 100;
+      return 60;
     default:
       return 2;
   }
@@ -428,4 +428,87 @@ export function getUserEffectiveLimits(
     maxSaved: getTierMaxSaved(tier),
     isUnlimited: false,
   };
+}
+
+/**
+ * Tier hierarchy for filtering pricing plans
+ * Higher index = higher tier
+ */
+const INDIVIDUAL_TIER_HIERARCHY = ['free', 'explorer', 'navigator', 'voyager'];
+const TEAM_TIER_HIERARCHY = ['crew', 'fleet', 'armada'];
+
+/**
+ * Get the plans that should be shown to a user based on their current tier
+ * Users should only see upgrade options (higher tiers) in their category
+ *
+ * @param currentTier - The user's current subscription tier
+ * @returns Object containing which individual and team plans should be shown
+ *
+ * @example
+ * getAvailableUpgradePlans('free') // returns { individualPlans: ['explorer', 'navigator', 'voyager'], teamPlans: ['crew', 'fleet', 'armada'] }
+ * getAvailableUpgradePlans('explorer') // returns { individualPlans: ['navigator', 'voyager'], teamPlans: ['crew', 'fleet', 'armada'] }
+ * getAvailableUpgradePlans('crew') // returns { individualPlans: [], teamPlans: ['fleet', 'armada'] }
+ * getAvailableUpgradePlans('armada') // returns { individualPlans: [], teamPlans: [] }
+ */
+export function getAvailableUpgradePlans(
+  currentTier: string | null | undefined
+): {
+  individualPlans: string[];
+  teamPlans: string[];
+} {
+  const normalizedTier = (currentTier || 'free').toLowerCase();
+
+  // Check if user is on an individual tier
+  const individualTierIndex = INDIVIDUAL_TIER_HIERARCHY.indexOf(normalizedTier);
+  const isIndividualTier = individualTierIndex !== -1;
+
+  // Check if user is on a team tier
+  const teamTierIndex = TEAM_TIER_HIERARCHY.indexOf(normalizedTier);
+  const isTeamTier = teamTierIndex !== -1;
+
+  let individualPlans: string[] = [];
+  let teamPlans: string[] = [];
+
+  if (isIndividualTier) {
+    // Show higher individual tiers + all team tiers
+    individualPlans = INDIVIDUAL_TIER_HIERARCHY.slice(individualTierIndex + 1);
+    teamPlans = [...TEAM_TIER_HIERARCHY];
+  } else if (isTeamTier) {
+    // Show only higher team tiers (no individual tiers)
+    individualPlans = [];
+    teamPlans = TEAM_TIER_HIERARCHY.slice(teamTierIndex + 1);
+  } else {
+    // Unknown tier or null - show all plans (same as free tier)
+    individualPlans = INDIVIDUAL_TIER_HIERARCHY.slice(1); // Skip 'free' itself
+    teamPlans = [...TEAM_TIER_HIERARCHY];
+  }
+
+  return {
+    individualPlans,
+    teamPlans,
+  };
+}
+
+/**
+ * Check if a specific plan should be shown to a user based on their current tier
+ *
+ * @param planId - The plan ID to check (e.g., 'explorer', 'navigator', 'crew')
+ * @param currentTier - The user's current subscription tier
+ * @returns true if the plan should be shown, false otherwise
+ *
+ * @example
+ * shouldShowPlan('navigator', 'free') // returns true
+ * shouldShowPlan('explorer', 'navigator') // returns false
+ * shouldShowPlan('fleet', 'crew') // returns true
+ */
+export function shouldShowPlan(
+  planId: string,
+  currentTier: string | null | undefined
+): boolean {
+  const { individualPlans, teamPlans } = getAvailableUpgradePlans(currentTier);
+  const normalizedPlanId = planId.toLowerCase();
+
+  return (
+    individualPlans.includes(normalizedPlanId) || teamPlans.includes(normalizedPlanId)
+  );
 }

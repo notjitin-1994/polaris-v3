@@ -180,6 +180,7 @@ export class BlueprintService {
       .from('blueprint_generator')
       .select('*')
       .eq('user_id', userId)
+      .is('deleted_at', null)  // Exclude soft-deleted blueprints
       .order('created_at', { ascending: false });
 
     if (error) {

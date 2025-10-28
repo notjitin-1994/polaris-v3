@@ -14,6 +14,9 @@ import { createBrowserBlueprintService } from '@/lib/db/blueprints.client';
 import { BlueprintRow } from '@/lib/db/blueprints';
 import { StandardHeader } from '@/components/layout/StandardHeader';
 import { createServiceLogger } from '@/lib/logging';
+import { useBlueprintLimits } from '@/lib/hooks/useBlueprintLimits';
+import { UpgradePromptModal } from '@/components/modals/UpgradePromptModal';
+import { cn } from '@/lib/utils';
 
 const _logger = createServiceLogger('ui');
 
@@ -27,6 +30,16 @@ function DynamicWizardContent({ id }: { id: string }): React.JSX.Element {
   const [blueprint, setBlueprint] = useState<BlueprintRow | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [showUpgradePrompt, setShowUpgradePrompt] = useState(false);
+  const { canCreate, isAtCreationLimit } = useBlueprintLimits();
+
+  const handleUpgradeClick = () => {
+    router.push('/pricing');
+  };
+
+  const handleUpgradeCancel = () => {
+    setShowUpgradePrompt(false);
+  };
 
   const loadBlueprint = useCallback(async () => {
     try {
@@ -177,6 +190,12 @@ function DynamicWizardContent({ id }: { id: string }): React.JSX.Element {
                   <button
                     type="button"
                     onClick={async () => {
+                      // Check if at limit - show upgrade modal immediately
+                      if (isAtCreationLimit) {
+                        setShowUpgradePrompt(true);
+                        return;
+                      }
+
                       try {
                         const supabase = getSupabaseBrowserClient();
                         const { data: userResp } = await supabase.auth.getUser();
@@ -211,9 +230,17 @@ function DynamicWizardContent({ id }: { id: string }): React.JSX.Element {
                         router.push('/static-wizard');
                       }
                     }}
-                    className="bg-background text-text-secondary hover:bg-surface inline-flex items-center justify-center gap-2 rounded-lg border border-neutral-300 px-6 py-2.5 text-sm font-medium transition-colors"
+                    disabled={isAtCreationLimit}
+                    className={cn(
+                      'inline-flex items-center justify-center gap-2 rounded-lg border border-neutral-300 px-6 py-2.5 text-sm font-medium transition-colors',
+                      'bg-background text-text-secondary hover:bg-surface',
+                      isAtCreationLimit && 'cursor-not-allowed opacity-50'
+                    )}
+                    title={
+                      isAtCreationLimit ? "You've reached your limit. Click to upgrade." : undefined
+                    }
                   >
-                    Create Another Blueprint
+                    {isAtCreationLimit ? 'Limit Reached - Upgrade' : 'Create Another Blueprint'}
                   </button>
                 </div>
               </div>
@@ -332,6 +359,14 @@ function DynamicWizardContent({ id }: { id: string }): React.JSX.Element {
           />
         </div>
       </main>
+
+      {/* Upgrade Prompt Modal */}
+      <UpgradePromptModal
+        isOpen={showUpgradePrompt}
+        onClose={handleUpgradeCancel}
+        onUpgrade={handleUpgradeClick}
+        userId={user?.id}
+      />
     </div>
   );
 }

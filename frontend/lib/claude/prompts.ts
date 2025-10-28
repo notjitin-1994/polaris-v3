@@ -28,7 +28,10 @@ Your task is to generate comprehensive, industry-specific learning blueprints th
 - Consider diverse learning modalities and accessibility
 
 OUTPUT REQUIREMENTS:
-1. Valid JSON only - no markdown, no preamble, no explanatory text
+CRITICAL: Your response must be PURE JSON. Do NOT wrap your response in markdown code blocks (no \`\`\`json or \`\`\`).
+Do NOT include ANY text before or after the JSON. Start directly with { and end with }.
+
+1. Valid JSON only - no markdown code blocks, no explanatory text, no formatting
 2. Include "displayType" metadata for EVERY section (except metadata)
 3. Use rich, descriptive content that demonstrates expertise
 4. Provide specific, contextual recommendations (no generic advice)
@@ -359,14 +362,16 @@ OUTPUT SCHEMA:
 }
 
 CRITICAL REQUIREMENTS:
-1. Return ONLY valid JSON (no markdown code fences, no explanatory text)
+1. Return ONLY valid JSON - Do NOT use markdown code blocks (no \`\`\`json, no \`\`\`, no backticks)
+   Start your response with { and end with }. No text before or after the JSON.
 2. Include displayType for EVERY top-level section (except metadata)
 3. Use specific, contextual content (not generic templates)
 4. Include chartConfig when displayType is "chart" or "infographic" with charts
 5. Ensure all dates are ISO format strings
 6. All monetary amounts should be numbers
 7. Percentages should be numbers (0-100)
-8. Be comprehensive but avoid unnecessary verbosity${isTest ? '\n9. REMEMBER: This is TEST MODE - generate realistic, impressive sample data that showcases best practices and full system capabilities' : ''}`;
+8. Be comprehensive but avoid unnecessary verbosity
+9. REMINDER: Your entire response must be valid JSON only. No markdown formatting.${isTest ? '\n10. REMEMBER: This is TEST MODE - generate realistic, impressive sample data that showcases best practices and full system capabilities' : ''}`;
 
   // Replace date placeholders with actual dates
   return prompt

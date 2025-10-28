@@ -3,8 +3,8 @@
 import { motion } from 'framer-motion';
 import ProtectedRoute from '@/components/auth/ProtectedRoute';
 import { Footer } from '@/components/layout/Footer';
-import { UsageStatsCard } from '@/components/dashboard/UsageStatsCard';
-import { QuickActionsCard } from '@/components/dashboard/QuickActionsCard';
+import { EnhancedUsageStatsCard } from '@/components/dashboard/EnhancedUsageStatsCard';
+import { QuickActionsCardWithLimits } from '@/components/dashboard/QuickActionsCardWithLimits';
 import { RecentBlueprintsCard } from '@/components/dashboard/RecentBlueprintsCard';
 import { useUserProfile } from '@/lib/hooks/useUserProfile';
 import { useAuth } from '@/contexts/AuthContext';
@@ -44,8 +44,6 @@ function DashboardContent() {
       </div>
     );
   }
-
-  const isLifetimeTier = profile?.subscription_tier === 'free';
 
   return (
     <div className="relative flex min-h-screen w-full flex-col bg-[#020C1B] text-[rgb(224,224,224)]">
@@ -118,14 +116,7 @@ function DashboardContent() {
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.8, duration: 0.5 }}
             >
-              <UsageStatsCard
-                creationCount={profile?.blueprint_creation_count || 0}
-                creationLimit={profile?.blueprint_creation_limit || 2}
-                savingCount={profile?.blueprint_saving_count || 0}
-                savingLimit={profile?.blueprint_saving_limit || 2}
-                subscriptionTier={profile?.subscription_tier || 'free'}
-                isLifetime={isLifetimeTier}
-              />
+              <EnhancedUsageStatsCard />
             </motion.div>
 
             {/* Quick Actions */}
@@ -134,7 +125,7 @@ function DashboardContent() {
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.8, duration: 0.5 }}
             >
-              <QuickActionsCard />
+              <QuickActionsCardWithLimits />
             </motion.div>
           </div>
 

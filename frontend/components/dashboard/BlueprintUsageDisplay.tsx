@@ -1,11 +1,10 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { FileText, Save, Crown, AlertCircle, RefreshCw } from 'lucide-react';
-import { BlueprintUsageService, BlueprintUsageInfo } from '@/lib/services/blueprintUsageService';
-import { useAuth } from '@/contexts/AuthContext';
-import { getSupabaseBrowserClient } from '@/lib/supabase/client';
+import { useUserUsage } from '@/lib/hooks/useUserUsage';
+import { isFreeTier } from '@/lib/utils/tierDisplay';
 
 interface BlueprintUsageDisplayProps {
   className?: string;
@@ -14,53 +13,7 @@ interface BlueprintUsageDisplayProps {
 export function BlueprintUsageDisplay({
   className,
 }: BlueprintUsageDisplayProps): React.JSX.Element {
-  const { user } = useAuth();
-  const [usage, setUsage] = useState<BlueprintUsageInfo | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [refreshKey, setRefreshKey] = useState(0);
-
-  // Function to refresh usage data
-  const refreshUsage = React.useCallback(async () => {
-    if (!user?.id) return;
-
-    try {
-      const supabase = getSupabaseBrowserClient();
-      const usageInfo = await BlueprintUsageService.getBlueprintUsageInfo(supabase, user.id);
-      console.log('Blueprint usage info:', usageInfo); // Debug logging
-      console.log('User ID:', user.id);
-      console.log('Current counts:', {
-        creationCount: usageInfo.creationCount,
-        savingCount: usageInfo.savingCount,
-        creationLimit: usageInfo.creationLimit,
-        savingLimit: usageInfo.savingLimit,
-        creationRemaining: usageInfo.creationLimit - usageInfo.creationCount,
-        savingRemaining: usageInfo.savingLimit - usageInfo.savingCount,
-      });
-      setUsage(usageInfo);
-    } catch (error) {
-      console.error('Error loading blueprint usage:', error);
-    }
-  }, [user?.id]);
-
-  useEffect(() => {
-    const loadUsage = async () => {
-      await refreshUsage();
-      setLoading(false);
-    };
-
-    loadUsage();
-  }, [user?.id, refreshKey, refreshUsage]);
-
-  // Set up polling to refresh data every 30 seconds
-  useEffect(() => {
-    if (!user?.id) return;
-
-    const interval = setInterval(() => {
-      refreshUsage();
-    }, 30000); // Refresh every 30 seconds
-
-    return () => clearInterval(interval);
-  }, [user?.id, refreshUsage]);
+  const { usage, loading, refreshUsage } = useUserUsage();
 
   // Listen for storage events to refresh when blueprint operations complete
   useEffect(() => {
@@ -74,32 +27,6 @@ export function BlueprintUsageDisplay({
     return () => window.removeEventListener('storage', handleStorageChange);
   }, [refreshUsage]);
 
-  // Expose refresh and debug functions globally for manual testing
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      (window as any).refreshBlueprintUsage = refreshUsage;
-
-      // Debug function to check blueprint counts
-      (window as any).debugBlueprintUsage = async () => {
-        if (!user?.id) return;
-        const supabase = getSupabaseBrowserClient();
-        const usageInfo = await BlueprintUsageService.getBlueprintUsageInfo(supabase, user.id);
-        const rawCounts = await BlueprintUsageService.getRawBlueprintCounts(supabase, user.id);
-
-        console.log('=== Blueprint Usage Debug ===');
-        console.log('Usage Info:', usageInfo);
-        console.log('Raw Counts:', rawCounts);
-        console.log('User ID:', user.id);
-        console.log('Exempt:', usageInfo.isExempt);
-        console.log('Remaining Creation:', usageInfo.creationLimit - usageInfo.creationCount);
-        console.log('Remaining Saving:', usageInfo.savingLimit - usageInfo.savingCount);
-        console.log('===========================');
-
-        return { usageInfo, rawCounts };
-      };
-    }
-  }, [refreshUsage, user?.id]);
-
   if (loading || !usage) {
     return (
       <div className={`flex items-center gap-3 ${className}`}>
@@ -111,13 +38,22 @@ export function BlueprintUsageDisplay({
     );
   }
 
-  const creationRemaining = usage.creationLimit - usage.creationCount;
-  const savingRemaining = usage.savingLimit - usage.savingCount;
-  const creationPercentage = (usage.creationCount / usage.creationLimit) * 100;
-  const savingPercentage = (usage.savingCount / usage.savingLimit) * 100;
+  // Get values from usage API (actual database counts)
+  const creationCount = usage.creationCount;
+  const creationLimit = usage.creationLimit;
+  const savingCount = usage.savingCount;
+  const savingLimit = usage.savingLimit;
+  const subscriptionTier = usage.subscriptionTier;
 
-  // If user is exempt, show unlimited indicator
-  if (usage.isExempt) {
+  // Handle unlimited limits (-1 means unlimited)
+  const isCreationUnlimited = creationLimit === -1;
+  const isSavingUnlimited = savingLimit === -1;
+
+  const creationRemaining = isCreationUnlimited ? 999 : Math.max(0, creationLimit - creationCount);
+  const savingRemaining = isSavingUnlimited ? 999 : Math.max(0, savingLimit - savingCount);
+
+  // If user is exempt or has unlimited access, show unlimited indicator
+  if (isCreationUnlimited || isSavingUnlimited) {
     return (
       <motion.div
         className={`flex items-center gap-3 ${className}`}
@@ -127,9 +63,7 @@ export function BlueprintUsageDisplay({
       >
         <div className="bg-primary/10 border-primary/20 flex items-center gap-2 rounded-xl border px-3 py-2">
           <Crown className="text-primary h-4 w-4" />
-          <span className="text-primary text-sm font-medium">
-            {usage.exemptionReason || 'Unlimited Access'}
-          </span>
+          <span className="text-primary text-sm font-medium">Unlimited Access</span>
         </div>
       </motion.div>
     );
@@ -142,7 +76,7 @@ export function BlueprintUsageDisplay({
       animate={{ opacity: 1, x: 0 }}
       transition={{ duration: 0.3 }}
     >
-      {/* Creation Limit */}
+      {/* Creation Counter */}
       <div className="flex items-center gap-2">
         <div className="relative">
           <FileText className="h-4 w-4 text-white/80" />
@@ -150,18 +84,18 @@ export function BlueprintUsageDisplay({
             className="absolute -right-1 -bottom-1 h-2 w-2 rounded-full border border-white/20"
             style={{
               backgroundColor:
-                creationPercentage >= 80
-                  ? '#ef4444'
-                  : creationPercentage >= 60
-                    ? '#f59e0b'
-                    : '#10b981',
+                creationRemaining <= 1 ? '#ef4444' : creationRemaining <= 3 ? '#f59e0b' : '#10b981',
             }}
           />
         </div>
         <div className="flex flex-col">
           <div className="text-xs text-white/60">Create</div>
           <div className="text-sm font-medium text-white">
-            {creationRemaining > 0 ? `${creationRemaining} left` : 'Limit reached'}
+            {isFreeTier(subscriptionTier)
+              ? `${creationRemaining} of ${creationLimit}`
+              : isCreationUnlimited
+                ? 'Unlimited'
+                : `${creationRemaining} left`}
           </div>
         </div>
       </div>
@@ -169,7 +103,7 @@ export function BlueprintUsageDisplay({
       {/* Divider */}
       <div className="h-6 w-px bg-white/20"></div>
 
-      {/* Saving Limit */}
+      {/* Saving Counter */}
       <div className="flex items-center gap-2">
         <div className="relative">
           <Save className="h-4 w-4 text-white/80" />
@@ -177,14 +111,18 @@ export function BlueprintUsageDisplay({
             className="absolute -right-1 -bottom-1 h-2 w-2 rounded-full border border-white/20"
             style={{
               backgroundColor:
-                savingPercentage >= 80 ? '#ef4444' : savingPercentage >= 60 ? '#f59e0b' : '#10b981',
+                savingRemaining <= 1 ? '#ef4444' : savingRemaining <= 3 ? '#f59e0b' : '#10b981',
             }}
           />
         </div>
         <div className="flex flex-col">
           <div className="text-xs text-white/60">Save</div>
           <div className="text-sm font-medium text-white">
-            {savingRemaining > 0 ? `${savingRemaining} left` : 'Limit reached'}
+            {isFreeTier(subscriptionTier)
+              ? `${savingRemaining} of ${savingLimit}`
+              : isSavingUnlimited
+                ? 'Unlimited'
+                : `${savingRemaining} left`}
           </div>
         </div>
       </div>

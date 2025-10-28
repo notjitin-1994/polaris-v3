@@ -41,7 +41,7 @@ const subscriptionTiers = {
     period: 'month',
     features: [
       '20 starmap generations per month',
-      '10 saved starmaps (roll over 12 months)',
+      '20 saved starmaps (roll over 12 months)',
       'Advanced export formats',
       'Priority email support',
       'Template library access',
@@ -55,7 +55,7 @@ const subscriptionTiers = {
     period: 'month',
     features: [
       '40 starmap generations per month',
-      '20 saved starmaps (240/year with rollover)',
+      '40 saved starmaps (480/year with rollover)',
       'All export formats',
       'Priority chat support',
       'Custom template creation',

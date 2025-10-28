@@ -78,8 +78,8 @@ Ensures users only access features and resources appropriate for their subscript
 
 **Team Tiers:**
 - **Crew Role** ($25/seat, 2-5 seats):
-  - 5 generations/user/month
-  - 5 saved starmaps/user (with 12-month rollover to 60)
+  - 10 generations/user/month
+  - 10 saved starmaps/user (with 12-month rollover to 120)
   - Shared team workspace
   - Real-time collaboration
   - Role-based permissions (within team)
@@ -88,8 +88,8 @@ Ensures users only access features and resources appropriate for their subscript
   - Priority email support
 
 - **Fleet Role** ($49/seat, 6-15 seats):
-  - 20 generations/user/month
-  - 10 saved starmaps/user (with 12-month rollover to 120)
+  - 30 generations/user/month
+  - 30 saved starmaps/user (with 12-month rollover to 360)
   - Everything in Crew, plus:
   - SSO with OAuth/SAML
   - Advanced user management
@@ -99,8 +99,8 @@ Ensures users only access features and resources appropriate for their subscript
   - Audit logs
 
 - **Armada Role** ($99/seat, 16-50 seats):
-  - 50 generations/user/month
-  - 50 saved starmaps/user (with 12-month rollover to 600)
+  - 60 generations/user/month
+  - 60 saved starmaps/user (with 12-month rollover to 720)
   - Everything in Fleet, plus:
   - Dedicated success manager
   - Quarterly business reviews
@@ -672,7 +672,7 @@ export const ROLE_LIMITS: Record<UserRole, TierLimits> = {
   },
   crew: {
     max_generations_monthly: 10,
-    max_saved_starmaps: 25,
+    max_saved_starmaps: 10,
     processing_priority: 'high',
     export_formats: ['pdf', 'word'],
     api_access: false,
@@ -687,8 +687,8 @@ export const ROLE_LIMITS: Record<UserRole, TierLimits> = {
     ],
   },
   fleet: {
-    max_generations_monthly: 25,
-    max_saved_starmaps: 75,
+    max_generations_monthly: 30,
+    max_saved_starmaps: 30,
     processing_priority: 'highest',
     export_formats: ['pdf', 'word'],
     api_access: false,
@@ -706,8 +706,8 @@ export const ROLE_LIMITS: Record<UserRole, TierLimits> = {
     ],
   },
   armada: {
-    max_generations_monthly: 'unlimited',
-    max_saved_starmaps: 100,
+    max_generations_monthly: 60,
+    max_saved_starmaps: 60,
     processing_priority: 'highest',
     export_formats: ['pdf', 'word', 'custom'],
     api_access: true,

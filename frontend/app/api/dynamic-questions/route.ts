@@ -232,12 +232,17 @@ export async function POST(request: NextRequest): Promise<Response> {
     }
 
     // Validate result structure
-    if (!result.sections || !Array.isArray(result.sections) || result.sections.length === 0) {
+    const resultTyped = result as { sections: unknown[]; metadata: unknown };
+    if (
+      !resultTyped.sections ||
+      !Array.isArray(resultTyped.sections) ||
+      resultTyped.sections.length === 0
+    ) {
       logger.error('api.error', 'Invalid result structure from V2 service', {
         blueprintId,
         userId: user.id,
         hasResult: !!result,
-        hasSections: !!result?.sections,
+        hasSections: !!resultTyped?.sections,
         requestId,
       });
 
@@ -250,19 +255,19 @@ export async function POST(request: NextRequest): Promise<Response> {
     }
 
     // Save questions to database
-    const questionCount = result.sections.reduce(
+    const questionCount = resultTyped.sections.reduce(
       (sum: number, s: any) => sum + s.questions.length,
       0
     );
 
     console.log('\n💾 Saving to database...');
-    console.log('- Sections:', result.sections.length);
+    console.log('- Sections:', resultTyped.sections.length);
     console.log('- Total Questions:', questionCount);
 
     dbLogger.info('database.save.start', 'Saving dynamic questions to database', {
       blueprintId,
       userId: user.id,
-      sectionCount: result.sections.length,
+      sectionCount: resultTyped.sections.length,
       questionCount,
       requestId,
     });
@@ -270,7 +275,7 @@ export async function POST(request: NextRequest): Promise<Response> {
     const { error: saveError } = await supabase
       .from('blueprint_generator')
       .update({
-        dynamic_questions: result.sections,
+        dynamic_questions: resultTyped.sections,
         dynamic_questions_raw: result,
         status: 'draft', // Set to draft so user can proceed to answer questions
         updated_at: new Date().toISOString(),
@@ -293,7 +298,7 @@ export async function POST(request: NextRequest): Promise<Response> {
     dbLogger.info('database.save.success', 'Dynamic questions saved successfully', {
       blueprintId,
       userId: user.id,
-      sectionCount: result.sections.length,
+      sectionCount: resultTyped.sections.length,
       requestId,
     });
 
@@ -307,7 +312,7 @@ export async function POST(request: NextRequest): Promise<Response> {
     logger.info('api.response', 'Successfully generated and saved dynamic questions', {
       blueprintId,
       userId: user.id,
-      sectionCount: result.sections.length,
+      sectionCount: resultTyped.sections.length,
       questionCount,
       duration,
       requestId,
@@ -316,10 +321,10 @@ export async function POST(request: NextRequest): Promise<Response> {
 
     return NextResponse.json({
       success: true,
-      sections: result.sections,
+      sections: resultTyped.sections,
       metadata: {
         generatedAt: new Date().toISOString(),
-        sectionCount: result.sections.length,
+        sectionCount: resultTyped.sections.length,
         questionCount,
         duration,
       },

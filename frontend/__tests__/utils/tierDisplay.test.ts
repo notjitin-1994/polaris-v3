@@ -380,10 +380,10 @@ describe('tierDisplay utilities', () => {
       expect(getTierMaxGenerations('free')).toBe(2);
       expect(getTierMaxGenerations('explorer')).toBe(5);
       expect(getTierMaxGenerations('navigator')).toBe(20);
-      expect(getTierMaxGenerations('voyager')).toBe(40);
-      expect(getTierMaxGenerations('crew')).toBe(60);
-      expect(getTierMaxGenerations('fleet')).toBe(80);
-      expect(getTierMaxGenerations('armada')).toBe(100);
+      expect(getTierMaxGenerations('voyager')).toBe(50);
+      expect(getTierMaxGenerations('crew')).toBe(10);
+      expect(getTierMaxGenerations('fleet')).toBe(30);
+      expect(getTierMaxGenerations('armada')).toBe(60);
     });
 
     it('handles null/undefined by defaulting to free tier', () => {
@@ -406,10 +406,10 @@ describe('tierDisplay utilities', () => {
       expect(getTierMaxSaved('free')).toBe(2);
       expect(getTierMaxSaved('explorer')).toBe(5);
       expect(getTierMaxSaved('navigator')).toBe(20);
-      expect(getTierMaxSaved('voyager')).toBe(40);
-      expect(getTierMaxSaved('crew')).toBe(60);
-      expect(getTierMaxSaved('fleet')).toBe(80);
-      expect(getTierMaxSaved('armada')).toBe(100);
+      expect(getTierMaxSaved('voyager')).toBe(50);
+      expect(getTierMaxSaved('crew')).toBe(10);
+      expect(getTierMaxSaved('fleet')).toBe(30);
+      expect(getTierMaxSaved('armada')).toBe(60);
     });
 
     it('handles null/undefined by defaulting to free tier', () => {
@@ -497,7 +497,7 @@ describe('tierDisplay utilities', () => {
         { generations: 2, saved: 2 }, // free
         { generations: 5, saved: 5 }, // explorer
         { generations: 20, saved: 20 }, // navigator
-        { generations: 40, saved: 40 }, // voyager
+        { generations: 50, saved: 50 }, // voyager
         { generations: 60, saved: 60 }, // crew
         { generations: 80, saved: 80 }, // fleet
         { generations: 100, saved: 100 }, // armada

@@ -68,7 +68,39 @@ WHERE subscription_tier = 'voyager';
 
 -- Update Crew tier users
 UPDATE public.user_profiles
-SET 
+SET
+  subscription_metadata = jsonb_set(
+    jsonb_set(
+      subscription_metadata,
+      '{limits,max_generations_monthly}',
+      '10'::jsonb
+    ),
+    '{limits,max_saved_starmaps}',
+    '10'::jsonb
+  ),
+  blueprint_creation_limit = 10,
+  blueprint_saving_limit = 10
+WHERE subscription_tier = 'crew';
+
+-- Update Fleet tier users
+UPDATE public.user_profiles
+SET
+  subscription_metadata = jsonb_set(
+    jsonb_set(
+      subscription_metadata,
+      '{limits,max_generations_monthly}',
+      '30'::jsonb
+    ),
+    '{limits,max_saved_starmaps}',
+    '30'::jsonb
+  ),
+  blueprint_creation_limit = 30,
+  blueprint_saving_limit = 30
+WHERE subscription_tier = 'fleet';
+
+-- Update Armada tier users
+UPDATE public.user_profiles
+SET
   subscription_metadata = jsonb_set(
     jsonb_set(
       subscription_metadata,
@@ -80,38 +112,6 @@ SET
   ),
   blueprint_creation_limit = 60,
   blueprint_saving_limit = 60
-WHERE subscription_tier = 'crew';
-
--- Update Fleet tier users
-UPDATE public.user_profiles
-SET 
-  subscription_metadata = jsonb_set(
-    jsonb_set(
-      subscription_metadata,
-      '{limits,max_generations_monthly}',
-      '80'::jsonb
-    ),
-    '{limits,max_saved_starmaps}',
-    '80'::jsonb
-  ),
-  blueprint_creation_limit = 80,
-  blueprint_saving_limit = 80
-WHERE subscription_tier = 'fleet';
-
--- Update Armada tier users
-UPDATE public.user_profiles
-SET 
-  subscription_metadata = jsonb_set(
-    jsonb_set(
-      subscription_metadata,
-      '{limits,max_generations_monthly}',
-      '100'::jsonb
-    ),
-    '{limits,max_saved_starmaps}',
-    '100'::jsonb
-  ),
-  blueprint_creation_limit = 100,
-  blueprint_saving_limit = 100
 WHERE subscription_tier = 'armada';
 
 -- Update Free tier users (default for all users)
@@ -196,9 +196,9 @@ BEGIN
         WHEN 'explorer' THEN 5
         WHEN 'navigator' THEN 20
         WHEN 'voyager' THEN 40
-        WHEN 'crew' THEN 60
-        WHEN 'fleet' THEN 80
-        WHEN 'armada' THEN 100
+        WHEN 'crew' THEN 10
+        WHEN 'fleet' THEN 30
+        WHEN 'armada' THEN 60
         ELSE 2 -- default to free tier limits
       END AS max_generations_monthly,
       CASE v_subscription_tier
@@ -206,9 +206,9 @@ BEGIN
         WHEN 'explorer' THEN 5
         WHEN 'navigator' THEN 20
         WHEN 'voyager' THEN 40
-        WHEN 'crew' THEN 60
-        WHEN 'fleet' THEN 80
-        WHEN 'armada' THEN 100
+        WHEN 'crew' THEN 10
+        WHEN 'fleet' THEN 30
+        WHEN 'armada' THEN 60
         ELSE 2 -- default to free tier limits
       END AS max_saved_starmaps,
       v_current_generations AS current_generations,
@@ -219,9 +219,9 @@ BEGIN
           WHEN 'explorer' THEN 5
           WHEN 'navigator' THEN 20
           WHEN 'voyager' THEN 40
-          WHEN 'crew' THEN 60
-          WHEN 'fleet' THEN 80
-          WHEN 'armada' THEN 100
+          WHEN 'crew' THEN 10
+          WHEN 'fleet' THEN 30
+          WHEN 'armada' THEN 60
           ELSE 2
         END - v_current_generations
       ) AS generations_remaining,
@@ -231,9 +231,9 @@ BEGIN
           WHEN 'explorer' THEN 5
           WHEN 'navigator' THEN 20
           WHEN 'voyager' THEN 40
-          WHEN 'crew' THEN 60
-          WHEN 'fleet' THEN 80
-          WHEN 'armada' THEN 100
+          WHEN 'crew' THEN 10
+          WHEN 'fleet' THEN 30
+          WHEN 'armada' THEN 60
           ELSE 2
         END - v_current_saved
       ) AS saved_remaining,
@@ -290,9 +290,9 @@ BEGIN
     WHEN 'explorer' THEN 5
     WHEN 'navigator' THEN 20
     WHEN 'voyager' THEN 40
-    WHEN 'crew' THEN 60
-    WHEN 'fleet' THEN 80
-    WHEN 'armada' THEN 100
+    WHEN 'crew' THEN 10
+    WHEN 'fleet' THEN 30
+    WHEN 'armada' THEN 60
     ELSE 2 -- default to free tier limits
   END;
   
@@ -363,9 +363,9 @@ BEGIN
     WHEN 'explorer' THEN 5
     WHEN 'navigator' THEN 20
     WHEN 'voyager' THEN 40
-    WHEN 'crew' THEN 60
-    WHEN 'fleet' THEN 80
-    WHEN 'armada' THEN 100
+    WHEN 'crew' THEN 10
+    WHEN 'fleet' THEN 30
+    WHEN 'armada' THEN 60
     ELSE 2 -- default to free tier limits
   END;
   

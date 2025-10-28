@@ -35,20 +35,50 @@ export function stripMarkdownCodeFences(text: string): string {
 /**
  * Parse and validate JSON response
  * Throws ValidationError if response is not valid JSON
+ * Enhanced to handle various edge cases
  */
 export function parseAndValidateJSON<T = unknown>(text: string): T {
   if (!text || typeof text !== 'string') {
     throw new ValidationError('Response text is empty or not a string', 'EMPTY_RESPONSE', { text });
   }
 
-  // Check for markdown code fences
-  const hasCodeFences = /^```/.test(text) || /```$/.test(text);
+  // Trim whitespace first
+  text = text.trim();
+
+  // Check for markdown code fences more aggressively
+  const hasCodeFences = /^```/i.test(text) || /```$/i.test(text);
   if (hasCodeFences) {
-    logger.warn('claude.validation.markdown_detected', {
-      textPreview: text.substring(0, 100),
+    logger.warn('claude.validation.markdown_detected', 'Markdown code fences detected', {
+      textPreview: text.substring(0, 200),
     });
 
     text = stripMarkdownCodeFences(text);
+
+    // Log cleaned text preview for debugging
+    logger.debug('claude.validation.cleaned_text', 'Text after removing markdown', {
+      cleanedPreview: text.substring(0, 200),
+    });
+  }
+
+  // Additional cleanup - remove any non-JSON content before first { or [
+  const jsonStartMatch = text.match(/^[^{[]*([{[])/);
+  if (jsonStartMatch && jsonStartMatch.index !== 0) {
+    logger.warn('claude.validation.removing_preamble', 'Removing preamble text', {
+      removedText: text.substring(0, jsonStartMatch.index),
+    });
+    text = text.substring(text.indexOf(jsonStartMatch[1]));
+  }
+
+  // Remove any trailing non-JSON content after last } or ]
+  const lastBrace = Math.max(text.lastIndexOf('}'), text.lastIndexOf(']'));
+  if (lastBrace > -1 && lastBrace < text.length - 1) {
+    const trailingContent = text.substring(lastBrace + 1).trim();
+    if (trailingContent) {
+      logger.warn('claude.validation.removing_trailing', 'Removing trailing text', {
+        removedText: trailingContent,
+      });
+      text = text.substring(0, lastBrace + 1);
+    }
   }
 
   // Try to parse JSON
@@ -56,6 +86,14 @@ export function parseAndValidateJSON<T = unknown>(text: string): T {
     const parsed = JSON.parse(text);
     return parsed as T;
   } catch (error) {
+    // Log more details for debugging
+    logger.error('claude.validation.json_parse_error', 'Failed to parse JSON', {
+      textLength: text.length,
+      textStart: text.substring(0, 100),
+      textEnd: text.substring(Math.max(0, text.length - 100)),
+      error: (error as Error).message,
+    });
+
     throw new ValidationError('Response is not valid JSON', 'INVALID_JSON', {
       textPreview: text.substring(0, 500),
       error: (error as Error).message,
@@ -107,7 +145,7 @@ export function validateBlueprintStructure(blueprint: any): void {
     if (section && typeof section === 'object' && !section.displayType) {
       sectionsWithoutDisplayType.push(sectionKey);
 
-      logger.warn('claude.validation.missing_display_type', {
+      logger.warn('claude.validation.missing_display_type', 'Section missing displayType', {
         section: sectionKey,
       });
     }
@@ -116,7 +154,7 @@ export function validateBlueprintStructure(blueprint: any): void {
   // Log warning but don't fail validation for missing displayType
   // The normalization step will add defaults
   if (sectionsWithoutDisplayType.length > 0) {
-    logger.info('claude.validation.sections_missing_display_type', {
+    logger.info('claude.validation.sections_missing_display_type', 'Sections need displayType', {
       count: sectionsWithoutDisplayType.length,
       sections: sectionsWithoutDisplayType,
     });
@@ -208,7 +246,7 @@ export function normalizeBlueprintStructure(blueprint: any): any {
         // Infer appropriate displayType based on content
         section.displayType = inferDisplayType(sectionKey, section);
 
-        logger.info('claude.validation.inferred_display_type', {
+        logger.info('claude.validation.inferred_display_type', 'Inferred displayType', {
           section: sectionKey,
           displayType: section.displayType,
           hasObjectives: !!section.objectives,
@@ -221,7 +259,7 @@ export function normalizeBlueprintStructure(blueprint: any): any {
       // Validate displayType is a known value
       const validTypes = ['infographic', 'timeline', 'chart', 'table', 'markdown'];
       if (!validTypes.includes(section.displayType)) {
-        logger.warn('claude.validation.invalid_display_type', {
+        logger.warn('claude.validation.invalid_display_type', 'Invalid displayType', {
           section: sectionKey,
           invalidType: section.displayType,
           defaultingTo: 'markdown',
@@ -248,7 +286,7 @@ export function validateAndNormalizeBlueprint(text: string): any {
   // Step 3: Normalize (add defaults where needed)
   const normalized = normalizeBlueprintStructure(blueprint);
 
-  logger.info('claude.validation.success', {
+  logger.info('claude.validation.success', 'Blueprint validation successful', {
     hasMetadata: !!normalized.metadata,
     sectionCount: Object.keys(normalized).filter((k) => k !== 'metadata').length,
   });

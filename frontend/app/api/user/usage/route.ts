@@ -54,7 +54,17 @@ export async function GET(req: NextRequest): Promise<NextResponse<UserUsageRespo
     const supabase = await getSupabaseServerClient();
 
     // Get blueprint usage information
+    logger.info('user.usage.fetching', 'Fetching usage info from database', { userId });
+    console.log('[API /user/usage] About to call BlueprintUsageService.getBlueprintUsageInfo for user:', userId);
+
     const usageInfo = await BlueprintUsageService.getBlueprintUsageInfo(supabase, userId);
+
+    console.log('[API /user/usage] Raw usage data from service:', JSON.stringify(usageInfo, null, 2));
+
+    logger.info('user.usage.raw_data', 'Raw usage data from service', {
+      userId,
+      usageInfo,
+    });
 
     // Get user profile for subscription tier
     const { data: profile, error: profileError } = await supabase
@@ -76,6 +86,8 @@ export async function GET(req: NextRequest): Promise<NextResponse<UserUsageRespo
       userId,
       creationCount: usageInfo.creationCount,
       savingCount: usageInfo.savingCount,
+      creationLimit: usageInfo.creationLimit,
+      savingLimit: usageInfo.savingLimit,
       subscriptionTier,
     });
 

@@ -123,14 +123,15 @@ function LoadingContent({ id }: { id: string }): React.JSX.Element {
               }
             }
 
-            // Must have a reasonable number of sections (typically 10)
-            if (data.sections.length < 5) {
+            // Must have exactly 10 sections (V2.0 requirement)
+            if (data.sections.length !== 10) {
               logger.warn(
                 'dynamic_questions.incomplete',
-                'Too few sections, considering incomplete',
+                'Expected exactly 10 sections, considering incomplete',
                 {
                   blueprintId: id,
                   sectionCount: data.sections.length,
+                  expected: 10,
                 }
               );
               return false;

@@ -6,7 +6,7 @@
 export type LogLevel = 'debug' | 'info' | 'warn' | 'error';
 
 export type LogService =
-  | 'perplexity'
+  | 'claude'
   | 'ollama'
   | 'dynamic-questions'
   | 'database'
@@ -23,12 +23,12 @@ export type LogService =
   | 'claude-fallback';
 
 export type LogEvent =
-  // Perplexity events
-  | 'perplexity.request'
-  | 'perplexity.success'
-  | 'perplexity.failure'
-  | 'perplexity.timeout'
-  | 'perplexity.retry'
+  // Claude events
+  | 'claude.request'
+  | 'claude.success'
+  | 'claude.failure'
+  | 'claude.timeout'
+  | 'claude.retry'
   // Ollama events
   | 'ollama.fallback.activated'
   | 'ollama.fallback.success'
@@ -179,7 +179,6 @@ export const LOG_COLORS: Record<LogLevel, string> = {
 };
 
 export const SERVICE_COLORS: Record<LogService, string> = {
-  perplexity: 'bg-primary/10 text-primary-dark dark:bg-primary/20 dark:text-primary-light',
   ollama: 'bg-secondary/10 text-secondary-dark dark:bg-secondary/20 dark:text-secondary-light',
   'dynamic-questions': 'bg-success/10 text-success dark:bg-success/20 dark:text-success',
   database: 'bg-orange-100 text-orange-700 dark:bg-orange-900 dark:text-orange-300',

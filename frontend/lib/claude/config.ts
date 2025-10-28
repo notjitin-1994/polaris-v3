@@ -32,12 +32,12 @@ export function getClaudeConfig(): ClaudeConfig {
   // The blueprint generation service will handle missing API keys gracefully
   if (!apiKey) {
     return {
-      primaryModel: 'claude-sonnet-4-20250514',
+      primaryModel: 'claude-sonnet-4-5',
       fallbackModel: 'claude-opus-4-20250514',
       apiKey: '',
       baseUrl: 'https://api.anthropic.com',
       version: '2023-06-01',
-      maxTokens: 12000,
+      maxTokens: 16000,
       temperature: 0.2,
       timeout: 840000,
       retries: 2,
@@ -51,12 +51,12 @@ export function getClaudeConfig(): ClaudeConfig {
   const version = (process.env.ANTHROPIC_VERSION || '2023-06-01').trim();
 
   return {
-    primaryModel: 'claude-sonnet-4-20250514',
+    primaryModel: 'claude-sonnet-4-5',
     fallbackModel: 'claude-opus-4-20250514',
     apiKey,
     baseUrl,
     version,
-    maxTokens: 12000,
+    maxTokens: 16000,
     temperature: 0.2,
     timeout: 840000, // 14 minutes - avg generation time is ~13 minutes (779.7s)
     retries: 2,

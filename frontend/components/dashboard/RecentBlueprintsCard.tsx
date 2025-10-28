@@ -6,8 +6,12 @@ import { FileText, Clock, Eye, Trash2, Calendar } from 'lucide-react';
 import { GlassCard } from '@/components/ui/GlassCard';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { getSupabaseBrowserClient } from '@/lib/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
+import { useBlueprintLimits } from '@/lib/hooks/useBlueprintLimits';
+import { UpgradePromptModal } from '@/components/modals/UpgradePromptModal';
+import { cn } from '@/lib/utils';
 
 interface Blueprint {
   id: string;
@@ -19,8 +23,11 @@ interface Blueprint {
 
 export function RecentBlueprintsCard() {
   const { user } = useAuth();
+  const router = useRouter();
   const [blueprints, setBlueprints] = useState<Blueprint[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showUpgradePrompt, setShowUpgradePrompt] = useState(false);
+  const { canCreate, isAtCreationLimit } = useBlueprintLimits();
 
   useEffect(() => {
     async function fetchBlueprints() {
@@ -31,6 +38,7 @@ export function RecentBlueprintsCard() {
         .from('blueprint_generator')
         .select('id, title, status, created_at, updated_at')
         .eq('user_id', user.id)
+        .is('deleted_at', null)  // Exclude soft-deleted blueprints
         .order('updated_at', { ascending: false })
         .limit(5);
 
@@ -71,6 +79,22 @@ export function RecentBlueprintsCard() {
     }
   };
 
+  const handleCreateClick = () => {
+    if (isAtCreationLimit) {
+      setShowUpgradePrompt(true);
+      return;
+    }
+    router.push('/static-wizard');
+  };
+
+  const handleUpgradeClick = () => {
+    router.push('/pricing');
+  };
+
+  const handleUpgradeCancel = () => {
+    setShowUpgradePrompt(false);
+  };
+
   return (
     <GlassCard className="p-6 sm:p-8">
       {/* Header */}
@@ -85,7 +109,7 @@ export function RecentBlueprintsCard() {
           </div>
         </div>
         <Link href="/dashboard/starmaps">
-          <Button className="btn-ghost text-xs">View All</Button>
+          <Button className="bg-primary text-black hover:bg-primary/90 text-xs">View All</Button>
         </Link>
       </div>
 
@@ -100,9 +124,16 @@ export function RecentBlueprintsCard() {
         <div className="py-12 text-center">
           <FileText className="text-text-secondary mx-auto mb-3 h-12 w-12 opacity-50" />
           <p className="text-body text-text-secondary mb-4">No starmaps yet</p>
-          <Link href="/static-wizard">
-            <Button className="btn-primary">Create Your First Starmap</Button>
-          </Link>
+          <Button
+            className={cn('btn-primary', isAtCreationLimit && 'cursor-not-allowed opacity-50')}
+            onClick={handleCreateClick}
+            disabled={isAtCreationLimit}
+            title={
+              isAtCreationLimit ? "You've reached your limit. Upgrade to create more." : undefined
+            }
+          >
+            {isAtCreationLimit ? 'Limit Reached - Upgrade' : 'Create Your First Starmap'}
+          </Button>
         </div>
       ) : (
         <div className="space-y-3">
@@ -140,6 +171,14 @@ export function RecentBlueprintsCard() {
           ))}
         </div>
       )}
+
+      {/* Upgrade Prompt Modal */}
+      <UpgradePromptModal
+        isOpen={showUpgradePrompt}
+        onClose={handleUpgradeCancel}
+        onUpgrade={handleUpgradeClick}
+        userId={user?.id}
+      />
     </GlassCard>
   );
 }

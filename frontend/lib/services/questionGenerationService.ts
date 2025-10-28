@@ -1,24 +1,24 @@
 /**
  * Question Generation Orchestrator
- * Coordinates between Perplexity (primary) and Ollama (fallback) for dynamic question generation
+ * Coordinates between Claude (primary) and Ollama (fallback) for dynamic question generation
  */
 
 import { createServiceLogger } from '@/lib/logging';
 import {
-  generateWithPerplexity,
-  validatePerplexityConfig,
+  generateWithClaude,
+  validateClaudeConfig,
   QuestionGenerationContext,
-  PerplexityResponse,
-} from './perplexityQuestionService';
+  ClaudeResponse,
+} from './claudeQuestionService';
 import { generateWithOllama, isOllamaAvailable } from './ollamaQuestionService';
 
 const logger = createServiceLogger('dynamic-questions');
 
 export interface GenerationResult {
   success: boolean;
-  sections: PerplexityResponse['sections'];
-  metadata: PerplexityResponse['metadata'] & {
-    source: 'perplexity' | 'ollama';
+  sections: ClaudeResponse['sections'];
+  metadata: ClaudeResponse['metadata'] & {
+    source: 'claude' | 'ollama';
     fallbackUsed: boolean;
     fallbackReason?: string;
   };
@@ -26,7 +26,7 @@ export interface GenerationResult {
 }
 
 /**
- * Generate dynamic questions with automatic Perplexity → Ollama fallback
+ * Generate dynamic questions with automatic Claude → Ollama fallback
  */
 export async function generateDynamicQuestions(
   context: QuestionGenerationContext
@@ -38,21 +38,21 @@ export async function generateDynamicQuestions(
     userId: context.userId,
   });
 
-  // Try Perplexity first
-  const perplexityConfig = validatePerplexityConfig();
+  // Try Claude first
+  const claudeConfig = validateClaudeConfig();
 
-  if (perplexityConfig.valid) {
+  if (claudeConfig.valid) {
     try {
-      const result = await generateWithPerplexity(context);
+      const result = await generateWithClaude(context);
 
       const totalDuration = Date.now() - overallStartTime;
 
       logger.info(
         'dynamic_questions.generation.complete',
-        'Successfully generated questions with Perplexity',
+        'Successfully generated questions with Claude',
         {
           blueprintId: context.blueprintId,
-          source: 'perplexity',
+          source: 'claude',
           sectionCount: result.sections.length,
           questionCount: result.sections.reduce((sum, s) => sum + s.questions.length, 0),
           duration: totalDuration,
@@ -65,49 +65,49 @@ export async function generateDynamicQuestions(
         sections: result.sections,
         metadata: {
           ...result.metadata,
-          source: 'perplexity',
+          source: 'claude',
           fallbackUsed: false,
           duration: totalDuration,
         },
       };
-    } catch (perplexityError) {
-      const perplexityErrorMessage =
-        perplexityError instanceof Error ? perplexityError.message : String(perplexityError);
+    } catch (claudeError) {
+      const claudeErrorMessage =
+        claudeError instanceof Error ? claudeError.message : String(claudeError);
 
       logger.warn(
         'dynamic_questions.generation.error',
-        'Perplexity failed, attempting Ollama fallback',
+        'Claude failed, attempting Ollama fallback',
         {
           blueprintId: context.blueprintId,
-          error: perplexityErrorMessage,
+          error: claudeErrorMessage,
           fallbackActivated: true,
         }
       );
 
       // Continue to fallback
-      return await runFallback(context, perplexityErrorMessage, overallStartTime);
+      return await runFallback(context, claudeErrorMessage, overallStartTime);
     }
   } else {
     logger.warn(
       'dynamic_questions.generation.error',
-      'Perplexity not configured, using Ollama fallback',
+      'Claude not configured, using Ollama fallback',
       {
         blueprintId: context.blueprintId,
-        errors: perplexityConfig.errors,
+        errors: claudeConfig.errors,
         fallbackActivated: true,
       }
     );
 
     return await runFallback(
       context,
-      `Perplexity not configured: ${perplexityConfig.errors.join(', ')}`,
+      `Claude not configured: ${claudeConfig.errors.join(', ')}`,
       overallStartTime
     );
   }
 }
 
 /**
- * Use Ollama fallback
+ * Use Ollama fallback when Claude fails
  */
 async function runFallback(
   context: QuestionGenerationContext,
@@ -120,9 +120,9 @@ async function runFallback(
   if (!ollamaHealthy) {
     const totalDuration = Date.now() - overallStartTime;
 
-    logger.error('dynamic_questions.generation.error', 'Both Perplexity and Ollama failed', {
+    logger.error('dynamic_questions.generation.error', 'Both Claude and Ollama failed', {
       blueprintId: context.blueprintId,
-      perplexityReason: reason,
+      claudeReason: reason,
       ollamaAvailable: false,
       duration: totalDuration,
     });
@@ -138,7 +138,7 @@ async function runFallback(
         fallbackReason: 'Both services unavailable',
         duration: totalDuration,
       },
-      error: `Question generation failed. Perplexity: ${reason}. Ollama: Service unavailable.`,
+      error: `Question generation failed. Claude: ${reason}. Ollama: Service unavailable.`,
     };
   }
 
@@ -176,9 +176,9 @@ async function runFallback(
     const ollamaErrorMessage =
       ollamaError instanceof Error ? ollamaError.message : String(ollamaError);
 
-    logger.error('dynamic_questions.generation.error', 'Both Perplexity and Ollama failed', {
+    logger.error('dynamic_questions.generation.error', 'Both Claude and Ollama failed', {
       blueprintId: context.blueprintId,
-      perplexityError: reason,
+      claudeError: reason,
       ollamaError: ollamaErrorMessage,
       duration: totalDuration,
     });
@@ -194,7 +194,7 @@ async function runFallback(
         fallbackReason: reason,
         duration: totalDuration,
       },
-      error: `Question generation failed. Perplexity: ${reason}. Ollama: ${ollamaErrorMessage}`,
+      error: `Question generation failed. Claude: ${reason}. Ollama: ${ollamaErrorMessage}`,
     };
   }
 }
@@ -203,11 +203,11 @@ async function runFallback(
  * Validate generation configuration
  */
 export function validateGenerationConfig(): {
-  perplexity: { valid: boolean; errors: string[] };
+  claude: { valid: boolean; errors: string[] };
   ollama: { available: boolean };
 } {
   return {
-    perplexity: validatePerplexityConfig(),
+    claude: validateClaudeConfig(),
     ollama: { available: true }, // Always true, checked at runtime
   };
 }

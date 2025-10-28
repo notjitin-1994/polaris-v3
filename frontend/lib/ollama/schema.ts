@@ -238,9 +238,9 @@ export const dynamicQuestionSchema = z.union([
 export type DynamicQuestions = z.infer<typeof dynamicQuestionSchema>;
 
 /**
- * Generation input schema (new format)
+ * Generation input schema (V2.0 format only)
  */
-const generationInputSchemaNew = z.object({
+export const generationInputSchema = z.object({
   role: z.string().min(1),
   organization: z.string().min(1),
   learningGap: z.string().min(1),
@@ -249,42 +249,6 @@ const generationInputSchemaNew = z.object({
   numSections: z.number().int().min(1).max(12).default(10),
   questionsPerSection: z.number().int().min(1).max(10).default(7),
 });
-
-/**
- * Generation input schema (legacy format)
- */
-const generationInputSchemaLegacy = z.object({
-  assessmentType: z.string().min(1),
-  deliveryMethod: z.string().min(1),
-  duration: z.string().min(1),
-  learningObjectives: z.array(z.string().min(1)).min(1),
-  targetAudience: z.string().min(1),
-  numSections: z.number().int().min(1).max(6).optional(),
-  questionsPerSection: z.number().int().min(1).max(10).optional(),
-});
-
-/**
- * Generation input schema with backward compatibility transformation
- */
-export const generationInputSchema = z
-  .union([generationInputSchemaNew, generationInputSchemaLegacy])
-  .transform((input) => {
-    if ('role' in input) {
-      return input;
-    }
-    // Map legacy fields into the new canonical shape
-    return {
-      role: 'Learning Professional',
-      organization: input.targetAudience,
-      learningGap: Array.isArray(input.learningObjectives)
-        ? input.learningObjectives.join(', ')
-        : String(input.learningObjectives),
-      resources: input.deliveryMethod,
-      constraints: `${input.assessmentType} • ${input.duration}`,
-      numSections: input.numSections ?? 5,
-      questionsPerSection: input.questionsPerSection ?? 7,
-    } as const;
-  });
 
 export type GenerationInput = z.infer<typeof generationInputSchema>;
 

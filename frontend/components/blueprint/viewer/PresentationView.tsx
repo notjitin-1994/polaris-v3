@@ -91,6 +91,16 @@ const BRAND_TEAL = {
   glow: 'rgba(167, 218, 219, 0.3)',
 };
 
+// Light theme for success metrics - high contrast, legible design
+const LIGHT_METRICS_THEME = {
+  primary: 'rgb(20, 184, 166)', // Teal accent for highlights only
+  light: 'rgb(167, 218, 219)', // Lighter teal
+  dark: 'rgb(13, 148, 136)', // Darker teal
+  bg: 'rgba(20, 184, 166, 0.05)', // Very subtle teal background
+  border: 'rgba(229, 231, 235, 1)', // Gray borders
+  glow: 'rgba(20, 184, 166, 0.2)', // Subtle teal glow
+};
+
 const colorPalettes = {
   executive: BRAND_TEAL,
   objectives: BRAND_TEAL,
@@ -101,7 +111,7 @@ const colorPalettes = {
   assessment: BRAND_TEAL,
   timeline: BRAND_TEAL,
   risks: BRAND_TEAL,
-  metrics: BRAND_TEAL,
+  metrics: LIGHT_METRICS_THEME, // Special light theme for metrics
   sustainability: BRAND_TEAL,
 } as const;
 
@@ -273,7 +283,7 @@ export function PresentationView({
     return modules.reduce((sum, m) => sum + (m.learning_activities?.length || 0), 0);
   }, [modules]);
 
-  // Stats Card Component
+  // Premium Stats Card Component - Matching ComprehensiveBlueprintViewer aesthetic
   const StatCard = ({
     icon: Icon,
     label,
@@ -293,30 +303,28 @@ export function PresentationView({
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="glass-card group relative overflow-hidden rounded-2xl border border-white/10 p-6 transition-all duration-300 hover:border-white/20"
+        className="glass-card group hover:border-primary/30 relative overflow-hidden rounded-2xl border border-neutral-300 p-6 transition-all duration-300"
       >
+        {/* Subtle hover overlay */}
+        <div className="bg-primary/5 pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+
         <div className="relative z-10">
-          <div className="mb-4 flex items-start justify-between">
+          <div className="mb-4 inline-flex">
             <div
-              className="rounded-xl p-3.5 transition-transform group-hover:scale-105 [&_svg]:!fill-none [&_svg_*]:!fill-none"
+              className="rounded-xl p-3 transition-transform duration-200 group-hover:scale-105 [&_svg]:!fill-none [&_svg_*]:!fill-none"
               style={{ backgroundColor: bgColor }}
             >
-              <Icon
-                className="h-7 w-7"
-                strokeWidth={2.5}
-                fill="none"
-                style={{ color: iconColor }}
-              />
+              <Icon className="h-6 w-6" strokeWidth={2} fill="none" style={{ color: iconColor }} />
             </div>
           </div>
-          <div className="space-y-2">
+          <div className="space-y-1">
             <p className="text-text-secondary text-sm font-medium">{label}</p>
             <div className="flex items-baseline gap-1">
               {mounted ? (
                 <CountUp
                   start={0}
                   end={value}
-                  duration={1.5}
+                  duration={2}
                   decimals={suffix === 'hrs' ? 1 : 0}
                   className="text-4xl font-bold text-white"
                   separator=","
@@ -614,12 +622,14 @@ export function PresentationView({
       const firstSlide = slideArray[0];
       const originalContent = firstSlide.content;
 
-      // Component for embedded slide grid preview
+      // Component for embedded slide grid preview - Premium styling
       const EmbeddedSlideGrid = () => (
         <div className="mt-12">
           <div className="mb-6 flex items-center gap-3">
             <div className="from-primary to-primary/50 h-6 w-0.5 rounded-full bg-gradient-to-b" />
-            <h3 className="text-foreground text-xl font-bold">Presentation Overview</h3>
+            <h3 className="font-heading text-foreground text-xl font-bold">
+              Presentation Overview
+            </h3>
             <div className="text-text-secondary ml-auto text-sm font-medium">
               <span className="text-foreground font-semibold">{slideArray.length}</span>
               <span className="mx-1">slides</span>
@@ -632,63 +642,34 @@ export function PresentationView({
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.8 + index * 0.05 }}
-                className="glass-card relative overflow-hidden rounded-xl border-2 p-3"
-                style={{
-                  borderColor: slide.colorTheme.primary,
-                  boxShadow: `0 4px 20px -4px ${slide.colorTheme.glow}`,
-                }}
+                className="glass-card group hover:border-primary/40 relative overflow-hidden rounded-xl border border-neutral-300 p-3 transition-all duration-300"
               >
-                {/* Decorative gradient background with slide color */}
-                <div
-                  className="pointer-events-none absolute inset-0 opacity-[0.15]"
-                  style={{
-                    background: `linear-gradient(135deg, ${slide.colorTheme.primary}40 0%, ${slide.colorTheme.dark}20 100%)`,
-                  }}
-                />
+                {/* Subtle gradient background overlay */}
+                <div className="bg-primary/5 pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
 
-                {/* Top accent bar */}
-                <div
-                  className="absolute top-0 right-0 left-0 h-1 rounded-t-xl"
-                  style={{
-                    background: `linear-gradient(90deg, ${slide.colorTheme.primary}, ${slide.colorTheme.light})`,
-                  }}
-                />
+                {/* Top accent bar - unified teal */}
+                <div className="from-primary to-primary/60 absolute top-0 right-0 left-0 h-1 rounded-t-xl bg-gradient-to-r" />
 
                 {/* Slide Number Badge */}
-                <div
-                  className="absolute top-2 right-2 rounded-full px-2.5 py-1 text-xs font-bold shadow-lg"
-                  style={{
-                    backgroundColor: slide.colorTheme.primary,
-                    color: '#fff',
-                    boxShadow: `0 2px 10px ${slide.colorTheme.glow}`,
-                  }}
-                >
+                <div className="bg-primary shadow-primary/30 absolute top-2 right-2 rounded-full px-2.5 py-1 text-xs font-bold text-white shadow-lg">
                   {index + 1}
                 </div>
 
-                {/* Icon Only - No background */}
+                {/* Icon Only - Clean design */}
                 <div className="relative z-10 flex items-center justify-center pt-6 pb-3 [&_svg]:!fill-none [&_svg_*]:!fill-none">
                   {slide.icon &&
                     React.createElement(slide.icon, {
-                      className: 'h-12 w-12',
+                      className:
+                        'h-10 w-10 text-primary transition-transform duration-200 group-hover:scale-110',
                       strokeWidth: 2,
                       fill: 'none',
                       stroke: 'currentColor',
-                      style: {
-                        color: slide.colorTheme.primary,
-                        filter: `drop-shadow(0 4px 12px ${slide.colorTheme.glow})`,
-                      },
                     })}
                 </div>
 
                 {/* Slide Title */}
                 <div className="relative z-10 mt-2 px-1 text-center">
-                  <h4
-                    className="text-sm leading-tight font-bold"
-                    style={{ color: slide.colorTheme.primary }}
-                  >
-                    {slide.title}
-                  </h4>
+                  <h4 className="text-primary text-sm leading-tight font-bold">{slide.title}</h4>
                 </div>
               </motion.div>
             ))}

@@ -8,21 +8,21 @@ import { readFileSync } from 'fs';
 import { join } from 'path';
 import { ClaudeClient } from '@/lib/claude/client';
 
-const logger = createServiceLogger('dynamic-questions-v2');
+const logger = createServiceLogger('dynamic-questions');
 
-// LLM Configuration - Perplexity primary, Claude fallback
+// LLM Configuration - Claude primary, Perplexity fallback
 const LLM_CONFIG = {
+  claude: {
+    apiKey: process.env.ANTHROPIC_API_KEY || '',
+    model: 'claude-sonnet-4-5',
+    maxTokens: 16000,
+    temperature: 0.7,
+  },
   perplexity: {
     apiKey: process.env.PERPLEXITY_API_KEY || '',
     model: 'sonar-pro',
     baseUrl: 'https://api.perplexity.ai',
-    maxTokens: 32000,
-    temperature: 0.7,
-  },
-  claude: {
-    apiKey: process.env.ANTHROPIC_API_KEY || '',
-    model: 'claude-sonnet-4-20250514',
-    maxTokens: 32000,
+    maxTokens: 16000,
     temperature: 0.7,
   },
   timeout: 840000, // 14 minutes - avg generation time is ~13 minutes (779.7s)
@@ -63,16 +63,16 @@ function loadUserPromptTemplate(): string {
 /**
  * Build user prompt using the new V2 template with 3-section static data
  */
-export function buildUserPromptV2(staticAnswers: Record<string, any>): string {
+export function buildUserPromptV2(staticAnswers: Record<string, unknown>): string {
   const template = loadUserPromptTemplate();
 
   // Extract 3-section data
-  const section1 = staticAnswers.section_1_role_experience || {};
-  const section2 = staticAnswers.section_2_organization || {};
-  const section3 = staticAnswers.section_3_learning_gap || {};
+  const section1 = (staticAnswers.section_1_role_experience as Record<string, unknown>) || {};
+  const section2 = (staticAnswers.section_2_organization as Record<string, unknown>) || {};
+  const section3 = (staticAnswers.section_3_learning_gap as Record<string, unknown>) || {};
 
   // Helper to format arrays
-  const formatArray = (arr: any) => {
+  const formatArray = (arr: unknown) => {
     if (Array.isArray(arr) && arr.length > 0) {
       return arr.join(', ');
     }
@@ -85,18 +85,30 @@ export function buildUserPromptV2(staticAnswers: Record<string, any>): string {
   // Section 1: Role & Experience
   prompt = prompt.replace(
     /\{current_role\}/g,
-    section1.current_role || section1.custom_role || 'Not specified'
+    String(section1.current_role || section1.custom_role || 'Not specified')
   );
   prompt = prompt.replace(/\{years_in_role\}/g, String(section1.years_in_role || 0));
-  prompt = prompt.replace(/\{previous_roles\}/g, section1.previous_roles || 'Not specified');
+  prompt = prompt.replace(
+    /\{previous_roles\}/g,
+    String(section1.previous_roles || 'Not specified')
+  );
   prompt = prompt.replace(/\{industry_experience\}/g, formatArray(section1.industry_experience));
-  prompt = prompt.replace(/\{team_size\}/g, section1.team_size || 'Not specified');
+  prompt = prompt.replace(/\{team_size\}/g, String(section1.team_size || 'Not specified'));
   prompt = prompt.replace(/\{technical_skills\}/g, formatArray(section1.technical_skills));
 
   // Section 2: Organization
-  prompt = prompt.replace(/\{organization_name\}/g, section2.organization_name || 'Not specified');
-  prompt = prompt.replace(/\{industry_sector\}/g, section2.industry_sector || 'Not specified');
-  prompt = prompt.replace(/\{organization_size\}/g, section2.organization_size || 'Not specified');
+  prompt = prompt.replace(
+    /\{organization_name\}/g,
+    String(section2.organization_name || 'Not specified')
+  );
+  prompt = prompt.replace(
+    /\{industry_sector\}/g,
+    String(section2.industry_sector || 'Not specified')
+  );
+  prompt = prompt.replace(
+    /\{organization_size\}/g,
+    String(section2.organization_size || 'Not specified')
+  );
   prompt = prompt.replace(/\{geographic_regions\}/g, formatArray(section2.geographic_regions));
   prompt = prompt.replace(
     /\{compliance_requirements\}/g,
@@ -104,22 +116,22 @@ export function buildUserPromptV2(staticAnswers: Record<string, any>): string {
   );
   prompt = prompt.replace(
     /\{data_sharing_policies\}/g,
-    section2.data_sharing_policies || 'Not specified'
+    String(section2.data_sharing_policies || 'Not specified')
   );
-  prompt = prompt.replace(/\{security_clearance\}/g, section2.security_clearance || 'None');
+  prompt = prompt.replace(/\{security_clearance\}/g, String(section2.security_clearance || 'None'));
   prompt = prompt.replace(
     /\{legal_restrictions\}/g,
-    section2.legal_restrictions || 'None specified'
+    String(section2.legal_restrictions || 'None specified')
   );
 
   // Section 3: Learning Gap & Audience
   prompt = prompt.replace(
     /\{learning_gap_description\}/g,
-    section3.learning_gap_description || 'Not specified'
+    String(section3.learning_gap_description || 'Not specified')
   );
   prompt = prompt.replace(
     /\{total_learners_range\}/g,
-    section3.total_learners_range || 'Not specified'
+    String(section3.total_learners_range || 'Not specified')
   );
   prompt = prompt.replace(
     /\{current_knowledge_level\}/g,
@@ -128,12 +140,19 @@ export function buildUserPromptV2(staticAnswers: Record<string, any>): string {
   prompt = prompt.replace(/\{motivation_factors\}/g, formatArray(section3.motivation_factors));
   prompt = prompt.replace(/\{learning_location\}/g, formatArray(section3.learning_location));
   prompt = prompt.replace(/\{devices_used\}/g, formatArray(section3.devices_used));
-  prompt = prompt.replace(/\{hours_per_week\}/g, section3.hours_per_week || 'Not specified');
-  prompt = prompt.replace(/\{learning_deadline\}/g, section3.learning_deadline || 'Not specified');
+  prompt = prompt.replace(
+    /\{hours_per_week\}/g,
+    String(section3.hours_per_week || 'Not specified')
+  );
+  prompt = prompt.replace(
+    /\{learning_deadline\}/g,
+    String(section3.learning_deadline || 'Not specified')
+  );
 
   // Budget available with currency and amount
-  const budgetAmount = section3.budget_available?.amount || 0;
-  const budgetCurrency = section3.budget_available?.currency || 'USD';
+  const budgetAvailable = (section3.budget_available as Record<string, unknown>) || {};
+  const budgetAmount = Number(budgetAvailable.amount) || 0;
+  const budgetCurrency = String(budgetAvailable.currency || 'USD');
   prompt = prompt.replace(
     /\{budget_available\}/g,
     budgetAmount > 0 ? `${budgetCurrency} ${budgetAmount.toLocaleString()}` : 'Not specified'
@@ -145,7 +164,7 @@ export function buildUserPromptV2(staticAnswers: Record<string, any>): string {
 /**
  * Call LLM provider (Claude)
  */
-async function callClaude(systemPrompt: string, userPrompt: string): Promise<any> {
+async function callClaude(systemPrompt: string, userPrompt: string): Promise<string> {
   const config = LLM_CONFIG.claude;
 
   if (!config.apiKey) {
@@ -176,7 +195,7 @@ async function callClaude(systemPrompt: string, userPrompt: string): Promise<any
 /**
  * Call LLM provider (Perplexity)
  */
-async function callPerplexity(systemPrompt: string, userPrompt: string): Promise<any> {
+async function callPerplexity(systemPrompt: string, userPrompt: string): Promise<string> {
   const config = LLM_CONFIG.perplexity;
 
   if (!config.apiKey) {
@@ -247,35 +266,67 @@ function repairTruncatedJSON(jsonString: string): string {
         closeBraces,
         openBrackets,
         closeBrackets,
+        position: repaired.length,
       }
     );
 
-    // Remove any incomplete trailing content (partial string, property, etc.)
-    // Find the last complete element
+    // Find the last complete structural element
     let lastValidIdx = repaired.length;
+    let inString = false;
+    let escapeNext = false;
 
-    // Look backwards for the last properly closed element
+    // Scan backwards to find the last complete element
     for (let i = repaired.length - 1; i >= 0; i--) {
       const char = repaired[i];
-      if (char === '}' || char === ']' || char === '"') {
-        lastValidIdx = i + 1;
-        break;
+
+      if (escapeNext) {
+        escapeNext = false;
+        continue;
       }
-      if (char === ',' || char === ':') {
-        // Remove incomplete element including the delimiter
-        lastValidIdx = i;
-        break;
+
+      if (char === '\\') {
+        escapeNext = true;
+        continue;
+      }
+
+      if (char === '"' && !escapeNext) {
+        inString = !inString;
+      }
+
+      if (!inString) {
+        // Found a complete object or array element
+        if (char === '}' || char === ']') {
+          lastValidIdx = i + 1;
+          break;
+        }
+        // Found a complete string value
+        if (char === '"') {
+          // Check if this is a complete property value (has colon before it)
+          let j = i - 1;
+          while (j >= 0 && /\s/.test(repaired[j])) j--;
+          if (j >= 0 && repaired[j] === ':') {
+            lastValidIdx = i + 1;
+            break;
+          }
+        }
       }
     }
 
+    // Truncate to last valid position
     repaired = repaired.substring(0, lastValidIdx);
 
-    // Remove trailing comma if present
+    // Remove trailing comma if present (but not within strings)
     repaired = repaired.replace(/,\s*$/, '');
 
-    // Close unclosed brackets
-    const bracketDiff = openBrackets - closeBrackets;
-    const braceDiff = openBraces - closeBraces;
+    // Recalculate bracket counts after truncation
+    const newOpenBrackets = (repaired.match(/\[/g) || []).length;
+    const newCloseBrackets = (repaired.match(/]/g) || []).length;
+    const newOpenBraces = (repaired.match(/{/g) || []).length;
+    const newCloseBraces = (repaired.match(/}/g) || []).length;
+
+    // Close unclosed brackets in the correct order (arrays before objects)
+    const bracketDiff = newOpenBrackets - newCloseBrackets;
+    const braceDiff = newOpenBraces - newCloseBraces;
 
     for (let i = 0; i < bracketDiff; i++) {
       repaired += ']';
@@ -283,6 +334,13 @@ function repairTruncatedJSON(jsonString: string): string {
     for (let i = 0; i < braceDiff; i++) {
       repaired += '}';
     }
+
+    logger.info('dynamic_questions.json.truncation_repaired', 'Truncation repair applied', {
+      originalLength: jsonString.length,
+      repairedLength: repaired.length,
+      removedChars: jsonString.length - lastValidIdx,
+      bracketsAdded: bracketDiff + braceDiff,
+    });
   }
 
   return repaired;
@@ -330,7 +388,10 @@ function repairJSON(jsonString: string): string {
 /**
  * Extract and validate JSON from LLM response with repair attempts
  */
-function extractAndValidateJSON(content: string, attemptRepair: boolean = true): any {
+function extractAndValidateJSON(
+  content: string,
+  attemptRepair: boolean = true
+): { sections: unknown[]; metadata: unknown } {
   // Remove markdown code fences if present
   let jsonString = content.trim();
   const fenceMatch = jsonString.match(/```(?:json)?\s*([\s\S]*?)\s*```/);
@@ -349,7 +410,7 @@ function extractAndValidateJSON(content: string, attemptRepair: boolean = true):
   jsonString = jsonString.substring(startIdx, endIdx + 1);
 
   // Try parsing original first
-  let parsed: any = null;
+  let parsed: { sections: unknown[]; metadata: unknown } | null = null;
   let parseError: Error | null = null;
 
   try {
@@ -458,8 +519,8 @@ function extractAndValidateJSON(content: string, attemptRepair: boolean = true):
  */
 export async function generateDynamicQuestionsV2(
   blueprintId: string,
-  staticAnswers: Record<string, any>
-): Promise<any> {
+  staticAnswers: Record<string, unknown>
+): Promise<{ sections: unknown[]; metadata: unknown }> {
   const startTime = Date.now();
 
   console.log('\n========================================');
@@ -470,7 +531,7 @@ export async function generateDynamicQuestionsV2(
 
   logger.info(
     'dynamic_questions.generation.start',
-    'Starting V2 question generation with Perplexity → OpenAI fallback',
+    'Starting V2 question generation with Claude → Perplexity fallback',
     {
       blueprintId,
     }
@@ -496,14 +557,80 @@ export async function generateDynamicQuestionsV2(
     });
 
     let responseContent: string | null = null;
-    let usedProvider: 'perplexity' | 'claude' | null = null;
+    let usedProvider: 'claude' | 'perplexity' | null = null;
 
-    // Try Perplexity first (primary provider)
-    if (LLM_CONFIG.perplexity.apiKey) {
-      console.log('\n🔮 PRIMARY PROVIDER: Perplexity');
+    // Try Claude first (primary provider)
+    if (LLM_CONFIG.claude.apiKey) {
+      console.log('\n🤖 PRIMARY PROVIDER: Claude');
+      console.log('→ Model:', LLM_CONFIG.claude.model);
+      console.log('→ Max Tokens:', LLM_CONFIG.claude.maxTokens);
+      console.log('→ Temperature:', LLM_CONFIG.claude.temperature);
+
+      for (let attempt = 1; attempt <= LLM_CONFIG.retries + 1; attempt++) {
+        try {
+          console.log(`\n⏳ Attempt ${attempt}/${LLM_CONFIG.retries + 1}: Calling Claude...`);
+
+          logger.info('dynamic_questions.claude.request', `Calling Claude (attempt ${attempt})`, {
+            blueprintId,
+            attemptNumber: attempt,
+            model: LLM_CONFIG.claude.model,
+          });
+
+          responseContent = await callClaude(systemPrompt, userPrompt);
+          usedProvider = 'claude';
+
+          console.log('✅ Claude succeeded on attempt', attempt);
+
+          logger.info('dynamic_questions.claude.success', 'Claude generation successful', {
+            blueprintId,
+            attemptNumber: attempt,
+          });
+
+          break; // Success, exit retry loop
+        } catch (error) {
+          console.error(
+            `❌ Attempt ${attempt} failed:`,
+            error instanceof Error ? error.message : String(error)
+          );
+
+          logger.warn('dynamic_questions.claude.error', `Claude attempt ${attempt} failed`, {
+            blueprintId,
+            error: error instanceof Error ? error.message : String(error),
+            attemptNumber: attempt,
+          });
+
+          if (attempt < LLM_CONFIG.retries + 1) {
+            const delay = Math.pow(2, attempt - 1) * 1000; // Exponential backoff
+            console.log(`⏳ Retrying in ${delay}ms...`);
+            logger.debug('dynamic_questions.claude.retry', `Retrying Claude after delay`, {
+              blueprintId,
+              delay,
+            });
+            await new Promise((resolve) => setTimeout(resolve, delay));
+          }
+        }
+      }
+    } else {
+      console.log('\n⚠️  Claude API key not configured, skipping to fallback');
+      logger.warn(
+        'dynamic_questions.claude.skipped',
+        'Claude API key not configured, skipping to Perplexity',
+        {
+          blueprintId,
+        }
+      );
+    }
+
+    // Fallback to Perplexity if Claude failed or unavailable
+    if (!responseContent && LLM_CONFIG.perplexity.apiKey) {
+      console.log('\n🔄 FALLBACK PROVIDER: Perplexity');
       console.log('→ Model:', LLM_CONFIG.perplexity.model);
       console.log('→ Max Tokens:', LLM_CONFIG.perplexity.maxTokens);
       console.log('→ Temperature:', LLM_CONFIG.perplexity.temperature);
+
+      logger.info('dynamic_questions.perplexity.fallback', 'Falling back to Perplexity', {
+        blueprintId,
+      });
 
       for (let attempt = 1; attempt <= LLM_CONFIG.retries + 1; attempt++) {
         try {
@@ -531,12 +658,7 @@ export async function generateDynamicQuestionsV2(
 
           break; // Success, exit retry loop
         } catch (error) {
-          console.error(
-            `❌ Attempt ${attempt} failed:`,
-            error instanceof Error ? error.message : String(error)
-          );
-
-          logger.warn(
+          logger.error(
             'dynamic_questions.perplexity.error',
             `Perplexity attempt ${attempt} failed`,
             {
@@ -547,8 +669,7 @@ export async function generateDynamicQuestionsV2(
           );
 
           if (attempt < LLM_CONFIG.retries + 1) {
-            const delay = Math.pow(2, attempt - 1) * 1000; // Exponential backoff
-            console.log(`⏳ Retrying in ${delay}ms...`);
+            const delay = Math.pow(2, attempt - 1) * 1000;
             logger.debug('dynamic_questions.perplexity.retry', `Retrying Perplexity after delay`, {
               blueprintId,
               delay,
@@ -557,76 +678,16 @@ export async function generateDynamicQuestionsV2(
           }
         }
       }
-    } else {
-      console.log('\n⚠️  Perplexity API key not configured, skipping to fallback');
-      logger.warn(
-        'dynamic_questions.perplexity.skipped',
-        'Perplexity API key not configured, skipping to Claude',
-        {
-          blueprintId,
-        }
-      );
-    }
-
-    // Fallback to Claude if Perplexity failed or unavailable
-    if (!responseContent && LLM_CONFIG.claude.apiKey) {
-      console.log('\n🔄 FALLBACK PROVIDER: Claude');
-      console.log('→ Model:', LLM_CONFIG.claude.model);
-      console.log('→ Max Tokens:', LLM_CONFIG.claude.maxTokens);
-      console.log('→ Temperature:', LLM_CONFIG.claude.temperature);
-
-      logger.info('dynamic_questions.claude.fallback', 'Falling back to Claude', {
-        blueprintId,
-      });
-
-      for (let attempt = 1; attempt <= LLM_CONFIG.retries + 1; attempt++) {
-        try {
-          console.log(`\n⏳ Attempt ${attempt}/${LLM_CONFIG.retries + 1}: Calling Claude...`);
-
-          logger.info('dynamic_questions.claude.request', `Calling Claude (attempt ${attempt})`, {
-            blueprintId,
-            attemptNumber: attempt,
-            model: LLM_CONFIG.claude.model,
-          });
-
-          responseContent = await callClaude(systemPrompt, userPrompt);
-          usedProvider = 'claude';
-
-          console.log('✅ Claude succeeded on attempt', attempt);
-
-          logger.info('dynamic_questions.claude.success', 'Claude generation successful', {
-            blueprintId,
-            attemptNumber: attempt,
-          });
-
-          break; // Success, exit retry loop
-        } catch (error) {
-          logger.error('dynamic_questions.claude.error', `Claude attempt ${attempt} failed`, {
-            blueprintId,
-            error: error instanceof Error ? error.message : String(error),
-            attemptNumber: attempt,
-          });
-
-          if (attempt < LLM_CONFIG.retries + 1) {
-            const delay = Math.pow(2, attempt - 1) * 1000;
-            logger.debug('dynamic_questions.claude.retry', `Retrying Claude after delay`, {
-              blueprintId,
-              delay,
-            });
-            await new Promise((resolve) => setTimeout(resolve, delay));
-          }
-        }
-      }
     } else if (!responseContent) {
-      logger.error('dynamic_questions.claude.skipped', 'Claude API key not configured', {
+      logger.error('dynamic_questions.perplexity.skipped', 'Perplexity API key not configured', {
         blueprintId,
       });
     }
 
     if (!responseContent) {
       console.error('\n❌ ALL PROVIDERS FAILED');
-      console.error('- Perplexity: Failed or not configured');
       console.error('- Claude: Failed or not configured');
+      console.error('- Perplexity: Failed or not configured');
       console.log('========================================\n');
       throw new Error('All generation providers failed. Please check API keys and try again.');
     }
@@ -637,14 +698,15 @@ export async function generateDynamicQuestionsV2(
     console.log('✓ Response validated successfully');
 
     const duration = Date.now() - startTime;
-    const questionCount = result.sections.reduce(
-      (sum: number, s: any) => sum + s.questions.length,
-      0
-    );
+    const resultTyped = result as { sections: unknown[]; metadata: unknown };
+    const questionCount = resultTyped.sections.reduce((sum: number, s: unknown) => {
+      const sTyped = s as { questions: unknown[] };
+      return sum + sTyped.questions.length;
+    }, 0);
 
     console.log('\n✨ GENERATION COMPLETE');
     console.log('→ Provider Used:', usedProvider?.toUpperCase() || 'UNKNOWN');
-    console.log('→ Sections Generated:', result.sections.length);
+    console.log('→ Sections Generated:', resultTyped.sections.length);
     console.log('→ Total Questions:', questionCount);
     console.log('→ Duration:', duration + 'ms (' + (duration / 1000).toFixed(2) + 's)');
     console.log('========================================\n');
@@ -652,7 +714,7 @@ export async function generateDynamicQuestionsV2(
     logger.info('dynamic_questions.generation.complete', 'Successfully generated questions', {
       blueprintId,
       provider: usedProvider,
-      sectionCount: result.sections.length,
+      sectionCount: resultTyped.sections.length,
       questionCount,
       duration,
     });

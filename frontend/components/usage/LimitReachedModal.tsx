@@ -134,7 +134,7 @@ export function LimitReachedModal({
                   }}
                   className={cn(
                     'h-20 w-20 rounded-2xl',
-                    'from-warning/20 to-error/20 bg-gradient-to-br',
+                    'bg-warning/20',
                     'border-warning/30 border',
                     'flex items-center justify-center',
                     'shadow-warning/10 shadow-lg'
@@ -187,7 +187,7 @@ export function LimitReachedModal({
                     initial={{ width: 0 }}
                     animate={{ width: '100%' }}
                     transition={{ delay: 0.4, duration: 0.6, ease: 'easeOut' }}
-                    className="from-error h-full rounded-full bg-gradient-to-r to-rose-600"
+                    className="bg-error h-full rounded-full"
                   />
                 </div>
               </motion.div>
@@ -197,23 +197,23 @@ export function LimitReachedModal({
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.35, duration: 0.3 }}
-                className="from-primary/5 to-secondary/5 border-primary/20 mb-8 rounded-xl border bg-gradient-to-r p-4"
+                className="bg-primary/10 border-primary/20 mb-8 rounded-xl border p-4"
               >
                 <div className="mb-3 flex items-center gap-2">
-                  <Sparkles className="text-primary h-5 w-5" />
+                  <Sparkles className="text-black h-5 w-5" />
                   <h3 className="text-body text-foreground font-semibold">Upgrade for More</h3>
                 </div>
                 <ul className="space-y-2">
                   <li className="text-caption text-text-secondary flex items-start gap-2">
-                    <Zap className="text-primary mt-0.5 h-4 w-4 flex-shrink-0" />
+                    <Zap className="text-black mt-0.5 h-4 w-4 flex-shrink-0" />
                     <span>Unlimited blueprint creations and saves</span>
                   </li>
                   <li className="text-caption text-text-secondary flex items-start gap-2">
-                    <TrendingUp className="text-primary mt-0.5 h-4 w-4 flex-shrink-0" />
+                    <TrendingUp className="text-black mt-0.5 h-4 w-4 flex-shrink-0" />
                     <span>Advanced analytics and insights</span>
                   </li>
                   <li className="text-caption text-text-secondary flex items-start gap-2">
-                    <Crown className="text-primary mt-0.5 h-4 w-4 flex-shrink-0" />
+                    <Crown className="text-black mt-0.5 h-4 w-4 flex-shrink-0" />
                     <span>Priority support and early access to features</span>
                   </li>
                 </ul>
@@ -229,16 +229,15 @@ export function LimitReachedModal({
                 <Link href="/pricing" className="flex-1">
                   <Button
                     className={cn(
-                      'btn-primary w-full',
-                      'from-secondary to-secondary/90 bg-gradient-to-r',
-                      'hover:from-secondary/90 hover:to-secondary/80',
-                      'shadow-secondary/20 shadow-lg',
+                      'btn-primary w-full bg-primary text-black',
+                      'hover:bg-primary/90',
+                      'shadow-lg',
                       'transition-all duration-200'
                     )}
                     size="large"
                     onClick={onClose}
                   >
-                    <Crown className="mr-2 h-4 w-4" />
+                    <Crown className="mr-2 h-4 w-4 text-black" />
                     View Pricing
                   </Button>
                 </Link>
@@ -283,7 +282,7 @@ export function ApproachingLimitBanner({
       exit={{ opacity: 0, y: -10 }}
       className={cn(
         'rounded-xl border p-4',
-        'from-warning/5 to-amber/5 bg-gradient-to-r',
+        'bg-warning/5',
         'border-warning/20'
       )}
     >
