@@ -38,7 +38,7 @@ export function RecentBlueprintsCard() {
         .from('blueprint_generator')
         .select('id, title, status, created_at, updated_at')
         .eq('user_id', user.id)
-        .is('deleted_at', null)  // Exclude soft-deleted blueprints
+        .is('deleted_at', null) // Exclude soft-deleted blueprints
         .order('updated_at', { ascending: false })
         .limit(5);
 
@@ -108,8 +108,8 @@ export function RecentBlueprintsCard() {
             <p className="text-caption text-text-secondary">Your latest blueprints</p>
           </div>
         </div>
-        <Link href="/dashboard/starmaps">
-          <Button className="bg-primary text-black hover:bg-primary/90 text-xs">View All</Button>
+        <Link href="/my-starmaps">
+          <Button className="bg-primary hover:bg-primary/90 text-xs text-black">View All</Button>
         </Link>
       </div>
 
