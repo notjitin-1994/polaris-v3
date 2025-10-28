@@ -84,7 +84,7 @@ credentials/
 keys/
 certs/
 security/
-auth/
+/auth/
 
 # SSH directories
 .ssh/
