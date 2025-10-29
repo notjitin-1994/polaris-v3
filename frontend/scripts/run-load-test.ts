@@ -49,7 +49,7 @@ async function runLoadTest(options: TestOptions) {
 
       config = {
         ...presetConfig,
-        endpoint: `${baseUrl}${presetConfig.endpoint}`
+        endpoint: `${baseUrl}${presetConfig.endpoint}`,
       };
 
       console.log(`Using preset: ${options.preset}`);
@@ -69,7 +69,7 @@ async function runLoadTest(options: TestOptions) {
           : `${baseUrl}${options.endpoint}`,
         method: (options.method || 'GET') as 'GET' | 'POST' | 'PUT' | 'DELETE',
         thinkTime: options.thinkTime || 0,
-        timeout: options.timeout || 30000
+        timeout: options.timeout || 30000,
       };
 
       if (options.body) {
@@ -134,7 +134,6 @@ async function runLoadTest(options: TestOptions) {
         console.error(`❌ Failed to save report: ${error}`);
       }
     }
-
   } catch (error) {
     console.error('❌ Load test failed:', error);
     process.exit(1);
@@ -224,7 +223,7 @@ async function runQuickHealthCheck(baseUrl: string) {
       ...loadTestConfigs.healthCheck,
       endpoint: `${baseUrl}${loadTestConfigs.healthCheck.endpoint}`,
       duration: 10, // Short health check
-      concurrency: 10
+      concurrency: 10,
     };
 
     const result = await loadTester.runLoadTest(config);
@@ -236,7 +235,6 @@ async function runQuickHealthCheck(baseUrl: string) {
       console.log(`  Success Rate: ${result.summary.successRate.toFixed(2)}%`);
       console.log(`  P95 Response Time: ${result.summary.p95.toFixed(2)}ms`);
     }
-
   } catch (error) {
     console.error('❌ Health check failed:', error);
     process.exit(1);
@@ -265,15 +263,16 @@ program
   .option('--base-url <url>', `Base URL for endpoints (default: ${DEFAULT_BASE_URL})`)
   .action(runLoadTest);
 
-program
-  .command('presets')
-  .description('List available test presets')
-  .action(listPresets);
+program.command('presets').description('List available test presets').action(listPresets);
 
 program
   .command('health-check')
   .description('Run quick health check')
-  .option('--base-url <url>', `Base URL for health check (default: ${DEFAULT_BASE_URL})`, DEFAULT_BASE_URL)
+  .option(
+    '--base-url <url>',
+    `Base URL for health check (default: ${DEFAULT_BASE_URL})`,
+    DEFAULT_BASE_URL
+  )
   .action((options) => runQuickHealthCheck(options.baseUrl));
 
 // Parse command line arguments

@@ -200,20 +200,20 @@ export function LimitReachedModal({
                 className="bg-primary/10 border-primary/20 mb-8 rounded-xl border p-4"
               >
                 <div className="mb-3 flex items-center gap-2">
-                  <Sparkles className="text-black h-5 w-5" />
+                  <Sparkles className="h-5 w-5 text-black" />
                   <h3 className="text-body text-foreground font-semibold">Upgrade for More</h3>
                 </div>
                 <ul className="space-y-2">
                   <li className="text-caption text-text-secondary flex items-start gap-2">
-                    <Zap className="text-black mt-0.5 h-4 w-4 flex-shrink-0" />
+                    <Zap className="mt-0.5 h-4 w-4 flex-shrink-0 text-black" />
                     <span>Unlimited blueprint creations and saves</span>
                   </li>
                   <li className="text-caption text-text-secondary flex items-start gap-2">
-                    <TrendingUp className="text-black mt-0.5 h-4 w-4 flex-shrink-0" />
+                    <TrendingUp className="mt-0.5 h-4 w-4 flex-shrink-0 text-black" />
                     <span>Advanced analytics and insights</span>
                   </li>
                   <li className="text-caption text-text-secondary flex items-start gap-2">
-                    <Crown className="text-black mt-0.5 h-4 w-4 flex-shrink-0" />
+                    <Crown className="mt-0.5 h-4 w-4 flex-shrink-0 text-black" />
                     <span>Priority support and early access to features</span>
                   </li>
                 </ul>
@@ -229,7 +229,7 @@ export function LimitReachedModal({
                 <Link href="/pricing" className="flex-1">
                   <Button
                     className={cn(
-                      'btn-primary w-full bg-primary text-black',
+                      'btn-primary bg-primary w-full text-black',
                       'hover:bg-primary/90',
                       'shadow-lg',
                       'transition-all duration-200'
@@ -280,11 +280,7 @@ export function ApproachingLimitBanner({
       initial={{ opacity: 0, y: -10 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -10 }}
-      className={cn(
-        'rounded-xl border p-4',
-        'bg-warning/5',
-        'border-warning/20'
-      )}
+      className={cn('rounded-xl border p-4', 'bg-warning/5', 'border-warning/20')}
     >
       <div className="flex items-start gap-3">
         <AlertCircle className="text-warning mt-0.5 h-5 w-5 flex-shrink-0" />

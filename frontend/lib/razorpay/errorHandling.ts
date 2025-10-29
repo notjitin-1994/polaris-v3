@@ -25,12 +25,21 @@
  */
 export abstract class RazorpayError extends Error {
   abstract readonly code: string;
-  abstract readonly category: 'script' | 'network' | 'validation' | 'payment' | 'configuration' | 'unknown';
+  abstract readonly category:
+    | 'script'
+    | 'network'
+    | 'validation'
+    | 'payment'
+    | 'configuration'
+    | 'unknown';
   abstract readonly userMessage: string;
   abstract readonly recoverable: boolean;
   abstract readonly suggestedAction: string;
 
-  constructor(message: string, public readonly context?: Record<string, any>) {
+  constructor(
+    message: string,
+    public readonly context?: Record<string, any>
+  ) {
     super(message);
     this.name = this.constructor.name;
   }
@@ -70,7 +79,8 @@ export class RazorpayScriptError extends RazorpayError {
 export class RazorpayNetworkError extends RazorpayError {
   readonly code = 'NETWORK_ERROR';
   readonly category = 'network';
-  readonly userMessage = 'Network connection issue. Please check your internet connection and try again.';
+  readonly userMessage =
+    'Network connection issue. Please check your internet connection and try again.';
   readonly recoverable = true;
   readonly suggestedAction = 'Check your internet connection and try again.';
 
@@ -85,7 +95,8 @@ export class RazorpayNetworkError extends RazorpayError {
 export class RazorpayConfigurationError extends RazorpayError {
   readonly code = 'CONFIGURATION_ERROR';
   readonly category = 'configuration';
-  readonly userMessage = 'Payment system configuration issue. Please contact support if this persists.';
+  readonly userMessage =
+    'Payment system configuration issue. Please contact support if this persists.';
   readonly recoverable = false;
   readonly suggestedAction = 'Contact support or try again later.';
 
@@ -100,7 +111,8 @@ export class RazorpayConfigurationError extends RazorpayError {
 export class RazorpayValidationError extends RazorpayError {
   readonly code = 'VALIDATION_ERROR';
   readonly category = 'validation';
-  readonly userMessage = 'Invalid payment information provided. Please check your details and try again.';
+  readonly userMessage =
+    'Invalid payment information provided. Please check your details and try again.';
   readonly recoverable = true;
   readonly suggestedAction = 'Verify all payment details are correct and try again.';
 
@@ -115,7 +127,8 @@ export class RazorpayValidationError extends RazorpayError {
 export class RazorpayPaymentError extends RazorpayError {
   readonly code = 'PAYMENT_ERROR';
   readonly category = 'payment';
-  readonly userMessage = 'Payment processing failed. Please try again or use a different payment method.';
+  readonly userMessage =
+    'Payment processing failed. Please try again or use a different payment method.';
   readonly recoverable = true;
   readonly suggestedAction = 'Check your payment details or try a different payment method.';
 
@@ -162,18 +175,22 @@ export function isAdBlockerDetected(): boolean {
       },
       // Check for blocked Razorpay script
       () => {
-        return !window.Razorpay &&
-               !document.querySelector('script[src*="razorpay"]') &&
-               !document.querySelector('script[src*="checkout"]');
+        return (
+          !window.Razorpay &&
+          !document.querySelector('script[src*="razorpay"]') &&
+          !document.querySelector('script[src*="checkout"]')
+        );
       },
       // Check for ad blocker patterns
       () => {
-        return !!document.querySelector('[style*="display: none"][style*="important"]') ||
-               !!document.querySelector('.adblocker-detected');
+        return (
+          !!document.querySelector('[style*="display: none"][style*="important"]') ||
+          !!document.querySelector('.adblocker-detected')
+        );
       },
     ];
 
-    return adBlockerIndicators.some(check => {
+    return adBlockerIndicators.some((check) => {
       try {
         return check();
       } catch {
@@ -206,22 +223,16 @@ export function isUnsupportedBrowser(): boolean {
     ];
 
     // Check for browser versions that might have issues
-    const majorVersion = oldBrowserPatterns.find(match => match && parseInt(match[1]) < 60);
+    const majorVersion = oldBrowserPatterns.find((match) => match && parseInt(match[1]) < 60);
 
     if (majorVersion) {
       return true;
     }
 
     // Check for headless browsers or automated tools
-    const headlessPatterns = [
-      /headless/i,
-      /bot/i,
-      /crawler/i,
-      /spider/i,
-      /scraper/i,
-    ];
+    const headlessPatterns = [/headless/i, /bot/i, /crawler/i, /spider/i, /scraper/i];
 
-    return headlessPatterns.some(pattern => pattern.test(userAgent));
+    return headlessPatterns.some((pattern) => pattern.test(userAgent));
   } catch {
     return false;
   }
@@ -246,7 +257,7 @@ export function isNetworkError(error: any): boolean {
   ];
 
   const errorMessage = error?.message || error?.toString() || '';
-  return networkErrorPatterns.some(pattern => pattern.test(errorMessage));
+  return networkErrorPatterns.some((pattern) => pattern.test(errorMessage));
 }
 
 /**
@@ -299,7 +310,7 @@ export function classifyRazorpayError(error: any): RazorpayError {
 export async function attemptScriptRecovery(): Promise<boolean> {
   try {
     // Wait a bit and check if script loads
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    await new Promise((resolve) => setTimeout(resolve, 1000));
 
     if (typeof window !== 'undefined' && window.Razorpay) {
       return true;
@@ -392,14 +403,20 @@ export function isRecoverable(error: Error | RazorpayError): boolean {
 /**
  * Log error with context for debugging
  */
-export function logError(error: Error | RazorpayError, additionalContext?: Record<string, any>): void {
+export function logError(
+  error: Error | RazorpayError,
+  additionalContext?: Record<string, any>
+): void {
   const errorData = {
     timestamp: new Date().toISOString(),
-    error: error instanceof RazorpayError ? error.toJSON() : {
-      name: error.name,
-      message: error.message,
-      stack: error.stack,
-    },
+    error:
+      error instanceof RazorpayError
+        ? error.toJSON()
+        : {
+            name: error.name,
+            message: error.message,
+            stack: error.stack,
+          },
     context: additionalContext,
     userAgent: typeof window !== 'undefined' ? window.navigator.userAgent : 'N/A',
     url: typeof window !== 'undefined' ? window.location.href : 'N/A',
@@ -430,11 +447,14 @@ export function createErrorReport(error: Error | RazorpayError): {
 } {
   return {
     timestamp: new Date().toISOString(),
-    error: error instanceof RazorpayError ? error.toJSON() : {
-      name: error.name,
-      message: error.message,
-      stack: error.stack,
-    },
+    error:
+      error instanceof RazorpayError
+        ? error.toJSON()
+        : {
+            name: error.name,
+            message: error.message,
+            stack: error.stack,
+          },
     context: error instanceof Error ? (error as any).context : {},
     userAgent: typeof window !== 'undefined' ? window.navigator.userAgent : 'N/A',
     url: typeof window !== 'undefined' ? window.location.href : 'N/A',
@@ -452,7 +472,6 @@ export function createErrorReport(error: Error | RazorpayError): {
 // ============================================================================
 // Export
 // ============================================================================
-
 
 export default {
   classifyRazorpayError,

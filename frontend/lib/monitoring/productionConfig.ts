@@ -8,7 +8,11 @@
  * @date 2025-10-30
  */
 
-import { alertingSystem, type AlertRule, type NotificationChannel } from '@/lib/monitoring/alertingSystem';
+import {
+  alertingSystem,
+  type AlertRule,
+  type NotificationChannel,
+} from '@/lib/monitoring/alertingSystem';
 import { webhookLogger } from '@/lib/logging/webhookLogging';
 
 // ============================================================================
@@ -28,8 +32,8 @@ export const PRODUCTION_NOTIFICATION_CHANNELS = {
       to: process.env.PROD_ALERT_EMAIL?.split(',') || ['admin@smartslate.com'],
       from: 'alerts@smartslate.com',
       subject: '[SMARTSLATE-PROD] Alert: {severity} - {ruleName}',
-      template: 'production_alert'
-    }
+      template: 'production_alert',
+    },
   },
 
   // Slack channel for real-time notifications
@@ -41,8 +45,8 @@ export const PRODUCTION_NOTIFICATION_CHANNELS = {
       webhookUrl: process.env.SLACK_WEBHOOK_URL,
       channel: '#production-alerts',
       username: 'SmartSlate Monitor',
-      iconEmoji: ':warning:'
-    }
+      iconEmoji: ':warning:',
+    },
   },
 
   // Webhook for external monitoring services
@@ -53,11 +57,11 @@ export const PRODUCTION_NOTIFICATION_CHANNELS = {
     config: {
       url: process.env.EXTERNAL_MONITORING_WEBHOOK_URL,
       headers: {
-        'Authorization': `Bearer ${process.env.EXTERNAL_MONITORING_TOKEN}`,
-        'Content-Type': 'application/json'
-      }
-    }
-  }
+        Authorization: `Bearer ${process.env.EXTERNAL_MONITORING_TOKEN}`,
+        'Content-Type': 'application/json',
+      },
+    },
+  },
 };
 
 // ============================================================================
@@ -74,18 +78,20 @@ export const PAYMENT_ALERT_RULES: Omit<AlertRule, 'id' | 'triggerCount' | 'lastT
     enabled: true,
     severity: 'critical',
     cooldownPeriod: 5 * 60 * 1000, // 5 minutes
-    conditions: [{
-      type: 'error_rate',
-      operator: '>',
-      threshold: 5, // 5% failure rate
-      timeWindow: 5 * 60 * 1000, // 5 minutes
-      category: 'payment'
-    }],
+    conditions: [
+      {
+        type: 'error_rate',
+        operator: '>',
+        threshold: 5, // 5% failure rate
+        timeWindow: 5 * 60 * 1000, // 5 minutes
+        category: 'payment',
+      },
+    ],
     actions: [
       { type: 'email', enabled: true, config: PRODUCTION_NOTIFICATION_CHANNELS.email.config },
       { type: 'slack', enabled: true, config: PRODUCTION_NOTIFICATION_CHANNELS.slack.config },
-      { type: 'webhook', enabled: true, config: PRODUCTION_NOTIFICATION_CHANNELS.webhook.config }
-    ]
+      { type: 'webhook', enabled: true, config: PRODUCTION_NOTIFICATION_CHANNELS.webhook.config },
+    ],
   },
 
   {
@@ -94,17 +100,19 @@ export const PAYMENT_ALERT_RULES: Omit<AlertRule, 'id' | 'triggerCount' | 'lastT
     enabled: true,
     severity: 'error',
     cooldownPeriod: 2 * 60 * 1000, // 2 minutes
-    conditions: [{
-      type: 'error_pattern',
-      operator: '>=',
-      threshold: 3,
-      pattern: 'webhook.*failed',
-      category: 'webhook'
-    }],
+    conditions: [
+      {
+        type: 'error_pattern',
+        operator: '>=',
+        threshold: 3,
+        pattern: 'webhook.*failed',
+        category: 'webhook',
+      },
+    ],
     actions: [
       { type: 'slack', enabled: true, config: PRODUCTION_NOTIFICATION_CHANNELS.slack.config },
-      { type: 'email', enabled: true, config: PRODUCTION_NOTIFICATION_CHANNELS.email.config }
-    ]
+      { type: 'email', enabled: true, config: PRODUCTION_NOTIFICATION_CHANNELS.email.config },
+    ],
   },
 
   {
@@ -113,18 +121,20 @@ export const PAYMENT_ALERT_RULES: Omit<AlertRule, 'id' | 'triggerCount' | 'lastT
     enabled: true,
     severity: 'critical',
     cooldownPeriod: 1 * 60 * 1000, // 1 minute
-    conditions: [{
-      type: 'error_pattern',
-      operator: '>=',
-      threshold: 1,
-      pattern: 'signature.*verification.*failed',
-      category: 'security'
-    }],
+    conditions: [
+      {
+        type: 'error_pattern',
+        operator: '>=',
+        threshold: 1,
+        pattern: 'signature.*verification.*failed',
+        category: 'security',
+      },
+    ],
     actions: [
       { type: 'slack', enabled: true, config: PRODUCTION_NOTIFICATION_CHANNELS.slack.config },
       { type: 'email', enabled: true, config: PRODUCTION_NOTIFICATION_CHANNELS.email.config },
-      { type: 'webhook', enabled: true, config: PRODUCTION_NOTIFICATION_CHANNELS.webhook.config }
-    ]
+      { type: 'webhook', enabled: true, config: PRODUCTION_NOTIFICATION_CHANNELS.webhook.config },
+    ],
   },
 
   {
@@ -133,15 +143,17 @@ export const PAYMENT_ALERT_RULES: Omit<AlertRule, 'id' | 'triggerCount' | 'lastT
     enabled: true,
     severity: 'warning',
     cooldownPeriod: 10 * 60 * 1000, // 10 minutes
-    conditions: [{
-      type: 'response_time',
-      operator: '>',
-      threshold: 3000, // 3 seconds
-      metric: 'payment_api'
-    }],
+    conditions: [
+      {
+        type: 'response_time',
+        operator: '>',
+        threshold: 3000, // 3 seconds
+        metric: 'payment_api',
+      },
+    ],
     actions: [
-      { type: 'slack', enabled: true, config: PRODUCTION_NOTIFICATION_CHANNELS.slack.config }
-    ]
+      { type: 'slack', enabled: true, config: PRODUCTION_NOTIFICATION_CHANNELS.slack.config },
+    ],
   },
 
   {
@@ -150,17 +162,19 @@ export const PAYMENT_ALERT_RULES: Omit<AlertRule, 'id' | 'triggerCount' | 'lastT
     enabled: true,
     severity: 'critical',
     cooldownPeriod: 2 * 60 * 1000, // 2 minutes
-    conditions: [{
-      type: 'error_pattern',
-      operator: '>=',
-      threshold: 2,
-      pattern: 'database.*connection|timeout.*database',
-      category: 'database'
-    }],
+    conditions: [
+      {
+        type: 'error_pattern',
+        operator: '>=',
+        threshold: 2,
+        pattern: 'database.*connection|timeout.*database',
+        category: 'database',
+      },
+    ],
     actions: [
       { type: 'slack', enabled: true, config: PRODUCTION_NOTIFICATION_CHANNELS.slack.config },
-      { type: 'email', enabled: true, config: PRODUCTION_NOTIFICATION_CHANNELS.email.config }
-    ]
+      { type: 'email', enabled: true, config: PRODUCTION_NOTIFICATION_CHANNELS.email.config },
+    ],
   },
 
   {
@@ -169,15 +183,17 @@ export const PAYMENT_ALERT_RULES: Omit<AlertRule, 'id' | 'triggerCount' | 'lastT
     enabled: true,
     severity: 'warning',
     cooldownPeriod: 15 * 60 * 1000, // 15 minutes
-    conditions: [{
-      type: 'response_time',
-      operator: '>',
-      threshold: 30000, // 30 seconds
-      metric: 'subscription_processing'
-    }],
+    conditions: [
+      {
+        type: 'response_time',
+        operator: '>',
+        threshold: 30000, // 30 seconds
+        metric: 'subscription_processing',
+      },
+    ],
     actions: [
-      { type: 'slack', enabled: true, config: PRODUCTION_NOTIFICATION_CHANNELS.slack.config }
-    ]
+      { type: 'slack', enabled: true, config: PRODUCTION_NOTIFICATION_CHANNELS.slack.config },
+    ],
   },
 
   {
@@ -186,17 +202,19 @@ export const PAYMENT_ALERT_RULES: Omit<AlertRule, 'id' | 'triggerCount' | 'lastT
     enabled: true,
     severity: 'error',
     cooldownPeriod: 5 * 60 * 1000, // 5 minutes
-    conditions: [{
-      type: 'error_rate',
-      operator: '>',
-      threshold: 10, // 10% error rate
-      timeWindow: 5 * 60 * 1000, // 5 minutes
-      category: 'ai_service'
-    }],
+    conditions: [
+      {
+        type: 'error_rate',
+        operator: '>',
+        threshold: 10, // 10% error rate
+        timeWindow: 5 * 60 * 1000, // 5 minutes
+        category: 'ai_service',
+      },
+    ],
     actions: [
       { type: 'slack', enabled: true, config: PRODUCTION_NOTIFICATION_CHANNELS.slack.config },
-      { type: 'email', enabled: true, config: PRODUCTION_NOTIFICATION_CHANNELS.email.config }
-    ]
+      { type: 'email', enabled: true, config: PRODUCTION_NOTIFICATION_CHANNELS.email.config },
+    ],
   },
 
   {
@@ -205,16 +223,18 @@ export const PAYMENT_ALERT_RULES: Omit<AlertRule, 'id' | 'triggerCount' | 'lastT
     enabled: true,
     severity: 'warning',
     cooldownPeriod: 10 * 60 * 1000, // 10 minutes
-    conditions: [{
-      type: 'error_pattern',
-      operator: '>=',
-      threshold: 5, // 5 rate limit hits
-      pattern: 'rate.*limit.*exceeded',
-      category: 'security'
-    }],
+    conditions: [
+      {
+        type: 'error_pattern',
+        operator: '>=',
+        threshold: 5, // 5 rate limit hits
+        pattern: 'rate.*limit.*exceeded',
+        category: 'security',
+      },
+    ],
     actions: [
-      { type: 'slack', enabled: true, config: PRODUCTION_NOTIFICATION_CHANNELS.slack.config }
-    ]
+      { type: 'slack', enabled: true, config: PRODUCTION_NOTIFICATION_CHANNELS.slack.config },
+    ],
   },
 
   {
@@ -223,15 +243,17 @@ export const PAYMENT_ALERT_RULES: Omit<AlertRule, 'id' | 'triggerCount' | 'lastT
     enabled: true,
     severity: 'warning',
     cooldownPeriod: 15 * 60 * 1000, // 15 minutes
-    conditions: [{
-      type: 'metric_threshold',
-      operator: '>',
-      threshold: 80, // 80%
-      metric: 'memory_usage_percent'
-    }],
+    conditions: [
+      {
+        type: 'metric_threshold',
+        operator: '>',
+        threshold: 80, // 80%
+        metric: 'memory_usage_percent',
+      },
+    ],
     actions: [
-      { type: 'slack', enabled: true, config: PRODUCTION_NOTIFICATION_CHANNELS.slack.config }
-    ]
+      { type: 'slack', enabled: true, config: PRODUCTION_NOTIFICATION_CHANNELS.slack.config },
+    ],
   },
 
   {
@@ -240,18 +262,20 @@ export const PAYMENT_ALERT_RULES: Omit<AlertRule, 'id' | 'triggerCount' | 'lastT
     enabled: true,
     severity: 'critical',
     cooldownPeriod: 1 * 60 * 1000, // 1 minute
-    conditions: [{
-      type: 'health_check',
-      operator: '!=',
-      healthCheck: 'healthy',
-      threshold: 1
-    }],
+    conditions: [
+      {
+        type: 'health_check',
+        operator: '!=',
+        healthCheck: 'healthy',
+        threshold: 1,
+      },
+    ],
     actions: [
       { type: 'slack', enabled: true, config: PRODUCTION_NOTIFICATION_CHANNELS.slack.config },
       { type: 'email', enabled: true, config: PRODUCTION_NOTIFICATION_CHANNELS.email.config },
-      { type: 'webhook', enabled: true, config: PRODUCTION_NOTIFICATION_CHANNELS.webhook.config }
-    ]
-  }
+      { type: 'webhook', enabled: true, config: PRODUCTION_NOTIFICATION_CHANNELS.webhook.config },
+    ],
+  },
 ];
 
 // ============================================================================
@@ -268,15 +292,17 @@ export const SYSTEM_HEALTH_RULES: Omit<AlertRule, 'id' | 'triggerCount' | 'lastT
     enabled: true,
     severity: 'warning',
     cooldownPeriod: 10 * 60 * 1000, // 10 minutes
-    conditions: [{
-      type: 'response_time',
-      operator: '>',
-      threshold: 2000, // 2 seconds
-      metric: 'api_p95_response_time'
-    }],
+    conditions: [
+      {
+        type: 'response_time',
+        operator: '>',
+        threshold: 2000, // 2 seconds
+        metric: 'api_p95_response_time',
+      },
+    ],
     actions: [
-      { type: 'slack', enabled: true, config: PRODUCTION_NOTIFICATION_CHANNELS.slack.config }
-    ]
+      { type: 'slack', enabled: true, config: PRODUCTION_NOTIFICATION_CHANNELS.slack.config },
+    ],
   },
 
   {
@@ -285,17 +311,19 @@ export const SYSTEM_HEALTH_RULES: Omit<AlertRule, 'id' | 'triggerCount' | 'lastT
     enabled: true,
     severity: 'error',
     cooldownPeriod: 15 * 60 * 1000, // 15 minutes
-    conditions: [{
-      type: 'uptime',
-      operator: '<',
-      threshold: 99, // 99% uptime
-      timeWindow: 60 * 60 * 1000 // 1 hour
-    }],
+    conditions: [
+      {
+        type: 'uptime',
+        operator: '<',
+        threshold: 99, // 99% uptime
+        timeWindow: 60 * 60 * 1000, // 1 hour
+      },
+    ],
     actions: [
       { type: 'slack', enabled: true, config: PRODUCTION_NOTIFICATION_CHANNELS.slack.config },
-      { type: 'email', enabled: true, config: PRODUCTION_NOTIFICATION_CHANNELS.email.config }
-    ]
-  }
+      { type: 'email', enabled: true, config: PRODUCTION_NOTIFICATION_CHANNELS.email.config },
+    ],
+  },
 ];
 
 // ============================================================================
@@ -309,12 +337,7 @@ export const VERCEL_MONITORING_CONFIG = {
   // Vercel Analytics integration
   analytics: {
     enabled: true,
-    metrics: [
-      'web_vitals',
-      'page_views',
-      'conversion_rates',
-      'error_rates'
-    ]
+    metrics: ['web_vitals', 'page_views', 'conversion_rates', 'error_rates'],
   },
 
   // Vercel Speed Insights
@@ -322,20 +345,16 @@ export const VERCEL_MONITORING_CONFIG = {
     enabled: true,
     thresholds: {
       lcp: 2500, // Largest Contentful Paint
-      fid: 100,  // First Input Delay
-      cls: 0.1   // Cumulative Layout Shift
-    }
+      fid: 100, // First Input Delay
+      cls: 0.1, // Cumulative Layout Shift
+    },
   },
 
   // Vercel Logs integration
   logs: {
     enabled: true,
-    filters: [
-      'error',
-      'warning',
-      'critical'
-    ],
-    realtime: true
+    filters: ['error', 'warning', 'critical'],
+    realtime: true,
   },
 
   // Custom metrics for payment processing
@@ -343,19 +362,19 @@ export const VERCEL_MONITORING_CONFIG = {
     {
       name: 'payment_success_rate',
       type: 'percentage',
-      tags: ['payment', 'razorpay']
+      tags: ['payment', 'razorpay'],
     },
     {
       name: 'webhook_processing_time',
       type: 'duration',
-      tags: ['webhook', 'razorpay']
+      tags: ['webhook', 'razorpay'],
     },
     {
       name: 'subscription_conversion_rate',
       type: 'percentage',
-      tags: ['subscription', 'business']
-    }
-  ]
+      tags: ['subscription', 'business'],
+    },
+  ],
 };
 
 // ============================================================================
@@ -373,13 +392,8 @@ export const DASHBOARD_CONFIG = {
       id: 'payment_health',
       title: 'Payment System Health',
       type: 'status_grid',
-      metrics: [
-        'payment_success_rate',
-        'webhook_success_rate',
-        'api_response_time',
-        'error_rate'
-      ],
-      refreshInterval: 10000 // 10 seconds
+      metrics: ['payment_success_rate', 'webhook_success_rate', 'api_response_time', 'error_rate'],
+      refreshInterval: 10000, // 10 seconds
     },
 
     {
@@ -390,21 +404,16 @@ export const DASHBOARD_CONFIG = {
         'transactions_per_minute',
         'revenue_tracking',
         'subscription_conversions',
-        'failed_payments'
+        'failed_payments',
       ],
-      timeRange: '1h'
+      timeRange: '1h',
     },
 
     {
       id: 'system_health',
       title: 'System Health',
       type: 'gauge_grid',
-      metrics: [
-        'cpu_usage',
-        'memory_usage',
-        'database_connections',
-        'uptime_percentage'
-      ]
+      metrics: ['cpu_usage', 'memory_usage', 'database_connections', 'uptime_percentage'],
     },
 
     {
@@ -414,8 +423,8 @@ export const DASHBOARD_CONFIG = {
       maxItems: 20,
       filter: {
         resolved: false,
-        severity: ['critical', 'error']
-      }
+        severity: ['critical', 'error'],
+      },
     },
 
     {
@@ -423,9 +432,9 @@ export const DASHBOARD_CONFIG = {
       title: 'Error Analysis',
       type: 'error_breakdown',
       groupBy: 'category',
-      timeRange: '24h'
-    }
-  ]
+      timeRange: '24h',
+    },
+  ],
 };
 
 // ============================================================================
@@ -439,7 +448,7 @@ export function configureProductionMonitoring(): void {
   console.log('[Production Monitoring] Setting up production monitoring...');
 
   // Add notification channels
-  Object.values(PRODUCTION_NOTIFICATION_CHANNELS).forEach(channel => {
+  Object.values(PRODUCTION_NOTIFICATION_CHANNELS).forEach((channel) => {
     try {
       alertingSystem.addChannel(channel);
       console.log(`[Production Monitoring] Added ${channel.name} channel`);
@@ -449,22 +458,28 @@ export function configureProductionMonitoring(): void {
   });
 
   // Add payment alert rules
-  PAYMENT_ALERT_RULES.forEach(rule => {
+  PAYMENT_ALERT_RULES.forEach((rule) => {
     try {
       const ruleId = alertingSystem.addRule(rule);
       console.log(`[Production Monitoring] Added payment alert rule: ${rule.name} (${ruleId})`);
     } catch (error) {
-      console.error(`[Production Monitoring] Failed to add payment alert rule ${rule.name}:`, error);
+      console.error(
+        `[Production Monitoring] Failed to add payment alert rule ${rule.name}:`,
+        error
+      );
     }
   });
 
   // Add system health rules
-  SYSTEM_HEALTH_RULES.forEach(rule => {
+  SYSTEM_HEALTH_RULES.forEach((rule) => {
     try {
       const ruleId = alertingSystem.addRule(rule);
       console.log(`[Production Monitoring] Added system health rule: ${rule.name} (${ruleId})`);
     } catch (error) {
-      console.error(`[Production Monitoring] Failed to add system health rule ${rule.name}:`, error);
+      console.error(
+        `[Production Monitoring] Failed to add system health rule ${rule.name}:`,
+        error
+      );
     }
   });
 
@@ -479,7 +494,7 @@ export function configureProductionMonitoring(): void {
     level: 'warn',
     excludeSensitiveData: true,
     maxLogEntries: 50000,
-    retentionDays: 30
+    retentionDays: 30,
   });
 
   console.log('[Production Monitoring] Production monitoring configured successfully');
@@ -511,7 +526,7 @@ export async function testProductionAlerting(): Promise<{
         timestamp: Date.now(),
         data: { test: true, channel: name },
         actions: [],
-        resolved: false
+        resolved: false,
       };
 
       // This would normally trigger the alert actions
@@ -520,21 +535,23 @@ export async function testProductionAlerting(): Promise<{
       results.push({
         rule: `${name} channel`,
         success: true,
-        message: 'Test alert sent successfully'
+        message: 'Test alert sent successfully',
       });
     } catch (error) {
       results.push({
         rule: `${name} channel`,
         success: false,
-        message: error instanceof Error ? error.message : 'Unknown error'
+        message: error instanceof Error ? error.message : 'Unknown error',
       });
     }
   }
 
-  const successCount = results.filter(r => r.success).length;
+  const successCount = results.filter((r) => r.success).length;
   const success = successCount === results.length;
 
-  console.log(`[Production Monitoring] Alerting test completed: ${successCount}/${results.length} successful`);
+  console.log(
+    `[Production Monitoring] Alerting test completed: ${successCount}/${results.length} successful`
+  );
 
   return { success, results };
 }
@@ -552,24 +569,24 @@ export function getProductionMonitoringStatus(): {
 
   return {
     configured: stats.enabledRules > 0,
-    channels: Object.values(PRODUCTION_NOTIFICATION_CHANNELS).map(channel => ({
+    channels: Object.values(PRODUCTION_NOTIFICATION_CHANNELS).map((channel) => ({
       name: channel.name,
       type: channel.type,
-      enabled: channel.enabled
+      enabled: channel.enabled,
     })),
     rules: [
-      ...PAYMENT_ALERT_RULES.map(rule => ({
+      ...PAYMENT_ALERT_RULES.map((rule) => ({
         name: rule.name,
         severity: rule.severity,
-        enabled: rule.enabled
+        enabled: rule.enabled,
       })),
-      ...SYSTEM_HEALTH_RULES.map(rule => ({
+      ...SYSTEM_HEALTH_RULES.map((rule) => ({
         name: rule.name,
         severity: rule.severity,
-        enabled: rule.enabled
-      }))
+        enabled: rule.enabled,
+      })),
     ],
-    lastHealthCheck: new Date().toISOString()
+    lastHealthCheck: new Date().toISOString(),
   };
 }
 
@@ -593,23 +610,19 @@ export function validateProductionEnvironment(): {
     'PROD_ALERT_EMAIL',
     'SLACK_WEBHOOK_URL',
     'EXTERNAL_MONITORING_WEBHOOK_URL',
-    'EXTERNAL_MONITORING_TOKEN'
+    'EXTERNAL_MONITORING_TOKEN',
   ];
 
-  required.forEach(envVar => {
+  required.forEach((envVar) => {
     if (!process.env[envVar]) {
       errors.push(`Missing required environment variable: ${envVar}`);
     }
   });
 
   // Optional but recommended
-  const recommended = [
-    'VERCEL_ANALYTICS_ID',
-    'SENTRY_DSN',
-    'LOGDNA_API_KEY'
-  ];
+  const recommended = ['VERCEL_ANALYTICS_ID', 'SENTRY_DSN', 'LOGDNA_API_KEY'];
 
-  recommended.forEach(envVar => {
+  recommended.forEach((envVar) => {
     if (!process.env[envVar]) {
       warnings.push(`Missing recommended environment variable: ${envVar}`);
     }
@@ -618,7 +631,7 @@ export function validateProductionEnvironment(): {
   return {
     valid: errors.length === 0,
     errors,
-    warnings
+    warnings,
   };
 }
 
@@ -631,5 +644,5 @@ export default {
   configureProductionMonitoring,
   testProductionAlerting,
   getProductionMonitoringStatus,
-  validateProductionEnvironment
+  validateProductionEnvironment,
 };

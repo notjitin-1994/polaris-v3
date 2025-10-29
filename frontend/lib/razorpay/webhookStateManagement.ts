@@ -124,8 +124,8 @@ export class WebhookStateManagement {
         metadata: {
           eventType: event.eventType,
           accountId: event.accountId,
-          timestamp: new Date().toISOString()
-        }
+          timestamp: new Date().toISOString(),
+        },
       };
 
       // Persist state if enabled
@@ -140,7 +140,7 @@ export class WebhookStateManagement {
     } catch (error) {
       return {
         success: false,
-        error: `Failed to initialize processing state: ${error instanceof Error ? error.message : 'Unknown error'}`
+        error: `Failed to initialize processing state: ${error instanceof Error ? error.message : 'Unknown error'}`,
       };
     }
   }
@@ -177,7 +177,7 @@ export class WebhookStateManagement {
         processed: handlerResult.processed,
         duration: Date.now() - startTime,
         error: handlerResult.error,
-        details: handlerResult.details
+        details: handlerResult.details,
       };
 
       if (!state.handlerResults) {
@@ -215,7 +215,7 @@ export class WebhookStateManagement {
       return {
         success: false,
         state,
-        error: `Failed to execute handler with state: ${state.error}`
+        error: `Failed to execute handler with state: ${state.error}`,
       };
     }
   }
@@ -226,13 +226,15 @@ export class WebhookStateManagement {
    * @param operations - Array of database operations to execute
    * @returns Transaction result
    */
-  async executeTransaction(operations: Array<{
-    name: string;
-    operation: () => Promise<any>;
-  }>): Promise<TransactionResult> {
+  async executeTransaction(
+    operations: Array<{
+      name: string;
+      operation: () => Promise<any>;
+    }>
+  ): Promise<TransactionResult> {
     const startTime = Date.now();
     const operationsCompleted: string[] = [];
-    let rollbackData: any[] = [];
+    const rollbackData: any[] = [];
 
     try {
       // Execute operations in sequence
@@ -248,7 +250,7 @@ export class WebhookStateManagement {
             rollbackData.push({
               operation: op.name,
               data: result,
-              timestamp: Date.now()
+              timestamp: Date.now(),
             });
           }
 
@@ -268,7 +270,7 @@ export class WebhookStateManagement {
             committed: false,
             rolledBack: this.config.enableTransactionRollback && operationsCompleted.length > 0,
             error: errorMsg,
-            operationsCompleted
+            operationsCompleted,
           };
         }
       }
@@ -278,7 +280,7 @@ export class WebhookStateManagement {
         committed: true,
         rolledBack: false,
         operationsCompleted,
-        data: rollbackData
+        data: rollbackData,
       };
     } catch (error) {
       return {
@@ -286,7 +288,7 @@ export class WebhookStateManagement {
         committed: false,
         rolledBack: false,
         error: `Transaction execution failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
-        operationsCompleted
+        operationsCompleted,
       };
     }
   }
@@ -356,7 +358,7 @@ export class WebhookStateManagement {
     } catch (error) {
       return {
         success: false,
-        error: `Failed to cleanup old states: ${error instanceof Error ? error.message : 'Unknown error'}`
+        error: `Failed to cleanup old states: ${error instanceof Error ? error.message : 'Unknown error'}`,
       };
     }
   }
@@ -377,7 +379,7 @@ export class WebhookStateManagement {
       if (this.config.enableDetailedLogging) {
         console.log('Persisting state for event:', state.eventId, {
           status: state.status,
-          handlerCount: state.handlerResults?.length || 0
+          handlerCount: state.handlerResults?.length || 0,
         });
       }
 
@@ -385,7 +387,7 @@ export class WebhookStateManagement {
     } catch (error) {
       return {
         success: false,
-        error: `Failed to persist state: ${error instanceof Error ? error.message : 'Unknown error'}`
+        error: `Failed to persist state: ${error instanceof Error ? error.message : 'Unknown error'}`,
       };
     }
   }
@@ -431,7 +433,7 @@ export class WebhookStateManagement {
         totalProcessed: 0,
         successRate: 0,
         averageProcessingTime: 0,
-        recentFailures: 0
+        recentFailures: 0,
       };
     } catch (error) {
       this.logError('Failed to get processing statistics', error);
@@ -439,7 +441,7 @@ export class WebhookStateManagement {
         totalProcessed: 0,
         successRate: 0,
         averageProcessingTime: 0,
-        recentFailures: 0
+        recentFailures: 0,
       };
     }
   }
@@ -473,10 +475,10 @@ export function createWebhookDatabaseOperations(
         .from('webhook_events')
         .update({
           processing_status: 'processing',
-          processing_started_at: new Date().toISOString()
+          processing_started_at: new Date().toISOString(),
         })
         .eq('event_id', event.eventId);
-    }
+    },
   });
 
   // Add more operations based on event type
@@ -489,10 +491,10 @@ export function createWebhookDatabaseOperations(
           .from('razorpay_subscriptions')
           .update({
             status: subscription.status,
-            updated_at: new Date().toISOString()
+            updated_at: new Date().toISOString(),
           })
           .eq('razorpay_subscription_id', subscription.id);
-      }
+      },
     });
   }
 
@@ -505,10 +507,10 @@ export function createWebhookDatabaseOperations(
           .from('razorpay_payments')
           .update({
             status: payment.status,
-            updated_at: new Date().toISOString()
+            updated_at: new Date().toISOString(),
           })
           .eq('razorpay_payment_id', payment.id);
-      }
+      },
     });
   }
 
@@ -554,7 +556,7 @@ export function validateProcessingState(state: WebhookProcessingState): {
 
   return {
     valid: errors.length === 0,
-    errors
+    errors,
   };
 }
 

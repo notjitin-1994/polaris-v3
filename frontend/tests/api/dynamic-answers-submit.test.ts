@@ -20,27 +20,37 @@ vi.mock('@supabase/ssr', () => ({
       getUser: vi.fn(),
     },
     from: vi.fn(() => ({
-      select: vi.fn(() => Promise.resolve({
-        data: null,
-        error: null,
-      })),
-      update: vi.fn(() => Promise.resolve({
-        data: null,
-        error: null,
-      })),
-      insert: vi.fn(() => Promise.resolve({
-        data: null,
-        error: null,
-      })),
+      select: vi.fn(() =>
+        Promise.resolve({
+          data: null,
+          error: null,
+        })
+      ),
+      update: vi.fn(() =>
+        Promise.resolve({
+          data: null,
+          error: null,
+        })
+      ),
+      insert: vi.fn(() =>
+        Promise.resolve({
+          data: null,
+          error: null,
+        })
+      ),
       eq: vi.fn(() => ({
-        eq: vi.fn(() => Promise.resolve({
-          data: null,
-          error: null,
-        })),
-        single: vi.fn(() => Promise.resolve({
-          data: null,
-          error: null,
-        })),
+        eq: vi.fn(() =>
+          Promise.resolve({
+            data: null,
+            error: null,
+          })
+        ),
+        single: vi.fn(() =>
+          Promise.resolve({
+            data: null,
+            error: null,
+          })
+        ),
       })),
     })),
   })),

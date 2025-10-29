@@ -20,11 +20,14 @@ vi.hoisted(() => {
 /**
  * Helper function to create mock NextRequest
  */
-function createMockRequest(url: string, options: {
-  method?: string;
-  headers?: Record<string, string>;
-  body?: any;
-} = {}) {
+function createMockRequest(
+  url: string,
+  options: {
+    method?: string;
+    headers?: Record<string, string>;
+    body?: any;
+  } = {}
+) {
   const { method = 'POST', headers = {}, body } = options;
 
   const request = new NextRequest(url, {
@@ -161,7 +164,7 @@ describe('Payment Flow Integration Tests', () => {
         data: {
           subscription_tier: 'explorer',
           full_name: 'Integration Test User',
-          user_id: mockUser.id
+          user_id: mockUser.id,
         },
         error: null,
       });
@@ -208,19 +211,22 @@ describe('Payment Flow Integration Tests', () => {
       });
 
       // 6. Create subscription request
-      const createRequest = createMockRequest('http://localhost:3000/api/subscriptions/create-subscription', {
-        headers: {
-          'x-forwarded-for': '192.168.1.100',
-        },
-        body: {
-          tier: 'navigator',
-          billingCycle: 'monthly',
-          customerInfo: {
-            name: 'Integration Test User',
-            email: mockUser.email,
+      const createRequest = createMockRequest(
+        'http://localhost:3000/api/subscriptions/create-subscription',
+        {
+          headers: {
+            'x-forwarded-for': '192.168.1.100',
           },
-        },
-      });
+          body: {
+            tier: 'navigator',
+            billingCycle: 'monthly',
+            customerInfo: {
+              name: 'Integration Test User',
+              email: mockUser.email,
+            },
+          },
+        }
+      );
 
       const createResponse = await CreateSubscription(createRequest);
       const createData = await createResponse.json();
@@ -272,7 +278,7 @@ describe('Payment Flow Integration Tests', () => {
         error_step: null,
         error_reason: null,
         acquirer_data: {
-          auth_code: '123456'
+          auth_code: '123456',
         },
         created_at: 1698576000,
       };
@@ -280,13 +286,16 @@ describe('Payment Flow Integration Tests', () => {
       (razorpayClient.payments.fetch as any).mockResolvedValue(mockPayment);
 
       // 9. Create payment verification request
-      const verifyRequest = createMockRequest('http://localhost:3000/api/subscriptions/verify-payment', {
-        body: {
-          razorpay_payment_id: 'pay_integration',
-          razorpay_subscription_id: 'raz_sub_integration',
-          razorpay_signature: 'test_signature',
-        },
-      });
+      const verifyRequest = createMockRequest(
+        'http://localhost:3000/api/subscriptions/verify-payment',
+        {
+          body: {
+            razorpay_payment_id: 'pay_integration',
+            razorpay_subscription_id: 'raz_sub_integration',
+            razorpay_signature: 'test_signature',
+          },
+        }
+      );
 
       const verifyResponse = await VerifyPayment(verifyRequest);
       const verifyData = await verifyResponse.json();
@@ -536,15 +545,18 @@ describe('Payment Flow Integration Tests', () => {
       (razorpayClient.subscriptions.cancel as any).mockResolvedValue({});
 
       // 7. Create subscription request
-      const createRequest = createMockRequest('http://localhost:3000/api/subscriptions/create-subscription', {
-        headers: {
-          'x-forwarded-for': '192.168.1.200',
-        },
-        body: {
-          tier: 'navigator',
-          billingCycle: 'monthly',
-        },
-      });
+      const createRequest = createMockRequest(
+        'http://localhost:3000/api/subscriptions/create-subscription',
+        {
+          headers: {
+            'x-forwarded-for': '192.168.1.200',
+          },
+          body: {
+            tier: 'navigator',
+            billingCycle: 'monthly',
+          },
+        }
+      );
 
       const createResponse = await CreateSubscription(createRequest);
       const createData = await createResponse.json();
@@ -570,14 +582,16 @@ describe('Payment Flow Integration Tests', () => {
 
       // 2. Existing subscription found (lower tier)
       mockSupabase.order.mockResolvedValueOnce({
-        data: [{
-          subscription_id: 'sub-existing',
-          razorpay_subscription_id: 'raz_sub_existing',
-          status: 'active',
-          subscription_tier: 'navigator',
-          plan_name: 'Navigator Plan (Monthly)',
-          next_billing_date: '2025-11-29T12:00:00.000Z',
-        }],
+        data: [
+          {
+            subscription_id: 'sub-existing',
+            razorpay_subscription_id: 'raz_sub_existing',
+            status: 'active',
+            subscription_tier: 'navigator',
+            plan_name: 'Navigator Plan (Monthly)',
+            next_billing_date: '2025-11-29T12:00:00.000Z',
+          },
+        ],
         error: null,
       });
 
@@ -615,15 +629,18 @@ describe('Payment Flow Integration Tests', () => {
       });
 
       // 6. Create upgrade request
-      const upgradeRequest = createMockRequest('http://localhost:3000/api/subscriptions/create-subscription', {
-        headers: {
-          'x-forwarded-for': '192.168.1.300',
-        },
-        body: {
-          tier: 'voyager', // Higher tier
-          billingCycle: 'monthly',
-        },
-      });
+      const upgradeRequest = createMockRequest(
+        'http://localhost:3000/api/subscriptions/create-subscription',
+        {
+          headers: {
+            'x-forwarded-for': '192.168.1.300',
+          },
+          body: {
+            tier: 'voyager', // Higher tier
+            billingCycle: 'monthly',
+          },
+        }
+      );
 
       const upgradeResponse = await CreateSubscription(upgradeRequest);
       const upgradeData = await upgradeResponse.json();
@@ -720,20 +737,23 @@ describe('Payment Flow Integration Tests', () => {
       });
 
       // Create subscription
-      const request = createMockRequest('http://localhost:3000/api/subscriptions/create-subscription', {
-        headers: {
-          'x-forwarded-for': '192.168.1.400',
-        },
-        body: {
-          tier: consistentTier,
-          billingCycle: consistentBillingCycle,
-          customerInfo: {
-            name: 'Consistency Test User',
-            email: consistentEmail,
+      const request = createMockRequest(
+        'http://localhost:3000/api/subscriptions/create-subscription',
+        {
+          headers: {
+            'x-forwarded-for': '192.168.1.400',
           },
-          metadata: { source: 'consistency_test' },
-        },
-      });
+          body: {
+            tier: consistentTier,
+            billingCycle: consistentBillingCycle,
+            customerInfo: {
+              name: 'Consistency Test User',
+              email: consistentEmail,
+            },
+            metadata: { source: 'consistency_test' },
+          },
+        }
+      );
 
       const response = await CreateSubscription(request);
       const data = await response.json();

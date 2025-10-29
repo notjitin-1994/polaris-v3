@@ -24,10 +24,12 @@ import type { BlueprintData } from '@/lib/stores/types';
 
 // Helper function to check if blueprint is complete
 function isFullBlueprint(blueprint: any): blueprint is BlueprintData {
-  return blueprint &&
-         typeof blueprint.id === 'string' &&
-         typeof blueprint.title === 'string' &&
-         typeof blueprint.description === 'string';
+  return (
+    blueprint &&
+    typeof blueprint.id === 'string' &&
+    typeof blueprint.title === 'string' &&
+    typeof blueprint.description === 'string'
+  );
 }
 
 /**

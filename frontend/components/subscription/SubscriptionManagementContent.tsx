@@ -64,30 +64,30 @@ function SubscriptionManagementContent({
             <div className="flex items-center space-x-4">
               <Link
                 href="/settings"
-                className="p-2 text-gray-600 hover:text-gray-900 transition-colors"
+                className="p-2 text-gray-600 transition-colors hover:text-gray-900"
               >
                 <ArrowLeft className="h-5 w-5" />
               </Link>
               <div>
                 <h1 className="text-3xl font-bold text-gray-900">Subscription Management</h1>
-                <p className="text-gray-600 mt-1">
+                <p className="mt-1 text-gray-600">
                   Manage your subscription, payment history, and billing preferences
                 </p>
               </div>
             </div>
 
             {/* Quick Actions */}
-            <div className="hidden md:flex items-center space-x-3">
+            <div className="hidden items-center space-x-3 md:flex">
               <Link
                 href="/pricing"
-                className="flex items-center space-x-2 px-4 py-2 text-primary-600 hover:text-primary-700 transition-colors"
+                className="text-primary-600 hover:text-primary-700 flex items-center space-x-2 px-4 py-2 transition-colors"
               >
                 <Shield className="h-4 w-4" />
                 <span>View Plans</span>
               </Link>
               <Link
                 href="/settings"
-                className="flex items-center space-x-2 px-4 py-2 text-gray-600 hover:text-gray-900 transition-colors"
+                className="flex items-center space-x-2 px-4 py-2 text-gray-600 transition-colors hover:text-gray-900"
               >
                 <Settings className="h-4 w-4" />
                 <span>Settings</span>
@@ -103,7 +103,7 @@ function SubscriptionManagementContent({
             animate={{ opacity: 1, y: 0 }}
             className="mb-8"
           >
-            <GlassCard className="p-6 border-red-200 bg-red-50">
+            <GlassCard className="border-red-200 bg-red-50 p-6">
               <div className="flex items-center space-x-3 text-red-600">
                 <Shield className="h-5 w-5" />
                 <h3 className="font-semibold">Error Loading Subscription Data</h3>
@@ -111,7 +111,7 @@ function SubscriptionManagementContent({
               <p className="mt-2 text-red-700">{error}</p>
               <button
                 onClick={() => window.location.reload()}
-                className="mt-4 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+                className="mt-4 rounded-lg bg-red-600 px-4 py-2 text-white transition-colors hover:bg-red-700"
               >
                 Try Again
               </button>
@@ -121,20 +121,16 @@ function SubscriptionManagementContent({
 
         {/* Loading State */}
         {isLoading && !error && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="mb-8"
-          >
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mb-8">
+            <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
               <div className="lg:col-span-2">
                 <GlassCard className="p-6">
                   <div className="animate-pulse">
-                    <div className="h-8 bg-gray-200 rounded mb-4"></div>
+                    <div className="mb-4 h-8 rounded bg-gray-200"></div>
                     <div className="space-y-3">
-                      <div className="h-4 bg-gray-200 rounded"></div>
-                      <div className="h-4 bg-gray-200 rounded w-3/4"></div>
-                      <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+                      <div className="h-4 rounded bg-gray-200"></div>
+                      <div className="h-4 w-3/4 rounded bg-gray-200"></div>
+                      <div className="h-4 w-1/2 rounded bg-gray-200"></div>
                     </div>
                   </div>
                 </GlassCard>
@@ -142,10 +138,10 @@ function SubscriptionManagementContent({
               <div>
                 <GlassCard className="p-6">
                   <div className="animate-pulse">
-                    <div className="h-6 bg-gray-200 rounded mb-4"></div>
+                    <div className="mb-4 h-6 rounded bg-gray-200"></div>
                     <div className="space-y-2">
-                      <div className="h-4 bg-gray-200 rounded"></div>
-                      <div className="h-4 bg-gray-200 rounded w-2/3"></div>
+                      <div className="h-4 rounded bg-gray-200"></div>
+                      <div className="h-4 w-2/3 rounded bg-gray-200"></div>
                     </div>
                   </div>
                 </GlassCard>
@@ -156,27 +152,21 @@ function SubscriptionManagementContent({
 
         {/* Main Content */}
         {!isLoading && !error && (
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
             {/* Left Column - Subscription Info & Actions */}
-            <div className="lg:col-span-2 space-y-6">
+            <div className="space-y-6 lg:col-span-2">
               {/* Subscription Information */}
-              <SubscriptionInfo
-                subscription={subscription}
-                userProfile={userProfile}
-              />
+              <SubscriptionInfo subscription={subscription} userProfile={userProfile} />
 
               {/* Payment History */}
-              <PaymentHistory
-                payments={mockPayments}
-                isLoading={paymentHistoryLoading}
-              />
+              <PaymentHistory payments={mockPayments} isLoading={paymentHistoryLoading} />
             </div>
 
             {/* Right Column - Quick Actions & Info */}
             <div className="space-y-6">
               {/* Quick Actions Card */}
               <GlassCard className="p-6">
-                <div className="flex items-center space-x-2 mb-4">
+                <div className="mb-4 flex items-center space-x-2">
                   <Settings className="h-5 w-5 text-gray-600" />
                   <h3 className="text-lg font-semibold text-gray-900">Quick Actions</h3>
                 </div>
@@ -190,13 +180,13 @@ function SubscriptionManagementContent({
                   {/* Other Actions */}
                   <Link
                     href="/pricing"
-                    className="w-full px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors flex items-center justify-center space-x-2"
+                    className="bg-primary-600 hover:bg-primary-700 flex w-full items-center justify-center space-x-2 rounded-lg px-4 py-2 text-white transition-colors"
                   >
                     <Shield className="h-4 w-4" />
                     <span>Change Plan</span>
                   </Link>
 
-                  <button className="w-full px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors flex items-center justify-center space-x-2">
+                  <button className="flex w-full items-center justify-center space-x-2 rounded-lg border border-gray-300 px-4 py-2 text-gray-700 transition-colors hover:bg-gray-50">
                     <CreditCard className="h-4 w-4" />
                     <span>Update Payment Method</span>
                   </button>
@@ -205,31 +195,32 @@ function SubscriptionManagementContent({
 
               {/* Support Card */}
               <GlassCard className="p-6">
-                <div className="flex items-center space-x-2 mb-4">
-                  <Shield className="h-5 w-5 text-primary-600" />
+                <div className="mb-4 flex items-center space-x-2">
+                  <Shield className="text-primary-600 h-5 w-5" />
                   <h3 className="text-lg font-semibold text-gray-900">Need Help?</h3>
                 </div>
 
-                <p className="text-gray-600 text-sm mb-4">
-                  Have questions about your subscription or billing? Our support team is here to help.
+                <p className="mb-4 text-sm text-gray-600">
+                  Have questions about your subscription or billing? Our support team is here to
+                  help.
                 </p>
 
                 <div className="space-y-2">
                   <a
                     href="mailto:support@polaris.app"
-                    className="block px-4 py-2 text-primary-600 hover:text-primary-700 text-sm font-medium"
+                    className="text-primary-600 hover:text-primary-700 block px-4 py-2 text-sm font-medium"
                   >
                     Email Support
                   </a>
                   <a
                     href="/docs/billing"
-                    className="block px-4 py-2 text-primary-600 hover:text-primary-700 text-sm font-medium"
+                    className="text-primary-600 hover:text-primary-700 block px-4 py-2 text-sm font-medium"
                   >
                     Billing Documentation
                   </a>
                   <a
                     href="/faq"
-                    className="block px-4 py-2 text-primary-600 hover:text-primary-700 text-sm font-medium"
+                    className="text-primary-600 hover:text-primary-700 block px-4 py-2 text-sm font-medium"
                   >
                     FAQ
                   </a>
@@ -239,7 +230,7 @@ function SubscriptionManagementContent({
               {/* Billing Summary */}
               {subscription && (
                 <GlassCard className="p-6">
-                  <div className="flex items-center space-x-2 mb-4">
+                  <div className="mb-4 flex items-center space-x-2">
                     <CreditCard className="h-5 w-5 text-gray-600" />
                     <h3 className="text-lg font-semibold text-gray-900">Billing Summary</h3>
                   </div>
@@ -247,9 +238,7 @@ function SubscriptionManagementContent({
                   <div className="space-y-3">
                     <div className="flex justify-between text-sm">
                       <span className="text-gray-600">Current Plan</span>
-                      <span className="font-medium text-gray-900">
-                        {subscription.planName}
-                      </span>
+                      <span className="font-medium text-gray-900">{subscription.planName}</span>
                     </div>
 
                     <div className="flex justify-between text-sm">
@@ -268,12 +257,11 @@ function SubscriptionManagementContent({
                               day: 'numeric',
                               year: 'numeric',
                             })
-                          : 'N/A'
-                        }
+                          : 'N/A'}
                       </span>
                     </div>
 
-                    <div className="pt-3 border-t border-gray-200">
+                    <div className="border-t border-gray-200 pt-3">
                       <Link
                         href="/billing"
                         className="text-primary-600 hover:text-primary-700 text-sm font-medium"
@@ -289,9 +277,9 @@ function SubscriptionManagementContent({
         )}
 
         {/* Mobile Quick Actions */}
-        <div className="lg:hidden mt-8">
+        <div className="mt-8 lg:hidden">
           <GlassCard className="p-6">
-            <div className="flex items-center space-x-2 mb-4">
+            <div className="mb-4 flex items-center space-x-2">
               <Settings className="h-5 w-5 text-gray-600" />
               <h3 className="text-lg font-semibold text-gray-900">Quick Actions</h3>
             </div>
@@ -299,22 +287,20 @@ function SubscriptionManagementContent({
             <div className="grid grid-cols-2 gap-3">
               <Link
                 href="/pricing"
-                className="px-3 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors text-center text-sm"
+                className="bg-primary-600 hover:bg-primary-700 rounded-lg px-3 py-2 text-center text-sm text-white transition-colors"
               >
                 Change Plan
               </Link>
 
-              <button className="px-3 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm">
+              <button className="rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-700 transition-colors hover:bg-gray-50">
                 Update Payment
               </button>
 
-              <CancelSubscriptionButton
-                subscription={subscription as any}
-              />
+              <CancelSubscriptionButton subscription={subscription as any} />
 
               <Link
                 href="/support"
-                className="px-3 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-center text-sm"
+                className="rounded-lg border border-gray-300 px-3 py-2 text-center text-sm text-gray-700 transition-colors hover:bg-gray-50"
               >
                 Get Support
               </Link>

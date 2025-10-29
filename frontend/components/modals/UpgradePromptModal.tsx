@@ -133,7 +133,7 @@ export function UpgradePromptModal({
         return TEAM_TIERS.slice(0, 3);
       } else {
         // Show individual tiers (navigator, voyager)
-        return INDIVIDUAL_TIERS.filter(tier => tier !== 'explorer').slice(0, 3);
+        return INDIVIDUAL_TIERS.filter((tier) => tier !== 'explorer').slice(0, 3);
       }
     }
 
@@ -167,7 +167,7 @@ export function UpgradePromptModal({
                     repeat: Infinity,
                     ease: 'easeInOut',
                   }}
-                  className="absolute -top-1/2 -right-1/4 h-96 w-96 rounded-full bg-primary/20 blur-3xl"
+                  className="bg-primary/20 absolute -top-1/2 -right-1/4 h-96 w-96 rounded-full blur-3xl"
                 />
                 <motion.div
                   animate={{
@@ -180,7 +180,7 @@ export function UpgradePromptModal({
                     ease: 'easeInOut',
                     delay: 1,
                   }}
-                  className="absolute -bottom-1/2 -left-1/4 h-96 w-96 rounded-full bg-secondary-accent/20 blur-3xl"
+                  className="bg-secondary-accent/20 absolute -bottom-1/2 -left-1/4 h-96 w-96 rounded-full blur-3xl"
                 />
               </div>
 
@@ -195,19 +195,19 @@ export function UpgradePromptModal({
                     delay: 0.1,
                     bounce: 0.5,
                   }}
-                  className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-primary via-primary-accent-light to-primary-accent shadow-lg shadow-primary/30"
+                  className="from-primary via-primary-accent-light to-primary-accent shadow-primary/30 mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br shadow-lg"
                 >
                   <Rocket className="h-8 w-8 text-black" />
                 </motion.div>
 
                 {/* Header */}
                 <DialogHeader className="mb-6 space-y-3 text-center">
-                  <DialogTitle className="text-2xl font-bold text-foreground">
+                  <DialogTitle className="text-foreground text-2xl font-bold">
                     You've Reached Your Limit
                   </DialogTitle>
-                  <DialogDescription className="text-base text-text-secondary">
+                  <DialogDescription className="text-text-secondary text-base">
                     You've used{' '}
-                    <span className="font-semibold text-foreground">
+                    <span className="text-foreground font-semibold">
                       {currentCount} of {limitCount}
                     </span>{' '}
                     {limitTypeLabel}.
@@ -225,7 +225,7 @@ export function UpgradePromptModal({
                 >
                   <div className="mb-2 flex items-center justify-between text-sm">
                     <span className="text-text-secondary">Your Usage</span>
-                    <span className="font-semibold text-foreground">
+                    <span className="text-foreground font-semibold">
                       {currentCount}/{limitCount}
                     </span>
                   </div>
@@ -234,7 +234,7 @@ export function UpgradePromptModal({
                       initial={{ width: 0 }}
                       animate={{ width: '100%' }}
                       transition={{ duration: 0.8, delay: 0.3 }}
-                      className="absolute inset-y-0 left-0 rounded-full bg-gradient-to-r from-primary to-primary-accent-light"
+                      className="from-primary to-primary-accent-light absolute inset-y-0 left-0 rounded-full bg-gradient-to-r"
                     />
                   </div>
                 </motion.div>
@@ -243,7 +243,9 @@ export function UpgradePromptModal({
                 <div
                   className={cn(
                     'mb-6 grid gap-4',
-                    availableTiers.length === 3 ? 'grid-cols-1 md:grid-cols-3' : 'grid-cols-1 md:grid-cols-2'
+                    availableTiers.length === 3
+                      ? 'grid-cols-1 md:grid-cols-3'
+                      : 'grid-cols-1 md:grid-cols-2'
                   )}
                 >
                   {availableTiers.map((tierKey, index) => {
@@ -257,12 +259,12 @@ export function UpgradePromptModal({
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.3 + index * 0.1 }}
-                        className="group relative overflow-hidden rounded-xl border border-primary/30 bg-gradient-to-br from-primary/10 via-primary/5 to-transparent p-6 transition-all duration-300 hover:border-primary/50 hover:shadow-lg hover:shadow-primary/20"
+                        className="group border-primary/30 from-primary/10 via-primary/5 hover:border-primary/50 hover:shadow-primary/20 relative overflow-hidden rounded-xl border bg-gradient-to-br to-transparent p-6 transition-all duration-300 hover:shadow-lg"
                       >
                         {/* Popular badge */}
                         {tier.popular && (
                           <div className="absolute top-3 right-3">
-                            <span className="inline-flex items-center gap-1 rounded-full bg-primary px-2.5 py-1 text-xs font-semibold text-black">
+                            <span className="bg-primary inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold text-black">
                               <Sparkles className="h-3 w-3" />
                               Popular
                             </span>
@@ -270,18 +272,16 @@ export function UpgradePromptModal({
                         )}
 
                         {/* Tier Icon */}
-                        <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-primary via-primary-accent-light to-primary-accent shadow-md">
+                        <div className="from-primary via-primary-accent-light to-primary-accent mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br shadow-md">
                           <Icon className="h-6 w-6 text-black" />
                         </div>
 
                         {/* Tier Name & Price */}
-                        <h3 className="mb-1 text-xl font-bold text-foreground">
+                        <h3 className="text-foreground mb-1 text-xl font-bold">
                           {tierInfo.displayName}
                         </h3>
                         <div className="mb-4 flex items-baseline gap-1">
-                          <span className="text-3xl font-bold text-foreground">
-                            ${tier.price}
-                          </span>
+                          <span className="text-foreground text-3xl font-bold">${tier.price}</span>
                           <span className="text-text-secondary">/month</span>
                         </div>
 
@@ -289,13 +289,13 @@ export function UpgradePromptModal({
                         <div className="mb-4 rounded-lg bg-white/5 p-3 backdrop-blur-sm">
                           <div className="mb-2 flex items-center justify-between text-sm">
                             <span className="text-text-secondary">Blueprints</span>
-                            <span className="font-semibold text-foreground">
+                            <span className="text-foreground font-semibold">
                               {tier.generations}/mo
                             </span>
                           </div>
                           <div className="flex items-center justify-between text-sm">
                             <span className="text-text-secondary">Saved</span>
-                            <span className="font-semibold text-foreground">{tier.saved}</span>
+                            <span className="text-foreground font-semibold">{tier.saved}</span>
                           </div>
                         </div>
 
@@ -303,7 +303,7 @@ export function UpgradePromptModal({
                         <div className="mb-4 space-y-2">
                           {tier.features.slice(0, 4).map((feature, idx) => (
                             <div key={idx} className="flex items-center gap-2 text-sm">
-                              <div className="h-1.5 w-1.5 flex-shrink-0 rounded-full bg-primary" />
+                              <div className="bg-primary h-1.5 w-1.5 flex-shrink-0 rounded-full" />
                               <span className="text-text-secondary">{feature}</span>
                             </div>
                           ))}
@@ -315,8 +315,8 @@ export function UpgradePromptModal({
                             className={cn(
                               'w-full',
                               tier.popular
-                                ? 'bg-gradient-to-r from-primary to-primary-accent-light text-black hover:shadow-lg hover:shadow-primary/30'
-                                : 'border-white/10 bg-white/5 text-foreground hover:bg-white/10'
+                                ? 'from-primary to-primary-accent-light hover:shadow-primary/30 bg-gradient-to-r text-black hover:shadow-lg'
+                                : 'text-foreground border-white/10 bg-white/5 hover:bg-white/10'
                             )}
                             variant={tier.popular ? 'default' : 'outline'}
                           >
@@ -339,7 +339,7 @@ export function UpgradePromptModal({
                   <Button
                     variant="outline"
                     onClick={() => onOpenChange(false)}
-                    className="flex-1 border-white/10 bg-white/5 text-foreground hover:bg-white/10"
+                    className="text-foreground flex-1 border-white/10 bg-white/5 hover:bg-white/10"
                   >
                     Maybe Later
                   </Button>
@@ -347,9 +347,9 @@ export function UpgradePromptModal({
                     <Button
                       className={cn(
                         'group relative w-full overflow-hidden',
-                        'bg-gradient-to-r from-primary to-primary-accent-light',
-                        'text-black font-semibold',
-                        'hover:shadow-lg hover:shadow-primary/30',
+                        'from-primary to-primary-accent-light bg-gradient-to-r',
+                        'font-semibold text-black',
+                        'hover:shadow-primary/30 hover:shadow-lg',
                         'transition-all duration-300'
                       )}
                     >
@@ -358,7 +358,7 @@ export function UpgradePromptModal({
                         <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                       </span>
                       <motion.div
-                        className="absolute inset-0 bg-gradient-to-r from-primary-accent-light to-primary"
+                        className="from-primary-accent-light to-primary absolute inset-0 bg-gradient-to-r"
                         initial={{ x: '100%' }}
                         whileHover={{ x: 0 }}
                         transition={{ duration: 0.3 }}
@@ -372,10 +372,10 @@ export function UpgradePromptModal({
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: 0.6 }}
-                  className="mt-4 text-center text-xs text-text-secondary"
+                  className="text-text-secondary mt-4 text-center text-xs"
                 >
-                  <Sparkles className="inline h-3 w-3" /> Upgrade anytime, cancel anytime. All
-                  plans include 12-month rollover.
+                  <Sparkles className="inline h-3 w-3" /> Upgrade anytime, cancel anytime. All plans
+                  include 12-month rollover.
                 </motion.p>
               </div>
             </motion.div>

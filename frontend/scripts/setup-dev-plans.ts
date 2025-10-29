@@ -57,29 +57,34 @@ const MOCK_PLAN_IDS = {
 /**
  * Generate updated razorpayPlans.ts content
  */
-function generateUpdatedConfig(useRealPlans: boolean = false, createdPlans?: Map<string, string>): string {
+function generateUpdatedConfig(
+  useRealPlans: boolean = false,
+  createdPlans?: Map<string, string>
+): string {
   const configLines = [
     'export const RAZORPAY_PLANS: RazorpayPlanMapping = {',
     '  /**',
-    '   * Free Tier (No Razorpay plan - users don\'t pay)',
+    "   * Free Tier (No Razorpay plan - users don't pay)",
     '   */',
     '  free: {',
     '    monthly: null,',
     '    yearly: null,',
     '  },',
-    ''
+    '',
   ];
 
   const tiers = ['explorer', 'navigator', 'voyager', 'crew', 'fleet', 'armada'];
 
-  tiers.forEach(tier => {
-    const monthlyPlanId = useRealPlans && createdPlans
-      ? createdPlans.get(`${tier}-monthly`) || null
-      : MOCK_PLAN_IDS[tier as keyof typeof MOCK_PLAN_IDS].monthly;
+  tiers.forEach((tier) => {
+    const monthlyPlanId =
+      useRealPlans && createdPlans
+        ? createdPlans.get(`${tier}-monthly`) || null
+        : MOCK_PLAN_IDS[tier as keyof typeof MOCK_PLAN_IDS].monthly;
 
-    const yearlyPlanId = useRealPlans && createdPlans
-      ? createdPlans.get(`${tier}-yearly`) || null
-      : MOCK_PLAN_IDS[tier as keyof typeof MOCK_PLAN_IDS].yearly;
+    const yearlyPlanId =
+      useRealPlans && createdPlans
+        ? createdPlans.get(`${tier}-yearly`) || null
+        : MOCK_PLAN_IDS[tier as keyof typeof MOCK_PLAN_IDS].yearly;
 
     configLines.push(`  /**`);
     configLines.push(`   * ${tier.charAt(0).toUpperCase() + tier.slice(1)} Tier`);
@@ -92,8 +97,12 @@ function generateUpdatedConfig(useRealPlans: boolean = false, createdPlans?: Map
     configLines.push(`   * Generated on: ${new Date().toISOString()}`);
     configLines.push(`   */`);
     configLines.push(`  ${tier}: {`);
-    configLines.push(`    monthly: ${monthlyPlanId ? `'${monthlyPlanId}'` : 'null'}, // Plan ID for monthly billing`);
-    configLines.push(`    yearly: ${yearlyPlanId ? `'${yearlyPlanId}'` : 'null'},   // Plan ID for yearly billing`);
+    configLines.push(
+      `    monthly: ${monthlyPlanId ? `'${monthlyPlanId}'` : 'null'}, // Plan ID for monthly billing`
+    );
+    configLines.push(
+      `    yearly: ${yearlyPlanId ? `'${yearlyPlanId}'` : 'null'},   // Plan ID for yearly billing`
+    );
     configLines.push(`  },`);
     configLines.push('');
   });
@@ -114,7 +123,7 @@ function checkRazorpayConfiguration(): { isConfigured: boolean; mode: string; re
     return {
       isConfigured: false,
       mode: 'none',
-      reason: 'Missing NEXT_PUBLIC_RAZORPAY_KEY_ID or RAZORPAY_KEY_SECRET environment variables'
+      reason: 'Missing NEXT_PUBLIC_RAZORPAY_KEY_ID or RAZORPAY_KEY_SECRET environment variables',
     };
   }
 
@@ -122,7 +131,8 @@ function checkRazorpayConfiguration(): { isConfigured: boolean; mode: string; re
     return {
       isConfigured: false,
       mode: 'invalid',
-      reason: 'Invalid NEXT_PUBLIC_RAZORPAY_KEY_ID format. Expected: rzp_test_XXXXX or rzp_live_XXXXX'
+      reason:
+        'Invalid NEXT_PUBLIC_RAZORPAY_KEY_ID format. Expected: rzp_test_XXXXX or rzp_live_XXXXX',
     };
   }
 
@@ -132,14 +142,15 @@ function checkRazorpayConfiguration(): { isConfigured: boolean; mode: string; re
     return {
       isConfigured: false,
       mode: 'production_in_dev',
-      reason: 'Using live mode keys in development environment. Consider switching to test mode (rzp_test_) for development.'
+      reason:
+        'Using live mode keys in development environment. Consider switching to test mode (rzp_test_) for development.',
     };
   }
 
   return {
     isConfigured: true,
     mode,
-    reason: 'Razorpay environment is properly configured'
+    reason: 'Razorpay environment is properly configured',
   };
 }
 
@@ -167,7 +178,7 @@ async function tryCreateRealPlans(): Promise<Map<string, string>> {
         amount: 1900,
         currency: 'INR',
         period: 1,
-        key: 'explorer-monthly'
+        key: 'explorer-monthly',
       },
       {
         tier: 'explorer',
@@ -176,7 +187,7 @@ async function tryCreateRealPlans(): Promise<Map<string, string>> {
         amount: 19000,
         currency: 'INR',
         period: 12,
-        key: 'explorer-yearly'
+        key: 'explorer-yearly',
       },
       // Add more plan configurations as needed for testing
     ];
@@ -196,14 +207,16 @@ async function tryCreateRealPlans(): Promise<Map<string, string>> {
           notes: {
             tier: config.tier,
             created_by: 'dev-setup-script',
-            environment: 'development'
-          }
+            environment: 'development',
+          },
         });
 
         createdPlans.set(config.key, plan.id);
         console.log(`✅ Created: ${plan.id}`);
       } catch (error: any) {
-        console.log(`❌ Failed to create ${config.name}: ${error.error?.description || error.message}`);
+        console.log(
+          `❌ Failed to create ${config.name}: ${error.error?.description || error.message}`
+        );
       }
     }
 
@@ -223,7 +236,9 @@ async function main(): Promise<void> {
 
   const config = checkRazorpayConfiguration();
 
-  console.log(`🔧 Razorpay Configuration Status: ${config.isConfigured ? '✅ Configured' : '❌ Not Configured'}`);
+  console.log(
+    `🔧 Razorpay Configuration Status: ${config.isConfigured ? '✅ Configured' : '❌ Not Configured'}`
+  );
   console.log(`   Mode: ${config.mode.toUpperCase()}`);
   console.log(`   Reason: ${config.reason}\n`);
 
@@ -274,7 +289,9 @@ async function main(): Promise<void> {
     console.log('\n⚠️  Development Mode Notice:');
     console.log('   - Using mock plan IDs for development');
     console.log('   - Real payment processing will not work');
-    console.log('   - To enable real payments, configure Razorpay and run: npm run create-razorpay-plans');
+    console.log(
+      '   - To enable real payments, configure Razorpay and run: npm run create-razorpay-plans'
+    );
   }
 
   console.log('\n🎉 Setup completed!');

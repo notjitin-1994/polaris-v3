@@ -35,11 +35,13 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 
     const data = await response.json();
     return NextResponse.json(data);
-
   } catch (error) {
     console.error('[Generate Questions] Error:', error);
     return NextResponse.json(
-      { error: 'Internal server error', details: error instanceof Error ? error.message : 'Unknown error' },
+      {
+        error: 'Internal server error',
+        details: error instanceof Error ? error.message : 'Unknown error',
+      },
       { status: 500 }
     );
   }
@@ -52,7 +54,7 @@ export async function GET(): Promise<NextResponse> {
   return NextResponse.json({
     message: 'This endpoint has been migrated to the new dynamic question generation system',
     newEndpoint: '/api/generate-dynamic-questions',
-    status: 'migrated'
+    status: 'migrated',
   });
 }
 

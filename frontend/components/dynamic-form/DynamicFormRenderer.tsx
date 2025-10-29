@@ -420,11 +420,11 @@ export const DynamicFormRenderer = React.forwardRef<DynamicFormRef, DynamicFormR
                 {formSchema.title && (
                   <div className="animate-fade-in-up mb-10 space-y-6">
                     <div className="text-center">
-                      <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
+                      <h1 className="mb-4 text-3xl font-bold text-gray-900 dark:text-white">
                         {formSchema.title}
                       </h1>
                       {formSchema.description && (
-                        <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+                        <p className="mx-auto max-w-2xl text-lg text-gray-600 dark:text-gray-300">
                           {formSchema.description}
                         </p>
                       )}

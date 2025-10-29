@@ -26,7 +26,6 @@ vi.mock('@/lib/claude/client', () => {
   };
 });
 
-
 // Mock config
 vi.mock('@/lib/claude/config', () => {
   return {
@@ -229,12 +228,18 @@ describe('BlueprintGenerationService', () => {
       expect(result.metadata.attempts).toBe(2);
 
       expect(mockClaudeGenerate).toHaveBeenCalledTimes(2);
-      expect(mockClaudeGenerate).toHaveBeenNthCalledWith(1, expect.objectContaining({
-        model: 'claude-sonnet-4-5',
-      }));
-      expect(mockClaudeGenerate).toHaveBeenNthCalledWith(2, expect.objectContaining({
-        model: 'claude-sonnet-4',
-      }));
+      expect(mockClaudeGenerate).toHaveBeenNthCalledWith(
+        1,
+        expect.objectContaining({
+          model: 'claude-sonnet-4-5',
+        })
+      );
+      expect(mockClaudeGenerate).toHaveBeenNthCalledWith(
+        2,
+        expect.objectContaining({
+          model: 'claude-sonnet-4',
+        })
+      );
     });
 
     it('should return error when all Claude models fail', async () => {

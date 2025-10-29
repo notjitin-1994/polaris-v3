@@ -21,11 +21,11 @@ export const mockUser = {
   last_sign_in_at: '2025-10-29T12:00:00.000Z',
   app_metadata: {
     provider: 'email',
-    providers: ['email']
+    providers: ['email'],
   },
   user_metadata: {
     full_name: 'Test User',
-    avatar_url: null
+    avatar_url: null,
   },
   identities: [
     {
@@ -33,14 +33,14 @@ export const mockUser = {
       user_id: 'test-user-id-123456789',
       identity_data: {
         email: 'test@example.com',
-        sub: 'test-user-id-123456789'
+        sub: 'test-user-id-123456789',
       },
       provider: 'email',
       created_at: '2025-10-29T12:00:00.000Z',
-      last_sign_in_at: '2025-10-29T12:00:00.000Z'
-    }
+      last_sign_in_at: '2025-10-29T12:00:00.000Z',
+    },
   ],
-  factors: null
+  factors: null,
 };
 
 export const mockSession = {
@@ -49,7 +49,7 @@ export const mockSession = {
   expires_in: 3600,
   expires_at: 1698579600,
   token_type: 'bearer',
-  user: mockUser
+  user: mockUser,
 };
 
 // Mock user profile data
@@ -71,8 +71,8 @@ export const mockUserProfile = {
   usage_metadata: {
     last_blueprint_date: '2025-10-28T10:30:00.000Z',
     preferred_export_format: 'pdf',
-    learning_objectives: ['enhance skills', 'improve performance']
-  }
+    learning_objectives: ['enhance skills', 'improve performance'],
+  },
 };
 
 // Mock subscription data
@@ -106,14 +106,14 @@ export const mockSubscription = {
     customer_info: {
       name: 'Test User',
       email: 'test@example.com',
-      contact: '+919876543210'
+      contact: '+919876543210',
     },
     created_via_api: 'create-subscription',
-    api_request_id: 'req_123456789'
+    api_request_id: 'req_123456789',
   },
   created_at: '2025-10-29T12:00:00.000Z',
   updated_at: '2025-10-29T12:00:00.000Z',
-  deleted_at: null
+  deleted_at: null,
 };
 
 // Mock payment data
@@ -131,7 +131,7 @@ export const mockPayment = {
   notes: {
     subscription_id: 'sub_test123456789',
     user_id: 'test-user-id-123456789',
-    billing_cycle: 'monthly'
+    billing_cycle: 'monthly',
   },
   fee: 8700,
   tax: 1305,
@@ -140,7 +140,7 @@ export const mockPayment = {
   failure_reason: null,
   webhook_event_id: 'we_test123456789',
   created_at: '2025-10-29T12:00:00.000Z',
-  updated_at: '2025-10-29T12:00:00.000Z'
+  updated_at: '2025-10-29T12:00:00.000Z',
 };
 
 // Mock webhook event data
@@ -162,8 +162,8 @@ export const mockWebhookEvent = {
       remaining_count: 11,
       notes: {
         user_id: 'test-user-id-123456789',
-        subscription_tier: 'navigator'
-      }
+        subscription_tier: 'navigator',
+      },
     },
     payment: {
       id: 'pay_test123456789',
@@ -186,7 +186,7 @@ export const mockWebhookEvent = {
       email: 'test@example.com',
       contact: '+919876543210',
       notes: {
-        subscription_id: 'sub_test123456789'
+        subscription_id: 'sub_test123456789',
       },
       fee: 8700,
       tax: 1305,
@@ -196,17 +196,17 @@ export const mockWebhookEvent = {
       error_step: null,
       error_reason: null,
       acquirer_data: {
-        auth_code: '123456'
+        auth_code: '123456',
       },
-      created_at: 1698576000
-    }
+      created_at: 1698576000,
+    },
   },
   processed: true,
   processing_status: 'success',
   processing_error: null,
   retry_count: 0,
   created_at: '2025-10-29T12:00:00.000Z',
-  updated_at: '2025-10-29T12:00:00.000Z'
+  updated_at: '2025-10-29T12:00:00.000Z',
 };
 
 // Mock blueprint generator data
@@ -226,10 +226,10 @@ export const mockBlueprintGenerator = {
       department: 'Engineering',
       team_size: '50-100',
       timeline: '3-6 months',
-      budget: '100K-500K'
+      budget: '100K-500K',
     },
     learning_goals: ['skill enhancement', 'performance improvement'],
-    target_audience: ['engineers', 'team leads']
+    target_audience: ['engineers', 'team leads'],
   },
   dynamic_questions: {
     sections: [
@@ -242,16 +242,16 @@ export const mockBlueprintGenerator = {
             type: 'radio_pills',
             question: 'What is the current skill level?',
             options: ['Beginner', 'Intermediate', 'Advanced'],
-            required: true
-          }
-        ]
-      }
-    ]
+            required: true,
+          },
+        ],
+      },
+    ],
   },
   dynamic_answers: {
     'section-1': {
-      'q1': 'Intermediate'
-    }
+      q1: 'Intermediate',
+    },
   },
   blueprint_json: {
     title: 'Learning Blueprint for Test Organization',
@@ -261,18 +261,19 @@ export const mockBlueprintGenerator = {
         id: 'module-1',
         title: 'Technical Skills Development',
         duration: '4 weeks',
-        objectives: ['Learn new technologies', 'Improve coding practices']
-      }
+        objectives: ['Learn new technologies', 'Improve coding practices'],
+      },
     ],
     timeline: '3 months',
     budget: '250000',
-    success_metrics: ['Completion rate > 80%', 'Skill improvement assessment']
+    success_metrics: ['Completion rate > 80%', 'Skill improvement assessment'],
   },
-  blueprint_markdown: '# Learning Blueprint for Test Organization\n\n## Objectives\n\n- Enhance technical skills\n- Improve team collaboration\n\n## Modules\n\n### Module 1: Technical Skills Development\n\n**Duration:** 4 weeks\n\n**Objectives:**\n- Learn new technologies\n- Improve coding practices',
+  blueprint_markdown:
+    '# Learning Blueprint for Test Organization\n\n## Objectives\n\n- Enhance technical skills\n- Improve team collaboration\n\n## Modules\n\n### Module 1: Technical Skills Development\n\n**Duration:** 4 weeks\n\n**Objectives:**\n- Learn new technologies\n- Improve coding practices',
   status: 'completed',
   generated_at: '2025-10-29T12:00:00.000Z',
   created_at: '2025-10-29T10:00:00.000Z',
-  updated_at: '2025-10-29T12:00:00.000Z'
+  updated_at: '2025-10-29T12:00:00.000Z',
 };
 
 // Database query builder mock
@@ -351,7 +352,7 @@ export const createMockQueryBuilder = (defaultData: any = null) => {
 
     then: vi.fn().mockImplementation((callback) => {
       return Promise.resolve(callback({ data: queryData, error }));
-    })
+    }),
   };
 
   // Helper to set data and error
@@ -369,11 +370,11 @@ export const createMockSupabaseClient = () => {
   return {
     from: vi.fn().mockImplementation((table: string) => {
       const mockData = {
-        'user_profiles': mockUserProfile,
-        'subscriptions': mockSubscription,
-        'payments': mockPayment,
-        'razorpay_webhook_events': mockWebhookEvent,
-        'blueprint_generator': mockBlueprintGenerator
+        user_profiles: mockUserProfile,
+        subscriptions: mockSubscription,
+        payments: mockPayment,
+        razorpay_webhook_events: mockWebhookEvent,
+        blueprint_generator: mockBlueprintGenerator,
       };
 
       const queryBuilder = createMockQueryBuilder(mockData[table]);
@@ -399,77 +400,89 @@ export const createMockSupabaseClient = () => {
 
     rpc: vi.fn().mockImplementation((funcName: string, params?: any) => {
       const rpcMocks = {
-        'increment_blueprint_creation_count': Promise.resolve(),
-        'increment_blueprint_saving_count': Promise.resolve(),
-        'update_user_subscription': Promise.resolve({ data: null, error: null }),
-        'check_user_limits': Promise.resolve({
-          data: { can_create: true, can_save: true, remaining_creations: 20, remaining_savings: 22 },
-          error: null
-        })
+        increment_blueprint_creation_count: Promise.resolve(),
+        increment_blueprint_saving_count: Promise.resolve(),
+        update_user_subscription: Promise.resolve({ data: null, error: null }),
+        check_user_limits: Promise.resolve({
+          data: {
+            can_create: true,
+            can_save: true,
+            remaining_creations: 20,
+            remaining_savings: 22,
+          },
+          error: null,
+        }),
       };
 
-      return rpcMocks[funcName as keyof typeof rpcMocks] || Promise.resolve({ data: null, error: null });
+      return (
+        rpcMocks[funcName as keyof typeof rpcMocks] || Promise.resolve({ data: null, error: null })
+      );
     }),
 
     storage: {
       from: vi.fn().mockReturnValue({
         upload: vi.fn().mockResolvedValue({
           data: { path: 'test-file.pdf' },
-          error: null
+          error: null,
         }),
         download: vi.fn().mockResolvedValue({
           data: new Blob(['test content']),
-          error: null
+          error: null,
         }),
         remove: vi.fn().mockResolvedValue({
           data: {},
-          error: null
+          error: null,
         }),
         list: vi.fn().mockResolvedValue({
           data: [{ name: 'test-file.pdf', id: 'file-123' }],
-          error: null
-        })
-      })
+          error: null,
+        }),
+      }),
     },
 
     auth: {
       signIn: vi.fn().mockResolvedValue({
         data: { user: mockUser, session: mockSession },
-        error: null
+        error: null,
       }),
       signUp: vi.fn().mockResolvedValue({
         data: { user: mockUser, session: mockSession },
-        error: null
+        error: null,
       }),
       signOut: vi.fn().mockResolvedValue({
         data: {},
-        error: null
+        error: null,
       }),
       getUser: vi.fn().mockResolvedValue({
         data: { user: mockUser },
-        error: null
+        error: null,
       }),
       updateUser: vi.fn().mockResolvedValue({
-        data: { user: { ...mockUser, user_metadata: { ...mockUser.user_metadata, full_name: 'Updated Name' } } },
-        error: null
+        data: {
+          user: {
+            ...mockUser,
+            user_metadata: { ...mockUser.user_metadata, full_name: 'Updated Name' },
+          },
+        },
+        error: null,
       }),
       getSession: vi.fn().mockResolvedValue({
         data: { session: mockSession },
-        error: null
+        error: null,
       }),
       onAuthStateChange: vi.fn().mockReturnValue({
         data: { subscription: { unsubscribe: vi.fn() } },
-        error: null
+        error: null,
       }),
       verifyOtp: vi.fn().mockResolvedValue({
         data: { user: mockUser, session: mockSession },
-        error: null
+        error: null,
       }),
       resetPasswordForEmail: vi.fn().mockResolvedValue({
         data: {},
-        error: null
-      })
-    }
+        error: null,
+      }),
+    },
   };
 };
 
@@ -478,7 +491,7 @@ export const createSupabaseError = (code: string, message: string, details?: any
   message,
   code,
   details: details || null,
-  hint: null
+  hint: null,
 });
 
 // Common error scenarios
@@ -489,7 +502,7 @@ export const supabaseErrors = {
   checkViolation: createSupabaseError('23514', 'check violation'),
   connectionError: createSupabaseError('08006', 'connection failure'),
   timeoutError: createSupabaseError('57014', 'statement timeout'),
-  permissionDenied: createSupabaseError('42501', 'permission denied for table')
+  permissionDenied: createSupabaseError('42501', 'permission denied for table'),
 };
 
 // Helper functions for setting up specific mock scenarios
@@ -499,10 +512,10 @@ export const setupUserNotFound = (client: any) => {
       eq: vi.fn().mockReturnValue({
         single: vi.fn().mockResolvedValue({
           data: null,
-          error: supabaseErrors.recordNotFound
-        })
-      })
-    })
+          error: supabaseErrors.recordNotFound,
+        }),
+      }),
+    }),
   });
 };
 
@@ -514,12 +527,12 @@ export const setupDuplicateSubscription = (client: any) => {
           is: vi.fn().mockReturnValue({
             order: vi.fn().mockResolvedValue({
               data: [mockSubscription],
-              error: null
-            })
-          })
-        })
-      })
-    })
+              error: null,
+            }),
+          }),
+        }),
+      }),
+    }),
   });
 };
 
@@ -529,10 +542,10 @@ export const setupDatabaseError = (client: any, error: any = supabaseErrors.conn
       select: vi.fn().mockReturnValue({
         single: vi.fn().mockResolvedValue({
           data: null,
-          error
-        })
-      })
-    })
+          error,
+        }),
+      }),
+    }),
   });
 };
 

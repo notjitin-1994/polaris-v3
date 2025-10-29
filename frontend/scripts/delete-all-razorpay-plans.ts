@@ -29,16 +29,13 @@ const Razorpay = require('razorpay');
  * Validate environment variables
  */
 function validateEnvironment(): void {
-  const required = [
-    'NEXT_PUBLIC_RAZORPAY_KEY_ID',
-    'RAZORPAY_KEY_SECRET'
-  ];
+  const required = ['NEXT_PUBLIC_RAZORPAY_KEY_ID', 'RAZORPAY_KEY_SECRET'];
 
-  const missing = required.filter(key => !process.env[key]);
+  const missing = required.filter((key) => !process.env[key]);
 
   if (missing.length > 0) {
     console.error('❌ Missing required environment variables:');
-    missing.forEach(key => console.error(`   - ${key}`));
+    missing.forEach((key) => console.error(`   - ${key}`));
     console.error('\nPlease add these to your .env.local file');
     process.exit(1);
   }
@@ -85,7 +82,7 @@ async function listAllPlans(razorpay: any): Promise<any[]> {
     while (hasMore) {
       const response = await razorpay.plans.all({
         count: 100,
-        skip: count
+        skip: count,
       });
 
       if (response.items && response.items.length > 0) {
@@ -113,12 +110,14 @@ async function checkActiveSubscriptions(razorpay: any, planId: string): Promise<
     const subscriptions = await razorpay.subscriptions.all({
       plan_id: planId,
       status: 'active',
-      count: 1 // Just need to know if there are any
+      count: 1, // Just need to know if there are any
     });
 
     return subscriptions.items ? subscriptions.items.length : 0;
   } catch (error: any) {
-    console.warn(`   ⚠️  Could not check subscriptions for plan ${planId}: ${error.error?.description || error.message}`);
+    console.warn(
+      `   ⚠️  Could not check subscriptions for plan ${planId}: ${error.error?.description || error.message}`
+    );
     return 0;
   }
 }
@@ -192,8 +191,12 @@ async function main(): Promise<void> {
   allPlans.forEach((plan, index) => {
     const amount = plan.item.amount || 0;
     const currency = plan.item.currency || 'INR';
-    const price = currency === 'INR' ? `₹${(amount / 100).toLocaleString('en-IN')}` : `$${(amount / 100).toLocaleString('en-US')}`;
-    const period = plan.period === 1 ? 'monthly' : plan.period === 12 ? 'yearly' : `${plan.period} months`;
+    const price =
+      currency === 'INR'
+        ? `₹${(amount / 100).toLocaleString('en-IN')}`
+        : `$${(amount / 100).toLocaleString('en-US')}`;
+    const period =
+      plan.period === 1 ? 'monthly' : plan.period === 12 ? 'yearly' : `${plan.period} months`;
 
     console.log(`${(index + 1).toString().padStart(2, ' ')}. ${plan.item.name}`);
     console.log(`    ID: ${plan.id}`);

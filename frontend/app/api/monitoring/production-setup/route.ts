@@ -9,7 +9,12 @@
  */
 
 import { NextResponse } from 'next/server';
-import { configureProductionMonitoring, testProductionAlerting, getProductionMonitoringStatus, validateProductionEnvironment } from '@/lib/monitoring/productionConfig';
+import {
+  configureProductionMonitoring,
+  testProductionAlerting,
+  getProductionMonitoringStatus,
+  validateProductionEnvironment,
+} from '@/lib/monitoring/productionConfig';
 import { initializeVercelMonitoring, vercelLogs } from '@/lib/monitoring/vercelIntegration';
 import { addApiSecurityHeaders } from '@/lib/security/securityHeaders';
 
@@ -38,7 +43,7 @@ function createErrorResponse(
     success: false,
     error: { code, message, details },
     requestId,
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
   };
 
   const response = NextResponse.json(errorResponse, { status });
@@ -48,17 +53,16 @@ function createErrorResponse(
 /**
  * Create success response
  */
-function createSuccessResponse(
-  data: any,
-  requestId: string,
-  status = 200
-): NextResponse {
-  const response = NextResponse.json({
-    success: true,
-    data,
-    requestId,
-    timestamp: new Date().toISOString()
-  }, { status });
+function createSuccessResponse(data: any, requestId: string, status = 200): NextResponse {
+  const response = NextResponse.json(
+    {
+      success: true,
+      data,
+      requestId,
+      timestamp: new Date().toISOString(),
+    },
+    { status }
+  );
 
   return addApiSecurityHeaders(response);
 }
@@ -73,7 +77,7 @@ export async function GET(request: Request): Promise<Response> {
   try {
     console.log(`[Production Monitoring Setup] Status request`, {
       requestId,
-      processingTime: Date.now() - startTime
+      processingTime: Date.now() - startTime,
     });
 
     // Validate environment first
@@ -87,7 +91,7 @@ export async function GET(request: Request): Promise<Response> {
       environment: process.env.NODE_ENV,
       uptime: process.uptime(),
       memory: process.memoryUsage(),
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     };
 
     const responseData = {
@@ -100,30 +104,25 @@ export async function GET(request: Request): Promise<Response> {
           'SLACK_WEBHOOK_URL',
           'EXTERNAL_MONITORING_WEBHOOK_URL',
           'EXTERNAL_MONITORING_TOKEN',
-          'VERCEL_ANALYTICS_ID'
+          'VERCEL_ANALYTICS_ID',
         ],
-        recommended: [
-          'SENTRY_DSN',
-          'LOGDNA_API_KEY',
-          'VERCEL_LOG_LEVEL'
-        ]
-      }
+        recommended: ['SENTRY_DSN', 'LOGDNA_API_KEY', 'VERCEL_LOG_LEVEL'],
+      },
     };
 
     console.log(`[Production Monitoring Setup] Status response sent`, {
       requestId,
       responseSize: JSON.stringify(responseData).length,
-      processingTime: Date.now() - startTime
+      processingTime: Date.now() - startTime,
     });
 
     return createSuccessResponse(responseData, requestId);
-
   } catch (error: unknown) {
     console.error('[Production Monitoring Setup] Unexpected error in status endpoint', {
       requestId,
       error: error instanceof Error ? error.message : 'Unknown error',
       stack: error instanceof Error ? error.stack : undefined,
-      processingTime: Date.now() - startTime
+      processingTime: Date.now() - startTime,
     });
 
     return createErrorResponse(
@@ -133,7 +132,7 @@ export async function GET(request: Request): Promise<Response> {
       requestId,
       {
         timestamp: new Date().toISOString(),
-        processingTime: Date.now() - startTime
+        processingTime: Date.now() - startTime,
       }
     );
   }
@@ -152,12 +151,7 @@ export async function POST(request: Request): Promise<Response> {
     try {
       requestBody = await request.json();
     } catch (error) {
-      return createErrorResponse(
-        'INVALID_JSON',
-        'Invalid JSON in request body',
-        400,
-        requestId
-      );
+      return createErrorResponse('INVALID_JSON', 'Invalid JSON in request body', 400, requestId);
     }
 
     const { action, testMode } = requestBody as { action?: string; testMode?: boolean };
@@ -166,7 +160,7 @@ export async function POST(request: Request): Promise<Response> {
       requestId,
       action,
       testMode,
-      processingTime: Date.now() - startTime
+      processingTime: Date.now() - startTime,
     });
 
     let result;
@@ -198,19 +192,21 @@ export async function POST(request: Request): Promise<Response> {
         );
     }
 
-    return createSuccessResponse({
-      message: `Action ${action} completed successfully`,
-      action,
-      testMode,
-      result,
-      executedAt: new Date().toISOString()
-    }, requestId);
-
+    return createSuccessResponse(
+      {
+        message: `Action ${action} completed successfully`,
+        action,
+        testMode,
+        result,
+        executedAt: new Date().toISOString(),
+      },
+      requestId
+    );
   } catch (error: unknown) {
     console.error('[Production Monitoring Setup] Error in action endpoint', {
       requestId,
       error: error instanceof Error ? error.message : 'Unknown error',
-      processingTime: Date.now() - startTime
+      processingTime: Date.now() - startTime,
     });
 
     return createErrorResponse(
@@ -232,7 +228,7 @@ async function initializeProductionMonitoring(testMode = false): Promise<any> {
     environment: validateProductionEnvironment(),
     alerting: { success: false, message: '' },
     vercel: { success: false, message: '' },
-    health: { success: false, message: '' }
+    health: { success: false, message: '' },
   };
 
   // Initialize alerting system
@@ -240,22 +236,22 @@ async function initializeProductionMonitoring(testMode = false): Promise<any> {
     configureProductionMonitoring();
     results.alerting = {
       success: true,
-      message: 'Production alerting configured successfully'
+      message: 'Production alerting configured successfully',
     };
 
     vercelLogs.log('info', 'Production monitoring initialized', {
       component: 'alerting_system',
-      success: true
+      success: true,
     });
   } catch (error) {
     results.alerting = {
       success: false,
-      message: error instanceof Error ? error.message : 'Unknown error'
+      message: error instanceof Error ? error.message : 'Unknown error',
     };
 
     vercelLogs.log('error', 'Failed to initialize production alerting', {
       component: 'alerting_system',
-      error: error instanceof Error ? error.message : 'Unknown error'
+      error: error instanceof Error ? error.message : 'Unknown error',
     });
   }
 
@@ -264,22 +260,22 @@ async function initializeProductionMonitoring(testMode = false): Promise<any> {
     initializeVercelMonitoring();
     results.vercel = {
       success: true,
-      message: 'Vercel monitoring integrations initialized'
+      message: 'Vercel monitoring integrations initialized',
     };
 
     vercelLogs.log('info', 'Vercel monitoring initialized', {
       component: 'vercel_integration',
-      success: true
+      success: true,
     });
   } catch (error) {
     results.vercel = {
       success: false,
-      message: error instanceof Error ? error.message : 'Unknown error'
+      message: error instanceof Error ? error.message : 'Unknown error',
     };
 
     vercelLogs.log('error', 'Failed to initialize Vercel monitoring', {
       component: 'vercel_integration',
-      error: error instanceof Error ? error.message : 'Unknown error'
+      error: error instanceof Error ? error.message : 'Unknown error',
     });
   }
 
@@ -290,7 +286,7 @@ async function initializeProductionMonitoring(testMode = false): Promise<any> {
   } catch (error) {
     results.health = {
       success: false,
-      message: error instanceof Error ? error.message : 'Unknown error'
+      message: error instanceof Error ? error.message : 'Unknown error',
     };
   }
 
@@ -302,22 +298,23 @@ async function initializeProductionMonitoring(testMode = false): Promise<any> {
     } catch (error) {
       results.alertingTest = {
         success: false,
-        error: error instanceof Error ? error.message : 'Unknown error'
+        error: error instanceof Error ? error.message : 'Unknown error',
       };
     }
   }
 
-  const overallSuccess = results.alerting.success && results.vercel.success && results.health.success;
+  const overallSuccess =
+    results.alerting.success && results.vercel.success && results.health.success;
 
   console.log('[Production Monitoring Setup] Initialization completed', {
     success: overallSuccess,
-    results
+    results,
   });
 
   return {
     success: overallSuccess,
     results,
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
   };
 }
 
@@ -331,7 +328,7 @@ async function testProductionMonitoringSetup(): Promise<any> {
     alerting: { success: false, message: '', details: [] },
     logging: { success: false, message: '' },
     health: { success: false, message: '' },
-    integrations: { success: false, message: '', details: [] }
+    integrations: { success: false, message: '', details: [] },
   };
 
   // Test alerting system
@@ -340,13 +337,13 @@ async function testProductionMonitoringSetup(): Promise<any> {
     results.alerting = {
       success: alertingTest.success,
       message: alertingTest.success ? 'Alerting system test passed' : 'Alerting system test failed',
-      details: alertingTest.results
+      details: alertingTest.results,
     };
   } catch (error) {
     results.alerting = {
       success: false,
       message: error instanceof Error ? error.message : 'Unknown error',
-      details: []
+      details: [],
     };
   }
 
@@ -354,17 +351,17 @@ async function testProductionMonitoringSetup(): Promise<any> {
   try {
     vercelLogs.log('info', 'Production monitoring test log', {
       test: true,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     });
 
     results.logging = {
       success: true,
-      message: 'Logging system test passed'
+      message: 'Logging system test passed',
     };
   } catch (error) {
     results.logging = {
       success: false,
-      message: error instanceof Error ? error.message : 'Unknown error'
+      message: error instanceof Error ? error.message : 'Unknown error',
     };
   }
 
@@ -375,7 +372,7 @@ async function testProductionMonitoringSetup(): Promise<any> {
   } catch (error) {
     results.health = {
       success: false,
-      message: error instanceof Error ? error.message : 'Unknown error'
+      message: error instanceof Error ? error.message : 'Unknown error',
     };
   }
 
@@ -387,16 +384,17 @@ async function testProductionMonitoringSetup(): Promise<any> {
     results.integrations = {
       success: false,
       message: error instanceof Error ? error.message : 'Unknown error',
-      details: []
+      details: [],
     };
   }
 
-  const overallSuccess = results.alerting.success && results.logging.success && results.health.success;
+  const overallSuccess =
+    results.alerting.success && results.logging.success && results.health.success;
 
   return {
     success: overallSuccess,
     results,
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
   };
 }
 
@@ -409,23 +407,23 @@ async function performHealthCheck(): Promise<any> {
       memory: checkMemoryHealth(),
       uptime: process.uptime() > 60, // At least 1 minute uptime
       environment: process.env.NODE_ENV === 'production',
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     };
 
-    const allHealthy = Object.values(healthChecks).every(check =>
+    const allHealthy = Object.values(healthChecks).every((check) =>
       typeof check === 'boolean' ? check : true
     );
 
     return {
       success: allHealthy,
       message: allHealthy ? 'All health checks passed' : 'Some health checks failed',
-      details: healthChecks
+      details: healthChecks,
     };
   } catch (error) {
     return {
       success: false,
       message: error instanceof Error ? error.message : 'Health check failed',
-      details: {}
+      details: {},
     };
   }
 }
@@ -452,14 +450,14 @@ async function testIntegrations(): Promise<any> {
   tests.push({
     name: 'Vercel Analytics',
     success: true, // In real implementation, would test actual connection
-    message: 'Vercel Analytics integration available'
+    message: 'Vercel Analytics integration available',
   });
 
   // Test custom metrics
   tests.push({
     name: 'Custom Metrics',
     success: true,
-    message: 'Custom metrics system functional'
+    message: 'Custom metrics system functional',
   });
 
   // Test environment variables
@@ -469,15 +467,15 @@ async function testIntegrations(): Promise<any> {
     success: envValidation.valid,
     message: envValidation.valid ? 'All required variables present' : 'Missing required variables',
     errors: envValidation.errors,
-    warnings: envValidation.warnings
+    warnings: envValidation.warnings,
   });
 
-  const allSuccessful = tests.every(test => test.success);
+  const allSuccessful = tests.every((test) => test.success);
 
   return {
     success: allSuccessful,
     message: allSuccessful ? 'All integration tests passed' : 'Some integration tests failed',
-    details: tests
+    details: tests,
   };
 }
 

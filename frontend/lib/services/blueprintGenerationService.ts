@@ -13,7 +13,11 @@ import {
 import { validateAndNormalizeBlueprint } from '@/lib/claude/validation';
 import { shouldFallbackToSonnet4, logFallbackDecision } from '@/lib/claude/fallback';
 import { createServiceLogger } from '@/lib/logging';
-import { getCachedBlueprint, getSimilarBlueprint, cacheBlueprint } from '@/lib/cache/blueprintCache';
+import {
+  getCachedBlueprint,
+  getSimilarBlueprint,
+  cacheBlueprint,
+} from '@/lib/cache/blueprintCache';
 import { performanceMonitor } from '@/lib/performance/performanceMonitor';
 
 const logger = createServiceLogger('blueprint-generation');
@@ -54,10 +58,14 @@ export class BlueprintGenerationService {
    * 2. On failure or missing key, try Claude Sonnet 4 (fallback) - if API key available
    */
   async generate(context: BlueprintContext): Promise<GenerationResult> {
-    const endTimer = performanceMonitor.startTimer('blueprint_generation', {
-      blueprintId: context.blueprintId,
-      userId: context.userId
-    }, { type: 'api' });
+    const endTimer = performanceMonitor.startTimer(
+      'blueprint_generation',
+      {
+        blueprintId: context.blueprintId,
+        userId: context.userId,
+      },
+      { type: 'api' }
+    );
 
     // Check cache first for exact matches
     const staticAnswers = context.staticAnswers || {};
@@ -69,7 +77,7 @@ export class BlueprintGenerationService {
         blueprintId: context.blueprintId,
         userId: context.userId,
         cacheHit: true,
-        duration: metric.duration
+        duration: metric.duration,
       });
 
       return {
@@ -80,8 +88,8 @@ export class BlueprintGenerationService {
           duration: metric.duration,
           timestamp: new Date().toISOString(),
           fallbackUsed: false,
-          attempts: 0
-        }
+          attempts: 0,
+        },
       };
     }
 
@@ -95,7 +103,7 @@ export class BlueprintGenerationService {
         userId: context.userId,
         cacheHit: true,
         similar: true,
-        duration: metric.duration
+        duration: metric.duration,
       });
 
       // Cache the similar blueprint for this exact questionnaire too
@@ -109,8 +117,8 @@ export class BlueprintGenerationService {
           duration: metric.duration,
           timestamp: new Date().toISOString(),
           fallbackUsed: false,
-          attempts: 0
-        }
+          attempts: 0,
+        },
       };
     }
 
@@ -121,7 +129,7 @@ export class BlueprintGenerationService {
       userId: context.userId,
       organization: context.organization,
       industry: context.industry,
-      cacheHit: false
+      cacheHit: false,
     });
 
     // Build prompts once, reuse for all models
@@ -150,7 +158,7 @@ export class BlueprintGenerationService {
         } catch (cacheError) {
           logger.warn('blueprint.generation.cache_error', 'Failed to cache generated blueprint', {
             blueprintId: context.blueprintId,
-            error: (cacheError as Error).message
+            error: (cacheError as Error).message,
           });
         }
 
@@ -161,7 +169,7 @@ export class BlueprintGenerationService {
           model: 'claude-sonnet-4-5',
           duration,
           attempts: 1,
-          cached: true
+          cached: true,
         });
 
         return {
@@ -252,11 +260,15 @@ export class BlueprintGenerationService {
             usage: blueprint.usage,
           };
         } catch (sonnet4Error) {
-          logger.error('blueprint.generation.claude_fallback_failed', 'Claude Sonnet 4 fallback failed', {
-            blueprintId: context.blueprintId,
-            sonnet45Error: (sonnetError as Error).message,
-            sonnet4Error: (sonnet4Error as Error).message,
-          });
+          logger.error(
+            'blueprint.generation.claude_fallback_failed',
+            'Claude Sonnet 4 fallback failed',
+            {
+              blueprintId: context.blueprintId,
+              sonnet45Error: (sonnetError as Error).message,
+              sonnet4Error: (sonnet4Error as Error).message,
+            }
+          );
         }
       }
     } else {

@@ -120,9 +120,8 @@ export class RedisRateLimiter {
         limit,
         remaining,
         resetTime,
-        retryAfter: currentCount >= limit ? this.config.windowMs : undefined
+        retryAfter: currentCount >= limit ? this.config.windowMs : undefined,
       };
-
     } catch (error) {
       console.error('Rate limiting error:', error);
       // Fail open - allow request if Redis is down
@@ -130,7 +129,7 @@ export class RedisRateLimiter {
         success: true,
         limit: this.config.maxRequests,
         remaining: this.config.maxRequests,
-        resetTime: new Date(Date.now() + this.config.windowMs)
+        resetTime: new Date(Date.now() + this.config.windowMs),
       };
     }
   }
@@ -162,14 +161,14 @@ export class RedisRateLimiter {
       return {
         limit: this.config.maxRequests,
         remaining: Math.max(0, this.config.maxRequests - currentCount),
-        resetTime: new Date(now + this.config.windowMs)
+        resetTime: new Date(now + this.config.windowMs),
       };
     } catch (error) {
       console.error('Failed to get rate limit status:', error);
       return {
         limit: this.config.maxRequests,
         remaining: this.config.maxRequests,
-        resetTime: new Date(now + this.config.windowMs)
+        resetTime: new Date(now + this.config.windowMs),
       };
     }
   }
@@ -199,7 +198,7 @@ export const apiRateLimiter = (): RedisRateLimiter | MemoryRateLimiter => {
     _apiRateLimiter = createRateLimiter({
       windowMs: 60 * 1000, // 1 minute
       maxRequests: 10,
-      keyPrefix: 'api_rate_limit'
+      keyPrefix: 'api_rate_limit',
     });
   }
   return _apiRateLimiter;
@@ -211,7 +210,7 @@ export const subscriptionRateLimiter = (): RedisRateLimiter | MemoryRateLimiter 
     _subscriptionRateLimiter = createRateLimiter({
       windowMs: 60 * 60 * 1000, // 1 hour
       maxRequests: 3,
-      keyPrefix: 'subscription_rate_limit'
+      keyPrefix: 'subscription_rate_limit',
     });
   }
   return _subscriptionRateLimiter;
@@ -223,7 +222,7 @@ export const blueprintGenerationRateLimiter = (): RedisRateLimiter | MemoryRateL
     _blueprintGenerationRateLimiter = createRateLimiter({
       windowMs: 60 * 60 * 1000, // 1 hour
       maxRequests: 5,
-      keyPrefix: 'blueprint_gen_rate_limit'
+      keyPrefix: 'blueprint_gen_rate_limit',
     });
   }
   return _blueprintGenerationRateLimiter;
@@ -235,7 +234,7 @@ export const authRateLimiter = (): RedisRateLimiter | MemoryRateLimiter => {
     _authRateLimiter = createRateLimiter({
       windowMs: 15 * 60 * 1000, // 15 minutes
       maxRequests: 5,
-      keyPrefix: 'auth_rate_limit'
+      keyPrefix: 'auth_rate_limit',
     });
   }
   return _authRateLimiter;
@@ -258,7 +257,8 @@ export class MemoryRateLimiter {
     const key = `${this.config.keyPrefix}:${identifier}`;
 
     // Clean up expired entries periodically
-    if (Math.random() < 0.01) { // 1% chance to cleanup
+    if (Math.random() < 0.01) {
+      // 1% chance to cleanup
       for (const [k, data] of this.store.entries()) {
         if (data.resetTime < now) {
           this.store.delete(k);
@@ -272,24 +272,24 @@ export class MemoryRateLimiter {
       // New window
       this.store.set(key, {
         requests: [now],
-        resetTime: now + this.config.windowMs
+        resetTime: now + this.config.windowMs,
       });
 
       return {
         success: true,
         limit: this.config.maxRequests,
         remaining: this.config.maxRequests - 1,
-        resetTime: new Date(now + this.config.windowMs)
+        resetTime: new Date(now + this.config.windowMs),
       };
     }
 
     // Filter out old requests and add new one
-    const validRequests = existing.requests.filter(time => time > windowStart);
+    const validRequests = existing.requests.filter((time) => time > windowStart);
     validRequests.push(now);
 
     this.store.set(key, {
       requests: validRequests,
-      resetTime: existing.resetTime
+      resetTime: existing.resetTime,
     });
 
     const currentCount = validRequests.length;
@@ -300,7 +300,7 @@ export class MemoryRateLimiter {
       limit: this.config.maxRequests,
       remaining,
       resetTime: new Date(existing.resetTime),
-      retryAfter: currentCount > this.config.maxRequests ? this.config.windowMs : undefined
+      retryAfter: currentCount > this.config.maxRequests ? this.config.windowMs : undefined,
     };
   }
 
@@ -320,17 +320,17 @@ export class MemoryRateLimiter {
       return {
         limit: this.config.maxRequests,
         remaining: this.config.maxRequests,
-        resetTime: new Date(now + this.config.windowMs)
+        resetTime: new Date(now + this.config.windowMs),
       };
     }
 
-    const validRequests = existing.requests.filter(time => time > windowStart);
+    const validRequests = existing.requests.filter((time) => time > windowStart);
     const remaining = Math.max(0, this.config.maxRequests - validRequests.length);
 
     return {
       limit: this.config.maxRequests,
       remaining,
-      resetTime: new Date(existing.resetTime)
+      resetTime: new Date(existing.resetTime),
     };
   }
 }
@@ -351,11 +351,13 @@ export function createRateLimiter(config: RateLimitConfig): RedisRateLimiter | M
  * Express/Next.js middleware helper
  */
 export function createRateLimitMiddleware(limiter: RedisRateLimiter | MemoryRateLimiter) {
-  return async (request: Request, identifier?: string): Promise<{ success: boolean; headers: Record<string, string> }> => {
+  return async (
+    request: Request,
+    identifier?: string
+  ): Promise<{ success: boolean; headers: Record<string, string> }> => {
     // Extract identifier from request
-    const ip = request.headers.get('x-forwarded-for') ||
-               request.headers.get('x-real-ip') ||
-               'unknown';
+    const ip =
+      request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'unknown';
 
     const key = identifier || ip;
 
@@ -364,7 +366,7 @@ export function createRateLimitMiddleware(limiter: RedisRateLimiter | MemoryRate
     const headers: Record<string, string> = {
       'X-RateLimit-Limit': result.limit.toString(),
       'X-RateLimit-Remaining': result.remaining.toString(),
-      'X-RateLimit-Reset': Math.ceil(result.resetTime.getTime() / 1000).toString()
+      'X-RateLimit-Reset': Math.ceil(result.resetTime.getTime() / 1000).toString(),
     };
 
     if (result.retryAfter) {
@@ -373,7 +375,7 @@ export function createRateLimitMiddleware(limiter: RedisRateLimiter | MemoryRate
 
     return {
       success: result.success,
-      headers
+      headers,
     };
   };
 }

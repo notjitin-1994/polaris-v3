@@ -201,7 +201,15 @@ const commonFeatures = [
   },
 ];
 
-function PricingCardComponent({ plan, isTeam, billingCycle }: { plan: Plan; isTeam?: boolean; billingCycle?: 'monthly' | 'yearly' }) {
+function PricingCardComponent({
+  plan,
+  isTeam,
+  billingCycle,
+}: {
+  plan: Plan;
+  isTeam?: boolean;
+  billingCycle?: 'monthly' | 'yearly';
+}) {
   const { formatPrice } = useCurrency();
 
   return (
@@ -257,7 +265,7 @@ function PricingCardComponent({ plan, isTeam, billingCycle }: { plan: Plan; isTe
       {/* CTA Button */}
       {isTeam ? (
         <button
-          className={`mb-8 flex w-full items-center justify-center gap-2 rounded-md px-6 py-3 text-sm font-semibold transition-all duration-300 hover:opacity-90 border border-[rgb(79,70,229)] bg-transparent text-[rgb(79,70,229)] hover:bg-[rgba(79,70,229,0.1)]`}
+          className={`mb-8 flex w-full items-center justify-center gap-2 rounded-md border border-[rgb(79,70,229)] bg-transparent px-6 py-3 text-sm font-semibold text-[rgb(79,70,229)] transition-all duration-300 hover:bg-[rgba(79,70,229,0.1)] hover:opacity-90`}
           onClick={() => alert('Team button clicked!')}
         >
           Reach Out
@@ -552,7 +560,12 @@ function PricingPageContent() {
           ) : filteredTeamPlans.length > 0 ? (
             <div className="grid gap-8 md:grid-cols-3">
               {filteredTeamPlans.map((plan) => (
-                <PricingCardComponent key={plan.id} plan={plan} isTeam billingCycle={billingCycle} />
+                <PricingCardComponent
+                  key={plan.id}
+                  plan={plan}
+                  isTeam
+                  billingCycle={billingCycle}
+                />
               ))}
             </div>
           ) : (

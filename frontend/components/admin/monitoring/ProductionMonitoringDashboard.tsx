@@ -31,7 +31,7 @@ import {
   Server,
   Database,
   CreditCard,
-  Webhook
+  Webhook,
 } from 'lucide-react';
 
 // ============================================================================
@@ -82,7 +82,9 @@ interface MetricsData {
 
 export default function ProductionMonitoringDashboard() {
   const [monitoringStatus, setMonitoringStatus] = useState<MonitoringStatus | null>(null);
-  const [environmentValidation, setEnvironmentValidation] = useState<EnvironmentValidation | null>(null);
+  const [environmentValidation, setEnvironmentValidation] = useState<EnvironmentValidation | null>(
+    null
+  );
   const [systemHealth, setSystemHealth] = useState<SystemHealth | null>(null);
   const [recentAlerts, setRecentAlerts] = useState<AlertEvent[]>([]);
   const [metrics, setMetrics] = useState<MetricsData | null>(null);
@@ -101,7 +103,7 @@ export default function ProductionMonitoringDashboard() {
       const response = await fetch('/api/monitoring/production-setup', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'status' })
+        body: JSON.stringify({ action: 'status' }),
       });
 
       if (!response.ok) {
@@ -141,7 +143,7 @@ export default function ProductionMonitoringDashboard() {
           apiResponseTime: 245,
           errorRate: 1.2,
           totalTransactions: 1247,
-          activeAlerts: data.data.alerts?.statistics?.activeEvents || 0
+          activeAlerts: data.data.alerts?.statistics?.activeEvents || 0,
         });
 
         // Set recent alerts
@@ -165,7 +167,7 @@ export default function ProductionMonitoringDashboard() {
       const response = await fetch('/api/monitoring/production-setup', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'initialize', testMode: false })
+        body: JSON.stringify({ action: 'initialize', testMode: false }),
       });
 
       if (!response.ok) {
@@ -191,7 +193,7 @@ export default function ProductionMonitoringDashboard() {
       const response = await fetch('/api/monitoring/production-setup', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'test' })
+        body: JSON.stringify({ action: 'test' }),
       });
 
       if (!response.ok) {
@@ -284,7 +286,7 @@ export default function ProductionMonitoringDashboard() {
 
   if (isLoading && !monitoringStatus) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
+      <div className="flex min-h-screen items-center justify-center">
         <RefreshCw className="h-8 w-8 animate-spin" />
         <span className="ml-2">Loading monitoring dashboard...</span>
       </div>
@@ -342,7 +344,7 @@ export default function ProductionMonitoringDashboard() {
               <XCircle className="h-4 w-4 text-red-600" />
               <AlertTitle className="text-red-800">Configuration Issues</AlertTitle>
               <AlertDescription className="text-red-700">
-                <ul className="list-disc list-inside mt-2">
+                <ul className="mt-2 list-inside list-disc">
                   {environmentValidation.errors.map((error, index) => (
                     <li key={index}>{error}</li>
                   ))}
@@ -356,7 +358,7 @@ export default function ProductionMonitoringDashboard() {
               <AlertTriangle className="h-4 w-4 text-yellow-600" />
               <AlertTitle className="text-yellow-800">Recommendations</AlertTitle>
               <AlertDescription className="text-yellow-700">
-                <ul className="list-disc list-inside mt-2">
+                <ul className="mt-2 list-inside list-disc">
                   {environmentValidation.warnings.map((warning, index) => (
                     <li key={index}>{warning}</li>
                   ))}
@@ -389,7 +391,7 @@ export default function ProductionMonitoringDashboard() {
         {/* Overview Tab */}
         <TabsContent value="overview" className="space-y-4">
           {/* Key Metrics */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
             {metrics && (
               <>
                 <Card>
@@ -397,7 +399,9 @@ export default function ProductionMonitoringDashboard() {
                     <div className="flex items-center justify-between">
                       <div>
                         <p className="text-sm font-medium text-gray-600">Payment Success Rate</p>
-                        <p className="text-2xl font-bold text-gray-900">{metrics.paymentSuccessRate}%</p>
+                        <p className="text-2xl font-bold text-gray-900">
+                          {metrics.paymentSuccessRate}%
+                        </p>
                       </div>
                       <CreditCard className="h-8 w-8 text-green-600" />
                     </div>
@@ -412,7 +416,9 @@ export default function ProductionMonitoringDashboard() {
                     <div className="flex items-center justify-between">
                       <div>
                         <p className="text-sm font-medium text-gray-600">Webhook Success Rate</p>
-                        <p className="text-2xl font-bold text-gray-900">{metrics.webhookSuccessRate}%</p>
+                        <p className="text-2xl font-bold text-gray-900">
+                          {metrics.webhookSuccessRate}%
+                        </p>
                       </div>
                       <Webhook className="h-8 w-8 text-blue-600" />
                     </div>
@@ -427,11 +433,13 @@ export default function ProductionMonitoringDashboard() {
                     <div className="flex items-center justify-between">
                       <div>
                         <p className="text-sm font-medium text-gray-600">API Response Time</p>
-                        <p className="text-2xl font-bold text-gray-900">{metrics.apiResponseTime}ms</p>
+                        <p className="text-2xl font-bold text-gray-900">
+                          {metrics.apiResponseTime}ms
+                        </p>
                       </div>
                       <Activity className="h-8 w-8 text-yellow-600" />
                     </div>
-                    <p className="text-xs text-gray-500 mt-1">P95 response time</p>
+                    <p className="mt-1 text-xs text-gray-500">P95 response time</p>
                   </CardContent>
                 </Card>
 
@@ -442,9 +450,17 @@ export default function ProductionMonitoringDashboard() {
                         <p className="text-sm font-medium text-gray-600">Active Alerts</p>
                         <p className="text-2xl font-bold text-gray-900">{metrics.activeAlerts}</p>
                       </div>
-                      <Bell className={`h-8 w-8 ${metrics.activeAlerts > 0 ? 'text-red-600' : 'text-green-600'}`} />
+                      <Bell
+                        className={`h-8 w-8 ${metrics.activeAlerts > 0 ? 'text-red-600' : 'text-green-600'}`}
+                      />
                     </div>
-                    <Badge className={metrics.activeAlerts > 0 ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'}>
+                    <Badge
+                      className={
+                        metrics.activeAlerts > 0
+                          ? 'bg-red-100 text-red-800'
+                          : 'bg-green-100 text-green-800'
+                      }
+                    >
                       {metrics.activeAlerts > 0 ? 'Attention Needed' : 'All Clear'}
                     </Badge>
                   </CardContent>
@@ -465,11 +481,12 @@ export default function ProductionMonitoringDashboard() {
               <CardContent>
                 <div className="space-y-3">
                   {recentAlerts.slice(0, 5).map((alert) => (
-                    <div key={alert.id} className="flex items-center justify-between p-3 border rounded-lg">
+                    <div
+                      key={alert.id}
+                      className="flex items-center justify-between rounded-lg border p-3"
+                    >
                       <div className="flex items-center space-x-3">
-                        <Badge className={getSeverityColor(alert.severity)}>
-                          {alert.severity}
-                        </Badge>
+                        <Badge className={getSeverityColor(alert.severity)}>{alert.severity}</Badge>
                         <div>
                           <p className="font-medium text-gray-900">{alert.ruleName}</p>
                           <p className="text-sm text-gray-600">{alert.message}</p>
@@ -501,11 +518,12 @@ export default function ProductionMonitoringDashboard() {
               {monitoringStatus?.rules && monitoringStatus.rules.length > 0 ? (
                 <div className="space-y-3">
                   {monitoringStatus.rules.map((rule, index) => (
-                    <div key={index} className="flex items-center justify-between p-4 border rounded-lg">
+                    <div
+                      key={index}
+                      className="flex items-center justify-between rounded-lg border p-4"
+                    >
                       <div className="flex items-center space-x-3">
-                        <Badge className={getSeverityColor(rule.severity)}>
-                          {rule.severity}
-                        </Badge>
+                        <Badge className={getSeverityColor(rule.severity)}>{rule.severity}</Badge>
                         <div>
                           <p className="font-medium text-gray-900">{rule.name}</p>
                           <p className="text-sm text-gray-600">Rule configured for monitoring</p>
@@ -520,8 +538,8 @@ export default function ProductionMonitoringDashboard() {
                   ))}
                 </div>
               ) : (
-                <div className="text-center py-8">
-                  <Bell className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                <div className="py-8 text-center">
+                  <Bell className="mx-auto mb-4 h-12 w-12 text-gray-400" />
                   <p className="text-gray-600">No alert rules configured</p>
                   <Button onClick={initializeMonitoring} className="mt-4">
                     Initialize Monitoring
@@ -540,10 +558,10 @@ export default function ProductionMonitoringDashboard() {
             </CardHeader>
             <CardContent>
               {metrics ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                   <div className="space-y-4">
                     <div>
-                      <div className="flex items-center justify-between mb-2">
+                      <div className="mb-2 flex items-center justify-between">
                         <span className="text-sm font-medium">Payment Success Rate</span>
                         <span className="text-sm text-gray-600">{metrics.paymentSuccessRate}%</span>
                       </div>
@@ -551,7 +569,7 @@ export default function ProductionMonitoringDashboard() {
                     </div>
 
                     <div>
-                      <div className="flex items-center justify-between mb-2">
+                      <div className="mb-2 flex items-center justify-between">
                         <span className="text-sm font-medium">Webhook Success Rate</span>
                         <span className="text-sm text-gray-600">{metrics.webhookSuccessRate}%</span>
                       </div>
@@ -577,8 +595,8 @@ export default function ProductionMonitoringDashboard() {
                   </div>
                 </div>
               ) : (
-                <div className="text-center py-8">
-                  <TrendingUp className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                <div className="py-8 text-center">
+                  <TrendingUp className="mx-auto mb-4 h-12 w-12 text-gray-400" />
                   <p className="text-gray-600">No metrics data available</p>
                 </div>
               )}
@@ -598,22 +616,26 @@ export default function ProductionMonitoringDashboard() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                     <div className="space-y-2">
                       <div className="flex justify-between">
                         <span className="text-sm font-medium">Environment</span>
-                        <Badge className={
-                          systemHealth.environment === 'production'
-                            ? 'bg-green-100 text-green-800'
-                            : 'bg-yellow-100 text-yellow-800'
-                        }>
+                        <Badge
+                          className={
+                            systemHealth.environment === 'production'
+                              ? 'bg-green-100 text-green-800'
+                              : 'bg-yellow-100 text-yellow-800'
+                          }
+                        >
                           {systemHealth.environment}
                         </Badge>
                       </div>
 
                       <div className="flex justify-between">
                         <span className="text-sm font-medium">Uptime</span>
-                        <span className="text-sm text-gray-600">{formatUptime(systemHealth.uptime)}</span>
+                        <span className="text-sm text-gray-600">
+                          {formatUptime(systemHealth.uptime)}
+                        </span>
                       </div>
 
                       <div className="flex justify-between">
@@ -628,7 +650,8 @@ export default function ProductionMonitoringDashboard() {
                       <div className="flex justify-between">
                         <span className="text-sm font-medium">Memory Usage</span>
                         <span className="text-sm text-gray-600">
-                          {formatMemory(systemHealth.memory.heapUsed)} / {formatMemory(systemHealth.memory.heapTotal)}
+                          {formatMemory(systemHealth.memory.heapUsed)} /{' '}
+                          {formatMemory(systemHealth.memory.heapTotal)}
                         </span>
                       </div>
 
@@ -649,10 +672,13 @@ export default function ProductionMonitoringDashboard() {
                   </div>
 
                   <div className="mt-4">
-                    <div className="flex justify-between mb-2">
+                    <div className="mb-2 flex justify-between">
                       <span className="text-sm font-medium">Heap Usage</span>
                       <span className="text-sm text-gray-600">
-                        {Math.round((systemHealth.memory.heapUsed / systemHealth.memory.heapTotal) * 100)}%
+                        {Math.round(
+                          (systemHealth.memory.heapUsed / systemHealth.memory.heapTotal) * 100
+                        )}
+                        %
                       </span>
                     </div>
                     <Progress
@@ -676,11 +702,14 @@ export default function ProductionMonitoringDashboard() {
               {monitoringStatus ? (
                 <div className="space-y-6">
                   <div>
-                    <h3 className="text-lg font-medium mb-3">Notification Channels</h3>
+                    <h3 className="mb-3 text-lg font-medium">Notification Channels</h3>
                     {monitoringStatus.channels.length > 0 ? (
                       <div className="space-y-2">
                         {monitoringStatus.channels.map((channel, index) => (
-                          <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
+                          <div
+                            key={index}
+                            className="flex items-center justify-between rounded-lg border p-3"
+                          >
                             <div className="flex items-center space-x-3">
                               <Database className="h-4 w-4 text-gray-600" />
                               <div>
@@ -700,23 +729,29 @@ export default function ProductionMonitoringDashboard() {
                   </div>
 
                   <div>
-                    <h3 className="text-lg font-medium mb-3">System Status</h3>
+                    <h3 className="mb-3 text-lg font-medium">System Status</h3>
                     <div className="flex items-center space-x-2">
-                      <Badge className={monitoringStatus.configured ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}>
+                      <Badge
+                        className={
+                          monitoringStatus.configured
+                            ? 'bg-green-100 text-green-800'
+                            : 'bg-red-100 text-red-800'
+                        }
+                      >
                         {monitoringStatus.configured ? 'Configured' : 'Not Configured'}
                       </Badge>
                       <span className="text-sm text-gray-600">
-                        Last health check: {monitoringStatus.lastHealthCheck ?
-                          new Date(monitoringStatus.lastHealthCheck).toLocaleString() :
-                          'Never'
-                        }
+                        Last health check:{' '}
+                        {monitoringStatus.lastHealthCheck
+                          ? new Date(monitoringStatus.lastHealthCheck).toLocaleString()
+                          : 'Never'}
                       </span>
                     </div>
                   </div>
                 </div>
               ) : (
-                <div className="text-center py-8">
-                  <Settings className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                <div className="py-8 text-center">
+                  <Settings className="mx-auto mb-4 h-12 w-12 text-gray-400" />
                   <p className="text-gray-600">Monitoring configuration not loaded</p>
                 </div>
               )}

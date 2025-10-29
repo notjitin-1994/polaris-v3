@@ -17,7 +17,8 @@ const lato = Lato({
 
 export const metadata: Metadata = {
   title: 'Smartslate - Transform Ideas into Launch-Ready Blueprints',
-  description: 'Turn customer insight into a clear, prioritized roadmap with AI-powered blueprint generation.',
+  description:
+    'Turn customer insight into a clear, prioritized roadmap with AI-powered blueprint generation.',
 };
 
 export default function LandingLayout({

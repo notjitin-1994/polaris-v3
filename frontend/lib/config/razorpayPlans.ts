@@ -50,7 +50,7 @@ export const RAZORPAY_PLANS: RazorpayPlanMapping = {
    */
   explorer: {
     monthly: 'plan_RZGmbMjd9u0qtI', // Plan ID for monthly billing (₹159) ✅ CURRENT ACTIVE PLAN
-    yearly: 'plan_RZGmc1LbRLGH5a',   // Plan ID for yearly billing (₹1,590) ✅ CURRENT ACTIVE PLAN
+    yearly: 'plan_RZGmc1LbRLGH5a', // Plan ID for yearly billing (₹1,590) ✅ CURRENT ACTIVE PLAN
   },
 
   /**
@@ -60,7 +60,7 @@ export const RAZORPAY_PLANS: RazorpayPlanMapping = {
    */
   navigator: {
     monthly: 'plan_RZGf8oI6VAEW3h', // Plan ID for monthly billing (₹39) ✅ CURRENT ACTIVE PLAN
-    yearly: 'plan_RZGf9MME1Bs4Vd',   // Plan ID for yearly billing (₹390) ✅ CURRENT ACTIVE PLAN
+    yearly: 'plan_RZGf9MME1Bs4Vd', // Plan ID for yearly billing (₹390) ✅ CURRENT ACTIVE PLAN
   },
 
   /**
@@ -70,7 +70,7 @@ export const RAZORPAY_PLANS: RazorpayPlanMapping = {
    */
   voyager: {
     monthly: 'plan_RZGfA1SbZQnZyM', // Plan ID for monthly billing (₹79) ✅ CURRENT ACTIVE PLAN
-    yearly: 'plan_RZGfAdVwwRTQah',   // Plan ID for yearly billing (₹790) ✅ CURRENT ACTIVE PLAN
+    yearly: 'plan_RZGfAdVwwRTQah', // Plan ID for yearly billing (₹790) ✅ CURRENT ACTIVE PLAN
   },
 
   /**
@@ -80,7 +80,7 @@ export const RAZORPAY_PLANS: RazorpayPlanMapping = {
    */
   crew: {
     monthly: 'plan_RZGfBEA99LRzFq', // Plan ID for monthly billing (₹24) ✅ CURRENT ACTIVE PLAN
-    yearly: 'plan_RZGfBkdSfXnmbj',   // Plan ID for yearly billing (₹240) ✅ CURRENT ACTIVE PLAN
+    yearly: 'plan_RZGfBkdSfXnmbj', // Plan ID for yearly billing (₹240) ✅ CURRENT ACTIVE PLAN
   },
 
   /**
@@ -90,7 +90,7 @@ export const RAZORPAY_PLANS: RazorpayPlanMapping = {
    */
   fleet: {
     monthly: 'plan_RZGfCI7A2I714z', // Plan ID for monthly billing (₹64) ✅ CURRENT ACTIVE PLAN
-    yearly: 'plan_RZGfCtTYD4rC1y',   // Plan ID for yearly billing (₹640) ✅ CURRENT ACTIVE PLAN
+    yearly: 'plan_RZGfCtTYD4rC1y', // Plan ID for yearly billing (₹640) ✅ CURRENT ACTIVE PLAN
   },
 
   /**
@@ -100,9 +100,8 @@ export const RAZORPAY_PLANS: RazorpayPlanMapping = {
    */
   armada: {
     monthly: 'plan_RZGfDTm2erB6km', // Plan ID for monthly billing (₹129) ✅ CURRENT ACTIVE PLAN
-    yearly: 'plan_RZGfE89sNsuNMo',   // Plan ID for yearly billing (₹1,290) ✅ CURRENT ACTIVE PLAN
+    yearly: 'plan_RZGfE89sNsuNMo', // Plan ID for yearly billing (₹1,290) ✅ CURRENT ACTIVE PLAN
   },
-
 } as const;
 
 // ============================================================================

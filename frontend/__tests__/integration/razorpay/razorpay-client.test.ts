@@ -35,7 +35,9 @@ describe('Razorpay Client', () => {
 
       await expect(async () => {
         await import('../../../lib/razorpay/client');
-      }).rejects.toThrow('[Razorpay Client] Missing required environment variables: NEXT_PUBLIC_RAZORPAY_KEY_ID');
+      }).rejects.toThrow(
+        '[Razorpay Client] Missing required environment variables: NEXT_PUBLIC_RAZORPAY_KEY_ID'
+      );
     });
 
     it('should throw error when RAZORPAY_KEY_SECRET is missing', async () => {
@@ -44,7 +46,9 @@ describe('Razorpay Client', () => {
 
       await expect(async () => {
         await import('../../../lib/razorpay/client');
-      }).rejects.toThrow('[Razorpay Client] Missing required environment variables: RAZORPAY_KEY_SECRET');
+      }).rejects.toThrow(
+        '[Razorpay Client] Missing required environment variables: RAZORPAY_KEY_SECRET'
+      );
     });
 
     it('should throw error when both environment variables are missing', async () => {
@@ -53,7 +57,9 @@ describe('Razorpay Client', () => {
 
       await expect(async () => {
         await import('../../../lib/razorpay/client');
-      }).rejects.toThrow('[Razorpay Client] Missing required environment variables: NEXT_PUBLIC_RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET');
+      }).rejects.toThrow(
+        '[Razorpay Client] Missing required environment variables: NEXT_PUBLIC_RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET'
+      );
     });
 
     it('should throw error for invalid key format', async () => {
@@ -188,7 +194,9 @@ describe('Razorpay Client', () => {
           total_count: 12,
         };
 
-        await expect(client.createSubscription(params)).rejects.toThrow('Failed to create subscription: API Error: Invalid plan ID');
+        await expect(client.createSubscription(params)).rejects.toThrow(
+          'Failed to create subscription: API Error: Invalid plan ID'
+        );
         expect(consoleSpy).toHaveBeenCalledWith('[Razorpay] Subscription creation failed:', error);
 
         consoleSpy.mockRestore();
@@ -212,7 +220,9 @@ describe('Razorpay Client', () => {
 
         const consoleSpy = vi.spyOn(console, 'error').mockImplementation();
 
-        await expect(client.fetchSubscription('invalid_sub')).rejects.toThrow('Failed to fetch subscription: Subscription not found');
+        await expect(client.fetchSubscription('invalid_sub')).rejects.toThrow(
+          'Failed to fetch subscription: Subscription not found'
+        );
         expect(consoleSpy).toHaveBeenCalledWith('[Razorpay] Subscription fetch failed:', error);
 
         consoleSpy.mockRestore();
@@ -226,7 +236,10 @@ describe('Razorpay Client', () => {
 
         const result = await client.cancelSubscription('sub_test123');
 
-        expect(client.razorpayClient.subscriptions.cancel).toHaveBeenCalledWith('sub_test123', true);
+        expect(client.razorpayClient.subscriptions.cancel).toHaveBeenCalledWith(
+          'sub_test123',
+          true
+        );
         expect(result).toEqual(mockSubscription);
       });
 
@@ -236,7 +249,10 @@ describe('Razorpay Client', () => {
 
         const result = await client.cancelSubscription('sub_test123', false);
 
-        expect(client.razorpayClient.subscriptions.cancel).toHaveBeenCalledWith('sub_test123', false);
+        expect(client.razorpayClient.subscriptions.cancel).toHaveBeenCalledWith(
+          'sub_test123',
+          false
+        );
         expect(result).toEqual(mockSubscription);
       });
 
@@ -246,8 +262,13 @@ describe('Razorpay Client', () => {
 
         const consoleSpy = vi.spyOn(console, 'error').mockImplementation();
 
-        await expect(client.cancelSubscription('sub_test123')).rejects.toThrow('Failed to cancel subscription: Cannot cancel active subscription');
-        expect(consoleSpy).toHaveBeenCalledWith('[Razorpay] Subscription cancellation failed:', error);
+        await expect(client.cancelSubscription('sub_test123')).rejects.toThrow(
+          'Failed to cancel subscription: Cannot cancel active subscription'
+        );
+        expect(consoleSpy).toHaveBeenCalledWith(
+          '[Razorpay] Subscription cancellation failed:',
+          error
+        );
 
         consoleSpy.mockRestore();
       });
@@ -281,7 +302,9 @@ describe('Razorpay Client', () => {
           email: 'invalid-email',
         };
 
-        await expect(client.createCustomer(params)).rejects.toThrow('Failed to create customer: Invalid email format');
+        await expect(client.createCustomer(params)).rejects.toThrow(
+          'Failed to create customer: Invalid email format'
+        );
         expect(consoleSpy).toHaveBeenCalledWith('[Razorpay] Customer creation failed:', error);
 
         consoleSpy.mockRestore();
@@ -305,7 +328,9 @@ describe('Razorpay Client', () => {
 
         const consoleSpy = vi.spyOn(console, 'error').mockImplementation();
 
-        await expect(client.fetchCustomer('invalid_cust')).rejects.toThrow('Failed to fetch customer: Customer not found');
+        await expect(client.fetchCustomer('invalid_cust')).rejects.toThrow(
+          'Failed to fetch customer: Customer not found'
+        );
         expect(consoleSpy).toHaveBeenCalledWith('[Razorpay] Customer fetch failed:', error);
 
         consoleSpy.mockRestore();
@@ -350,7 +375,9 @@ describe('Razorpay Client', () => {
           },
         };
 
-        await expect(client.createPlan(params)).rejects.toThrow('Failed to create plan: Plan with same name already exists');
+        await expect(client.createPlan(params)).rejects.toThrow(
+          'Failed to create plan: Plan with same name already exists'
+        );
         expect(consoleSpy).toHaveBeenCalledWith('[Razorpay] Plan creation failed:', error);
 
         consoleSpy.mockRestore();
@@ -385,7 +412,9 @@ describe('Razorpay Client', () => {
 
         const consoleSpy = vi.spyOn(console, 'error').mockImplementation();
 
-        await expect(client.fetchAllPlans()).rejects.toThrow('Failed to fetch plans: API rate limit exceeded');
+        await expect(client.fetchAllPlans()).rejects.toThrow(
+          'Failed to fetch plans: API rate limit exceeded'
+        );
         expect(consoleSpy).toHaveBeenCalledWith('[Razorpay] Plans fetch failed:', error);
 
         consoleSpy.mockRestore();

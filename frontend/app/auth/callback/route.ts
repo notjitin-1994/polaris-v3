@@ -32,7 +32,8 @@ export async function GET(request: Request) {
     if (!error) {
       // Handle redirect parameter after successful OAuth
       const redirectUrl = requestUrl.searchParams.get('redirect');
-      const destination = redirectUrl && redirectUrl !== '/' ? decodeURIComponent(redirectUrl) : '/';
+      const destination =
+        redirectUrl && redirectUrl !== '/' ? decodeURIComponent(redirectUrl) : '/';
       return NextResponse.redirect(`${origin}${destination}`);
     }
   }

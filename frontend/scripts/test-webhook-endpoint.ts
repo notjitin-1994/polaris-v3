@@ -32,11 +32,11 @@ function parseArgs(): TestConfig {
 
   const config: TestConfig = {
     baseUrl: 'http://localhost:3000',
-    timeout: 10000
+    timeout: 10000,
   };
 
   // Parse URL argument
-  const urlIndex = args.findIndex(arg => !arg.startsWith('--'));
+  const urlIndex = args.findIndex((arg) => !arg.startsWith('--'));
   if (urlIndex !== -1 && args[urlIndex]) {
     config.baseUrl = args[urlIndex];
   }
@@ -65,9 +65,9 @@ async function testHealthEndpoint(baseUrl: string): Promise<{
     const response = await fetch(url, {
       method: 'GET',
       headers: {
-        'User-Agent': 'Webhook-Test-Script/1.0'
+        'User-Agent': 'Webhook-Test-Script/1.0',
       },
-      signal: AbortSignal.timeout(10000)
+      signal: AbortSignal.timeout(10000),
     });
 
     const responseTime = Date.now() - startTime;
@@ -77,14 +77,14 @@ async function testHealthEndpoint(baseUrl: string): Promise<{
       success: response.ok,
       responseTime,
       data,
-      error: response.ok ? undefined : `HTTP ${response.status}: ${response.statusText}`
+      error: response.ok ? undefined : `HTTP ${response.status}: ${response.statusText}`,
     };
   } catch (error) {
     const responseTime = Date.now() - startTime;
     return {
       success: false,
       responseTime,
-      error: error instanceof Error ? error.message : 'Unknown error'
+      error: error instanceof Error ? error.message : 'Unknown error',
     };
   }
 }
@@ -119,7 +119,7 @@ async function testWebhookProcessing(
     // Add signature if webhook secret is provided
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
-      'User-Agent': 'Webhook-Test-Script/1.0'
+      'User-Agent': 'Webhook-Test-Script/1.0',
     };
 
     if (webhookSecret) {
@@ -131,7 +131,7 @@ async function testWebhookProcessing(
       method: 'POST',
       headers,
       body: payloadString,
-      signal: AbortSignal.timeout(15000)
+      signal: AbortSignal.timeout(15000),
     });
 
     const responseTime = Date.now() - startTime;
@@ -141,14 +141,14 @@ async function testWebhookProcessing(
       success: response.ok,
       responseTime,
       data,
-      error: response.ok ? undefined : `HTTP ${response.status}: ${response.statusText}`
+      error: response.ok ? undefined : `HTTP ${response.status}: ${response.statusText}`,
     };
   } catch (error) {
     const responseTime = Date.now() - startTime;
     return {
       success: false,
       responseTime,
-      error: error instanceof Error ? error.message : 'Unknown error'
+      error: error instanceof Error ? error.message : 'Unknown error',
     };
   }
 }
@@ -169,12 +169,16 @@ async function testWebhookSecurity(baseUrl: string): Promise<{
     validSignatureTest: false,
     invalidSignatureTest: false,
     missingSignatureTest: false,
-    invalidPayloadTest: false
+    invalidPayloadTest: false,
   };
 
   try {
     // Test 1: Valid signature
-    const validPayload = createTestWebhookPayload('subscription.activated', 'evt_valid_123', 'sub_valid_123');
+    const validPayload = createTestWebhookPayload(
+      'subscription.activated',
+      'evt_valid_123',
+      'sub_valid_123'
+    );
     const validPayloadString = JSON.stringify(validPayload);
     const validSignature = generateTestSignature(validPayloadString, webhookSecret);
 
@@ -182,10 +186,10 @@ async function testWebhookSecurity(baseUrl: string): Promise<{
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'x-razorpay-signature': `sha256=${validSignature}`
+        'x-razorpay-signature': `sha256=${validSignature}`,
       },
       body: validPayloadString,
-      signal: AbortSignal.timeout(10000)
+      signal: AbortSignal.timeout(10000),
     });
 
     results.validSignatureTest = validResponse.ok;
@@ -195,10 +199,11 @@ async function testWebhookSecurity(baseUrl: string): Promise<{
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'x-razorpay-signature': 'sha256=invalid_signature_here_123456789012345678901234567890123456789012345678901234567890'
+        'x-razorpay-signature':
+          'sha256=invalid_signature_here_123456789012345678901234567890123456789012345678901234567890',
       },
       body: validPayloadString,
-      signal: AbortSignal.timeout(10000)
+      signal: AbortSignal.timeout(10000),
     });
 
     results.invalidSignatureTest = !invalidResponse.ok; // Should fail
@@ -207,10 +212,10 @@ async function testWebhookSecurity(baseUrl: string): Promise<{
     const missingResponse = await fetch(url, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
       },
       body: validPayloadString,
-      signal: AbortSignal.timeout(10000)
+      signal: AbortSignal.timeout(10000),
     });
 
     results.missingSignatureTest = !missingResponse.ok; // Should fail
@@ -220,14 +225,13 @@ async function testWebhookSecurity(baseUrl: string): Promise<{
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'x-razorpay-signature': `sha256=${validSignature}`
+        'x-razorpay-signature': `sha256=${validSignature}`,
       },
       body: 'invalid json payload here',
-      signal: AbortSignal.timeout(10000)
+      signal: AbortSignal.timeout(10000),
     });
 
     results.invalidPayloadTest = !invalidPayloadResponse.ok; // Should fail
-
   } catch (error) {
     console.error('Security testing failed:', error);
   }
@@ -287,12 +291,20 @@ async function main(): Promise<void> {
     console.log('3️⃣  Testing webhook security validation...');
     const securityResults = await testWebhookSecurity(config.baseUrl);
 
-    console.log(`   🔓 Valid signature test: ${securityResults.validSignatureTest ? '✅ Pass' : '❌ Fail'}`);
-    console.log(`   🚫 Invalid signature test: ${securityResults.invalidSignatureTest ? '✅ Pass' : '❌ Fail'}`);
-    console.log(`   ❌ Missing signature test: ${securityResults.missingSignatureTest ? '✅ Pass' : '❌ Fail'}`);
-    console.log(`   💥 Invalid payload test: ${securityResults.invalidPayloadTest ? '✅ Pass' : '❌ Fail'}`);
+    console.log(
+      `   🔓 Valid signature test: ${securityResults.validSignatureTest ? '✅ Pass' : '❌ Fail'}`
+    );
+    console.log(
+      `   🚫 Invalid signature test: ${securityResults.invalidSignatureTest ? '✅ Pass' : '❌ Fail'}`
+    );
+    console.log(
+      `   ❌ Missing signature test: ${securityResults.missingSignatureTest ? '✅ Pass' : '❌ Fail'}`
+    );
+    console.log(
+      `   💥 Invalid payload test: ${securityResults.invalidPayloadTest ? '✅ Pass' : '❌ Fail'}`
+    );
 
-    const allSecurityTestsPass = Object.values(securityResults).every(result => result);
+    const allSecurityTestsPass = Object.values(securityResults).every((result) => result);
     if (allSecurityTestsPass) {
       console.log('   🎉 All security tests passed!');
     } else {
@@ -324,7 +336,9 @@ async function main(): Promise<void> {
     console.log('   4. Monitor webhook processing logs');
   } else {
     console.log('');
-    console.log('❌ Some tests failed. Please review the issues above before deploying to production.');
+    console.log(
+      '❌ Some tests failed. Please review the issues above before deploying to production.'
+    );
     console.log('');
     console.log('🔧 Troubleshooting:');
     console.log('   • Check if the application is running');

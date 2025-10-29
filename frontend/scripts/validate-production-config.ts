@@ -123,7 +123,7 @@ function validateEnvironment(): ValidationResult {
   const isProduction = process.env.NODE_ENV === 'production';
 
   console.log(`🔍 Environment Validation (${isProduction ? 'PRODUCTION' : 'DEVELOPMENT'})`);
-  console.log('=' .repeat(60));
+  console.log('='.repeat(60));
 
   ENV_VARS.forEach((envVar) => {
     const value = process.env[envVar.name];
@@ -181,7 +181,7 @@ function validateEnvironment(): ValidationResult {
 
 function displayResults(result: ValidationResult): void {
   console.log('\n📊 VALIDATION RESULTS');
-  console.log('=' .repeat(60));
+  console.log('='.repeat(60));
 
   if (result.valid) {
     console.log('🎉 PASSED: Environment configuration is valid!\n');
@@ -191,19 +191,19 @@ function displayResults(result: ValidationResult): void {
 
   if (result.info.length > 0) {
     console.log('✅ VALID VARIABLES:');
-    result.info.forEach(info => console.log(`  ${info}`));
+    result.info.forEach((info) => console.log(`  ${info}`));
     console.log('');
   }
 
   if (result.warnings.length > 0) {
     console.log('⚠️ WARNINGS:');
-    result.warnings.forEach(warning => console.log(`  ${warning}`));
+    result.warnings.forEach((warning) => console.log(`  ${warning}`));
     console.log('');
   }
 
   if (result.errors.length > 0) {
     console.log('❌ ERRORS:');
-    result.errors.forEach(error => console.log(`  ${error}`));
+    result.errors.forEach((error) => console.log(`  ${error}`));
     console.log('');
   }
 

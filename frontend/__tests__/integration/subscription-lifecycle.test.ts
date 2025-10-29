@@ -19,11 +19,14 @@ vi.hoisted(() => {
 /**
  * Helper function to create mock NextRequest
  */
-function createMockRequest(url: string, options: {
-  method?: string;
-  headers?: Record<string, string>;
-  body?: any;
-} = {}) {
+function createMockRequest(
+  url: string,
+  options: {
+    method?: string;
+    headers?: Record<string, string>;
+    body?: any;
+  } = {}
+) {
   const { method = 'POST', headers = {}, body } = options;
 
   const request = new NextRequest(url, {
@@ -142,7 +145,7 @@ describe('Subscription Lifecycle Integration Tests', () => {
         data: {
           subscription_tier: 'explorer',
           full_name: 'Integration Test User',
-          user_id: mockUser.id
+          user_id: mockUser.id,
         },
         error: null,
       });
@@ -196,19 +199,22 @@ describe('Subscription Lifecycle Integration Tests', () => {
       });
 
       // 6. Create subscription request
-      const request = createMockRequest('http://localhost:3000/api/subscriptions/create-subscription', {
-        headers: {
-          'x-forwarded-for': '192.168.1.100',
-        },
-        body: {
-          tier: 'navigator',
-          billingCycle: 'monthly',
-          customerInfo: {
-            name: 'Integration Test User',
-            email: mockUser.email,
+      const request = createMockRequest(
+        'http://localhost:3000/api/subscriptions/create-subscription',
+        {
+          headers: {
+            'x-forwarded-for': '192.168.1.100',
           },
-        },
-      });
+          body: {
+            tier: 'navigator',
+            billingCycle: 'monthly',
+            customerInfo: {
+              name: 'Integration Test User',
+              email: mockUser.email,
+            },
+          },
+        }
+      );
 
       const response = await POST(request);
       const data = await response.json();
@@ -274,11 +280,13 @@ describe('Subscription Lifecycle Integration Tests', () => {
 
       // 3. Existing customer found in Razorpay
       (razorpayClient.customers.all as any).mockResolvedValue({
-        items: [{
-          id: 'cust_existing',
-          name: 'Test User',
-          email: mockUser.email,
-        }],
+        items: [
+          {
+            id: 'cust_existing',
+            name: 'Test User',
+            email: mockUser.email,
+          },
+        ],
       });
 
       // 4. Create new subscription for existing customer
@@ -294,13 +302,16 @@ describe('Subscription Lifecycle Integration Tests', () => {
         error: null,
       });
 
-      const request = createMockRequest('http://localhost:3000/api/subscriptions/create-subscription', {
-        headers: { 'x-forwarded-for': '192.168.1.200' },
-        body: {
-          tier: 'navigator',
-          billingCycle: 'monthly',
-        },
-      });
+      const request = createMockRequest(
+        'http://localhost:3000/api/subscriptions/create-subscription',
+        {
+          headers: { 'x-forwarded-for': '192.168.1.200' },
+          body: {
+            tier: 'navigator',
+            billingCycle: 'monthly',
+          },
+        }
+      );
 
       const response = await POST(request);
       const data = await response.json();
@@ -366,14 +377,17 @@ describe('Subscription Lifecycle Integration Tests', () => {
         error: null,
       });
 
-      const request = createMockRequest('http://localhost:3000/api/subscriptions/create-subscription', {
-        headers: { 'x-forwarded-for': '192.168.1.300' },
-        body: {
-          tier: 'crew',
-          billingCycle: 'monthly',
-          seats: 5,
-        },
-      });
+      const request = createMockRequest(
+        'http://localhost:3000/api/subscriptions/create-subscription',
+        {
+          headers: { 'x-forwarded-for': '192.168.1.300' },
+          body: {
+            tier: 'crew',
+            billingCycle: 'monthly',
+            seats: 5,
+          },
+        }
+      );
 
       const response = await POST(request);
       const data = await response.json();
@@ -400,9 +414,12 @@ describe('Subscription Lifecycle Integration Tests', () => {
       // Mock unauthenticated session
       (getServerSession as any).mockResolvedValue({ session: null });
 
-      const request = createMockRequest('http://localhost:3000/api/subscriptions/create-subscription', {
-        body: { tier: 'navigator', billingCycle: 'monthly' },
-      });
+      const request = createMockRequest(
+        'http://localhost:3000/api/subscriptions/create-subscription',
+        {
+          body: { tier: 'navigator', billingCycle: 'monthly' },
+        }
+      );
 
       const response = await POST(request);
       const data = await response.json();
@@ -424,9 +441,12 @@ describe('Subscription Lifecycle Integration Tests', () => {
         },
       });
 
-      const request = createMockRequest('http://localhost:3000/api/subscriptions/create-subscription', {
-        body: { tier: 'invalid_tier', billingCycle: 'invalid_cycle' },
-      });
+      const request = createMockRequest(
+        'http://localhost:3000/api/subscriptions/create-subscription',
+        {
+          body: { tier: 'invalid_tier', billingCycle: 'invalid_cycle' },
+        }
+      );
 
       const response = await POST(request);
       const data = await response.json();
@@ -458,10 +478,13 @@ describe('Subscription Lifecycle Integration Tests', () => {
         },
       });
 
-      const request = createMockRequest('http://localhost:3000/api/subscriptions/create-subscription', {
-        headers: { 'x-forwarded-for': '192.168.1.400' },
-        body: { tier: 'navigator', billingCycle: 'monthly' },
-      });
+      const request = createMockRequest(
+        'http://localhost:3000/api/subscriptions/create-subscription',
+        {
+          headers: { 'x-forwarded-for': '192.168.1.400' },
+          body: { tier: 'navigator', billingCycle: 'monthly' },
+        }
+      );
 
       const response = await POST(request);
       const data = await response.json();
@@ -506,10 +529,13 @@ describe('Subscription Lifecycle Integration Tests', () => {
       // Mock subscription cleanup
       (razorpayClient.subscriptions.cancel as any).mockResolvedValue({});
 
-      const request = createMockRequest('http://localhost:3000/api/subscriptions/create-subscription', {
-        headers: { 'x-forwarded-for': '192.168.1.500' },
-        body: { tier: 'navigator', billingCycle: 'monthly' },
-      });
+      const request = createMockRequest(
+        'http://localhost:3000/api/subscriptions/create-subscription',
+        {
+          headers: { 'x-forwarded-for': '192.168.1.500' },
+          body: { tier: 'navigator', billingCycle: 'monthly' },
+        }
+      );
 
       const response = await POST(request);
       const data = await response.json();
@@ -593,17 +619,20 @@ describe('Subscription Lifecycle Integration Tests', () => {
         error: null,
       });
 
-      const request = createMockRequest('http://localhost:3000/api/subscriptions/create-subscription', {
-        headers: { 'x-forwarded-for': '192.168.1.600' },
-        body: {
-          tier: consistentTier,
-          billingCycle: 'monthly',
-          customerInfo: {
-            name: 'Consistency Test User',
-            email: consistentEmail,
+      const request = createMockRequest(
+        'http://localhost:3000/api/subscriptions/create-subscription',
+        {
+          headers: { 'x-forwarded-for': '192.168.1.600' },
+          body: {
+            tier: consistentTier,
+            billingCycle: 'monthly',
+            customerInfo: {
+              name: 'Consistency Test User',
+              email: consistentEmail,
+            },
           },
-        },
-      });
+        }
+      );
 
       const response = await POST(request);
       const data = await response.json();
@@ -641,9 +670,12 @@ describe('Subscription Lifecycle Integration Tests', () => {
 
 describe('GET /api/subscriptions/create-subscription', () => {
   it('should return 405 for GET requests', async () => {
-    const request = createMockRequest('http://localhost:3000/api/subscriptions/create-subscription', {
-      method: 'GET',
-    });
+    const request = createMockRequest(
+      'http://localhost:3000/api/subscriptions/create-subscription',
+      {
+        method: 'GET',
+      }
+    );
 
     const response = await GET();
     const data = await response.json();

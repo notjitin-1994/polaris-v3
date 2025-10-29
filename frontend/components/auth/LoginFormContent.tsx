@@ -57,7 +57,8 @@ export function LoginFormContent(): React.JSX.Element {
       // Handle redirect after successful login
       const urlParams = new URLSearchParams(window.location.search);
       const redirectUrl = urlParams.get('redirect');
-      const destination = redirectUrl && redirectUrl !== '/' ? decodeURIComponent(redirectUrl) : '/';
+      const destination =
+        redirectUrl && redirectUrl !== '/' ? decodeURIComponent(redirectUrl) : '/';
       window.location.href = destination;
     } catch (err) {
       console.error('Login error:', err);

@@ -15,7 +15,7 @@ import { createRateLimiter } from '@/lib/rate-limiting/redisRateLimit';
 const metricsRateLimiter = createRateLimiter({
   windowMs: 60 * 1000, // 1 minute
   maxRequests: 30, // 30 requests per minute
-  keyPrefix: 'performance_metrics'
+  keyPrefix: 'performance_metrics',
 });
 
 // Set runtime configuration
@@ -43,7 +43,7 @@ function createErrorResponse(
     success: false,
     error: { code, message, details },
     requestId,
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
   };
 
   const response = NextResponse.json(errorResponse, { status });
@@ -53,17 +53,16 @@ function createErrorResponse(
 /**
  * Create success response
  */
-function createSuccessResponse(
-  data: any,
-  requestId: string,
-  status = 200
-): NextResponse {
-  const response = NextResponse.json({
-    success: true,
-    data,
-    requestId,
-    timestamp: new Date().toISOString()
-  }, { status });
+function createSuccessResponse(data: any, requestId: string, status = 200): NextResponse {
+  const response = NextResponse.json(
+    {
+      success: true,
+      data,
+      requestId,
+      timestamp: new Date().toISOString(),
+    },
+    { status }
+  );
 
   return addApiSecurityHeaders(response);
 }
@@ -77,9 +76,8 @@ export async function GET(request: Request): Promise<Response> {
 
   try {
     // Extract client IP for rate limiting
-    const ip = request.headers.get('x-forwarded-for') ||
-               request.headers.get('x-real-ip') ||
-               'unknown';
+    const ip =
+      request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'unknown';
 
     // Rate limiting check
     const rateLimitResult = await metricsRateLimiter.checkLimit(ip);
@@ -88,7 +86,7 @@ export async function GET(request: Request): Promise<Response> {
         requestId,
         ip,
         limit: rateLimitResult.limit,
-        remaining: rateLimitResult.remaining
+        remaining: rateLimitResult.remaining,
       });
 
       const response = createErrorResponse(
@@ -99,13 +97,16 @@ export async function GET(request: Request): Promise<Response> {
         {
           limit: rateLimitResult.limit,
           remaining: rateLimitResult.remaining,
-          retryAfter: rateLimitResult.retryAfter
+          retryAfter: rateLimitResult.retryAfter,
         }
       );
 
       response.headers.set('X-RateLimit-Limit', rateLimitResult.limit.toString());
       response.headers.set('X-RateLimit-Remaining', rateLimitResult.remaining.toString());
-      response.headers.set('Retry-After', Math.ceil((rateLimitResult.retryAfter || 60) / 1000).toString());
+      response.headers.set(
+        'Retry-After',
+        Math.ceil((rateLimitResult.retryAfter || 60) / 1000).toString()
+      );
 
       return response;
     }
@@ -139,7 +140,7 @@ export async function GET(request: Request): Promise<Response> {
       format,
       includeRaw,
       timeRange,
-      processingTime: Date.now() - startTime
+      processingTime: Date.now() - startTime,
     });
 
     // Get performance data
@@ -155,22 +156,24 @@ export async function GET(request: Request): Promise<Response> {
     const response = createSuccessResponse(responseData, requestId);
     response.headers.set('X-RateLimit-Limit', rateLimitResult.limit.toString());
     response.headers.set('X-RateLimit-Remaining', rateLimitResult.remaining.toString());
-    response.headers.set('X-RateLimit-Reset', Math.ceil(rateLimitResult.resetTime.getTime() / 1000).toString());
+    response.headers.set(
+      'X-RateLimit-Reset',
+      Math.ceil(rateLimitResult.resetTime.getTime() / 1000).toString()
+    );
 
     console.log(`[Performance] Metrics response sent`, {
       requestId,
       responseSize: JSON.stringify(responseData).length,
-      processingTime: Date.now() - startTime
+      processingTime: Date.now() - startTime,
     });
 
     return response;
-
   } catch (error: unknown) {
     console.error('[Performance] Unexpected error in metrics endpoint', {
       requestId,
       error: error instanceof Error ? error.message : 'Unknown error',
       stack: error instanceof Error ? error.stack : undefined,
-      processingTime: Date.now() - startTime
+      processingTime: Date.now() - startTime,
     });
 
     return createErrorResponse(
@@ -180,7 +183,7 @@ export async function GET(request: Request): Promise<Response> {
       requestId,
       {
         timestamp: new Date().toISOString(),
-        processingTime: Date.now() - startTime
+        processingTime: Date.now() - startTime,
       }
     );
   }
@@ -202,7 +205,7 @@ function generateJsonMetrics(
       return {
         category,
         found: false,
-        message: 'No metrics available for this category'
+        message: 'No metrics available for this category',
       };
     }
 
@@ -210,7 +213,7 @@ function generateJsonMetrics(
       category,
       found: true,
       report,
-      rawMetrics: includeRaw ? performanceMonitor.getMetrics(category) : undefined
+      rawMetrics: includeRaw ? performanceMonitor.getMetrics(category) : undefined,
     };
   } else {
     // System-wide metrics
@@ -220,23 +223,28 @@ function generateJsonMetrics(
       systemHealth: {
         overall: systemHealth.overall,
         summary: systemHealth.summary,
-        generatedAt: systemHealth.categories[Object.keys(systemHealth.categories)[0]]?.generatedAt || new Date().toISOString()
+        generatedAt:
+          systemHealth.categories[Object.keys(systemHealth.categories)[0]]?.generatedAt ||
+          new Date().toISOString(),
       },
-      categories: Object.keys(systemHealth.categories).reduce((acc, name) => {
-        const report = systemHealth.categories[name];
-        acc[name] = {
-          health: report.health,
-          stats: {
-            count: report.stats.count,
-            averageDuration: Math.round(report.stats.averageDuration * 100) / 100,
-            p95: Math.round(report.stats.p95 * 100) / 100,
-            successRate: Math.round(report.stats.successRate * 100) / 100
-          },
-          thresholds: report.thresholds,
-          recommendations: report.recommendations
-        };
-        return acc;
-      }, {} as Record<string, any>)
+      categories: Object.keys(systemHealth.categories).reduce(
+        (acc, name) => {
+          const report = systemHealth.categories[name];
+          acc[name] = {
+            health: report.health,
+            stats: {
+              count: report.stats.count,
+              averageDuration: Math.round(report.stats.averageDuration * 100) / 100,
+              p95: Math.round(report.stats.p95 * 100) / 100,
+              successRate: Math.round(report.stats.successRate * 100) / 100,
+            },
+            thresholds: report.thresholds,
+            recommendations: report.recommendations,
+          };
+          return acc;
+        },
+        {} as Record<string, any>
+      ),
     };
 
     // Include detailed reports for authenticated users
@@ -278,14 +286,26 @@ function generatePrometheusMetrics(category: string | null, isAuthenticated: boo
     const sanitizedName = name.replace(/[^a-zA-Z0-9_]/g, '_');
 
     // Duration metrics
-    lines.push(`polaris_performance_duration_ms{name="${sanitizedName}",quantile="avg"} ${report.stats.averageDuration}`);
-    lines.push(`polaris_performance_duration_ms{name="${sanitizedName}",quantile="p50"} ${report.stats.p50}`);
-    lines.push(`polaris_performance_duration_ms{name="${sanitizedName}",quantile="p90"} ${report.stats.p90}`);
-    lines.push(`polaris_performance_duration_ms{name="${sanitizedName}",quantile="p95"} ${report.stats.p95}`);
-    lines.push(`polaris_performance_duration_ms{name="${sanitizedName}",quantile="p99"} ${report.stats.p99}`);
+    lines.push(
+      `polaris_performance_duration_ms{name="${sanitizedName}",quantile="avg"} ${report.stats.averageDuration}`
+    );
+    lines.push(
+      `polaris_performance_duration_ms{name="${sanitizedName}",quantile="p50"} ${report.stats.p50}`
+    );
+    lines.push(
+      `polaris_performance_duration_ms{name="${sanitizedName}",quantile="p90"} ${report.stats.p90}`
+    );
+    lines.push(
+      `polaris_performance_duration_ms{name="${sanitizedName}",quantile="p95"} ${report.stats.p95}`
+    );
+    lines.push(
+      `polaris_performance_duration_ms{name="${sanitizedName}",quantile="p99"} ${report.stats.p99}`
+    );
 
     // Success rate
-    lines.push(`polaris_performance_success_rate{name="${sanitizedName}"} ${report.stats.successRate}`);
+    lines.push(
+      `polaris_performance_success_rate{name="${sanitizedName}"} ${report.stats.successRate}`
+    );
 
     // Count
     lines.push(`polars_performance_count{name="${sanitizedName}"} ${report.stats.count}`);
@@ -295,8 +315,12 @@ function generatePrometheusMetrics(category: string | null, isAuthenticated: boo
     lines.push(`polaris_performance_health{name="${sanitizedName}"} ${healthValue}`);
 
     // Threshold information
-    lines.push(`polaris_performance_threshold_warning{name="${sanitizedName}"} ${report.thresholds.warning}`);
-    lines.push(`polaris_performance_threshold_critical{name="${sanitizedName}"} ${report.thresholds.critical}`);
+    lines.push(
+      `polaris_performance_threshold_warning{name="${sanitizedName}"} ${report.thresholds.warning}`
+    );
+    lines.push(
+      `polaris_performance_threshold_critical{name="${sanitizedName}"} ${report.thresholds.critical}`
+    );
   }
 
   return lines.join('\n') + '\n';
@@ -326,12 +350,7 @@ export async function POST(request: Request): Promise<Response> {
     try {
       requestBody = await request.json();
     } catch (error) {
-      return createErrorResponse(
-        'INVALID_JSON',
-        'Invalid JSON in request body',
-        400,
-        requestId
-      );
+      return createErrorResponse('INVALID_JSON', 'Invalid JSON in request body', 400, requestId);
     }
 
     const { category } = requestBody as { category?: string };
@@ -340,23 +359,27 @@ export async function POST(request: Request): Promise<Response> {
       requestId,
       userId: sessionResult.session.user.id,
       category,
-      processingTime: Date.now() - startTime
+      processingTime: Date.now() - startTime,
     });
 
     // Clear metrics
     performanceMonitor.clearMetrics(category);
 
-    return createSuccessResponse({
-      message: category ? `Cleared metrics for category: ${category}` : 'Cleared all performance metrics',
-      category,
-      clearedAt: new Date().toISOString()
-    }, requestId);
-
+    return createSuccessResponse(
+      {
+        message: category
+          ? `Cleared metrics for category: ${category}`
+          : 'Cleared all performance metrics',
+        category,
+        clearedAt: new Date().toISOString(),
+      },
+      requestId
+    );
   } catch (error: unknown) {
     console.error('[Performance] Error in clear metrics endpoint', {
       requestId,
       error: error instanceof Error ? error.message : 'Unknown error',
-      processingTime: Date.now() - startTime
+      processingTime: Date.now() - startTime,
     });
 
     return createErrorResponse(

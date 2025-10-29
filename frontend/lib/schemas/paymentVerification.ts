@@ -67,7 +67,10 @@ export interface PaymentVerificationError {
 export const RazorpayPaymentIdSchema = z
   .string()
   .min(1, 'Payment ID is required')
-  .regex(/^pay_[a-zA-Z0-9_]+$/, 'Invalid payment ID format. Must start with "pay_" followed by alphanumeric characters and underscores')
+  .regex(
+    /^pay_[a-zA-Z0-9_]+$/,
+    'Invalid payment ID format. Must start with "pay_" followed by alphanumeric characters and underscores'
+  )
   .max(50, 'Payment ID is too long');
 
 /**
@@ -81,7 +84,10 @@ export const RazorpayPaymentIdSchema = z
 export const RazorpaySubscriptionIdSchema = z
   .string()
   .min(1, 'Subscription ID is required')
-  .regex(/^sub_[a-zA-Z0-9_]+$/, 'Invalid subscription ID format. Must start with "sub_" followed by alphanumeric characters and underscores')
+  .regex(
+    /^sub_[a-zA-Z0-9_]+$/,
+    'Invalid subscription ID format. Must start with "sub_" followed by alphanumeric characters and underscores'
+  )
   .max(50, 'Subscription ID is too long');
 
 /**
@@ -95,7 +101,10 @@ export const RazorpaySubscriptionIdSchema = z
 export const RazorpaySignatureSchema = z
   .string()
   .min(1, 'Signature is required')
-  .regex(/^[a-fA-F0-9]{64}$/, 'Invalid signature format. Must be a 64-character hexadecimal string (SHA256 hash)')
+  .regex(
+    /^[a-fA-F0-9]{64}$/,
+    'Invalid signature format. Must be a 64-character hexadecimal string (SHA256 hash)'
+  )
   .transform((val) => val.toLowerCase()); // Normalize to lowercase for consistent comparison
 
 /**
@@ -129,12 +138,14 @@ export const PaymentVerificationErrorResponseSchema = z.object({
   success: z.literal(false),
   error: z.string().min(1, 'Error message is required'),
   code: z.string().min(1, 'Error code is required'),
-  details: z.object({
-    field: z.string().optional(),
-    issue: z.string().optional(),
-    expected: z.string().optional(),
-    received: z.string().optional(),
-  }).optional(),
+  details: z
+    .object({
+      field: z.string().optional(),
+      issue: z.string().optional(),
+      expected: z.string().optional(),
+      received: z.string().optional(),
+    })
+    .optional(),
   timestamp: z.string().datetime('Invalid timestamp format'),
 });
 
@@ -165,21 +176,23 @@ export const PaymentVerificationAllResponsesSchema = z.union([
  *   console.error('Validation failed:', result.error);
  * }
  */
-export function validatePaymentVerificationRequest(data: unknown): {
-  success: true;
-  data: PaymentVerificationRequest;
-} | {
-  success: false;
-  error: string;
-  field?: string;
-  issue: string;
-  received?: unknown;
-} {
+export function validatePaymentVerificationRequest(data: unknown):
+  | {
+      success: true;
+      data: PaymentVerificationRequest;
+    }
+  | {
+      success: false;
+      error: string;
+      field?: string;
+      issue: string;
+      received?: unknown;
+    } {
   try {
     const parsed = PaymentVerificationRequestSchema.parse(data) as PaymentVerificationRequest;
     return {
       success: true,
-      data: parsed
+      data: parsed,
     };
   } catch (error) {
     if (error instanceof z.ZodError) {
@@ -194,14 +207,14 @@ export function validatePaymentVerificationRequest(data: unknown): {
         error: `Invalid request format: ${issue}`,
         field: fieldName,
         issue,
-        received
+        received,
       };
     }
 
     return {
       success: false,
       error: 'Request validation failed',
-      issue: error instanceof Error ? error.message : 'Unknown error'
+      issue: error instanceof Error ? error.message : 'Unknown error',
     };
   }
 }
@@ -326,7 +339,8 @@ export const PAYMENT_VERIFICATION_ERROR_CODES = {
 /**
  * Type for error codes
  */
-export type PaymentVerificationErrorCode = typeof PAYMENT_VERIFICATION_ERROR_CODES[keyof typeof PAYMENT_VERIFICATION_ERROR_CODES];
+export type PaymentVerificationErrorCode =
+  (typeof PAYMENT_VERIFICATION_ERROR_CODES)[keyof typeof PAYMENT_VERIFICATION_ERROR_CODES];
 
 // ============================================================================
 // Response Builders
@@ -345,11 +359,13 @@ export type PaymentVerificationErrorCode = typeof PAYMENT_VERIFICATION_ERROR_COD
  *   paymentId: 'pay_456'
  * });
  */
-export function createSuccessResponse(data: Omit<PaymentVerificationResponse, 'success' | 'timestamp'>): PaymentVerificationResponse {
+export function createSuccessResponse(
+  data: Omit<PaymentVerificationResponse, 'success' | 'timestamp'>
+): PaymentVerificationResponse {
   return {
     success: true,
     timestamp: new Date().toISOString(),
-    ...data
+    ...data,
   };
 }
 
@@ -366,11 +382,13 @@ export function createSuccessResponse(data: Omit<PaymentVerificationResponse, 's
  *   details: { field: 'razorpaySignature', issue: 'Signature verification failed' }
  * });
  */
-export function createErrorResponse(error: Omit<PaymentVerificationError, 'success' | 'timestamp'>): PaymentVerificationError {
+export function createErrorResponse(
+  error: Omit<PaymentVerificationError, 'success' | 'timestamp'>
+): PaymentVerificationError {
   return {
     success: false,
     timestamp: new Date().toISOString(),
-    ...error
+    ...error,
   };
 }
 

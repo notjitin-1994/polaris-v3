@@ -108,7 +108,7 @@ async function getUserBySubscription(
     if (error) {
       return {
         userId: null,
-        error: `Failed to find subscription: ${error.message}`
+        error: `Failed to find subscription: ${error.message}`,
       };
     }
 
@@ -116,7 +116,7 @@ async function getUserBySubscription(
   } catch (error) {
     return {
       userId: null,
-      error: `Unexpected error: ${error instanceof Error ? error.message : 'Unknown error'}`
+      error: `Unexpected error: ${error instanceof Error ? error.message : 'Unknown error'}`,
     };
   }
 }
@@ -138,7 +138,7 @@ async function updateSubscriptionRecord(
     if (error) {
       return {
         success: false,
-        error: `Failed to update subscription: ${error.message}`
+        error: `Failed to update subscription: ${error.message}`,
       };
     }
 
@@ -146,7 +146,7 @@ async function updateSubscriptionRecord(
   } catch (error) {
     return {
       success: false,
-      error: `Unexpected error: ${error instanceof Error ? error.message : 'Unknown error'}`
+      error: `Unexpected error: ${error instanceof Error ? error.message : 'Unknown error'}`,
     };
   }
 }
@@ -164,23 +164,21 @@ async function createPaymentRecord(
   userId: string
 ): Promise<{ success: boolean; error?: string }> {
   try {
-    const { error } = await supabase
-      .from('razorpay_payments')
-      .insert({
-        razorpay_payment_id: paymentId,
-        razorpay_subscription_id: subscriptionId,
-        user_id: userId,
-        amount,
-        currency,
-        status,
-        payment_type: 'subscription_charge',
-        created_at: new Date().toISOString()
-      });
+    const { error } = await supabase.from('razorpay_payments').insert({
+      razorpay_payment_id: paymentId,
+      razorpay_subscription_id: subscriptionId,
+      user_id: userId,
+      amount,
+      currency,
+      status,
+      payment_type: 'subscription_charge',
+      created_at: new Date().toISOString(),
+    });
 
     if (error) {
       return {
         success: false,
-        error: `Failed to create payment record: ${error.message}`
+        error: `Failed to create payment record: ${error.message}`,
       };
     }
 
@@ -188,7 +186,7 @@ async function createPaymentRecord(
   } catch (error) {
     return {
       success: false,
-      error: `Unexpected error: ${error instanceof Error ? error.message : 'Unknown error'}`
+      error: `Unexpected error: ${error instanceof Error ? error.message : 'Unknown error'}`,
     };
   }
 }
@@ -206,15 +204,12 @@ async function updateUserProfile(
   }
 ): Promise<{ success: boolean; error?: string }> {
   try {
-    const { error } = await supabase
-      .from('user_profiles')
-      .update(updates)
-      .eq('id', userId);
+    const { error } = await supabase.from('user_profiles').update(updates).eq('id', userId);
 
     if (error) {
       return {
         success: false,
-        error: `Failed to update user profile: ${error.message}`
+        error: `Failed to update user profile: ${error.message}`,
       };
     }
 
@@ -222,7 +217,7 @@ async function updateUserProfile(
   } catch (error) {
     return {
       success: false,
-      error: `Unexpected error: ${error instanceof Error ? error.message : 'Unknown error'}`
+      error: `Unexpected error: ${error instanceof Error ? error.message : 'Unknown error'}`,
     };
   }
 }
@@ -244,17 +239,14 @@ export const handleSubscriptionActivated: EventHandler = async (
 
   try {
     // Find user for this subscription
-    const { userId, error: userError } = await getUserBySubscription(
-      supabase,
-      subscription.id
-    );
+    const { userId, error: userError } = await getUserBySubscription(supabase, subscription.id);
 
     if (userError || !userId) {
       return {
         success: false,
         processed: false,
         error: `User not found for subscription ${subscription.id}`,
-        retryable: false
+        retryable: false,
       };
     }
 
@@ -264,25 +256,21 @@ export const handleSubscriptionActivated: EventHandler = async (
       current_start: unixToIso(subscription.current_start),
       current_end: unixToIso(subscription.current_end),
       trial_end: unixToIso(subscription.trial_end),
-      updated_at: new Date().toISOString()
+      updated_at: new Date().toISOString(),
     };
 
     if (subscription.payment_id) {
       updateData.razorpay_payment_id = subscription.payment_id;
     }
 
-    const updateResult = await updateSubscriptionRecord(
-      supabase,
-      subscription.id,
-      updateData
-    );
+    const updateResult = await updateSubscriptionRecord(supabase, subscription.id, updateData);
 
     if (!updateResult.success) {
       return {
         success: false,
         processed: false,
         error: updateResult.error,
-        retryable: true
+        retryable: true,
       };
     }
 
@@ -290,7 +278,7 @@ export const handleSubscriptionActivated: EventHandler = async (
     const profileUpdate = await updateUserProfile(supabase, userId, {
       subscription_status: 'active',
       subscription_ends_at: unixToIso(subscription.current_end),
-      updated_at: new Date().toISOString()
+      updated_at: new Date().toISOString(),
     });
 
     if (!profileUpdate.success) {
@@ -309,16 +297,16 @@ export const handleSubscriptionActivated: EventHandler = async (
         metadata: {
           userId,
           trialEnd: unixToIso(subscription.trial_end),
-          currentEnd: unixToIso(subscription.current_end)
-        }
-      }
+          currentEnd: unixToIso(subscription.current_end),
+        },
+      },
     };
   } catch (error) {
     return {
       success: false,
       processed: false,
       error: `Failed to process subscription activation: ${error instanceof Error ? error.message : 'Unknown error'}`,
-      retryable: true
+      retryable: true,
     };
   }
 };
@@ -336,17 +324,14 @@ export const handleSubscriptionCharged: EventHandler = async (
 
   try {
     // Find user for this subscription
-    const { userId, error: userError } = await getUserBySubscription(
-      supabase,
-      subscription.id
-    );
+    const { userId, error: userError } = await getUserBySubscription(supabase, subscription.id);
 
     if (userError || !userId) {
       return {
         success: false,
         processed: false,
         error: `User not found for subscription ${subscription.id}`,
-        retryable: false
+        retryable: false,
       };
     }
 
@@ -355,7 +340,7 @@ export const handleSubscriptionCharged: EventHandler = async (
       status: 'active',
       current_start: unixToIso(subscription.current_start),
       current_end: unixToIso(subscription.current_end),
-      updated_at: new Date().toISOString()
+      updated_at: new Date().toISOString(),
     };
 
     if (subscription.payment_id) {
@@ -366,18 +351,14 @@ export const handleSubscriptionCharged: EventHandler = async (
       updateData.invoice_id = subscription.invoice_id;
     }
 
-    const updateResult = await updateSubscriptionRecord(
-      supabase,
-      subscription.id,
-      updateData
-    );
+    const updateResult = await updateSubscriptionRecord(supabase, subscription.id, updateData);
 
     if (!updateResult.success) {
       return {
         success: false,
         processed: false,
         error: updateResult.error,
-        retryable: true
+        retryable: true,
       };
     }
 
@@ -407,7 +388,7 @@ export const handleSubscriptionCharged: EventHandler = async (
     const profileUpdate = await updateUserProfile(supabase, userId, {
       subscription_status: 'active',
       subscription_ends_at: unixToIso(subscription.current_end),
-      updated_at: new Date().toISOString()
+      updated_at: new Date().toISOString(),
     });
 
     if (!profileUpdate.success) {
@@ -425,16 +406,16 @@ export const handleSubscriptionCharged: EventHandler = async (
         metadata: {
           userId,
           nextBillingDate: unixToIso(subscription.current_end),
-          invoiceId: subscription.invoice_id
-        }
-      }
+          invoiceId: subscription.invoice_id,
+        },
+      },
     };
   } catch (error) {
     return {
       success: false,
       processed: false,
       error: `Failed to process subscription charge: ${error instanceof Error ? error.message : 'Unknown error'}`,
-      retryable: true
+      retryable: true,
     };
   }
 };
@@ -452,17 +433,14 @@ export const handleSubscriptionCompleted: EventHandler = async (
 
   try {
     // Find user for this subscription
-    const { userId, error: userError } = await getUserBySubscription(
-      supabase,
-      subscription.id
-    );
+    const { userId, error: userError } = await getUserBySubscription(supabase, subscription.id);
 
     if (userError || !userId) {
       return {
         success: false,
         processed: false,
         error: `User not found for subscription ${subscription.id}`,
-        retryable: false
+        retryable: false,
       };
     }
 
@@ -470,21 +448,17 @@ export const handleSubscriptionCompleted: EventHandler = async (
     const updateData: SubscriptionUpdateData = {
       status: 'completed',
       end_at: unixToIso(subscription.end_at),
-      updated_at: new Date().toISOString()
+      updated_at: new Date().toISOString(),
     };
 
-    const updateResult = await updateSubscriptionRecord(
-      supabase,
-      subscription.id,
-      updateData
-    );
+    const updateResult = await updateSubscriptionRecord(supabase, subscription.id, updateData);
 
     if (!updateResult.success) {
       return {
         success: false,
         processed: false,
         error: updateResult.error,
-        retryable: true
+        retryable: true,
       };
     }
 
@@ -492,7 +466,7 @@ export const handleSubscriptionCompleted: EventHandler = async (
     const profileUpdate = await updateUserProfile(supabase, userId, {
       subscription_status: 'completed',
       subscription_ends_at: unixToIso(subscription.end_at),
-      updated_at: new Date().toISOString()
+      updated_at: new Date().toISOString(),
     });
 
     if (!profileUpdate.success) {
@@ -508,16 +482,16 @@ export const handleSubscriptionCompleted: EventHandler = async (
         action: 'subscription_completed',
         metadata: {
           userId,
-          completedAt: unixToIso(subscription.end_at)
-        }
-      }
+          completedAt: unixToIso(subscription.end_at),
+        },
+      },
     };
   } catch (error) {
     return {
       success: false,
       processed: false,
       error: `Failed to process subscription completion: ${error instanceof Error ? error.message : 'Unknown error'}`,
-      retryable: true
+      retryable: true,
     };
   }
 };
@@ -535,17 +509,14 @@ export const handleSubscriptionCancelled: EventHandler = async (
 
   try {
     // Find user for this subscription
-    const { userId, error: userError } = await getUserBySubscription(
-      supabase,
-      subscription.id
-    );
+    const { userId, error: userError } = await getUserBySubscription(supabase, subscription.id);
 
     if (userError || !userId) {
       return {
         success: false,
         processed: false,
         error: `User not found for subscription ${subscription.id}`,
-        retryable: false
+        retryable: false,
       };
     }
 
@@ -554,21 +525,17 @@ export const handleSubscriptionCancelled: EventHandler = async (
       status: 'cancelled',
       cancelled_at: unixToIso(subscription.cancelled_at),
       end_at: unixToIso(subscription.end_at),
-      updated_at: new Date().toISOString()
+      updated_at: new Date().toISOString(),
     };
 
-    const updateResult = await updateSubscriptionRecord(
-      supabase,
-      subscription.id,
-      updateData
-    );
+    const updateResult = await updateSubscriptionRecord(supabase, subscription.id, updateData);
 
     if (!updateResult.success) {
       return {
         success: false,
         processed: false,
         error: updateResult.error,
-        retryable: true
+        retryable: true,
       };
     }
 
@@ -576,7 +543,7 @@ export const handleSubscriptionCancelled: EventHandler = async (
     const profileUpdate = await updateUserProfile(supabase, userId, {
       subscription_status: 'cancelled',
       subscription_ends_at: unixToIso(subscription.end_at),
-      updated_at: new Date().toISOString()
+      updated_at: new Date().toISOString(),
     });
 
     if (!profileUpdate.success) {
@@ -593,16 +560,16 @@ export const handleSubscriptionCancelled: EventHandler = async (
         metadata: {
           userId,
           cancelledAt: unixToIso(subscription.cancelled_at),
-          accessUntil: unixToIso(subscription.end_at)
-        }
-      }
+          accessUntil: unixToIso(subscription.end_at),
+        },
+      },
     };
   } catch (error) {
     return {
       success: false,
       processed: false,
       error: `Failed to process subscription cancellation: ${error instanceof Error ? error.message : 'Unknown error'}`,
-      retryable: true
+      retryable: true,
     };
   }
 };
@@ -620,45 +587,38 @@ export const handleSubscriptionHalted: EventHandler = async (
 
   try {
     // Find user for this subscription
-    const { userId, error: userError } = await getUserBySubscription(
-      supabase,
-      subscription.id
-    );
+    const { userId, error: userError } = await getUserBySubscription(supabase, subscription.id);
 
     if (userError || !userId) {
       return {
         success: false,
         processed: false,
         error: `User not found for subscription ${subscription.id}`,
-        retryable: false
+        retryable: false,
       };
     }
 
     // Update subscription record
     const updateData: SubscriptionUpdateData = {
       status: 'halted',
-      updated_at: new Date().toISOString()
+      updated_at: new Date().toISOString(),
     };
 
-    const updateResult = await updateSubscriptionRecord(
-      supabase,
-      subscription.id,
-      updateData
-    );
+    const updateResult = await updateSubscriptionRecord(supabase, subscription.id, updateData);
 
     if (!updateResult.success) {
       return {
         success: false,
         processed: false,
         error: updateResult.error,
-        retryable: true
+        retryable: true,
       };
     }
 
     // Update user profile
     const profileUpdate = await updateUserProfile(supabase, userId, {
       subscription_status: 'halted',
-      updated_at: new Date().toISOString()
+      updated_at: new Date().toISOString(),
     });
 
     if (!profileUpdate.success) {
@@ -674,16 +634,16 @@ export const handleSubscriptionHalted: EventHandler = async (
         action: 'subscription_halted',
         metadata: {
           userId,
-          reason: 'Payment failure or retry exhausted'
-        }
-      }
+          reason: 'Payment failure or retry exhausted',
+        },
+      },
     };
   } catch (error) {
     return {
       success: false,
       processed: false,
       error: `Failed to process subscription halt: ${error instanceof Error ? error.message : 'Unknown error'}`,
-      retryable: true
+      retryable: true,
     };
   }
 };
@@ -701,45 +661,38 @@ export const handleSubscriptionPaused: EventHandler = async (
 
   try {
     // Find user for this subscription
-    const { userId, error: userError } = await getUserBySubscription(
-      supabase,
-      subscription.id
-    );
+    const { userId, error: userError } = await getUserBySubscription(supabase, subscription.id);
 
     if (userError || !userId) {
       return {
         success: false,
         processed: false,
         error: `User not found for subscription ${subscription.id}`,
-        retryable: false
+        retryable: false,
       };
     }
 
     // Update subscription record
     const updateData: SubscriptionUpdateData = {
       status: 'paused',
-      updated_at: new Date().toISOString()
+      updated_at: new Date().toISOString(),
     };
 
-    const updateResult = await updateSubscriptionRecord(
-      supabase,
-      subscription.id,
-      updateData
-    );
+    const updateResult = await updateSubscriptionRecord(supabase, subscription.id, updateData);
 
     if (!updateResult.success) {
       return {
         success: false,
         processed: false,
         error: updateResult.error,
-        retryable: true
+        retryable: true,
       };
     }
 
     // Update user profile
     const profileUpdate = await updateUserProfile(supabase, userId, {
       subscription_status: 'paused',
-      updated_at: new Date().toISOString()
+      updated_at: new Date().toISOString(),
     });
 
     if (!profileUpdate.success) {
@@ -754,16 +707,16 @@ export const handleSubscriptionPaused: EventHandler = async (
         status: 'paused',
         action: 'subscription_paused',
         metadata: {
-          userId
-        }
-      }
+          userId,
+        },
+      },
     };
   } catch (error) {
     return {
       success: false,
       processed: false,
       error: `Failed to process subscription pause: ${error instanceof Error ? error.message : 'Unknown error'}`,
-      retryable: true
+      retryable: true,
     };
   }
 };
@@ -781,17 +734,14 @@ export const handleSubscriptionResumed: EventHandler = async (
 
   try {
     // Find user for this subscription
-    const { userId, error: userError } = await getUserBySubscription(
-      supabase,
-      subscription.id
-    );
+    const { userId, error: userError } = await getUserBySubscription(supabase, subscription.id);
 
     if (userError || !userId) {
       return {
         success: false,
         processed: false,
         error: `User not found for subscription ${subscription.id}`,
-        retryable: false
+        retryable: false,
       };
     }
 
@@ -800,21 +750,17 @@ export const handleSubscriptionResumed: EventHandler = async (
       status: 'active',
       current_start: unixToIso(subscription.current_start),
       current_end: unixToIso(subscription.current_end),
-      updated_at: new Date().toISOString()
+      updated_at: new Date().toISOString(),
     };
 
-    const updateResult = await updateSubscriptionRecord(
-      supabase,
-      subscription.id,
-      updateData
-    );
+    const updateResult = await updateSubscriptionRecord(supabase, subscription.id, updateData);
 
     if (!updateResult.success) {
       return {
         success: false,
         processed: false,
         error: updateResult.error,
-        retryable: true
+        retryable: true,
       };
     }
 
@@ -822,7 +768,7 @@ export const handleSubscriptionResumed: EventHandler = async (
     const profileUpdate = await updateUserProfile(supabase, userId, {
       subscription_status: 'active',
       subscription_ends_at: unixToIso(subscription.current_end),
-      updated_at: new Date().toISOString()
+      updated_at: new Date().toISOString(),
     });
 
     if (!profileUpdate.success) {
@@ -838,16 +784,16 @@ export const handleSubscriptionResumed: EventHandler = async (
         action: 'subscription_resumed',
         metadata: {
           userId,
-          nextBillingDate: unixToIso(subscription.current_end)
-        }
-      }
+          nextBillingDate: unixToIso(subscription.current_end),
+        },
+      },
     };
   } catch (error) {
     return {
       success: false,
       processed: false,
       error: `Failed to process subscription resume: ${error instanceof Error ? error.message : 'Unknown error'}`,
-      retryable: true
+      retryable: true,
     };
   }
 };
@@ -865,17 +811,14 @@ export const handleSubscriptionPending: EventHandler = async (
 
   try {
     // Find user for this subscription
-    const { userId, error: userError } = await getUserBySubscription(
-      supabase,
-      subscription.id
-    );
+    const { userId, error: userError } = await getUserBySubscription(supabase, subscription.id);
 
     if (userError || !userId) {
       return {
         success: false,
         processed: false,
         error: `User not found for subscription ${subscription.id}`,
-        retryable: false
+        retryable: false,
       };
     }
 
@@ -884,28 +827,24 @@ export const handleSubscriptionPending: EventHandler = async (
       status: 'pending',
       start_at: unixToIso(subscription.start_at),
       charge_at: unixToIso(subscription.charge_at),
-      updated_at: new Date().toISOString()
+      updated_at: new Date().toISOString(),
     };
 
-    const updateResult = await updateSubscriptionRecord(
-      supabase,
-      subscription.id,
-      updateData
-    );
+    const updateResult = await updateSubscriptionRecord(supabase, subscription.id, updateData);
 
     if (!updateResult.success) {
       return {
         success: false,
         processed: false,
         error: updateResult.error,
-        retryable: true
+        retryable: true,
       };
     }
 
     // Update user profile
     const profileUpdate = await updateUserProfile(supabase, userId, {
       subscription_status: 'pending',
-      updated_at: new Date().toISOString()
+      updated_at: new Date().toISOString(),
     });
 
     if (!profileUpdate.success) {
@@ -922,16 +861,16 @@ export const handleSubscriptionPending: EventHandler = async (
         metadata: {
           userId,
           startsAt: unixToIso(subscription.start_at),
-          chargeAt: unixToIso(subscription.charge_at)
-        }
-      }
+          chargeAt: unixToIso(subscription.charge_at),
+        },
+      },
     };
   } catch (error) {
     return {
       success: false,
       processed: false,
       error: `Failed to process subscription pending: ${error instanceof Error ? error.message : 'Unknown error'}`,
-      retryable: true
+      retryable: true,
     };
   }
 };

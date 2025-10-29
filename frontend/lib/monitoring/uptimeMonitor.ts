@@ -73,7 +73,7 @@ class UptimeMonitor {
   addHealthCheck(config: Omit<HealthCheck, 'lastChecked'>): void {
     const healthCheck: HealthCheck = {
       ...config,
-      lastChecked: 0
+      lastChecked: 0,
     };
 
     this.healthChecks.set(config.name, healthCheck);
@@ -87,7 +87,7 @@ class UptimeMonitor {
         totalChecks: 0,
         failedChecks: 0,
         averageResponseTime: 0,
-        incidents: []
+        incidents: [],
       });
     }
 
@@ -155,23 +155,22 @@ class UptimeMonitor {
       availability: number;
     };
   }> {
-    const checks = Array.from(this.healthChecks.values()).map(check => ({
+    const checks = Array.from(this.healthChecks.values()).map((check) => ({
       name: check.name,
       status: check.status,
       message: check.message,
       responseTime: check.responseTime,
       lastChecked: check.lastChecked,
-      interval: check.interval
+      interval: check.interval,
     }));
 
-    const healthyChecks = checks.filter(c => c.status === 'healthy').length;
-    const degradedChecks = checks.filter(c => c.status === 'degraded').length;
-    const unhealthyChecks = checks.filter(c => c.status === 'unhealthy').length;
+    const healthyChecks = checks.filter((c) => c.status === 'healthy').length;
+    const degradedChecks = checks.filter((c) => c.status === 'degraded').length;
+    const unhealthyChecks = checks.filter((c) => c.status === 'unhealthy').length;
     const totalChecks = checks.length;
 
     const overall: 'healthy' | 'degraded' | 'unhealthy' =
-      unhealthyChecks > 0 ? 'unhealthy' :
-      degradedChecks > 0 ? 'degraded' : 'healthy';
+      unhealthyChecks > 0 ? 'unhealthy' : degradedChecks > 0 ? 'degraded' : 'healthy';
 
     return {
       overall,
@@ -181,8 +180,8 @@ class UptimeMonitor {
         healthyChecks,
         degradedChecks,
         unhealthyChecks,
-        availability: totalChecks > 0 ? (healthyChecks / totalChecks) * 100 : 0
-      }
+        availability: totalChecks > 0 ? (healthyChecks / totalChecks) * 100 : 0,
+      },
     };
   }
 
@@ -199,7 +198,7 @@ class UptimeMonitor {
 
       metrics[name] = {
         ...metric,
-        availability
+        availability,
       };
     }
 
@@ -217,14 +216,17 @@ class UptimeMonitor {
       const startTime = Date.now();
       const result = await Promise.race([
         healthCheck.checkFunction(),
-        this.timeoutPromise(healthCheck.timeout)
+        this.timeoutPromise(healthCheck.timeout),
       ]);
 
       const responseTime = Date.now() - startTime;
 
       // Update health check status
-      healthCheck.status = result.healthy ? 'healthy' :
-                         result.message.includes('degraded') ? 'degraded' : 'unhealthy';
+      healthCheck.status = result.healthy
+        ? 'healthy'
+        : result.message.includes('degraded')
+          ? 'degraded'
+          : 'unhealthy';
       healthCheck.message = result.message;
       healthCheck.responseTime = responseTime;
       healthCheck.lastChecked = Date.now();
@@ -233,7 +235,6 @@ class UptimeMonitor {
       this.updateMetrics(name, result.healthy, responseTime);
 
       return result;
-
     } catch (error) {
       const responseTime = Date.now() - startTime;
 
@@ -249,13 +250,13 @@ class UptimeMonitor {
       errorTracker.trackError(error, {
         component: 'uptime-monitor',
         action: 'health-check',
-        healthCheck: name
+        healthCheck: name,
       });
 
       return {
         healthy: false,
         message: healthCheck.message,
-        responseTime
+        responseTime,
       };
     }
   }
@@ -282,16 +283,16 @@ class UptimeMonitor {
           return {
             healthy: false,
             message: `Database connection failed: ${error.message}`,
-            responseTime
+            responseTime,
           };
         }
 
         return {
           healthy: true,
           message: 'Database connection successful',
-          responseTime
+          responseTime,
         };
-      }
+      },
     });
 
     // API health check
@@ -305,7 +306,7 @@ class UptimeMonitor {
         try {
           const response = await fetch('/api/health', {
             method: 'GET',
-            signal: AbortSignal.timeout(3000)
+            signal: AbortSignal.timeout(3000),
           });
 
           const responseTime = Date.now() - startTime;
@@ -314,7 +315,7 @@ class UptimeMonitor {
             return {
               healthy: false,
               message: `API health check failed: ${response.status} ${response.statusText}`,
-              responseTime
+              responseTime,
             };
           }
 
@@ -324,18 +325,17 @@ class UptimeMonitor {
             healthy: data.status === 'healthy',
             message: data.message || 'API is healthy',
             responseTime,
-            metadata: data
+            metadata: data,
           };
-
         } catch (error) {
           const responseTime = Date.now() - startTime;
           return {
             healthy: false,
             message: `API health check failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
-            responseTime
+            responseTime,
           };
         }
-      }
+      },
     });
 
     // Redis cache health check (if configured)
@@ -358,24 +358,23 @@ class UptimeMonitor {
               return {
                 healthy: true,
                 message: 'Redis cache connection successful',
-                responseTime
+                responseTime,
               };
             }
 
             return {
               healthy: false,
               message: 'Redis cache test failed',
-              responseTime
+              responseTime,
             };
-
           } catch (error) {
             return {
               healthy: false,
               message: `Redis cache connection failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
-              responseTime: 0
+              responseTime: 0,
             };
           }
-        }
+        },
       });
     }
 
@@ -411,10 +410,10 @@ class UptimeMonitor {
           metadata: {
             heapUsed: usedMemory,
             heapTotal: totalMemory,
-            usagePercent: memoryUsagePercent
-          }
+            usagePercent: memoryUsagePercent,
+          },
         };
-      }
+      },
     });
 
     // Disk space check (if available)
@@ -431,17 +430,16 @@ class UptimeMonitor {
           return {
             healthy: true,
             message: 'Disk space check passed',
-            responseTime: 0
+            responseTime: 0,
           };
-
         } catch (error) {
           return {
             healthy: false,
             message: `Disk space check failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
-            responseTime: 0
+            responseTime: 0,
           };
         }
-      }
+      },
     });
   }
 
@@ -479,7 +477,7 @@ class UptimeMonitor {
       const incident = {
         timestamp: Date.now(),
         duration: 0,
-        description: `Health check failed for ${name}`
+        description: `Health check failed for ${name}`,
       };
       metrics.incidents.push(incident);
       metrics.lastIncident = incident;
@@ -489,12 +487,15 @@ class UptimeMonitor {
       // Resolve last incident if exists
       if (metrics.lastIncident && !metrics.lastIncident.resolvedAt) {
         metrics.lastIncident.resolvedAt = Date.now();
-        metrics.lastIncident.duration = metrics.lastIncident.resolvedAt - metrics.lastIncident.timestamp;
+        metrics.lastIncident.duration =
+          metrics.lastIncident.resolvedAt - metrics.lastIncident.timestamp;
       }
     }
 
     // Update average response time
-    metrics.averageResponseTime = (metrics.averageResponseTime * (metrics.totalChecks - 1) + responseTime) / metrics.totalChecks;
+    metrics.averageResponseTime =
+      (metrics.averageResponseTime * (metrics.totalChecks - 1) + responseTime) /
+      metrics.totalChecks;
   }
 
   private timeoutPromise(timeout: number): Promise<HealthCheckResult> {

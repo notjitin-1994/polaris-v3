@@ -22,18 +22,13 @@ const SAMPLE_PLANS = [
     tagline: 'Perfect for getting started',
     price: 0,
     priceMonthly: 0,
-    features: [
-      '2 blueprints per month',
-      'Basic AI generation',
-      'PDF export',
-      'Community support'
-    ],
+    features: ['2 blueprints per month', 'Basic AI generation', 'PDF export', 'Community support'],
     description: 'Free tier for casual learners',
     limits: {
       blueprints: 2,
       exports: 2,
-      support: 'Community'
-    }
+      support: 'Community',
+    },
   },
   {
     id: 'navigator',
@@ -47,7 +42,7 @@ const SAMPLE_PLANS = [
       'PDF & Word export',
       'Priority email support',
       'Custom templates',
-      'Progress tracking'
+      'Progress tracking',
     ],
     badge: 'Most Popular',
     popular: true,
@@ -55,8 +50,8 @@ const SAMPLE_PLANS = [
     limits: {
       blueprints: 25,
       exports: 25,
-      support: 'Email (24h response)'
-    }
+      support: 'Email (24h response)',
+    },
   },
   {
     id: 'voyager',
@@ -72,15 +67,15 @@ const SAMPLE_PLANS = [
       'Advanced analytics',
       'Team collaboration',
       'Custom integrations',
-      'API access'
+      'API access',
     ],
     description: 'Ultimate learning experience with no limits',
     limits: {
       blueprints: -1, // Unlimited
       exports: -1, // Unlimited
-      support: 'Phone (2h response)'
-    }
-  }
+      support: 'Phone (2h response)',
+    },
+  },
 ];
 
 interface PricingPageExampleProps {
@@ -90,7 +85,7 @@ interface PricingPageExampleProps {
 
 export function PricingPageExample({
   billing = 'monthly',
-  onPlanUpgrade
+  onPlanUpgrade,
 }: PricingPageExampleProps): React.JSX.Element {
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'annual'>(billing);
@@ -111,7 +106,8 @@ export function PricingPageExample({
     if (typeof window !== 'undefined') {
       // Example: Show success message
       const successMessage = document.createElement('div');
-      successMessage.className = 'fixed top-4 right-4 bg-success/20 border-success/30 text-success px-6 py-3 rounded-lg border shadow-lg z-50';
+      successMessage.className =
+        'fixed top-4 right-4 bg-success/20 border-success/30 text-success px-6 py-3 rounded-lg border shadow-lg z-50';
       successMessage.innerHTML = `
         <div class="flex items-center gap-3">
           <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
@@ -139,7 +135,8 @@ export function PricingPageExample({
     // Show error notification
     if (typeof window !== 'undefined') {
       const errorMessage = document.createElement('div');
-      errorMessage.className = 'fixed top-4 right-4 bg-error/20 border-error/30 text-error px-6 py-3 rounded-lg border shadow-lg z-50';
+      errorMessage.className =
+        'fixed top-4 right-4 bg-error/20 border-error/30 text-error px-6 py-3 rounded-lg border shadow-lg z-50';
       errorMessage.innerHTML = `
         <div class="flex items-center gap-3">
           <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
@@ -166,7 +163,7 @@ export function PricingPageExample({
     <div className="w-full">
       {/* Billing Toggle */}
       <div className="mb-12 flex justify-center">
-        <div className="bg-surface/50 border border-neutral-200/20 inline-flex rounded-2xl p-1 backdrop-blur-sm">
+        <div className="bg-surface/50 inline-flex rounded-2xl border border-neutral-200/20 p-1 backdrop-blur-sm">
           <button
             onClick={() => setBillingCycle('monthly')}
             className={`rounded-xl px-6 py-2 text-sm font-semibold transition-all duration-300 ${
@@ -186,7 +183,7 @@ export function PricingPageExample({
             }`}
           >
             Annual
-            <span className="ml-2 bg-success/20 text-success rounded-full px-2 py-0.5 text-xs">
+            <span className="bg-success/20 text-success ml-2 rounded-full px-2 py-0.5 text-xs">
               Save 20%
             </span>
           </button>
@@ -194,7 +191,7 @@ export function PricingPageExample({
       </div>
 
       {/* Pricing Cards Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-7xl mx-auto">
+      <div className="mx-auto grid max-w-7xl grid-cols-1 gap-8 md:grid-cols-3">
         {SAMPLE_PLANS.map((plan, index) => (
           <EnhancedPricingCard
             key={plan.id}
@@ -206,7 +203,7 @@ export function PricingPageExample({
             user={{
               name: user?.user_metadata?.full_name || user?.email?.split('@')[0],
               email: user?.email,
-              contact: user?.phone
+              contact: user?.phone,
             }}
             onPlanSelect={handlePlanSelect}
             onPaymentSuccess={handlePaymentSuccess}
@@ -228,43 +225,55 @@ export function PricingPageExample({
             Trusted by thousands of learners worldwide
           </h3>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+          <div className="grid grid-cols-2 gap-8 md:grid-cols-4">
             <div className="text-center">
-              <div className="text-foreground text-3xl font-bold mb-2">10K+</div>
+              <div className="text-foreground mb-2 text-3xl font-bold">10K+</div>
               <div className="text-text-secondary text-sm">Active Users</div>
             </div>
             <div className="text-center">
-              <div className="text-foreground text-3xl font-bold mb-2">50K+</div>
+              <div className="text-foreground mb-2 text-3xl font-bold">50K+</div>
               <div className="text-text-secondary text-sm">Blueprints Created</div>
             </div>
             <div className="text-center">
-              <div className="text-foreground text-3xl font-bold mb-2">98%</div>
+              <div className="text-foreground mb-2 text-3xl font-bold">98%</div>
               <div className="text-text-secondary text-sm">Satisfaction Rate</div>
             </div>
             <div className="text-center">
-              <div className="text-foreground text-3xl font-bold mb-2">24/7</div>
+              <div className="text-foreground mb-2 text-3xl font-bold">24/7</div>
               <div className="text-text-secondary text-sm">Support Available</div>
             </div>
           </div>
 
           {/* Security Badges */}
-          <div className="flex flex-wrap justify-center items-center gap-6 mt-8">
-            <div className="flex items-center gap-2 text-text-secondary text-sm">
-              <svg className="h-5 w-5 text-success" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd"/>
+          <div className="mt-8 flex flex-wrap items-center justify-center gap-6">
+            <div className="text-text-secondary flex items-center gap-2 text-sm">
+              <svg className="text-success h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                <path
+                  fillRule="evenodd"
+                  d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z"
+                  clipRule="evenodd"
+                />
               </svg>
               256-bit SSL Encryption
             </div>
-            <div className="flex items-center gap-2 text-text-secondary text-sm">
-              <svg className="h-5 w-5 text-primary" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"/>
+            <div className="text-text-secondary flex items-center gap-2 text-sm">
+              <svg className="text-primary h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                <path
+                  fillRule="evenodd"
+                  d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                  clipRule="evenodd"
+                />
               </svg>
               PCI DSS Compliant
             </div>
-            <div className="flex items-center gap-2 text-text-secondary text-sm">
-              <svg className="h-5 w-5 text-warning" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/>
-                <path fillRule="evenodd" d="M4 5a2 2 0 012-2 1 1 0 000 2H6a2 2 0 100 4h2a2 2 0 100 4h2a1 1 0 100 2 2 2 0 01-2 2H4a2 2 0 01-2-2V7a2 2 0 012-2z" clipRule="evenodd"/>
+            <div className="text-text-secondary flex items-center gap-2 text-sm">
+              <svg className="text-warning h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" />
+                <path
+                  fillRule="evenodd"
+                  d="M4 5a2 2 0 012-2 1 1 0 000 2H6a2 2 0 100 4h2a2 2 0 100 4h2a1 1 0 100 2 2 2 0 01-2 2H4a2 2 0 01-2-2V7a2 2 0 012-2z"
+                  clipRule="evenodd"
+                />
               </svg>
               GDPR Compliant
             </div>

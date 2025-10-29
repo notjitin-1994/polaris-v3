@@ -47,7 +47,8 @@ export function getRazorpayConfig(): RazorpayConfig {
   return {
     keyId: keyId || '',
     name: process.env.NEXT_PUBLIC_RAZORPAY_NAME || 'SmartSlate',
-    description: process.env.NEXT_PUBLIC_RAZORPAY_DESCRIPTION || 'AI-powered learning platform subscription',
+    description:
+      process.env.NEXT_PUBLIC_RAZORPAY_DESCRIPTION || 'AI-powered learning platform subscription',
     image: process.env.NEXT_PUBLIC_RAZORPAY_LOGO_URL,
     defaultNotes: {
       platform: 'SmartSlate Polaris v3',

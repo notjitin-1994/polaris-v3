@@ -72,16 +72,11 @@ export default function RootLayout({
         suppressHydrationWarning
       >
         {/* Razorpay Checkout Script */}
-        <Script
-          src="https://checkout.razorpay.com/v1/checkout.js"
-          strategy="afterInteractive"
-        />
+        <Script src="https://checkout.razorpay.com/v1/checkout.js" strategy="afterInteractive" />
 
         <GlobalErrorBoundary>
           <ThemeProvider defaultTheme="dark">
-            <RazorpayProvider>
-              {children}
-            </RazorpayProvider>
+            <RazorpayProvider>{children}</RazorpayProvider>
           </ThemeProvider>
         </GlobalErrorBoundary>
       </body>

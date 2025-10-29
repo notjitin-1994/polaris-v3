@@ -26,9 +26,23 @@ vi.mock('@/lib/razorpay/client');
 
 // Import route after mocking
 import { POST } from '@/app/api/subscriptions/create-subscription/route';
-import { createMockSupabaseClient, mockUser, mockUserProfile, supabaseErrors } from '@/__tests__/mocks/supabase';
-import { createMockRazorpayClient, mockRazorpayCustomer, mockRazorpaySubscription, createErrorMocks } from '@/__tests__/mocks/razorpay';
-import { createSubscription, createRazorpayCustomer as createCustomerFactory, createUserProfile } from '@/__tests__/mocks/factories';
+import {
+  createMockSupabaseClient,
+  mockUser,
+  mockUserProfile,
+  supabaseErrors,
+} from '@/__tests__/mocks/supabase';
+import {
+  createMockRazorpayClient,
+  mockRazorpayCustomer,
+  mockRazorpaySubscription,
+  createErrorMocks,
+} from '@/__tests__/mocks/razorpay';
+import {
+  createSubscription,
+  createRazorpayCustomer as createCustomerFactory,
+  createUserProfile,
+} from '@/__tests__/mocks/factories';
 import * as razorpayClient from '@/lib/razorpay/client';
 
 describe('POST /api/subscriptions/create-subscription', () => {
@@ -47,7 +61,7 @@ describe('POST /api/subscriptions/create-subscription', () => {
     // Setup authenticated user session
     mockUserSession = {
       user: mockUser,
-      session: { access_token: 'test-token', expires_at: Date.now() + 3600 }
+      session: { access_token: 'test-token', expires_at: Date.now() + 3600 },
     };
 
     // Mock Supabase client injection
@@ -61,7 +75,7 @@ describe('POST /api/subscriptions/create-subscription', () => {
     // Setup successful auth by default
     mockSupabase.auth.getUser.mockResolvedValue({
       data: { user: mockUser },
-      error: null
+      error: null,
     });
   });
 
@@ -74,21 +88,24 @@ describe('POST /api/subscriptions/create-subscription', () => {
       // Mock unauthenticated state
       mockSupabase.auth.getUser.mockResolvedValue({
         data: { user: null },
-        error: { message: 'Invalid token' }
+        error: { message: 'Invalid token' },
       });
 
-      const request = new NextRequest('http://localhost:3000/api/subscriptions/create-subscription', {
-        method: 'POST',
-        body: JSON.stringify({
-          tier: 'navigator',
-          billingCycle: 'monthly',
-          customerInfo: {
-            name: 'Test User',
-            email: 'test@example.com',
-            contact: '+919876543210'
-          }
-        })
-      });
+      const request = new NextRequest(
+        'http://localhost:3000/api/subscriptions/create-subscription',
+        {
+          method: 'POST',
+          body: JSON.stringify({
+            tier: 'navigator',
+            billingCycle: 'monthly',
+            customerInfo: {
+              name: 'Test User',
+              email: 'test@example.com',
+              contact: '+919876543210',
+            },
+          }),
+        }
+      );
 
       const response = await POST(request);
 
@@ -101,19 +118,22 @@ describe('POST /api/subscriptions/create-subscription', () => {
       // Mock expired session
       mockSupabase.auth.getUser.mockResolvedValue({
         data: { user: null },
-        error: { message: 'Session expired' }
+        error: { message: 'Session expired' },
       });
 
-      const request = new NextRequest('http://localhost:3000/api/subscriptions/create-subscription', {
-        method: 'POST',
-        headers: {
-          'Authorization': 'Bearer expired-token'
-        },
-        body: JSON.stringify({
-          tier: 'navigator',
-          billingCycle: 'monthly'
-        })
-      });
+      const request = new NextRequest(
+        'http://localhost:3000/api/subscriptions/create-subscription',
+        {
+          method: 'POST',
+          headers: {
+            Authorization: 'Bearer expired-token',
+          },
+          body: JSON.stringify({
+            tier: 'navigator',
+            billingCycle: 'monthly',
+          }),
+        }
+      );
 
       const response = await POST(request);
 
@@ -125,10 +145,13 @@ describe('POST /api/subscriptions/create-subscription', () => {
 
   describe('Request Validation', () => {
     it('should return 400 if request body is missing', async () => {
-      const request = new NextRequest('http://localhost:3000/api/subscriptions/create-subscription', {
-        method: 'POST',
-        body: null
-      });
+      const request = new NextRequest(
+        'http://localhost:3000/api/subscriptions/create-subscription',
+        {
+          method: 'POST',
+          body: null,
+        }
+      );
 
       const response = await POST(request);
 
@@ -138,16 +161,19 @@ describe('POST /api/subscriptions/create-subscription', () => {
     });
 
     it('should return 400 if required fields are missing', async () => {
-      const request = new NextRequest('http://localhost:3000/api/subscriptions/create-subscription', {
-        method: 'POST',
-        body: JSON.stringify({
-          // Missing tier and billingCycle
-          customerInfo: {
-            name: 'Test User',
-            email: 'test@example.com'
-          }
-        })
-      });
+      const request = new NextRequest(
+        'http://localhost:3000/api/subscriptions/create-subscription',
+        {
+          method: 'POST',
+          body: JSON.stringify({
+            // Missing tier and billingCycle
+            customerInfo: {
+              name: 'Test User',
+              email: 'test@example.com',
+            },
+          }),
+        }
+      );
 
       const response = await POST(request);
 
@@ -158,18 +184,21 @@ describe('POST /api/subscriptions/create-subscription', () => {
     });
 
     it('should return 400 if tier is invalid', async () => {
-      const request = new NextRequest('http://localhost:3000/api/subscriptions/create-subscription', {
-        method: 'POST',
-        body: JSON.stringify({
-          tier: 'invalid_tier',
-          billingCycle: 'monthly',
-          customerInfo: {
-            name: 'Test User',
-            email: 'test@example.com',
-            contact: '+919876543210'
-          }
-        })
-      });
+      const request = new NextRequest(
+        'http://localhost:3000/api/subscriptions/create-subscription',
+        {
+          method: 'POST',
+          body: JSON.stringify({
+            tier: 'invalid_tier',
+            billingCycle: 'monthly',
+            customerInfo: {
+              name: 'Test User',
+              email: 'test@example.com',
+              contact: '+919876543210',
+            },
+          }),
+        }
+      );
 
       const response = await POST(request);
 
@@ -179,18 +208,21 @@ describe('POST /api/subscriptions/create-subscription', () => {
     });
 
     it('should return 400 if billing cycle is invalid', async () => {
-      const request = new NextRequest('http://localhost:3000/api/subscriptions/create-subscription', {
-        method: 'POST',
-        body: JSON.stringify({
-          tier: 'navigator',
-          billingCycle: 'invalid_cycle',
-          customerInfo: {
-            name: 'Test User',
-            email: 'test@example.com',
-            contact: '+919876543210'
-          }
-        })
-      });
+      const request = new NextRequest(
+        'http://localhost:3000/api/subscriptions/create-subscription',
+        {
+          method: 'POST',
+          body: JSON.stringify({
+            tier: 'navigator',
+            billingCycle: 'invalid_cycle',
+            customerInfo: {
+              name: 'Test User',
+              email: 'test@example.com',
+              contact: '+919876543210',
+            },
+          }),
+        }
+      );
 
       const response = await POST(request);
 
@@ -200,18 +232,21 @@ describe('POST /api/subscriptions/create-subscription', () => {
     });
 
     it('should return 400 if customer email is invalid', async () => {
-      const request = new NextRequest('http://localhost:3000/api/subscriptions/create-subscription', {
-        method: 'POST',
-        body: JSON.stringify({
-          tier: 'navigator',
-          billingCycle: 'monthly',
-          customerInfo: {
-            name: 'Test User',
-            email: 'invalid-email',
-            contact: '+919876543210'
-          }
-        })
-      });
+      const request = new NextRequest(
+        'http://localhost:3000/api/subscriptions/create-subscription',
+        {
+          method: 'POST',
+          body: JSON.stringify({
+            tier: 'navigator',
+            billingCycle: 'monthly',
+            customerInfo: {
+              name: 'Test User',
+              email: 'invalid-email',
+              contact: '+919876543210',
+            },
+          }),
+        }
+      );
 
       const response = await POST(request);
 
@@ -221,18 +256,21 @@ describe('POST /api/subscriptions/create-subscription', () => {
     });
 
     it('should return 400 if contact phone is invalid', async () => {
-      const request = new NextRequest('http://localhost:3000/api/subscriptions/create-subscription', {
-        method: 'POST',
-        body: JSON.stringify({
-          tier: 'navigator',
-          billingCycle: 'monthly',
-          customerInfo: {
-            name: 'Test User',
-            email: 'test@example.com',
-            contact: '123'
-          }
-        })
-      });
+      const request = new NextRequest(
+        'http://localhost:3000/api/subscriptions/create-subscription',
+        {
+          method: 'POST',
+          body: JSON.stringify({
+            tier: 'navigator',
+            billingCycle: 'monthly',
+            customerInfo: {
+              name: 'Test User',
+              email: 'test@example.com',
+              contact: '123',
+            },
+          }),
+        }
+      );
 
       const response = await POST(request);
 
@@ -252,26 +290,29 @@ describe('POST /api/subscriptions/create-subscription', () => {
               is: vi.fn().mockReturnValue({
                 order: vi.fn().mockResolvedValue({
                   data: [{ status: 'active' }],
-                  error: null
-                })
-              })
-            })
-          })
-        })
+                  error: null,
+                }),
+              }),
+            }),
+          }),
+        }),
       });
 
-      const request = new NextRequest('http://localhost:3000/api/subscriptions/create-subscription', {
-        method: 'POST',
-        body: JSON.stringify({
-          tier: 'navigator',
-          billingCycle: 'monthly',
-          customerInfo: {
-            name: 'Test User',
-            email: 'test@example.com',
-            contact: '+919876543210'
-          }
-        })
-      });
+      const request = new NextRequest(
+        'http://localhost:3000/api/subscriptions/create-subscription',
+        {
+          method: 'POST',
+          body: JSON.stringify({
+            tier: 'navigator',
+            billingCycle: 'monthly',
+            customerInfo: {
+              name: 'Test User',
+              email: 'test@example.com',
+              contact: '+919876543210',
+            },
+          }),
+        }
+      );
 
       const response = await POST(request);
 
@@ -290,26 +331,29 @@ describe('POST /api/subscriptions/create-subscription', () => {
               is: vi.fn().mockReturnValue({
                 order: vi.fn().mockResolvedValue({
                   data: [{ status: 'active', subscription_tier: 'explorer' }],
-                  error: null
-                })
-              })
-            })
-          })
-        })
+                  error: null,
+                }),
+              }),
+            }),
+          }),
+        }),
       });
 
-      const request = new NextRequest('http://localhost:3000/api/subscriptions/create-subscription', {
-        method: 'POST',
-        body: JSON.stringify({
-          tier: 'navigator',
-          billingCycle: 'monthly',
-          customerInfo: {
-            name: 'Test User',
-            email: 'test@example.com',
-            contact: '+919876543210'
-          }
-        })
-      });
+      const request = new NextRequest(
+        'http://localhost:3000/api/subscriptions/create-subscription',
+        {
+          method: 'POST',
+          body: JSON.stringify({
+            tier: 'navigator',
+            billingCycle: 'monthly',
+            customerInfo: {
+              name: 'Test User',
+              email: 'test@example.com',
+              contact: '+919876543210',
+            },
+          }),
+        }
+      );
 
       const response = await POST(request);
 
@@ -320,18 +364,21 @@ describe('POST /api/subscriptions/create-subscription', () => {
 
   describe('Razorpay Integration', () => {
     it('should create Razorpay customer with correct data', async () => {
-      const request = new NextRequest('http://localhost:3000/api/subscriptions/create-subscription', {
-        method: 'POST',
-        body: JSON.stringify({
-          tier: 'navigator',
-          billingCycle: 'monthly',
-          customerInfo: {
-            name: 'John Doe',
-            email: 'john@example.com',
-            contact: '+919876543210'
-          }
-        })
-      });
+      const request = new NextRequest(
+        'http://localhost:3000/api/subscriptions/create-subscription',
+        {
+          method: 'POST',
+          body: JSON.stringify({
+            tier: 'navigator',
+            billingCycle: 'monthly',
+            customerInfo: {
+              name: 'John Doe',
+              email: 'john@example.com',
+              contact: '+919876543210',
+            },
+          }),
+        }
+      );
 
       await POST(request);
 
@@ -343,25 +390,28 @@ describe('POST /api/subscriptions/create-subscription', () => {
           notes: expect.objectContaining({
             user_id: mockUser.id,
             source: 'polaris_v3_subscription',
-            created_at: expect.any(String)
-          })
+            created_at: expect.any(String),
+          }),
         })
       );
     });
 
     it('should create Razorpay subscription with correct parameters', async () => {
-      const request = new NextRequest('http://localhost:3000/api/subscriptions/create-subscription', {
-        method: 'POST',
-        body: JSON.stringify({
-          tier: 'navigator',
-          billingCycle: 'monthly',
-          customerInfo: {
-            name: 'John Doe',
-            email: 'john@example.com',
-            contact: '+919876543210'
-          }
-        })
-      });
+      const request = new NextRequest(
+        'http://localhost:3000/api/subscriptions/create-subscription',
+        {
+          method: 'POST',
+          body: JSON.stringify({
+            tier: 'navigator',
+            billingCycle: 'monthly',
+            customerInfo: {
+              name: 'John Doe',
+              email: 'john@example.com',
+              contact: '+919876543210',
+            },
+          }),
+        }
+      );
 
       await POST(request);
 
@@ -375,8 +425,8 @@ describe('POST /api/subscriptions/create-subscription', () => {
             subscription_tier: 'navigator',
             billing_cycle: 'monthly',
             seats: '1',
-            source: 'polaris_v3_subscription'
-          })
+            source: 'polaris_v3_subscription',
+          }),
         })
       );
     });
@@ -385,24 +435,27 @@ describe('POST /api/subscriptions/create-subscription', () => {
       const testCases = [
         { tier: 'navigator', billingCycle: 'monthly', expectedCount: 12 },
         { tier: 'voyager', billingCycle: 'yearly', expectedCount: 1 },
-        { tier: 'crew', billingCycle: 'monthly', expectedCount: 12 }
+        { tier: 'crew', billingCycle: 'monthly', expectedCount: 12 },
       ];
 
       for (const testCase of testCases) {
         vi.clearAllMocks();
 
-        const request = new NextRequest('http://localhost:3000/api/subscriptions/create-subscription', {
-          method: 'POST',
-          body: JSON.stringify({
-            tier: testCase.tier,
-            billingCycle: testCase.billingCycle,
-            customerInfo: {
-              name: 'Test User',
-              email: 'test@example.com',
-              contact: '+919876543210'
-            }
-          })
-        });
+        const request = new NextRequest(
+          'http://localhost:3000/api/subscriptions/create-subscription',
+          {
+            method: 'POST',
+            body: JSON.stringify({
+              tier: testCase.tier,
+              billingCycle: testCase.billingCycle,
+              customerInfo: {
+                name: 'Test User',
+                email: 'test@example.com',
+                contact: '+919876543210',
+              },
+            }),
+          }
+        );
 
         await POST(request);
 
@@ -411,8 +464,8 @@ describe('POST /api/subscriptions/create-subscription', () => {
             total_count: testCase.expectedCount,
             notes: expect.objectContaining({
               subscription_tier: testCase.tier,
-              billing_cycle: testCase.billingCycle
-            })
+              billing_cycle: testCase.billingCycle,
+            }),
           })
         );
       }
@@ -421,18 +474,21 @@ describe('POST /api/subscriptions/create-subscription', () => {
 
   describe('Database Operations', () => {
     it('should save subscription record to database', async () => {
-      const request = new NextRequest('http://localhost:3000/api/subscriptions/create-subscription', {
-        method: 'POST',
-        body: JSON.stringify({
-          tier: 'navigator',
-          billingCycle: 'monthly',
-          customerInfo: {
-            name: 'Test User',
-            email: 'test@example.com',
-            contact: '+919876543210'
-          }
-        })
-      });
+      const request = new NextRequest(
+        'http://localhost:3000/api/subscriptions/create-subscription',
+        {
+          method: 'POST',
+          body: JSON.stringify({
+            tier: 'navigator',
+            billingCycle: 'monthly',
+            customerInfo: {
+              name: 'Test User',
+              email: 'test@example.com',
+              contact: '+919876543210',
+            },
+          }),
+        }
+      );
 
       const response = await POST(request);
 
@@ -444,53 +500,59 @@ describe('POST /api/subscriptions/create-subscription', () => {
           razorpay_customer_id: mockRazorpayCustomer.id,
           status: 'created',
           subscription_tier: 'navigator',
-          plan_period: 'monthly'
+          plan_period: 'monthly',
         })
       );
     });
 
     it('should update user profile with subscription tier', async () => {
-      const request = new NextRequest('http://localhost:3000/api/subscriptions/create-subscription', {
-        method: 'POST',
-        body: JSON.stringify({
-          tier: 'voyager',
-          billingCycle: 'yearly',
-          customerInfo: {
-            name: 'Test User',
-            email: 'test@example.com',
-            contact: '+919876543210'
-          }
-        })
-      });
+      const request = new NextRequest(
+        'http://localhost:3000/api/subscriptions/create-subscription',
+        {
+          method: 'POST',
+          body: JSON.stringify({
+            tier: 'voyager',
+            billingCycle: 'yearly',
+            customerInfo: {
+              name: 'Test User',
+              email: 'test@example.com',
+              contact: '+919876543210',
+            },
+          }),
+        }
+      );
 
       await POST(request);
 
       expect(mockSupabase.from).toHaveBeenCalledWith('user_profiles');
       expect(mockSupabase.update).toHaveBeenCalledWith(
         expect.objectContaining({
-          subscription_tier: 'voyager'
+          subscription_tier: 'voyager',
         })
       );
     });
 
     it('should include complete metadata in subscription record', async () => {
-      const request = new NextRequest('http://localhost:3000/api/subscriptions/create-subscription', {
-        method: 'POST',
-        body: JSON.stringify({
-          tier: 'navigator',
-          billingCycle: 'monthly',
-          seats: 5,
-          customerInfo: {
-            name: 'Test User',
-            email: 'test@example.com',
-            contact: '+919876543210'
-          },
-          metadata: {
-            source: 'web',
-            campaign: 'summer_promo'
-          }
-        })
-      });
+      const request = new NextRequest(
+        'http://localhost:3000/api/subscriptions/create-subscription',
+        {
+          method: 'POST',
+          body: JSON.stringify({
+            tier: 'navigator',
+            billingCycle: 'monthly',
+            seats: 5,
+            customerInfo: {
+              name: 'Test User',
+              email: 'test@example.com',
+              contact: '+919876543210',
+            },
+            metadata: {
+              source: 'web',
+              campaign: 'summer_promo',
+            },
+          }),
+        }
+      );
 
       await POST(request);
 
@@ -502,13 +564,13 @@ describe('POST /api/subscriptions/create-subscription', () => {
             customer_info: expect.objectContaining({
               name: 'Test User',
               email: 'test@example.com',
-              contact: '+919876543210'
+              contact: '+919876543210',
             }),
             source: 'web',
             campaign: 'summer_promo',
             created_via_api: 'create-subscription',
-            api_request_id: expect.any(String)
-          })
+            api_request_id: expect.any(String),
+          }),
         })
       );
     });
@@ -516,18 +578,21 @@ describe('POST /api/subscriptions/create-subscription', () => {
 
   describe('Response Format', () => {
     it('should return subscription details on successful creation', async () => {
-      const request = new NextRequest('http://localhost:3000/api/subscriptions/create-subscription', {
-        method: 'POST',
-        body: JSON.stringify({
-          tier: 'navigator',
-          billingCycle: 'monthly',
-          customerInfo: {
-            name: 'Test User',
-            email: 'test@example.com',
-            contact: '+919876543210'
-          }
-        })
-      });
+      const request = new NextRequest(
+        'http://localhost:3000/api/subscriptions/create-subscription',
+        {
+          method: 'POST',
+          body: JSON.stringify({
+            tier: 'navigator',
+            billingCycle: 'monthly',
+            customerInfo: {
+              name: 'Test User',
+              email: 'test@example.com',
+              contact: '+919876543210',
+            },
+          }),
+        }
+      );
 
       const response = await POST(request);
 
@@ -543,24 +608,27 @@ describe('POST /api/subscriptions/create-subscription', () => {
           status: 'created',
           subscription_tier: 'navigator',
           plan_period: 'monthly',
-          short_url: mockRazorpaySubscription.short_url
-        })
+          short_url: mockRazorpaySubscription.short_url,
+        }),
       });
     });
 
     it('should include next billing date in response', async () => {
-      const request = new NextRequest('http://localhost:3000/api/subscriptions/create-subscription', {
-        method: 'POST',
-        body: JSON.stringify({
-          tier: 'navigator',
-          billingCycle: 'monthly',
-          customerInfo: {
-            name: 'Test User',
-            email: 'test@example.com',
-            contact: '+919876543210'
-          }
-        })
-      });
+      const request = new NextRequest(
+        'http://localhost:3000/api/subscriptions/create-subscription',
+        {
+          method: 'POST',
+          body: JSON.stringify({
+            tier: 'navigator',
+            billingCycle: 'monthly',
+            customerInfo: {
+              name: 'Test User',
+              email: 'test@example.com',
+              contact: '+919876543210',
+            },
+          }),
+        }
+      );
 
       const response = await POST(request);
 
@@ -573,22 +641,23 @@ describe('POST /api/subscriptions/create-subscription', () => {
 
   describe('Error Handling', () => {
     it('should handle Razorpay customer creation failure', async () => {
-      mockRazorpay.customers.create.mockRejectedValue(
-        createErrorMocks.customerNotFound
-      );
+      mockRazorpay.customers.create.mockRejectedValue(createErrorMocks.customerNotFound);
 
-      const request = new NextRequest('http://localhost:3000/api/subscriptions/create-subscription', {
-        method: 'POST',
-        body: JSON.stringify({
-          tier: 'navigator',
-          billingCycle: 'monthly',
-          customerInfo: {
-            name: 'Test User',
-            email: 'test@example.com',
-            contact: '+919876543210'
-          }
-        })
-      });
+      const request = new NextRequest(
+        'http://localhost:3000/api/subscriptions/create-subscription',
+        {
+          method: 'POST',
+          body: JSON.stringify({
+            tier: 'navigator',
+            billingCycle: 'monthly',
+            customerInfo: {
+              name: 'Test User',
+              email: 'test@example.com',
+              contact: '+919876543210',
+            },
+          }),
+        }
+      );
 
       const response = await POST(request);
 
@@ -598,22 +667,23 @@ describe('POST /api/subscriptions/create-subscription', () => {
     });
 
     it('should handle Razorpay subscription creation failure', async () => {
-      mockRazorpay.subscriptions.create.mockRejectedValue(
-        createErrorMocks.invalidPlanId
-      );
+      mockRazorpay.subscriptions.create.mockRejectedValue(createErrorMocks.invalidPlanId);
 
-      const request = new NextRequest('http://localhost:3000/api/subscriptions/create-subscription', {
-        method: 'POST',
-        body: JSON.stringify({
-          tier: 'navigator',
-          billingCycle: 'monthly',
-          customerInfo: {
-            name: 'Test User',
-            email: 'test@example.com',
-            contact: '+919876543210'
-          }
-        })
-      });
+      const request = new NextRequest(
+        'http://localhost:3000/api/subscriptions/create-subscription',
+        {
+          method: 'POST',
+          body: JSON.stringify({
+            tier: 'navigator',
+            billingCycle: 'monthly',
+            customerInfo: {
+              name: 'Test User',
+              email: 'test@example.com',
+              contact: '+919876543210',
+            },
+          }),
+        }
+      );
 
       const response = await POST(request);
 
@@ -625,21 +695,24 @@ describe('POST /api/subscriptions/create-subscription', () => {
     it('should handle database save failure', async () => {
       mockSupabase.insert.mockResolvedValue({
         data: null,
-        error: supabaseErrors.connectionError
+        error: supabaseErrors.connectionError,
       });
 
-      const request = new NextRequest('http://localhost:3000/api/subscriptions/create-subscription', {
-        method: 'POST',
-        body: JSON.stringify({
-          tier: 'navigator',
-          billingCycle: 'monthly',
-          customerInfo: {
-            name: 'Test User',
-            email: 'test@example.com',
-            contact: '+919876543210'
-          }
-        })
-      });
+      const request = new NextRequest(
+        'http://localhost:3000/api/subscriptions/create-subscription',
+        {
+          method: 'POST',
+          body: JSON.stringify({
+            tier: 'navigator',
+            billingCycle: 'monthly',
+            customerInfo: {
+              name: 'Test User',
+              email: 'test@example.com',
+              contact: '+919876543210',
+            },
+          }),
+        }
+      );
 
       const response = await POST(request);
 
@@ -649,24 +722,29 @@ describe('POST /api/subscriptions/create-subscription', () => {
     });
 
     it('should handle user profile update failure gracefully', async () => {
-      mockSupabase.from.mockReturnValueOnce({
-        insert: vi.fn().mockResolvedValue({ data: {}, error: null })
-      }).mockReturnValueOnce({
-        update: vi.fn().mockResolvedValue({ data: null, error: supabaseErrors.timeoutError })
-      });
-
-      const request = new NextRequest('http://localhost:3000/api/subscriptions/create-subscription', {
-        method: 'POST',
-        body: JSON.stringify({
-          tier: 'navigator',
-          billingCycle: 'monthly',
-          customerInfo: {
-            name: 'Test User',
-            email: 'test@example.com',
-            contact: '+919876543210'
-          }
+      mockSupabase.from
+        .mockReturnValueOnce({
+          insert: vi.fn().mockResolvedValue({ data: {}, error: null }),
         })
-      });
+        .mockReturnValueOnce({
+          update: vi.fn().mockResolvedValue({ data: null, error: supabaseErrors.timeoutError }),
+        });
+
+      const request = new NextRequest(
+        'http://localhost:3000/api/subscriptions/create-subscription',
+        {
+          method: 'POST',
+          body: JSON.stringify({
+            tier: 'navigator',
+            billingCycle: 'monthly',
+            customerInfo: {
+              name: 'Test User',
+              email: 'test@example.com',
+              contact: '+919876543210',
+            },
+          }),
+        }
+      );
 
       const response = await POST(request);
 
@@ -678,22 +756,23 @@ describe('POST /api/subscriptions/create-subscription', () => {
     });
 
     it('should handle rate limit errors from Razorpay', async () => {
-      mockRazorpay.customers.create.mockRejectedValue(
-        createErrorMocks.rateLimit
-      );
+      mockRazorpay.customers.create.mockRejectedValue(createErrorMocks.rateLimit);
 
-      const request = new NextRequest('http://localhost:3000/api/subscriptions/create-subscription', {
-        method: 'POST',
-        body: JSON.stringify({
-          tier: 'navigator',
-          billingCycle: 'monthly',
-          customerInfo: {
-            name: 'Test User',
-            email: 'test@example.com',
-            contact: '+919876543210'
-          }
-        })
-      });
+      const request = new NextRequest(
+        'http://localhost:3000/api/subscriptions/create-subscription',
+        {
+          method: 'POST',
+          body: JSON.stringify({
+            tier: 'navigator',
+            billingCycle: 'monthly',
+            customerInfo: {
+              name: 'Test User',
+              email: 'test@example.com',
+              contact: '+919876543210',
+            },
+          }),
+        }
+      );
 
       const response = await POST(request);
 
@@ -706,53 +785,59 @@ describe('POST /api/subscriptions/create-subscription', () => {
 
   describe('Edge Cases', () => {
     it('should handle optional seats parameter', async () => {
-      const request = new NextRequest('http://localhost:3000/api/subscriptions/create-subscription', {
-        method: 'POST',
-        body: JSON.stringify({
-          tier: 'crew',
-          billingCycle: 'monthly',
-          seats: 10,
-          customerInfo: {
-            name: 'Company User',
-            email: 'company@example.com',
-            contact: '+919876543210'
-          }
-        })
-      });
+      const request = new NextRequest(
+        'http://localhost:3000/api/subscriptions/create-subscription',
+        {
+          method: 'POST',
+          body: JSON.stringify({
+            tier: 'crew',
+            billingCycle: 'monthly',
+            seats: 10,
+            customerInfo: {
+              name: 'Company User',
+              email: 'company@example.com',
+              contact: '+919876543210',
+            },
+          }),
+        }
+      );
 
       await POST(request);
 
       expect(mockRazorpay.subscriptions.create).toHaveBeenCalledWith(
         expect.objectContaining({
           notes: expect.objectContaining({
-            seats: '10'
-          })
+            seats: '10',
+          }),
         })
       );
     });
 
     it('should default seats to 1 if not provided', async () => {
-      const request = new NextRequest('http://localhost:3000/api/subscriptions/create-subscription', {
-        method: 'POST',
-        body: JSON.stringify({
-          tier: 'navigator',
-          billingCycle: 'monthly',
-          customerInfo: {
-            name: 'Test User',
-            email: 'test@example.com',
-            contact: '+919876543210'
-          }
-          // No seats parameter
-        })
-      });
+      const request = new NextRequest(
+        'http://localhost:3000/api/subscriptions/create-subscription',
+        {
+          method: 'POST',
+          body: JSON.stringify({
+            tier: 'navigator',
+            billingCycle: 'monthly',
+            customerInfo: {
+              name: 'Test User',
+              email: 'test@example.com',
+              contact: '+919876543210',
+            },
+            // No seats parameter
+          }),
+        }
+      );
 
       await POST(request);
 
       expect(mockRazorpay.subscriptions.create).toHaveBeenCalledWith(
         expect.objectContaining({
           notes: expect.objectContaining({
-            seats: '1'
-          })
+            seats: '1',
+          }),
         })
       );
     });
@@ -760,18 +845,21 @@ describe('POST /api/subscriptions/create-subscription', () => {
     it('should handle very long customer names', async () => {
       const longName = 'A'.repeat(200); // 200 characters
 
-      const request = new NextRequest('http://localhost:3000/api/subscriptions/create-subscription', {
-        method: 'POST',
-        body: JSON.stringify({
-          tier: 'navigator',
-          billingCycle: 'monthly',
-          customerInfo: {
-            name: longName,
-            email: 'test@example.com',
-            contact: '+919876543210'
-          }
-        })
-      });
+      const request = new NextRequest(
+        'http://localhost:3000/api/subscriptions/create-subscription',
+        {
+          method: 'POST',
+          body: JSON.stringify({
+            tier: 'navigator',
+            billingCycle: 'monthly',
+            customerInfo: {
+              name: longName,
+              email: 'test@example.com',
+              contact: '+919876543210',
+            },
+          }),
+        }
+      );
 
       const response = await POST(request);
 
@@ -781,19 +869,22 @@ describe('POST /api/subscriptions/create-subscription', () => {
     });
 
     it('should validate minimum seat requirements for team plans', async () => {
-      const request = new NextRequest('http://localhost:3000/api/subscriptions/create-subscription', {
-        method: 'POST',
-        body: JSON.stringify({
-          tier: 'crew', // Team plan
-          billingCycle: 'monthly',
-          seats: 1, // Too few for team plan
-          customerInfo: {
-            name: 'Test User',
-            email: 'test@example.com',
-            contact: '+919876543210'
-          }
-        })
-      });
+      const request = new NextRequest(
+        'http://localhost:3000/api/subscriptions/create-subscription',
+        {
+          method: 'POST',
+          body: JSON.stringify({
+            tier: 'crew', // Team plan
+            billingCycle: 'monthly',
+            seats: 1, // Too few for team plan
+            customerInfo: {
+              name: 'Test User',
+              email: 'test@example.com',
+              contact: '+919876543210',
+            },
+          }),
+        }
+      );
 
       const response = await POST(request);
 
@@ -805,18 +896,21 @@ describe('POST /api/subscriptions/create-subscription', () => {
 
   describe('Security & Data Privacy', () => {
     it('should not expose sensitive Razorpay data in response', async () => {
-      const request = new NextRequest('http://localhost:3000/api/subscriptions/create-subscription', {
-        method: 'POST',
-        body: JSON.stringify({
-          tier: 'navigator',
-          billingCycle: 'monthly',
-          customerInfo: {
-            name: 'Test User',
-            email: 'test@example.com',
-            contact: '+919876543210'
-          }
-        })
-      });
+      const request = new NextRequest(
+        'http://localhost:3000/api/subscriptions/create-subscription',
+        {
+          method: 'POST',
+          body: JSON.stringify({
+            tier: 'navigator',
+            billingCycle: 'monthly',
+            customerInfo: {
+              name: 'Test User',
+              email: 'test@example.com',
+              contact: '+919876543210',
+            },
+          }),
+        }
+      );
 
       const response = await POST(request);
       const data = await response.json();
@@ -828,29 +922,32 @@ describe('POST /api/subscriptions/create-subscription', () => {
     });
 
     it('should sanitize customer notes before storing', async () => {
-      const request = new NextRequest('http://localhost:3000/api/subscriptions/create-subscription', {
-        method: 'POST',
-        body: JSON.stringify({
-          tier: 'navigator',
-          billingCycle: 'monthly',
-          customerInfo: {
-            name: 'Test User',
-            email: 'test@example.com',
-            contact: '+919876543210'
-          },
-          metadata: {
-            malicious_script: '<script>alert("xss")</script>',
-            sql_injection: "'; DROP TABLE users; --"
-          }
-        })
-      });
+      const request = new NextRequest(
+        'http://localhost:3000/api/subscriptions/create-subscription',
+        {
+          method: 'POST',
+          body: JSON.stringify({
+            tier: 'navigator',
+            billingCycle: 'monthly',
+            customerInfo: {
+              name: 'Test User',
+              email: 'test@example.com',
+              contact: '+919876543210',
+            },
+            metadata: {
+              malicious_script: '<script>alert("xss")</script>',
+              sql_injection: "'; DROP TABLE users; --",
+            },
+          }),
+        }
+      );
 
       await POST(request);
 
       // Should sanitize malicious content
       expect(mockSupabase.insert).toHaveBeenCalledWith(
         expect.objectContaining({
-          metadata: expect.not.toContain('<script>')
+          metadata: expect.not.toContain('<script>'),
         })
       );
     });

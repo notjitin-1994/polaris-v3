@@ -161,7 +161,7 @@ export function CheckoutButton({
     }
 
     // Clear previous errors
-    setState(prev => ({ ...prev, error: null, isLoading: true }));
+    setState((prev) => ({ ...prev, error: null, isLoading: true }));
 
     try {
       // Notify parent component that checkout is starting
@@ -185,8 +185,12 @@ export function CheckoutButton({
       });
 
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({ error: { message: 'Unknown error' } }));
-        throw new Error(errorData.error?.message || `HTTP ${response.status}: ${response.statusText}`);
+        const errorData = await response
+          .json()
+          .catch(() => ({ error: { message: 'Unknown error' } }));
+        throw new Error(
+          errorData.error?.message || `HTTP ${response.status}: ${response.statusText}`
+        );
       }
 
       const subscriptionData = await response.json();
@@ -195,7 +199,7 @@ export function CheckoutButton({
         throw new Error(subscriptionData.error?.message || 'Failed to create subscription');
       }
 
-      setState(prev => ({ ...prev, isLoading: false, isProcessing: true }));
+      setState((prev) => ({ ...prev, isLoading: false, isProcessing: true }));
 
       // Open Razorpay checkout modal
       await openCheckout({
@@ -203,7 +207,9 @@ export function CheckoutButton({
         plan: {
           name: tier,
           description: `SmartSlate Polaris ${tier} subscription - ${billingCycle === 'yearly' ? 'Annual' : 'Monthly'} billing`,
-          price: subscriptionData.data.planAmount ? subscriptionData.data.planAmount / 100 : getPlanPrice(planId as any, billingCycle) / 100, // Convert paise to INR
+          price: subscriptionData.data.planAmount
+            ? subscriptionData.data.planAmount / 100
+            : getPlanPrice(planId as any, billingCycle) / 100, // Convert paise to INR
           currency: subscriptionData.data.planCurrency || 'INR',
           billingCycle: billingCycle === 'yearly' ? 'annual' : 'monthly',
           tier: tier,
@@ -215,13 +221,16 @@ export function CheckoutButton({
         onSuccess: (response) => {
           console.log('[CheckoutButton] Payment successful:', response);
           // Handle successful payment
-          setState(prev => ({
+          setState((prev) => ({
             ...prev,
             isProcessing: false,
             error: null,
           }));
 
-          showSuccess('Payment successful!', 'Your subscription has been activated. Redirecting to dashboard...');
+          showSuccess(
+            'Payment successful!',
+            'Your subscription has been activated. Redirecting to dashboard...'
+          );
 
           // Notify parent component of success
           onCheckoutSuccess?.(response);
@@ -234,7 +243,7 @@ export function CheckoutButton({
         onFailure: (error) => {
           console.log('[CheckoutButton] Payment failed:', error);
           // Handle payment failure
-          setState(prev => ({
+          setState((prev) => ({
             ...prev,
             isProcessing: false,
             error: error.message || 'Payment failed',
@@ -243,16 +252,17 @@ export function CheckoutButton({
           showError('Payment failed', error.message || 'Please try again or contact support');
 
           // Notify parent component of error
-          onCheckoutError?.(error instanceof Error ? error : new Error(error.message || 'Payment failed'));
+          onCheckoutError?.(
+            error instanceof Error ? error : new Error(error.message || 'Payment failed')
+          );
         },
       });
-
     } catch (error) {
       // Handle checkout error
       console.error('[CheckoutButton] Checkout failed:', error);
 
       // Always ensure loading states are cleared
-      setState(prev => ({
+      setState((prev) => ({
         ...prev,
         isLoading: false,
         isProcessing: false,
@@ -263,7 +273,7 @@ export function CheckoutButton({
         const classifiedError = classifyRazorpayError(error);
         const userMessage = getUserFriendlyMessage(classifiedError);
 
-        setState(prev => ({
+        setState((prev) => ({
           ...prev,
           error: userMessage,
         }));
@@ -276,7 +286,7 @@ export function CheckoutButton({
       } else {
         // Handle non-Error objects
         const fallbackMessage = 'Payment failed. Please try again.';
-        setState(prev => ({
+        setState((prev) => ({
           ...prev,
           error: fallbackMessage,
         }));
@@ -290,14 +300,15 @@ export function CheckoutButton({
    * Clear error state
    */
   const clearError = (): void => {
-    setState(prev => ({ ...prev, error: null }));
+    setState((prev) => ({ ...prev, error: null }));
   };
 
   /**
    * Get button CSS classes based on variant and state
    */
   const getButtonClasses = (): string => {
-    const baseClasses = 'relative inline-flex items-center justify-center gap-2 rounded-xl font-semibold transition-all duration-300 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:opacity-50 disabled:cursor-not-allowed';
+    const baseClasses =
+      'relative inline-flex items-center justify-center gap-2 rounded-xl font-semibold transition-all duration-300 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:opacity-50 disabled:cursor-not-allowed';
 
     const sizeClasses = {
       sm: 'px-4 py-2 text-sm min-h-[40px]',
@@ -306,22 +317,22 @@ export function CheckoutButton({
     };
 
     const variantClasses = {
-      primary: 'from-primary to-primary/90 text-primary-foreground hover:from-primary/90 hover:to-primary/80 focus-visible:ring-primary/50 bg-gradient-to-r shadow-xl hover:shadow-2xl',
-      secondary: 'from-surface to-surface/90 text-foreground hover:from-surface/90 hover:to-surface/80 border border-neutral-200/40 bg-gradient-to-r shadow-md hover:border-neutral-300/60 hover:shadow-lg focus-visible:ring-neutral-400/50',
-      outline: 'border border-primary text-primary hover:bg-primary hover:text-primary-foreground bg-transparent hover:shadow-lg focus-visible:ring-primary/50',
+      primary:
+        'from-primary to-primary/90 text-primary-foreground hover:from-primary/90 hover:to-primary/80 focus-visible:ring-primary/50 bg-gradient-to-r shadow-xl hover:shadow-2xl',
+      secondary:
+        'from-surface to-surface/90 text-foreground hover:from-surface/90 hover:to-surface/80 border border-neutral-200/40 bg-gradient-to-r shadow-md hover:border-neutral-300/60 hover:shadow-lg focus-visible:ring-neutral-400/50',
+      outline:
+        'border border-primary text-primary hover:bg-primary hover:text-primary-foreground bg-transparent hover:shadow-lg focus-visible:ring-primary/50',
     };
 
-    const stateClasses = state.isLoading || state.isProcessing
-      ? 'cursor-wait opacity-90'
-      : 'hover:scale-[1.02] active:scale-[0.98]';
+    const stateClasses =
+      state.isLoading || state.isProcessing
+        ? 'cursor-wait opacity-90'
+        : 'hover:scale-[1.02] active:scale-[0.98]';
 
-    return [
-      baseClasses,
-      sizeClasses[size],
-      variantClasses[variant],
-      stateClasses,
-      className,
-    ].filter(Boolean).join(' ');
+    return [baseClasses, sizeClasses[size], variantClasses[variant], stateClasses, className]
+      .filter(Boolean)
+      .join(' ');
   };
 
   /**
@@ -332,9 +343,7 @@ export function CheckoutButton({
 
     return (
       <>
-        {showLoader && (
-          <Loader2 className="h-4 w-4 animate-spin" />
-        )}
+        {showLoader && <Loader2 className="h-4 w-4 animate-spin" />}
 
         {!showLoader && !state.isLoading && !state.isProcessing && (
           <ArrowUpRight className="h-4 w-4" />
@@ -372,7 +381,13 @@ export function CheckoutButton({
         {/* Checkout Button */}
         <motion.button
           onClick={handleCheckout}
-          disabled={disabled || state.isLoading || state.isProcessing || isRazorpayLoading || !paymentsEnabled}
+          disabled={
+            disabled ||
+            state.isLoading ||
+            state.isProcessing ||
+            isRazorpayLoading ||
+            !paymentsEnabled
+          }
           className={getButtonClasses()}
           whileHover={{
             scale: state.isLoading || state.isProcessing || disabled || !paymentsEnabled ? 1 : 1.02,
@@ -387,7 +402,6 @@ export function CheckoutButton({
           {renderButtonContent()}
         </motion.button>
       </div>
-
     </>
   );
 }

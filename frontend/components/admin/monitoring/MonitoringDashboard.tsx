@@ -30,7 +30,7 @@ import {
   BarChart3,
   LineChart,
   Info,
-  XCircle
+  XCircle,
 } from 'lucide-react';
 
 interface MonitoringData {
@@ -113,8 +113,8 @@ const MonitoringDashboard: React.FC = () => {
       setError(null);
       const response = await fetch('/api/monitoring/status', {
         headers: {
-          'Cache-Control': 'no-cache'
-        }
+          'Cache-Control': 'no-cache',
+        },
       });
 
       if (!response.ok) {
@@ -129,7 +129,6 @@ const MonitoringDashboard: React.FC = () => {
       } else {
         throw new Error(data.error?.message || 'Failed to fetch monitoring data');
       }
-
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unknown error');
       console.error('Failed to fetch monitoring data:', err);
@@ -144,7 +143,7 @@ const MonitoringDashboard: React.FC = () => {
       const response = await fetch('/api/monitoring/status', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'health-check', target })
+        body: JSON.stringify({ action: 'health-check', target }),
       });
 
       if (response.ok) {
@@ -161,7 +160,7 @@ const MonitoringDashboard: React.FC = () => {
       const response = await fetch('/api/monitoring/status', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'alert-check' })
+        body: JSON.stringify({ action: 'alert-check' }),
       });
 
       if (response.ok) {
@@ -189,39 +188,52 @@ const MonitoringDashboard: React.FC = () => {
   // Get health status color
   const getHealthStatusColor = (status: string) => {
     switch (status) {
-      case 'healthy': return 'bg-green-100 text-green-800 border-green-200';
-      case 'degraded': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-      case 'unhealthy': return 'bg-red-100 text-red-800 border-red-200';
-      default: return 'bg-gray-100 text-gray-800 border-gray-200';
+      case 'healthy':
+        return 'bg-green-100 text-green-800 border-green-200';
+      case 'degraded':
+        return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+      case 'unhealthy':
+        return 'bg-red-100 text-red-800 border-red-200';
+      default:
+        return 'bg-gray-100 text-gray-800 border-gray-200';
     }
   };
 
   // Get health status icon
   const getHealthStatusIcon = (status: string) => {
     switch (status) {
-      case 'healthy': return <CheckCircle className="h-4 w-4" />;
-      case 'degraded': return <AlertTriangle className="h-4 w-4" />;
-      case 'unhealthy': return <XCircle className="h-4 w-4" />;
-      default: return <Activity className="h-4 w-4" />;
+      case 'healthy':
+        return <CheckCircle className="h-4 w-4" />;
+      case 'degraded':
+        return <AlertTriangle className="h-4 w-4" />;
+      case 'unhealthy':
+        return <XCircle className="h-4 w-4" />;
+      default:
+        return <Activity className="h-4 w-4" />;
     }
   };
 
   // Get severity color
   const getSeverityColor = (severity: string) => {
     switch (severity) {
-      case 'critical': return 'bg-red-100 text-red-800';
-      case 'error': return 'bg-red-100 text-red-800';
-      case 'warning': return 'bg-yellow-100 text-yellow-800';
-      case 'info': return 'bg-blue-100 text-blue-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case 'critical':
+        return 'bg-red-100 text-red-800';
+      case 'error':
+        return 'bg-red-100 text-red-800';
+      case 'warning':
+        return 'bg-yellow-100 text-yellow-800';
+      case 'info':
+        return 'bg-blue-100 text-blue-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
     }
   };
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
+      <div className="flex min-h-screen items-center justify-center">
         <div className="text-center">
-          <RefreshCw className="h-8 w-8 animate-spin mx-auto mb-4" />
+          <RefreshCw className="mx-auto mb-4 h-8 w-8 animate-spin" />
           <p className="text-muted-foreground">Loading monitoring data...</p>
         </div>
       </div>
@@ -230,7 +242,7 @@ const MonitoringDashboard: React.FC = () => {
 
   if (error) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
+      <div className="flex min-h-screen items-center justify-center">
         <Card className="w-full max-w-md">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
@@ -261,52 +273,46 @@ const MonitoringDashboard: React.FC = () => {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold">Monitoring Dashboard</h1>
-          <p className="text-muted-foreground">
-            Real-time system monitoring and alerting
-          </p>
+          <p className="text-muted-foreground">Real-time system monitoring and alerting</p>
         </div>
         <div className="flex items-center gap-4">
-          <div className="text-sm text-muted-foreground">
+          <div className="text-muted-foreground text-sm">
             Last updated: {lastUpdated.toLocaleTimeString()}
           </div>
           <select
             value={selectedTimeRange}
             onChange={(e) => setSelectedTimeRange(e.target.value)}
-            className="px-3 py-2 border rounded-md bg-background"
+            className="bg-background rounded-md border px-3 py-2"
           >
             <option value="1h">Last 1 hour</option>
             <option value="6h">Last 6 hours</option>
             <option value="24h">Last 24 hours</option>
             <option value="7d">Last 7 days</option>
           </select>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setAutoRefresh(!autoRefresh)}
-          >
-            <RefreshCw className={`h-4 w-4 mr-2 ${autoRefresh ? 'animate-spin' : ''}`} />
+          <Button variant="outline" size="sm" onClick={() => setAutoRefresh(!autoRefresh)}>
+            <RefreshCw className={`mr-2 h-4 w-4 ${autoRefresh ? 'animate-spin' : ''}`} />
             Auto-refresh
           </Button>
           <Button variant="outline" size="sm" onClick={fetchMonitoringData}>
-            <RefreshCw className="h-4 w-4 mr-2" />
+            <RefreshCw className="mr-2 h-4 w-4" />
             Refresh
           </Button>
         </div>
       </div>
 
       {/* System Overview */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">System Status</CardTitle>
             {getHealthStatusIcon(health?.overall || 'unknown')}
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold capitalize">
-              {health?.overall || 'Unknown'}
-            </div>
-            <p className="text-xs text-muted-foreground">
-              {health?.summary ? `${health.summary.healthyChecks}/${health.summary.totalChecks} healthy` : 'No data'}
+            <div className="text-2xl font-bold capitalize">{health?.overall || 'Unknown'}</div>
+            <p className="text-muted-foreground text-xs">
+              {health?.summary
+                ? `${health.summary.healthyChecks}/${health.summary.totalChecks} healthy`
+                : 'No data'}
             </p>
           </CardContent>
         </Card>
@@ -320,8 +326,10 @@ const MonitoringDashboard: React.FC = () => {
             <div className="text-2xl font-bold text-green-600">
               {Math.floor(monitoringData.uptime / (1000 * 60 * 60))}h
             </div>
-            <p className="text-xs text-muted-foreground">
-              {health?.summary ? `${health.summary.availability.toFixed(1)}% availability` : 'No data'}
+            <p className="text-muted-foreground text-xs">
+              {health?.summary
+                ? `${health.summary.availability.toFixed(1)}% availability`
+                : 'No data'}
             </p>
           </CardContent>
         </Card>
@@ -332,12 +340,8 @@ const MonitoringDashboard: React.FC = () => {
             <AlertTriangle className="h-4 w-4 text-red-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-red-600">
-              {errors?.totalErrors || 0}
-            </div>
-            <p className="text-xs text-muted-foreground">
-              Last {selectedTimeRange}
-            </p>
+            <div className="text-2xl font-bold text-red-600">{errors?.totalErrors || 0}</div>
+            <p className="text-muted-foreground text-xs">Last {selectedTimeRange}</p>
           </CardContent>
         </Card>
 
@@ -350,7 +354,7 @@ const MonitoringDashboard: React.FC = () => {
             <div className="text-2xl font-bold text-yellow-600">
               {alerts?.statistics?.activeEvents || 0}
             </div>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-muted-foreground text-xs">
               {alerts?.statistics?.totalEvents || 0} total
             </p>
           </CardContent>
@@ -369,7 +373,7 @@ const MonitoringDashboard: React.FC = () => {
         </TabsList>
 
         <TabsContent value="overview" className="space-y-4">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
             {/* Health Summary */}
             <Card>
               <CardHeader>
@@ -389,7 +393,7 @@ const MonitoringDashboard: React.FC = () => {
                           <span className="text-sm font-medium">{check.name}</span>
                         </div>
                         {check.responseTime && (
-                          <span className="text-sm text-muted-foreground">
+                          <span className="text-muted-foreground text-sm">
                             {check.responseTime}ms
                           </span>
                         )}
@@ -432,11 +436,11 @@ const MonitoringDashboard: React.FC = () => {
 
                     {errors.topErrors && errors.topErrors.length > 0 && (
                       <div>
-                        <p className="text-sm text-muted-foreground mb-2">Top Errors</p>
+                        <p className="text-muted-foreground mb-2 text-sm">Top Errors</p>
                         <div className="space-y-1">
                           {errors.topErrors.slice(0, 3).map((error, index) => (
-                            <div key={index} className="text-xs p-2 bg-muted rounded">
-                              <div className="font-medium truncate">{error.message}</div>
+                            <div key={index} className="bg-muted rounded p-2 text-xs">
+                              <div className="truncate font-medium">{error.message}</div>
                               <div className="text-muted-foreground">
                                 {error.category} • {error.count} occurrences
                               </div>
@@ -461,14 +465,17 @@ const MonitoringDashboard: React.FC = () => {
               {alerts?.recentEvents && alerts.recentEvents.length > 0 ? (
                 <div className="space-y-3">
                   {alerts.recentEvents.slice(0, 5).map((event) => (
-                    <div key={event.id} className="flex items-center justify-between p-3 border rounded-lg">
+                    <div
+                      key={event.id}
+                      className="flex items-center justify-between rounded-lg border p-3"
+                    >
                       <div className="flex items-center gap-3">
                         <Badge className={getSeverityColor(event.severity)}>
                           <span className="capitalize">{event.severity}</span>
                         </Badge>
                         <div>
-                          <p className="font-medium text-sm">{event.message}</p>
-                          <p className="text-xs text-muted-foreground">
+                          <p className="text-sm font-medium">{event.message}</p>
+                          <p className="text-muted-foreground text-xs">
                             {event.ruleName} • {new Date(event.timestamp).toLocaleString()}
                           </p>
                         </div>
@@ -476,7 +483,9 @@ const MonitoringDashboard: React.FC = () => {
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => {/* Implement resolution */}}
+                        onClick={() => {
+                          /* Implement resolution */
+                        }}
                       >
                         Resolve
                       </Button>
@@ -484,8 +493,8 @@ const MonitoringDashboard: React.FC = () => {
                   ))}
                 </div>
               ) : (
-                <div className="text-center py-8 text-muted-foreground">
-                  <CheckCircle className="h-8 w-8 mx-auto mb-2" />
+                <div className="text-muted-foreground py-8 text-center">
+                  <CheckCircle className="mx-auto mb-2 h-8 w-8" />
                   <p>No recent alerts</p>
                 </div>
               )}
@@ -500,15 +509,15 @@ const MonitoringDashboard: React.FC = () => {
               <CardDescription>Detailed service health information</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="flex gap-4 mb-4">
+              <div className="mb-4 flex gap-4">
                 <Button onClick={() => triggerHealthCheck()} variant="outline">
-                  <RefreshCw className="h-4 w-4 mr-2" />
+                  <RefreshCw className="mr-2 h-4 w-4" />
                   Run Health Checks
                 </Button>
               </div>
 
               {health?.checks && (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
                   {health.checks.map((check) => (
                     <Card key={check.name}>
                       <CardHeader className="pb-2">
@@ -521,20 +530,16 @@ const MonitoringDashboard: React.FC = () => {
                         </div>
                       </CardHeader>
                       <CardContent>
-                        <p className="text-sm text-muted-foreground mb-2">
-                          {check.message}
-                        </p>
+                        <p className="text-muted-foreground mb-2 text-sm">{check.message}</p>
                         {check.responseTime && (
                           <div className="flex items-center text-sm">
-                            <Zap className="h-4 w-4 mr-1 text-green-500" />
+                            <Zap className="mr-1 h-4 w-4 text-green-500" />
                             <span>{check.responseTime}ms response time</span>
                           </div>
                         )}
-                        <div className="flex items-center text-xs text-muted-foreground">
-                          <Clock className="h-3 w-3 mr-1" />
-                          <span>
-                            Last checked: {new Date(check.lastChecked).toLocaleString()}
-                          </span>
+                        <div className="text-muted-foreground flex items-center text-xs">
+                          <Clock className="mr-1 h-3 w-3" />
+                          <span>Last checked: {new Date(check.lastChecked).toLocaleString()}</span>
                         </div>
                       </CardContent>
                     </Card>
@@ -553,9 +558,9 @@ const MonitoringDashboard: React.FC = () => {
             </CardHeader>
             <CardContent>
               {system && (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                   <div>
-                    <h4 className="font-medium mb-3">Runtime</h4>
+                    <h4 className="mb-3 font-medium">Runtime</h4>
                     <div className="space-y-2 text-sm">
                       <div className="flex justify-between">
                         <span>Node Version:</span>
@@ -576,18 +581,22 @@ const MonitoringDashboard: React.FC = () => {
                     </div>
                   </div>
                   <div>
-                    <h4 className="font-medium mb-3">Memory Usage</h4>
+                    <h4 className="mb-3 font-medium">Memory Usage</h4>
                     <div className="space-y-2 text-sm">
                       <div className="flex justify-between">
                         <span>Heap Used:</span>
                         <span className="font-mono">
-                          {system.memory ? `${(system.memory.heapUsed / 1024 / 1024).toFixed(2)} MB` : 'N/A'}
+                          {system.memory
+                            ? `${(system.memory.heapUsed / 1024 / 1024).toFixed(2)} MB`
+                            : 'N/A'}
                         </span>
                       </div>
                       <div className="flex justify-between">
                         <span>Heap Total:</span>
                         <span className="font-mono">
-                          {system.memory ? `${(system.memory.heapTotal / 1024 / 1024).toFixed(2)} MB` : 'N/A'}
+                          {system.memory
+                            ? `${(system.memory.heapTotal / 1024 / 1024).toFixed(2)} MB`
+                            : 'N/A'}
                         </span>
                       </div>
                       <div className="flex justify-between">

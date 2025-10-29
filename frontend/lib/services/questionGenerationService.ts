@@ -73,14 +73,10 @@ export async function generateDynamicQuestions(
       const claudeErrorMessage =
         claudeError instanceof Error ? claudeError.message : String(claudeError);
 
-      logger.error(
-        'dynamic_questions.generation.error',
-        'Claude generation failed',
-        {
-          blueprintId: context.blueprintId,
-          error: claudeErrorMessage,
-        }
-      );
+      logger.error('dynamic_questions.generation.error', 'Claude generation failed', {
+        blueprintId: context.blueprintId,
+        error: claudeErrorMessage,
+      });
 
       const totalDuration = Date.now() - overallStartTime;
 
@@ -100,14 +96,10 @@ export async function generateDynamicQuestions(
   } else {
     const totalDuration = Date.now() - overallStartTime;
 
-    logger.error(
-      'dynamic_questions.generation.error',
-      'Claude not configured',
-      {
-        blueprintId: context.blueprintId,
-        errors: claudeConfig.errors,
-      }
-    );
+    logger.error('dynamic_questions.generation.error', 'Claude not configured', {
+      blueprintId: context.blueprintId,
+      errors: claudeConfig.errors,
+    });
 
     return {
       success: false,

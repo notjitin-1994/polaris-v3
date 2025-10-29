@@ -125,14 +125,14 @@ export class WebhookIdempotencyService {
           exists: false,
           shouldProcess: false,
           details: {
-            reason: 'Invalid event ID provided'
-          }
+            reason: 'Invalid event ID provided',
+          },
         };
       }
 
       // Use the database function for atomic check
       const { data, error } = await this.supabase.rpc('is_webhook_event_processed', {
-        p_event_id: eventId
+        p_event_id: eventId,
       });
 
       if (error) {
@@ -141,8 +141,8 @@ export class WebhookIdempotencyService {
           exists: false,
           shouldProcess: false,
           details: {
-            reason: `Database error: ${error.message}`
-          }
+            reason: `Database error: ${error.message}`,
+          },
         };
       }
 
@@ -153,8 +153,8 @@ export class WebhookIdempotencyService {
         exists,
         shouldProcess: !exists,
         details: {
-          reason: exists ? 'Event already processed' : 'New event, safe to process'
-        }
+          reason: exists ? 'Event already processed' : 'New event, safe to process',
+        },
       };
     } catch (error) {
       console.error('Idempotency check error:', error);
@@ -162,8 +162,8 @@ export class WebhookIdempotencyService {
         exists: false,
         shouldProcess: false,
         details: {
-          reason: `Unexpected error: ${error instanceof Error ? error.message : 'Unknown error'}`
-        }
+          reason: `Unexpected error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        },
       };
     }
   }
@@ -198,7 +198,7 @@ export class WebhookIdempotencyService {
       if (!eventId || !eventType) {
         return {
           success: false,
-          error: 'Event ID and event type are required'
+          error: 'Event ID and event type are required',
         };
       }
 
@@ -208,7 +208,7 @@ export class WebhookIdempotencyService {
         p_event_type: eventType,
         p_account_id: accountId || null,
         p_payload: payload || {},
-        p_signature: signature || null
+        p_signature: signature || null,
       });
 
       if (error) {
@@ -217,26 +217,26 @@ export class WebhookIdempotencyService {
           return {
             success: true,
             wasDuplicate: true,
-            error: 'Event already exists (duplicate)'
+            error: 'Event already exists (duplicate)',
           };
         }
 
         console.error('Failed to record webhook event:', error);
         return {
           success: false,
-          error: `Database error: ${error.message}`
+          error: `Database error: ${error.message}`,
         };
       }
 
       return {
         success: true,
-        webhookId: data
+        webhookId: data,
       };
     } catch (error) {
       console.error('Event recording error:', error);
       return {
         success: false,
-        error: `Unexpected error: ${error instanceof Error ? error.message : 'Unknown error'}`
+        error: `Unexpected error: ${error instanceof Error ? error.message : 'Unknown error'}`,
       };
     }
   }
@@ -265,7 +265,7 @@ export class WebhookIdempotencyService {
       if (!eventId) {
         return {
           success: false,
-          error: 'Event ID is required'
+          error: 'Event ID is required',
         };
       }
 
@@ -273,14 +273,14 @@ export class WebhookIdempotencyService {
       const { data, error } = await this.supababse.rpc('mark_webhook_processed', {
         p_event_id: eventId,
         p_related_subscription_id: relatedSubscriptionId || null,
-        p_related_payment_id: relatedPaymentId || null
+        p_related_payment_id: relatedPaymentId || null,
       });
 
       if (error) {
         console.error('Failed to mark event as processed:', error);
         return {
           success: false,
-          error: `Database error: ${error.message}`
+          error: `Database error: ${error.message}`,
         };
       }
 
@@ -289,13 +289,13 @@ export class WebhookIdempotencyService {
       return {
         success: true,
         webhookId: eventId,
-        wasUpdated
+        wasUpdated,
       };
     } catch (error) {
       console.error('Event status update error:', error);
       return {
         success: false,
-        error: `Unexpected error: ${error instanceof Error ? error.message : 'Unknown error'}`
+        error: `Unexpected error: ${error instanceof Error ? error.message : 'Unknown error'}`,
       };
     }
   }
@@ -313,29 +313,26 @@ export class WebhookIdempotencyService {
    *   'Payment verification failed: Invalid signature'
    * );
    */
-  async markEventFailed(
-    eventId: string,
-    errorMessage: string
-  ): Promise<UpdateEventStatusResult> {
+  async markEventFailed(eventId: string, errorMessage: string): Promise<UpdateEventStatusResult> {
     try {
       if (!eventId || !errorMessage) {
         return {
           success: false,
-          error: 'Event ID and error message are required'
+          error: 'Event ID and error message are required',
         };
       }
 
       // Use the database function for atomic update
       const { data, error } = await this.supababse.rpc('mark_webhook_failed', {
         p_event_id: eventId,
-        p_error_message: errorMessage
+        p_error_message: errorMessage,
       });
 
       if (error) {
         console.error('Failed to mark event as failed:', error);
         return {
           success: false,
-          error: `Database error: ${error.message}`
+          error: `Database error: ${error.message}`,
         };
       }
 
@@ -344,13 +341,13 @@ export class WebhookIdempotencyService {
       return {
         success: true,
         webhookId: eventId,
-        wasUpdated
+        wasUpdated,
       };
     } catch (error) {
       console.error('Event failure marking error:', error);
       return {
         success: false,
-        error: `Unexpected error: ${error instanceof Error ? error.message : 'Unknown error'}`
+        error: `Unexpected error: ${error instanceof Error ? error.message : 'Unknown error'}`,
       };
     }
   }
@@ -402,10 +399,7 @@ export class WebhookIdempotencyService {
    * const pendingEvents = await idempotency.getEventsByStatus('pending', 50);
    * console.log(`Found ${pendingEvents.length} pending events`);
    */
-  async getEventsByStatus(
-    status: string,
-    limit: number = 100
-  ): Promise<WebhookEventRecord[]> {
+  async getEventsByStatus(status: string, limit: number = 100): Promise<WebhookEventRecord[]> {
     try {
       const { data, error } = await this.supabase
         .from('webhook_events')
@@ -436,10 +430,7 @@ export class WebhookIdempotencyService {
    * @example
    * const subscriptionEvents = await idempotency.getEventsByType('subscription.activated', 50);
    */
-  async getEventsByType(
-    eventType: string,
-    limit: number = 100
-  ): Promise<WebhookEventRecord[]> {
+  async getEventsByType(eventType: string, limit: number = 100): Promise<WebhookEventRecord[]> {
     try {
       const { data, error } = await this.supabase
         .from('webhook_events')
@@ -490,7 +481,7 @@ export class WebhookIdempotencyService {
         averageProcessingTime: stats.average_processing_time_seconds
           ? Number(stats.average_processing_time_seconds)
           : undefined,
-        eventsByType: stats.events_by_type || {}
+        eventsByType: stats.events_by_type || {},
       };
     } catch (error) {
       console.error('Webhook statistics retrieval error:', error);
@@ -514,7 +505,7 @@ export class WebhookIdempotencyService {
     try {
       // Use the database function for unprocessed webhooks
       const { data, error } = await this.supababse.rpc('get_unprocessed_webhooks', {
-        p_limit: limit
+        p_limit: limit,
       });
 
       if (error) {
@@ -540,7 +531,7 @@ export class WebhookIdempotencyService {
         signatureVerified: false,
         signature: null,
         relatedSubscriptionId: null,
-        relatedPaymentId: null
+        relatedPaymentId: null,
       }));
     } catch (error) {
       console.error('Unprocessed webhooks retrieval error:', error);
@@ -567,7 +558,7 @@ export class WebhookIdempotencyService {
       if (daysToKeep < 1) {
         return {
           success: false,
-          error: 'Days to keep must be at least 1'
+          error: 'Days to keep must be at least 1',
         };
       }
 
@@ -583,7 +574,7 @@ export class WebhookIdempotencyService {
         console.error('Failed to cleanup old webhook events:', error);
         return {
           success: false,
-          error: `Database error: ${error.message}`
+          error: `Database error: ${error.message}`,
         };
       }
 
@@ -591,13 +582,13 @@ export class WebhookIdempotencyService {
       // We would need to count before deletion if we need this information
 
       return {
-        success: true
+        success: true,
       };
     } catch (error) {
       console.error('Event cleanup error:', error);
       return {
         success: false,
-        error: `Unexpected error: ${error instanceof Error ? error.message : 'Unknown error'}`
+        error: `Unexpected error: ${error instanceof Error ? error.message : 'Unknown error'}`,
       };
     }
   }
@@ -619,32 +610,35 @@ export class WebhookIdempotencyService {
           pendingEvents: 0,
           failedEvents: 0,
           duplicateEvents: 0,
-          eventsByType: {}
+          eventsByType: {},
         };
       }
 
-      const stats = data.reduce((acc, event) => {
-        acc.totalEvents++;
-        switch (event.processing_status) {
-          case 'processed':
-            acc.processedEvents++;
-            break;
-          case 'pending':
-            acc.pendingEvents++;
-            break;
-          case 'failed':
-            acc.failedEvents++;
-            break;
+      const stats = data.reduce(
+        (acc, event) => {
+          acc.totalEvents++;
+          switch (event.processing_status) {
+            case 'processed':
+              acc.processedEvents++;
+              break;
+            case 'pending':
+              acc.pendingEvents++;
+              break;
+            case 'failed':
+              acc.failedEvents++;
+              break;
+          }
+          return acc;
+        },
+        {
+          totalEvents: 0,
+          processedEvents: 0,
+          pendingEvents: 0,
+          failedEvents: 0,
+          duplicateEvents: 0,
+          eventsByType: {},
         }
-        return acc;
-      }, {
-        totalEvents: 0,
-        processedEvents: 0,
-        pendingEvents: 0,
-        failedEvents: 0,
-        duplicateEvents: 0,
-        eventsByType: {}
-      });
+      );
 
       return stats;
     } catch (error) {
@@ -655,7 +649,7 @@ export class WebhookIdempotencyService {
         pendingEvents: 0,
         failedEvents: 0,
         duplicateEvents: 0,
-        eventsByType: {}
+        eventsByType: {},
       };
     }
   }

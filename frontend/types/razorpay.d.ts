@@ -32,7 +32,7 @@ declare global {
  * @see https://razorpay.com/docs/payments/payment-gateway/web-integration/standard/
  */
 export interface RazorpayConstructor {
-  new(options: RazorpayConfig): RazorpayInstance;
+  new (options: RazorpayConfig): RazorpayInstance;
 }
 
 /**
@@ -92,12 +92,18 @@ export interface RazorpayInstance {
   /**
    * Fetch all plans
    */
-  fetchAllPlans(options?: { count?: number; skip?: number }): Promise<{ items: RazorpayPlan[]; count: number }>;
+  fetchAllPlans(options?: {
+    count?: number;
+    skip?: number;
+  }): Promise<{ items: RazorpayPlan[]; count: number }>;
 
   /**
    * Cancel a subscription
    */
-  cancelSubscription(subscriptionId: string, options?: { cancel_at_cycle_end?: 0 | 1 }): Promise<RazorpaySubscription>;
+  cancelSubscription(
+    subscriptionId: string,
+    options?: { cancel_at_cycle_end?: 0 | 1 }
+  ): Promise<RazorpaySubscription>;
 
   /**
    * Pause a subscription
@@ -112,7 +118,10 @@ export interface RazorpayInstance {
   /**
    * Edit a subscription
    */
-  editSubscription(subscriptionId: string, options: Partial<CreateSubscriptionParams>): Promise<RazorpaySubscription>;
+  editSubscription(
+    subscriptionId: string,
+    options: Partial<CreateSubscriptionParams>
+  ): Promise<RazorpaySubscription>;
 
   /**
    * Create a payment link
@@ -249,7 +258,15 @@ export interface RazorpaySubscription {
   /** Customer ID who owns this subscription */
   customer_id: string;
   /** Subscription status */
-  status: 'created' | 'authenticated' | 'active' | 'halted' | 'cancelled' | 'completed' | 'expired' | 'paused';
+  status:
+    | 'created'
+    | 'authenticated'
+    | 'active'
+    | 'halted'
+    | 'cancelled'
+    | 'completed'
+    | 'expired'
+    | 'paused';
   /** Current billing period start (Unix timestamp) */
   current_start: number;
   /** Current billing period end (Unix timestamp) */
@@ -658,7 +675,15 @@ export interface SubscriptionRecord {
   razorpay_subscription_id: string;
   razorpay_plan_id: string;
   razorpay_customer_id: string | null;
-  status: 'created' | 'authenticated' | 'active' | 'halted' | 'cancelled' | 'completed' | 'expired' | 'paused';
+  status:
+    | 'created'
+    | 'authenticated'
+    | 'active'
+    | 'halted'
+    | 'cancelled'
+    | 'completed'
+    | 'expired'
+    | 'paused';
   plan_name: string;
   plan_amount: number; // paise
   plan_currency: string;
@@ -736,7 +761,14 @@ export interface WebhookEventRecord {
 /**
  * Subscription tier names
  */
-export type SubscriptionTier = 'free' | 'explorer' | 'navigator' | 'voyager' | 'crew' | 'fleet' | 'armada';
+export type SubscriptionTier =
+  | 'free'
+  | 'explorer'
+  | 'navigator'
+  | 'voyager'
+  | 'crew'
+  | 'fleet'
+  | 'armada';
 
 /**
  * Billing cycle type

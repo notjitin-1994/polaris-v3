@@ -55,11 +55,17 @@ export async function GET(req: NextRequest): Promise<NextResponse<UserUsageRespo
 
     // Get blueprint usage information
     logger.info('user.usage.fetching', 'Fetching usage info from database', { userId });
-    console.log('[API /user/usage] About to call BlueprintUsageService.getBlueprintUsageInfo for user:', userId);
+    console.log(
+      '[API /user/usage] About to call BlueprintUsageService.getBlueprintUsageInfo for user:',
+      userId
+    );
 
     const usageInfo = await BlueprintUsageService.getBlueprintUsageInfo(supabase, userId);
 
-    console.log('[API /user/usage] Raw usage data from service:', JSON.stringify(usageInfo, null, 2));
+    console.log(
+      '[API /user/usage] Raw usage data from service:',
+      JSON.stringify(usageInfo, null, 2)
+    );
 
     logger.info('user.usage.raw_data', 'Raw usage data from service', {
       userId,

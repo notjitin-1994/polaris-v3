@@ -127,7 +127,7 @@ async function getUserByPaymentId(
     if (!paymentError && payment) {
       return {
         userId: payment.user_id,
-        subscriptionId: payment.razorpay_subscription_id
+        subscriptionId: payment.razorpay_subscription_id,
       };
     }
 
@@ -141,25 +141,25 @@ async function getUserByPaymentId(
     if (subError) {
       return {
         userId: null,
-        error: `Failed to find subscription: ${subError.message}`
+        error: `Failed to find subscription: ${subError.message}`,
       };
     }
 
     if (subscriptions && subscriptions.length > 0) {
       return {
         userId: subscriptions[0].user_id,
-        subscriptionId: subscriptions[0].razorpay_subscription_id
+        subscriptionId: subscriptions[0].razorpay_subscription_id,
       };
     }
 
     return {
       userId: null,
-      error: `No user found for payment ${paymentId}`
+      error: `No user found for payment ${paymentId}`,
     };
   } catch (error) {
     return {
       userId: null,
-      error: `Unexpected error: ${error instanceof Error ? error.message : 'Unknown error'}`
+      error: `Unexpected error: ${error instanceof Error ? error.message : 'Unknown error'}`,
     };
   }
 }
@@ -172,14 +172,12 @@ async function createPaymentRecord(
   paymentData: PaymentCreateData
 ): Promise<{ success: boolean; error?: string }> {
   try {
-    const { error } = await supabase
-      .from('razorpay_payments')
-      .insert(paymentData);
+    const { error } = await supabase.from('razorpay_payments').insert(paymentData);
 
     if (error) {
       return {
         success: false,
-        error: `Failed to create payment record: ${error.message}`
+        error: `Failed to create payment record: ${error.message}`,
       };
     }
 
@@ -187,7 +185,7 @@ async function createPaymentRecord(
   } catch (error) {
     return {
       success: false,
-      error: `Unexpected error: ${error instanceof Error ? error.message : 'Unknown error'}`
+      error: `Unexpected error: ${error instanceof Error ? error.message : 'Unknown error'}`,
     };
   }
 }
@@ -209,7 +207,7 @@ async function updatePaymentRecord(
     if (error) {
       return {
         success: false,
-        error: `Failed to update payment record: ${error.message}`
+        error: `Failed to update payment record: ${error.message}`,
       };
     }
 
@@ -217,7 +215,7 @@ async function updatePaymentRecord(
   } catch (error) {
     return {
       success: false,
-      error: `Unexpected error: ${error instanceof Error ? error.message : 'Unknown error'}`
+      error: `Unexpected error: ${error instanceof Error ? error.message : 'Unknown error'}`,
     };
   }
 }
@@ -237,14 +235,14 @@ async function updateSubscriptionPayment(
       .update({
         razorpay_payment_id: paymentId,
         payment_verified_at: status === 'captured' ? new Date().toISOString() : null,
-        updated_at: new Date().toISOString()
+        updated_at: new Date().toISOString(),
       })
       .eq('razorpay_subscription_id', subscriptionId);
 
     if (error) {
       return {
         success: false,
-        error: `Failed to update subscription payment: ${error.message}`
+        error: `Failed to update subscription payment: ${error.message}`,
       };
     }
 
@@ -252,7 +250,7 @@ async function updateSubscriptionPayment(
   } catch (error) {
     return {
       success: false,
-      error: `Unexpected error: ${error instanceof Error ? error.message : 'Unknown error'}`
+      error: `Unexpected error: ${error instanceof Error ? error.message : 'Unknown error'}`,
     };
   }
 }
@@ -289,17 +287,18 @@ export const handlePaymentAuthorized: EventHandler = async (
 
   try {
     // Find user for this payment
-    const { userId, subscriptionId, error: userError } = await getUserByPaymentId(
-      supabase,
-      payment.id
-    );
+    const {
+      userId,
+      subscriptionId,
+      error: userError,
+    } = await getUserByPaymentId(supabase, payment.id);
 
     if (userError || !userId) {
       return {
         success: false,
         processed: false,
         error: `User not found for payment ${payment.id}`,
-        retryable: false
+        retryable: false,
       };
     }
 
@@ -319,7 +318,7 @@ export const handlePaymentAuthorized: EventHandler = async (
       payment_type: subscriptionId ? 'subscription_charge' : 'one_time',
       fee: payment.fee,
       tax: payment.tax,
-      created_at: unixToIso(payment.created_at) || new Date().toISOString()
+      created_at: unixToIso(payment.created_at) || new Date().toISOString(),
     };
 
     // Try to create payment record
@@ -329,7 +328,7 @@ export const handlePaymentAuthorized: EventHandler = async (
       // If creation fails (maybe record exists), try to update
       const updateData: PaymentUpdateData = {
         status: 'authorized',
-        updated_at: new Date().toISOString()
+        updated_at: new Date().toISOString(),
       };
 
       const updateResult = await updatePaymentRecord(supabase, payment.id, updateData);
@@ -338,7 +337,7 @@ export const handlePaymentAuthorized: EventHandler = async (
           success: false,
           processed: false,
           error: `Failed to create or update payment record: ${updateResult.error}`,
-          retryable: true
+          retryable: true,
         };
       }
     }
@@ -369,16 +368,16 @@ export const handlePaymentAuthorized: EventHandler = async (
           userId,
           amount: paiseToRupees(payment.amount),
           currency: payment.currency,
-          method: payment.method
-        }
-      }
+          method: payment.method,
+        },
+      },
     };
   } catch (error) {
     return {
       success: false,
       processed: false,
       error: `Failed to process payment authorization: ${error instanceof Error ? error.message : 'Unknown error'}`,
-      retryable: true
+      retryable: true,
     };
   }
 };
@@ -396,17 +395,18 @@ export const handlePaymentCaptured: EventHandler = async (
 
   try {
     // Find user for this payment
-    const { userId, subscriptionId, error: userError } = await getUserByPaymentId(
-      supabase,
-      payment.id
-    );
+    const {
+      userId,
+      subscriptionId,
+      error: userError,
+    } = await getUserByPaymentId(supabase, payment.id);
 
     if (userError || !userId) {
       return {
         success: false,
         processed: false,
         error: `User not found for payment ${payment.id}`,
-        retryable: false
+        retryable: false,
       };
     }
 
@@ -415,7 +415,7 @@ export const handlePaymentCaptured: EventHandler = async (
       status: 'captured',
       captured: true,
       captured_at: new Date().toISOString(),
-      updated_at: new Date().toISOString()
+      updated_at: new Date().toISOString(),
     };
 
     const updateResult = await updatePaymentRecord(supabase, payment.id, updateData);
@@ -425,7 +425,7 @@ export const handlePaymentCaptured: EventHandler = async (
         success: false,
         processed: false,
         error: updateResult.error,
-        retryable: true
+        retryable: true,
       };
     }
 
@@ -456,16 +456,16 @@ export const handlePaymentCaptured: EventHandler = async (
           amount: paiseToRupees(payment.amount),
           currency: payment.currency,
           method: payment.method,
-          capturedAt: new Date().toISOString()
-        }
-      }
+          capturedAt: new Date().toISOString(),
+        },
+      },
     };
   } catch (error) {
     return {
       success: false,
       processed: false,
       error: `Failed to process payment capture: ${error instanceof Error ? error.message : 'Unknown error'}`,
-      retryable: true
+      retryable: true,
     };
   }
 };
@@ -483,17 +483,18 @@ export const handlePaymentFailed: EventHandler = async (
 
   try {
     // Find user for this payment
-    const { userId, subscriptionId, error: userError } = await getUserByPaymentId(
-      supabase,
-      payment.id
-    );
+    const {
+      userId,
+      subscriptionId,
+      error: userError,
+    } = await getUserByPaymentId(supabase, payment.id);
 
     if (userError || !userId) {
       return {
         success: false,
         processed: false,
         error: `User not found for payment ${payment.id}`,
-        retryable: false
+        retryable: false,
       };
     }
 
@@ -506,7 +507,7 @@ export const handlePaymentFailed: EventHandler = async (
       error_step: payment.error_step,
       error_reason: payment.error_reason,
       failed_at: new Date().toISOString(),
-      updated_at: new Date().toISOString()
+      updated_at: new Date().toISOString(),
     };
 
     const updateResult = await updatePaymentRecord(supabase, payment.id, updateData);
@@ -516,7 +517,7 @@ export const handlePaymentFailed: EventHandler = async (
         success: false,
         processed: false,
         error: updateResult.error,
-        retryable: true
+        retryable: true,
       };
     }
 
@@ -549,16 +550,16 @@ export const handlePaymentFailed: EventHandler = async (
           method: payment.method,
           errorCode: payment.error_code,
           errorDescription: payment.error_description,
-          failedAt: new Date().toISOString()
-        }
-      }
+          failedAt: new Date().toISOString(),
+        },
+      },
     };
   } catch (error) {
     return {
       success: false,
       processed: false,
       error: `Failed to process payment failure: ${error instanceof Error ? error.message : 'Unknown error'}`,
-      retryable: true
+      retryable: true,
     };
   }
 };
@@ -576,17 +577,18 @@ export const handlePaymentPending: EventHandler = async (
 
   try {
     // Find user for this payment
-    const { userId, subscriptionId, error: userError } = await getUserByPaymentId(
-      supabase,
-      payment.id
-    );
+    const {
+      userId,
+      subscriptionId,
+      error: userError,
+    } = await getUserByPaymentId(supabase, payment.id);
 
     if (userError || !userId) {
       return {
         success: false,
         processed: false,
         error: `User not found for payment ${payment.id}`,
-        retryable: false
+        retryable: false,
       };
     }
 
@@ -606,7 +608,7 @@ export const handlePaymentPending: EventHandler = async (
       payment_type: subscriptionId ? 'subscription_charge' : 'one_time',
       fee: payment.fee,
       tax: payment.tax,
-      created_at: unixToIso(payment.created_at) || new Date().toISOString()
+      created_at: unixToIso(payment.created_at) || new Date().toISOString(),
     };
 
     // Try to create payment record
@@ -616,7 +618,7 @@ export const handlePaymentPending: EventHandler = async (
       // If creation fails, try to update
       const updateData: PaymentUpdateData = {
         status: 'pending',
-        updated_at: new Date().toISOString()
+        updated_at: new Date().toISOString(),
       };
 
       const updateResult = await updatePaymentRecord(supabase, payment.id, updateData);
@@ -625,7 +627,7 @@ export const handlePaymentPending: EventHandler = async (
           success: false,
           processed: false,
           error: `Failed to create or update payment record: ${updateResult.error}`,
-          retryable: true
+          retryable: true,
         };
       }
     }
@@ -642,16 +644,16 @@ export const handlePaymentPending: EventHandler = async (
           userId,
           amount: paiseToRupees(payment.amount),
           currency: payment.currency,
-          method: payment.method
-        }
-      }
+          method: payment.method,
+        },
+      },
     };
   } catch (error) {
     return {
       success: false,
       processed: false,
       error: `Failed to process payment pending: ${error instanceof Error ? error.message : 'Unknown error'}`,
-      retryable: true
+      retryable: true,
     };
   }
 };
@@ -669,17 +671,18 @@ export const handleRefundProcessed: EventHandler = async (
 
   try {
     // Find user for this payment
-    const { userId, subscriptionId, error: userError } = await getUserByPaymentId(
-      supabase,
-      payment.id
-    );
+    const {
+      userId,
+      subscriptionId,
+      error: userError,
+    } = await getUserByPaymentId(supabase, payment.id);
 
     if (userError || !userId) {
       return {
         success: false,
         processed: false,
         error: `User not found for payment ${payment.id}`,
-        retryable: false
+        retryable: false,
       };
     }
 
@@ -688,7 +691,7 @@ export const handleRefundProcessed: EventHandler = async (
       status: payment.status || 'refunded',
       amount_refunded: payment.amount_refunded,
       refund_status: payment.refund_status,
-      updated_at: new Date().toISOString()
+      updated_at: new Date().toISOString(),
     };
 
     const updateResult = await updatePaymentRecord(supabase, payment.id, updateData);
@@ -698,7 +701,7 @@ export const handleRefundProcessed: EventHandler = async (
         success: false,
         processed: false,
         error: updateResult.error,
-        retryable: true
+        retryable: true,
       };
     }
 
@@ -714,16 +717,16 @@ export const handleRefundProcessed: EventHandler = async (
           userId,
           amountRefunded: paiseToRupees(payment.amount_refunded),
           refundStatus: payment.refund_status,
-          originalAmount: paiseToRupees(payment.amount)
-        }
-      }
+          originalAmount: paiseToRupees(payment.amount),
+        },
+      },
     };
   } catch (error) {
     return {
       success: false,
       processed: false,
       error: `Failed to process refund: ${error instanceof Error ? error.message : 'Unknown error'}`,
-      retryable: true
+      retryable: true,
     };
   }
 };
@@ -741,17 +744,18 @@ export const handleRefundCreated: EventHandler = async (
 
   try {
     // Find user for this payment
-    const { userId, subscriptionId, error: userError } = await getUserByPaymentId(
-      supabase,
-      payment.id
-    );
+    const {
+      userId,
+      subscriptionId,
+      error: userError,
+    } = await getUserByPaymentId(supabase, payment.id);
 
     if (userError || !userId) {
       return {
         success: false,
         processed: false,
         error: `User not found for payment ${payment.id}`,
-        retryable: false
+        retryable: false,
       };
     }
 
@@ -759,7 +763,7 @@ export const handleRefundCreated: EventHandler = async (
     const updateData: PaymentUpdateData = {
       status: 'refund_initiated',
       refund_status: 'processing',
-      updated_at: new Date().toISOString()
+      updated_at: new Date().toISOString(),
     };
 
     const updateResult = await updatePaymentRecord(supabase, payment.id, updateData);
@@ -769,7 +773,7 @@ export const handleRefundCreated: EventHandler = async (
         success: false,
         processed: false,
         error: updateResult.error,
-        retryable: true
+        retryable: true,
       };
     }
 
@@ -783,16 +787,16 @@ export const handleRefundCreated: EventHandler = async (
         action: 'refund_created',
         metadata: {
           userId,
-          originalAmount: paiseToRupees(payment.amount)
-        }
-      }
+          originalAmount: paiseToRupees(payment.amount),
+        },
+      },
     };
   } catch (error) {
     return {
       success: false,
       processed: false,
       error: `Failed to process refund creation: ${error instanceof Error ? error.message : 'Unknown error'}`,
-      retryable: true
+      retryable: true,
     };
   }
 };

@@ -111,13 +111,7 @@ export const DEFAULT_LOGGING_CONFIG: LoggingConfig = {
   maxLogEntries: 10000,
   retentionDays: 30,
   excludeSensitiveData: true,
-  sensitiveFields: [
-    'razorpay_signature',
-    'webhook_secret',
-    'api_key',
-    'payment_id',
-    'customer_id'
-  ]
+  sensitiveFields: ['razorpay_signature', 'webhook_secret', 'api_key', 'payment_id', 'customer_id'],
 };
 
 // ============================================================================
@@ -152,7 +146,9 @@ export class WebhookLoggingService {
     this.createLog({
       level: context.signatureValid ? 'info' : 'warn',
       category: 'security',
-      message: context.signatureValid ? 'Webhook received and validated' : 'Webhook signature validation failed',
+      message: context.signatureValid
+        ? 'Webhook received and validated'
+        : 'Webhook signature validation failed',
       eventId: context.eventId,
       eventType: context.eventType,
       accountId: context.accountId,
@@ -160,12 +156,12 @@ export class WebhookLoggingService {
       details: {
         signatureValid: context.signatureValid,
         userAgent: context.request?.headers.get('user-agent'),
-        ip: this.extractIP(context.request)
+        ip: this.extractIP(context.request),
       },
       metrics: {
-        processingTime: context.processingTime
+        processingTime: context.processingTime,
       },
-      tags: ['webhook', 'validation']
+      tags: ['webhook', 'validation'],
     });
   }
 
@@ -191,9 +187,9 @@ export class WebhookLoggingService {
       paymentId: context.paymentId,
       requestId: context.requestId,
       details: {
-        processingPhase: 'started'
+        processingPhase: 'started',
       },
-      tags: ['processing', 'started']
+      tags: ['processing', 'started'],
     });
   }
 
@@ -224,13 +220,13 @@ export class WebhookLoggingService {
       details: {
         handlerSuccess: context.handlerResult.success,
         processed: context.handlerResult.processed,
-        handlerDetails: context.handlerResult.details
+        handlerDetails: context.handlerResult.details,
       },
       metrics: {
         processingTime: context.totalProcessingTime,
-        retryCount: context.state?.retryCount
+        retryCount: context.state?.retryCount,
       },
-      tags: ['processing', 'completed', 'success']
+      tags: ['processing', 'completed', 'success'],
     });
 
     // Track performance metrics
@@ -270,7 +266,7 @@ export class WebhookLoggingService {
         retryable: context.retryable,
         errorCode: context.errorCode,
         retryCount: context.state?.retryCount,
-        maxRetries: context.state?.maxRetries
+        maxRetries: context.state?.maxRetries,
       },
       error: {
         code: context.errorCode,
@@ -279,13 +275,13 @@ export class WebhookLoggingService {
         context: {
           eventId: context.eventId,
           eventType: context.eventType,
-          processingTime: context.totalProcessingTime
-        }
+          processingTime: context.totalProcessingTime,
+        },
       },
       metrics: {
-        processingTime: context.totalProcessingTime
+        processingTime: context.totalProcessingTime,
       },
-      tags: ['processing', 'failed', 'error']
+      tags: ['processing', 'failed', 'error'],
     });
 
     // Track error aggregation
@@ -318,20 +314,22 @@ export class WebhookLoggingService {
       details: {
         verificationSuccess: context.success,
         signatureLength: context.receivedSignature?.length,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       },
-      error: context.success ? undefined : {
-        code: 'SIGNATURE_VERIFICATION_FAILED',
-        message: 'Webhook signature verification failed',
-        context: {
-          expectedSignaturePrefix: context.expectedSignature?.substring(0, 8),
-          receivedSignaturePrefix: context.receivedSignature?.substring(0, 8)
-        }
-      },
+      error: context.success
+        ? undefined
+        : {
+            code: 'SIGNATURE_VERIFICATION_FAILED',
+            message: 'Webhook signature verification failed',
+            context: {
+              expectedSignaturePrefix: context.expectedSignature?.substring(0, 8),
+              receivedSignaturePrefix: context.receivedSignature?.substring(0, 8),
+            },
+          },
       metrics: {
-        processingTime: context.processingTime
+        processingTime: context.processingTime,
       },
-      tags: ['security', 'signature', context.success ? 'success' : 'failure']
+      tags: ['security', 'signature', context.success ? 'success' : 'failure'],
     });
   }
 
@@ -356,12 +354,12 @@ export class WebhookLoggingService {
       details: {
         isDuplicate: context.isDuplicate,
         existingStatus: context.existingRecord?.processingStatus,
-        existingProcessedAt: context.existingRecord?.processedAt
+        existingProcessedAt: context.existingRecord?.processedAt,
       },
       metrics: {
-        processingTime: context.processingTime
+        processingTime: context.processingTime,
       },
-      tags: ['processing', 'idempotency', context.isDuplicate ? 'duplicate' : 'new']
+      tags: ['processing', 'idempotency', context.isDuplicate ? 'duplicate' : 'new'],
     });
   }
 
@@ -391,12 +389,14 @@ export class WebhookLoggingService {
       requestId: context.requestId,
       details: {
         action: context.action,
-        ...context.details
+        ...context.details,
       },
-      metrics: context.value ? {
-        value: context.value
-      } : undefined,
-      tags: ['business', context.action]
+      metrics: context.value
+        ? {
+            value: context.value,
+          }
+        : undefined,
+      tags: ['business', context.action],
     });
   }
 
@@ -418,10 +418,10 @@ export class WebhookLoggingService {
       eventType: context.eventType,
       requestId: context.requestId,
       details: {
-        operation: context.operation || 'webhook_processing'
+        operation: context.operation || 'webhook_processing',
       },
       metrics: context.metrics,
-      tags: ['performance', 'metrics']
+      tags: ['performance', 'metrics'],
     });
   }
 
@@ -440,10 +440,10 @@ export class WebhookLoggingService {
         service: 'razorpay-webhook-handler',
         version: '1.0.0',
         environment: process.env.NODE_ENV || 'development',
-        hostname: process.env.HOSTNAME
+        hostname: process.env.HOSTNAME,
       },
       correlationId: this.generateCorrelationId(),
-      ...entry
+      ...entry,
     };
 
     // Filter sensitive data
@@ -488,7 +488,11 @@ export class WebhookLoggingService {
 
       const filtered: any = {};
       for (const [key, value] of Object.entries(obj)) {
-        if (this.config.sensitiveFields.some(field => key.toLowerCase().includes(field.toLowerCase()))) {
+        if (
+          this.config.sensitiveFields.some((field) =>
+            key.toLowerCase().includes(field.toLowerCase())
+          )
+        ) {
           filtered[key] = '[REDACTED]';
         } else if (typeof value === 'object') {
           filtered[key] = filterObject(value);
@@ -562,10 +566,12 @@ export class WebhookLoggingService {
   private extractIP(request?: Request): string | undefined {
     if (!request) return undefined;
 
-    return request.headers.get('x-forwarded-for') ||
-           request.headers.get('x-real-ip') ||
-           request.headers.get('cf-connecting-ip') ||
-           'unknown';
+    return (
+      request.headers.get('x-forwarded-for') ||
+      request.headers.get('x-real-ip') ||
+      request.headers.get('cf-connecting-ip') ||
+      'unknown'
+    );
   }
 
   /**
@@ -604,15 +610,21 @@ export class WebhookLoggingService {
    * Get logging statistics
    */
   getStatistics(): LogStatistics {
-    const logsByLevel = this.logBuffer.reduce((acc, log) => {
-      acc[log.level] = (acc[log.level] || 0) + 1;
-      return acc;
-    }, {} as Record<LogLevel, number>);
+    const logsByLevel = this.logBuffer.reduce(
+      (acc, log) => {
+        acc[log.level] = (acc[log.level] || 0) + 1;
+        return acc;
+      },
+      {} as Record<LogLevel, number>
+    );
 
-    const logsByCategory = this.logBuffer.reduce((acc, log) => {
-      acc[log.category] = (acc[log.category] || 0) + 1;
-      return acc;
-    }, {} as Record<string, number>);
+    const logsByCategory = this.logBuffer.reduce(
+      (acc, log) => {
+        acc[log.category] = (acc[log.category] || 0) + 1;
+        return acc;
+      },
+      {} as Record<string, number>
+    );
 
     const totalLogs = this.logBuffer.length;
     const errorLogs = logsByLevel.error || 0 + logsByLevel.fatal || 0;
@@ -620,17 +632,16 @@ export class WebhookLoggingService {
 
     // Calculate average processing time
     const processingTimes = this.logBuffer
-      .filter(log => log.metrics?.processingTime)
-      .map(log => log.metrics!.processingTime!);
+      .filter((log) => log.metrics?.processingTime)
+      .map((log) => log.metrics!.processingTime!);
 
-    const averageProcessingTime = processingTimes.length > 0
-      ? processingTimes.reduce((sum, time) => sum + time, 0) / processingTimes.length
-      : 0;
+    const averageProcessingTime =
+      processingTimes.length > 0
+        ? processingTimes.reduce((sum, time) => sum + time, 0) / processingTimes.length
+        : 0;
 
     // Get recent errors
-    const recentErrors = this.logBuffer
-      .filter(log => log.category === 'error')
-      .slice(-10);
+    const recentErrors = this.logBuffer.filter((log) => log.category === 'error').slice(-10);
 
     return {
       totalLogs,
@@ -641,8 +652,8 @@ export class WebhookLoggingService {
       recentErrors,
       timeRange: {
         start: this.logBuffer[0]?.timestamp || new Date().toISOString(),
-        end: this.logBuffer[this.logBuffer.length - 1]?.timestamp || new Date().toISOString()
-      }
+        end: this.logBuffer[this.logBuffer.length - 1]?.timestamp || new Date().toISOString(),
+      },
     };
   }
 
@@ -659,12 +670,15 @@ export class WebhookLoggingService {
   /**
    * Get performance metrics
    */
-  getPerformanceMetrics(): Record<string, {
-    average: number;
-    min: number;
-    max: number;
-    count: number;
-  }> {
+  getPerformanceMetrics(): Record<
+    string,
+    {
+      average: number;
+      min: number;
+      max: number;
+      count: number;
+    }
+  > {
     const metrics: Record<string, any> = {};
 
     for (const [eventType, times] of this.performanceMetrics.entries()) {
@@ -673,7 +687,7 @@ export class WebhookLoggingService {
           average: times.reduce((sum, time) => sum + time, 0) / times.length,
           min: Math.min(...times),
           max: Math.max(...times),
-          count: times.length
+          count: times.length,
         };
       }
     }
@@ -722,9 +736,7 @@ export class WebhookLoggingService {
  *   enableMetrics: true
  * });
  */
-export function createWebhookLogger(
-  config?: Partial<LoggingConfig>
-): WebhookLoggingService {
+export function createWebhookLogger(config?: Partial<LoggingConfig>): WebhookLoggingService {
   const finalConfig = { ...DEFAULT_LOGGING_CONFIG, ...config };
   return new WebhookLoggingService(finalConfig);
 }

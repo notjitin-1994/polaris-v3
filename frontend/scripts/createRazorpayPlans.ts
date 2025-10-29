@@ -104,18 +104,14 @@ const PLAN_CONFIGS: PlanConfig[] = [
 // ============================================================================
 
 function createRazorpayInstance(isLive: boolean = false): Razorpay {
-  const keyId = isLive
-    ? process.env.RAZORPAY_KEY_ID
-    : process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID;
+  const keyId = isLive ? process.env.RAZORPAY_KEY_ID : process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID;
 
-  const keySecret = isLive
-    ? process.env.RAZORPAY_KEY_SECRET
-    : process.env.RAZORPAY_KEY_SECRET;
+  const keySecret = isLive ? process.env.RAZORPAY_KEY_SECRET : process.env.RAZORPAY_KEY_SECRET;
 
   if (!keyId || !keySecret) {
     throw new Error(
       `Missing Razorpay credentials for ${isLive ? 'live' : 'test'} mode.\n` +
-      `Required: ${isLive ? 'RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET' : 'NEXT_PUBLIC_RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET'}`
+        `Required: ${isLive ? 'RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET' : 'NEXT_PUBLIC_RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET'}`
     );
   }
 
@@ -138,7 +134,9 @@ async function createPlan(
   isLive: boolean = false
 ): Promise<{ tier: string; planId: string; success: boolean; error?: string }> {
   try {
-    console.log(`📝 Creating ${config.name} (${config.tier}) in ${isLive ? 'LIVE' : 'TEST'} mode...`);
+    console.log(
+      `📝 Creating ${config.name} (${config.tier}) in ${isLive ? 'LIVE' : 'TEST'} mode...`
+    );
 
     const planData = {
       period: 'monthly',
@@ -182,20 +180,18 @@ async function createPlan(
 /**
  * Check if a plan already exists to avoid duplicates
  */
-async function checkPlanExists(
-  razorpay: Razorpay,
-  config: PlanConfig
-): Promise<boolean> {
+async function checkPlanExists(razorpay: Razorpay, config: PlanConfig): Promise<boolean> {
   try {
     const plans = await razorpay.plans.all({
       count: 100,
       skip: 0,
     });
 
-    const existingPlan = plans.items.find(plan =>
-      plan.item.name === config.name &&
-      plan.item.amount === config.amount &&
-      plan.item.currency === config.currency
+    const existingPlan = plans.items.find(
+      (plan) =>
+        plan.item.name === config.name &&
+        plan.item.amount === config.amount &&
+        plan.item.currency === config.currency
     );
 
     if (existingPlan) {
@@ -231,10 +227,7 @@ async function updateConfigurationFile(
         );
 
         // For now, we'll update monthly plans only as per task requirements
-        const monthlyRegex = new RegExp(
-          `(  ${result.tier}: \\{[\\s\\S]*?monthly: ')[^']*(')`,
-          'g'
-        );
+        const monthlyRegex = new RegExp(`(  ${result.tier}: \\{[\\s\\S]*?monthly: ')[^']*(')`, 'g');
 
         content = content.replace(monthlyRegex, `$1${result.planId}$2`);
 
@@ -250,7 +243,6 @@ async function updateConfigurationFile(
     // Write updated content
     fs.writeFileSync(configPath, content);
     console.log(`✅ Updated configuration file: ${configPath}`);
-
   } catch (error) {
     console.error(`❌ Failed to update configuration file: ${error}`);
     throw error;
@@ -273,7 +265,7 @@ async function main() {
 
   if (isDryRun) {
     console.log('🔍 DRY RUN - The following plans will be created:');
-    PLAN_CONFIGS.forEach(config => {
+    PLAN_CONFIGS.forEach((config) => {
       console.log(`  • ${config.name}: ₹${(config.amount / 100).toLocaleString('en-IN')}/month`);
     });
     console.log('');
@@ -308,7 +300,7 @@ async function main() {
       results.push(result);
 
       // Small delay to avoid rate limiting
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise((resolve) => setTimeout(resolve, 1000));
     }
 
     console.log('');
@@ -316,19 +308,19 @@ async function main() {
     console.log('');
 
     // Display results
-    const successful = results.filter(r => r.success);
-    const failed = results.filter(r => !r.success);
+    const successful = results.filter((r) => r.success);
+    const failed = results.filter((r) => !r.success);
 
     if (successful.length > 0) {
       console.log('✅ Successfully created plans:');
-      successful.forEach(result => {
+      successful.forEach((result) => {
         console.log(`  • ${result.tier}: ${result.planId}`);
       });
     }
 
     if (failed.length > 0) {
       console.log('❌ Failed to create plans:');
-      failed.forEach(result => {
+      failed.forEach((result) => {
         console.log(`  • ${result.tier}: ${result.error}`);
       });
     }
@@ -352,7 +344,6 @@ async function main() {
       console.log('3. Update any remaining configuration if needed');
       console.log('4. Configure webhooks for live mode');
     }
-
   } catch (error: any) {
     console.error('💥 Script failed:', error.message);
     console.error('');
@@ -371,7 +362,7 @@ async function main() {
 // ============================================================================
 
 if (require.main === module) {
-  main().catch(error => {
+  main().catch((error) => {
     console.error('💥 Unexpected error:', error);
     process.exit(1);
   });

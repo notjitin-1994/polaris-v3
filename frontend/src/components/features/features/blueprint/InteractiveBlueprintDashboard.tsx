@@ -259,90 +259,88 @@ export function InteractiveBlueprintDashboard({
     },
   };
 
-  const StatCard = React.useMemo(
-    () => {
-      const MetricCard = React.memo(
-        ({
-          icon: Icon,
-          label,
-          value,
-          suffix = '',
-          gradient,
-          delay = 0,
-        }: {
-          icon: React.ElementType;
-          label: string;
-          value: number;
-          suffix?: string;
-          gradient: string;
-          delay?: number;
-        }) => {
-          // Derive icon color from gradient
-          const iconColor = gradient.includes('primary')
-            ? 'text-primary'
-            : gradient.includes('secondary')
-              ? 'text-secondary'
-              : gradient.includes('success')
-                ? 'text-success'
-                : gradient.includes('warning')
-                  ? 'text-warning'
-                  : 'text-primary';
+  const StatCard = React.useMemo(() => {
+    const MetricCard = React.memo(
+      ({
+        icon: Icon,
+        label,
+        value,
+        suffix = '',
+        gradient,
+        delay = 0,
+      }: {
+        icon: React.ElementType;
+        label: string;
+        value: number;
+        suffix?: string;
+        gradient: string;
+        delay?: number;
+      }) => {
+        // Derive icon color from gradient
+        const iconColor = gradient.includes('primary')
+          ? 'text-primary'
+          : gradient.includes('secondary')
+            ? 'text-secondary'
+            : gradient.includes('success')
+              ? 'text-success'
+              : gradient.includes('warning')
+                ? 'text-warning'
+                : 'text-primary';
 
-          return (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={hasAnimated ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-              transition={{ duration: 0.5, delay }}
-              whileHover={shouldReduceAnimations ? undefined : { scale: 1.02, y: -5 }}
-              className="group glass-card hover:border-primary/30 hover:shadow-primary/10 relative overflow-hidden rounded-2xl border border-white/10 p-6 transition-all duration-300 hover:shadow-2xl"
-            >
-              <div
-                className={`absolute inset-0 ${gradient} opacity-5 transition-opacity group-hover:opacity-10`}
-              />
-              <div className="relative z-10">
-                <div className="mb-4 flex items-start justify-between">
-                  <div
-                    className={`rounded-xl p-3 ${gradient} bg-opacity-20 transition-transform group-hover:scale-110`}
-                  >
-                    <Icon className={`drop-shadow-glow h-6 w-6 ${iconColor}`} />
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <p className="text-text-secondary text-sm font-medium">{label}</p>
-                  <div className="flex items-baseline gap-1">
-                    {mounted && hasAnimated ? (
-                      shouldReduceAnimations ? (
-                        <span className="text-4xl font-bold text-white">
-                          {suffix === 'hrs' ? value.toFixed(1) : value.toLocaleString()}
-                        </span>
-                      ) : (
-                        <CountUp
-                          start={0}
-                          end={value}
-                          duration={2}
-                          delay={delay}
-                          decimals={suffix === 'hrs' ? 1 : 0}
-                          className="text-4xl font-bold text-white"
-                          separator=","
-                        />
-                      )
-                    ) : (
-                      <span className="text-4xl font-bold text-white">0</span>
-                    )}
-                    {suffix && <span className="text-primary text-xl font-medium">{suffix}</span>}
-                  </div>
+        return (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={hasAnimated ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+            transition={{ duration: 0.5, delay }}
+            whileHover={shouldReduceAnimations ? undefined : { scale: 1.02, y: -5 }}
+            className="group glass-card hover:border-primary/30 hover:shadow-primary/10 relative overflow-hidden rounded-2xl border border-white/10 p-6 transition-all duration-300 hover:shadow-2xl"
+          >
+            <div
+              className={`absolute inset-0 ${gradient} opacity-5 transition-opacity group-hover:opacity-10`}
+            />
+            <div className="relative z-10">
+              <div className="mb-4 flex items-start justify-between">
+                <div
+                  className={`rounded-xl p-3 ${gradient} bg-opacity-20 transition-transform group-hover:scale-110`}
+                >
+                  <Icon className={`drop-shadow-glow h-6 w-6 ${iconColor}`} />
                 </div>
               </div>
-            </motion.div>
-          );
-      });
+              <div className="space-y-2">
+                <p className="text-text-secondary text-sm font-medium">{label}</p>
+                <div className="flex items-baseline gap-1">
+                  {mounted && hasAnimated ? (
+                    shouldReduceAnimations ? (
+                      <span className="text-4xl font-bold text-white">
+                        {suffix === 'hrs' ? value.toFixed(1) : value.toLocaleString()}
+                      </span>
+                    ) : (
+                      <CountUp
+                        start={0}
+                        end={value}
+                        duration={2}
+                        delay={delay}
+                        decimals={suffix === 'hrs' ? 1 : 0}
+                        className="text-4xl font-bold text-white"
+                        separator=","
+                      />
+                    )
+                  ) : (
+                    <span className="text-4xl font-bold text-white">0</span>
+                  )}
+                  {suffix && <span className="text-primary text-xl font-medium">{suffix}</span>}
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        );
+      }
+    );
 
-      MetricCard.displayName = 'MetricCard';
+    MetricCard.displayName = 'MetricCard';
 
-      return MetricCard;
-    },
-    [hasAnimated, mounted, shouldReduceAnimations]
-  );
+    return MetricCard;
+  }, [hasAnimated, mounted, shouldReduceAnimations]);
 
   // Expandable Section Component
   const ExpandableSection = React.forwardRef<
@@ -365,14 +363,14 @@ export function InteractiveBlueprintDashboard({
     return (
       <motion.div
         ref={ref}
-        className="rounded-xl bg-surface border border-border overflow-hidden"
+        className="bg-surface border-border overflow-hidden rounded-xl border"
         variants={itemVariants}
       >
         <motion.button
           type="button"
           onClick={onToggle}
-          className={`w-full px-6 py-4 flex items-center justify-between text-left transition-colors ${
-            isExpanded ? 'bg-primary/5 border-b border-border' : 'hover:bg-surface-secondary'
+          className={`flex w-full items-center justify-between px-6 py-4 text-left transition-colors ${
+            isExpanded ? 'bg-primary/5 border-border border-b' : 'hover:bg-surface-secondary'
           }`}
         >
           <div className="flex items-center gap-4">
@@ -391,7 +389,7 @@ export function InteractiveBlueprintDashboard({
               <motion.div
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="p-2 rounded-lg bg-primary/10 hover:bg-primary/20 transition-colors cursor-pointer"
+                className="bg-primary/10 hover:bg-primary/20 cursor-pointer rounded-lg p-2 transition-colors"
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
@@ -408,7 +406,7 @@ export function InteractiveBlueprintDashboard({
               transition={{ duration: 0.3 }}
               className="rounded-full bg-white/5 p-2"
             >
-              <Maximize2 className="h-4 w-4 text-text-secondary" />
+              <Maximize2 className="text-text-secondary h-4 w-4" />
             </motion.div>
           </div>
         </motion.button>
@@ -422,9 +420,7 @@ export function InteractiveBlueprintDashboard({
               transition={{ duration: 0.3, ease: 'easeInOut' }}
               className="overflow-hidden"
             >
-              <div className="p-6">
-                {children}
-              </div>
+              <div className="p-6">{children}</div>
             </motion.div>
           )}
         </AnimatePresence>

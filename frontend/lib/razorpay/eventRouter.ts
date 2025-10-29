@@ -12,10 +12,7 @@
  * @see https://razorpay.com/docs/webhooks/
  */
 
-import type {
-  ParsedWebhookEvent,
-  WebhookSecurityResult
-} from './webhookSecurity';
+import type { ParsedWebhookEvent, WebhookSecurityResult } from './webhookSecurity';
 import type { WebhookEventRecord } from './idempotency';
 
 // ============================================================================
@@ -135,7 +132,7 @@ class EventRegistry {
   getRoutesByCategory(category: string): EventRoute[] {
     const eventTypes = this.categories.get(category) || [];
     return eventTypes
-      .map(type => this.routes.get(type))
+      .map((type) => this.routes.get(type))
       .filter((route): route is EventRoute => route !== undefined);
   }
 
@@ -183,7 +180,7 @@ class EventRegistry {
    * Get all enabled routes
    */
   getEnabledRoutes(): EventRoute[] {
-    return Array.from(this.routes.values()).filter(route => route.enabled);
+    return Array.from(this.routes.values()).filter((route) => route.enabled);
   }
 }
 
@@ -258,7 +255,7 @@ export class WebhookEventRouter {
             eventId: event.eventId,
             eventType: event.eventType,
             accountId: event.accountId,
-            timestamp: new Date().toISOString()
+            timestamp: new Date().toISOString(),
           });
         }
 
@@ -267,7 +264,7 @@ export class WebhookEventRouter {
           routed: false,
           eventType: event.eventType,
           error,
-          routingTime: Date.now() - startTime
+          routingTime: Date.now() - startTime,
         };
       }
 
@@ -279,7 +276,7 @@ export class WebhookEventRouter {
           eventType: event.eventType,
           handler: route.description,
           error: `Handler for ${event.eventType} is disabled`,
-          routingTime: Date.now() - startTime
+          routingTime: Date.now() - startTime,
         };
       }
 
@@ -289,11 +286,7 @@ export class WebhookEventRouter {
       }
 
       // Execute handler with timeout
-      const result = await this.executeHandlerWithTimeout(
-        route.handler,
-        event,
-        webhookRecord
-      );
+      const result = await this.executeHandlerWithTimeout(route.handler, event, webhookRecord);
 
       return {
         success: true,
@@ -301,16 +294,15 @@ export class WebhookEventRouter {
         eventType: event.eventType,
         handler: route.description,
         result,
-        routingTime: Date.now() - startTime
+        routingTime: Date.now() - startTime,
       };
-
     } catch (error) {
       return {
         success: false,
         routed: false,
         eventType: event.eventType,
         error: `Routing failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
-        routingTime: Date.now() - startTime
+        routingTime: Date.now() - startTime,
       };
     }
   }
@@ -377,10 +369,7 @@ export class WebhookEventRouter {
   /**
    * Validate required fields for event
    */
-  private validateRequiredFields(
-    event: ParsedWebhookEvent,
-    required: string[]
-  ): void {
+  private validateRequiredFields(event: ParsedWebhookEvent, required: string[]): void {
     const entity = event.payload.entity;
 
     for (const field of required) {
@@ -409,7 +398,9 @@ export class WebhookEventRouter {
     // Validate event type format
     const parts = route.eventType.split('.');
     if (parts.length !== 2) {
-      throw new Error(`Invalid event type format: ${route.eventType}. Expected format: "category.action"`);
+      throw new Error(
+        `Invalid event type format: ${route.eventType}. Expected format: "category.action"`
+      );
     }
   }
 
@@ -429,7 +420,7 @@ export class WebhookEventRouter {
       totalRoutes: allRoutes.length,
       enabledRoutes: enabledRoutes.length,
       categories: this.registry.getAllCategories(),
-      eventTypes: allRoutes
+      eventTypes: allRoutes,
     };
   }
 
@@ -442,7 +433,7 @@ export class WebhookEventRouter {
     enabled: boolean;
     category: string;
   }> {
-    return this.registry.getAllEventTypes().map(eventType => {
+    return this.registry.getAllEventTypes().map((eventType) => {
       const route = this.registry.getRoute(eventType);
       const [category] = eventType.split('.');
 
@@ -450,7 +441,7 @@ export class WebhookEventRouter {
         eventType,
         description: route?.description || 'No description',
         enabled: route?.enabled ?? false,
-        category
+        category,
       };
     });
   }
@@ -499,7 +490,7 @@ export const placeholderSubscriptionHandler: EventHandler = async (
 ): Promise<EventHandlerResult> => {
   console.log(`Placeholder: Handling subscription event ${event.eventType}`, {
     eventId: event.eventId,
-    subscriptionId: event.payload.entity.id
+    subscriptionId: event.payload.entity.id,
   });
 
   return {
@@ -507,8 +498,8 @@ export const placeholderSubscriptionHandler: EventHandler = async (
     processed: false, // Not actually processed, just acknowledged
     details: {
       subscriptionId: event.payload.entity.id,
-      action: 'placeholder_handler'
-    }
+      action: 'placeholder_handler',
+    },
   };
 };
 
@@ -520,7 +511,7 @@ export const placeholderPaymentHandler: EventHandler = async (
 ): Promise<EventHandlerResult> => {
   console.log(`Placeholder: Handling payment event ${event.eventType}`, {
     eventId: event.eventId,
-    paymentId: event.payload.entity.id
+    paymentId: event.payload.entity.id,
   });
 
   return {
@@ -528,8 +519,8 @@ export const placeholderPaymentHandler: EventHandler = async (
     processed: false, // Not actually processed, just acknowledged
     details: {
       paymentId: event.payload.entity.id,
-      action: 'placeholder_handler'
-    }
+      action: 'placeholder_handler',
+    },
   };
 };
 

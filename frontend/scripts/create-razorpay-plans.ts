@@ -35,8 +35,8 @@ const PLAN_CONFIG = [
       tier: 'explorer',
       billing_cycle: 'monthly',
       blueprints_limit: '5',
-      target_audience: 'individual_creators'
-    }
+      target_audience: 'individual_creators',
+    },
   },
   {
     tier: 'explorer',
@@ -50,8 +50,8 @@ const PLAN_CONFIG = [
       billing_cycle: 'yearly',
       blueprints_limit: '5',
       target_audience: 'individual_creators',
-      discount: '16_percent'
-    }
+      discount: '16_percent',
+    },
   },
   {
     tier: 'navigator',
@@ -64,8 +64,8 @@ const PLAN_CONFIG = [
       tier: 'navigator',
       billing_cycle: 'monthly',
       blueprints_limit: '25',
-      target_audience: 'professionals'
-    }
+      target_audience: 'professionals',
+    },
   },
   {
     tier: 'navigator',
@@ -79,8 +79,8 @@ const PLAN_CONFIG = [
       billing_cycle: 'yearly',
       blueprints_limit: '25',
       target_audience: 'professionals',
-      discount: '16_percent'
-    }
+      discount: '16_percent',
+    },
   },
   {
     tier: 'voyager',
@@ -93,8 +93,8 @@ const PLAN_CONFIG = [
       tier: 'voyager',
       billing_cycle: 'monthly',
       blueprints_limit: '50',
-      target_audience: 'power_users'
-    }
+      target_audience: 'power_users',
+    },
   },
   {
     tier: 'voyager',
@@ -108,8 +108,8 @@ const PLAN_CONFIG = [
       billing_cycle: 'yearly',
       blueprints_limit: '50',
       target_audience: 'power_users',
-      discount: '16_percent'
-    }
+      discount: '16_percent',
+    },
   },
   {
     tier: 'crew',
@@ -123,8 +123,8 @@ const PLAN_CONFIG = [
       billing_cycle: 'monthly',
       blueprints_limit: '10_per_seat',
       target_audience: 'small_teams',
-      pricing_model: 'per_seat'
-    }
+      pricing_model: 'per_seat',
+    },
   },
   {
     tier: 'crew',
@@ -139,8 +139,8 @@ const PLAN_CONFIG = [
       blueprints_limit: '10_per_seat',
       target_audience: 'small_teams',
       pricing_model: 'per_seat',
-      discount: '16_percent'
-    }
+      discount: '16_percent',
+    },
   },
   {
     tier: 'fleet',
@@ -154,8 +154,8 @@ const PLAN_CONFIG = [
       billing_cycle: 'monthly',
       blueprints_limit: '30_per_seat',
       target_audience: 'medium_teams',
-      pricing_model: 'per_seat'
-    }
+      pricing_model: 'per_seat',
+    },
   },
   {
     tier: 'fleet',
@@ -170,8 +170,8 @@ const PLAN_CONFIG = [
       blueprints_limit: '30_per_seat',
       target_audience: 'medium_teams',
       pricing_model: 'per_seat',
-      discount: '16_percent'
-    }
+      discount: '16_percent',
+    },
   },
   {
     tier: 'armada',
@@ -185,8 +185,8 @@ const PLAN_CONFIG = [
       billing_cycle: 'monthly',
       blueprints_limit: '60_per_seat',
       target_audience: 'large_teams',
-      pricing_model: 'per_seat'
-    }
+      pricing_model: 'per_seat',
+    },
   },
   {
     tier: 'armada',
@@ -201,25 +201,22 @@ const PLAN_CONFIG = [
       blueprints_limit: '60_per_seat',
       target_audience: 'large_teams',
       pricing_model: 'per_seat',
-      discount: '16_percent'
-    }
-  }
+      discount: '16_percent',
+    },
+  },
 ];
 
 /**
  * Validate environment variables
  */
 function validateEnvironment(): void {
-  const required = [
-    'NEXT_PUBLIC_RAZORPAY_KEY_ID',
-    'RAZORPAY_KEY_SECRET'
-  ];
+  const required = ['NEXT_PUBLIC_RAZORPAY_KEY_ID', 'RAZORPAY_KEY_SECRET'];
 
-  const missing = required.filter(key => !process.env[key]);
+  const missing = required.filter((key) => !process.env[key]);
 
   if (missing.length > 0) {
     console.error('❌ Missing required environment variables:');
-    missing.forEach(key => console.error(`   - ${key}`));
+    missing.forEach((key) => console.error(`   - ${key}`));
     console.error('\nPlease add these to your .env.local file');
     process.exit(1);
   }
@@ -271,8 +268,8 @@ async function createPlan(razorpay: any, planConfig: any): Promise<string | null
         ...planConfig.notes,
         created_by: 'create-razorpay-plans-script',
         created_at: new Date().toISOString(),
-        app_name: 'SmartSlate Polaris v3'
-      }
+        app_name: 'SmartSlate Polaris v3',
+      },
     });
 
     console.log(`✅ Created plan: ${plan.id} - ${planConfig.name}`);
@@ -291,18 +288,18 @@ function generateUpdatedConfig(createdPlans: Map<string, string>): string {
   const configLines = [
     'export const RAZORPAY_PLANS: RazorpayPlanMapping = {',
     '  /**',
-    '   * Free Tier (No Razorpay plan - users don\'t pay)',
+    "   * Free Tier (No Razorpay plan - users don't pay)",
     '   */',
     '  free: {',
     '    monthly: null,',
     '    yearly: null,',
     '  },',
-    ''
+    '',
   ];
 
   const tiers = ['explorer', 'navigator', 'voyager', 'crew', 'fleet', 'armada'];
 
-  tiers.forEach(tier => {
+  tiers.forEach((tier) => {
     const monthlyPlanId = createdPlans.get(`${tier}-monthly`);
     const yearlyPlanId = createdPlans.get(`${tier}-yearly`);
 
@@ -312,8 +309,12 @@ function generateUpdatedConfig(createdPlans: Map<string, string>): string {
     configLines.push(`   * Generated on: ${new Date().toISOString()}`);
     configLines.push(`   */`);
     configLines.push(`  ${tier}: {`);
-    configLines.push(`    monthly: ${monthlyPlanId ? `'${monthlyPlanId}'` : 'null'}, // Plan ID for monthly billing`);
-    configLines.push(`    yearly: ${yearlyPlanId ? `'${yearlyPlanId}'` : 'null'},   // Plan ID for yearly billing`);
+    configLines.push(
+      `    monthly: ${monthlyPlanId ? `'${monthlyPlanId}'` : 'null'}, // Plan ID for monthly billing`
+    );
+    configLines.push(
+      `    yearly: ${yearlyPlanId ? `'${yearlyPlanId}'` : 'null'},   // Plan ID for yearly billing`
+    );
     configLines.push(`  },`);
     configLines.push('');
   });
@@ -356,7 +357,7 @@ async function main(): Promise<void> {
 
   if (failedPlans.length > 0) {
     console.log('\n❌ Failed plans:');
-    failedPlans.forEach(plan => console.log(`   - ${plan}`));
+    failedPlans.forEach((plan) => console.log(`   - ${plan}`));
   }
 
   if (createdPlans.size > 0) {

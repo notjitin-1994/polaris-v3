@@ -126,7 +126,9 @@ export function generateSignature(payload: string | object, secret: string): str
     // Return hex-encoded signature
     return hmac.digest('hex');
   } catch (error) {
-    throw new Error(`Failed to generate HMAC signature: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    throw new Error(
+      `Failed to generate HMAC signature: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
   }
 }
 
@@ -155,7 +157,7 @@ export function verifySignature(
   if (!payload || !receivedSignature || !secret) {
     return {
       valid: false,
-      error: 'Missing required parameters: payload, signature, and secret are required'
+      error: 'Missing required parameters: payload, signature, and secret are required',
     };
   }
 
@@ -174,13 +176,13 @@ export function verifySignature(
       details: {
         expectedSignature,
         receivedSignature,
-        payloadHash: createHash('sha256').update(payloadString).digest('hex').substring(0, 16)
-      }
+        payloadHash: createHash('sha256').update(payloadString).digest('hex').substring(0, 16),
+      },
     };
   } catch (error) {
     return {
       valid: false,
-      error: `Signature verification failed: ${error instanceof Error ? error.message : 'Unknown error'}`
+      error: `Signature verification failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
     };
   }
 }
@@ -205,7 +207,9 @@ export function generatePaymentSignature(
   secret: string
 ): string {
   if (!paymentId || !subscriptionId || !secret) {
-    throw new Error('Payment ID, subscription ID, and secret are required for payment signature generation');
+    throw new Error(
+      'Payment ID, subscription ID, and secret are required for payment signature generation'
+    );
   }
 
   // Validate Razorpay ID formats
@@ -249,7 +253,8 @@ export function verifyPaymentSignature(
   if (!paymentId || !subscriptionId || !receivedSignature || !secret) {
     return {
       valid: false,
-      error: 'Missing required parameters: paymentId, subscriptionId, signature, and secret are required'
+      error:
+        'Missing required parameters: paymentId, subscriptionId, signature, and secret are required',
     };
   }
 
@@ -265,13 +270,16 @@ export function verifyPaymentSignature(
       details: {
         expectedSignature,
         receivedSignature,
-        payloadHash: createHash('sha256').update(`${paymentId}|${subscriptionId}`).digest('hex').substring(0, 16)
-      }
+        payloadHash: createHash('sha256')
+          .update(`${paymentId}|${subscriptionId}`)
+          .digest('hex')
+          .substring(0, 16),
+      },
     };
   } catch (error) {
     return {
       valid: false,
-      error: `Payment signature verification failed: ${error instanceof Error ? error.message : 'Unknown error'}`
+      error: `Payment signature verification failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
     };
   }
 }
@@ -299,7 +307,7 @@ export function verifyWebhookSignature(
   if (!webhookBody || !receivedSignature || !secret) {
     return {
       valid: false,
-      error: 'Missing required parameters: webhookBody, signature, and secret are required'
+      error: 'Missing required parameters: webhookBody, signature, and secret are required',
     };
   }
 
@@ -356,7 +364,7 @@ export function extractVerificationComponents(request: PaymentVerificationReques
   errors: string[];
 } {
   const errors: string[] = [];
-  let { razorpayPaymentId, razorpaySubscriptionId, razorpaySignature } = request;
+  const { razorpayPaymentId, razorpaySubscriptionId, razorpaySignature } = request;
 
   // Validate and normalize payment ID
   if (!razorpayPaymentId) {
@@ -383,7 +391,7 @@ export function extractVerificationComponents(request: PaymentVerificationReques
     paymentId: razorpayPaymentId || '',
     subscriptionId: razorpaySubscriptionId || '',
     signature: razorpaySignature || '',
-    errors
+    errors,
   };
 }
 

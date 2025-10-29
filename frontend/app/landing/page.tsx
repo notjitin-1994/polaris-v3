@@ -22,8 +22,7 @@ export default function LandingPage() {
                 <span
                   className="text-[rgb(255,215,0)]"
                   style={{
-                    textShadow:
-                      '0 0 10px rgba(255, 215, 0, 0.5), 0 0 20px rgba(255, 215, 0, 0.3)',
+                    textShadow: '0 0 10px rgba(255, 215, 0, 0.5), 0 0 20px rgba(255, 215, 0, 0.3)',
                   }}
                 >
                   Solara
@@ -47,7 +46,9 @@ export default function LandingPage() {
               transition={{ delay: 0.2 }}
               className="mx-auto mb-8 max-w-3xl text-lg leading-relaxed text-[rgb(176,197,198)] sm:text-xl"
             >
-              Polaris eliminates weeks of planning with AI-driven blueprint generation. From stakeholder interviews to production-ready documentation, we automate the entire learning design process.
+              Polaris eliminates weeks of planning with AI-driven blueprint generation. From
+              stakeholder interviews to production-ready documentation, we automate the entire
+              learning design process.
             </motion.p>
 
             <motion.div
@@ -113,7 +114,7 @@ export default function LandingPage() {
         {/* Decorative background elements */}
         <div className="absolute inset-0 -z-10">
           <div className="absolute top-0 left-1/4 h-96 w-96 rounded-full bg-[rgb(79,70,229)] opacity-10 blur-3xl" />
-          <div className="absolute bottom-0 right-1/4 h-96 w-96 rounded-full bg-[rgb(167,218,219)] opacity-10 blur-3xl" />
+          <div className="absolute right-1/4 bottom-0 h-96 w-96 rounded-full bg-[rgb(167,218,219)] opacity-10 blur-3xl" />
         </div>
       </section>
 
@@ -129,7 +130,8 @@ export default function LandingPage() {
               Everything You Need to Launch Learning Programs
             </h2>
             <p className="mx-auto mb-12 max-w-2xl text-lg text-[rgb(176,197,198)]">
-              From stakeholder interviews to production-ready documentation, we handle the entire learning design process.
+              From stakeholder interviews to production-ready documentation, we handle the entire
+              learning design process.
             </p>
           </motion.div>
 
@@ -143,7 +145,8 @@ export default function LandingPage() {
               {
                 icon: Sparkles,
                 title: 'Smart Analysis',
-                description: 'Automated gap detection identifies missing requirements before they become problems.',
+                description:
+                  'Automated gap detection identifies missing requirements before they become problems.',
               },
               {
                 icon: CheckCircle,
@@ -185,7 +188,8 @@ export default function LandingPage() {
             transition={{ delay: 0.1 }}
             className="mb-8 text-lg text-[rgb(176,197,198)]"
           >
-            Join thousands of learning professionals who are launching programs 15x faster with Polaris.
+            Join thousands of learning professionals who are launching programs 15x faster with
+            Polaris.
           </motion.p>
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -202,7 +206,6 @@ export default function LandingPage() {
           </motion.div>
         </div>
       </section>
-
     </div>
   );
 }

@@ -6,7 +6,10 @@ import { getSupabaseAdminClient } from '@/lib/supabase/admin';
  * Admin API: Get user details
  * GET /api/admin/users/[userId]
  */
-export async function GET(request: NextRequest, { params }: { params: Promise<{ userId: string }> }) {
+export async function GET(
+  request: NextRequest,
+  { params }: { params: Promise<{ userId: string }> }
+) {
   try {
     // Verify admin access
     await requireAdmin();
@@ -79,7 +82,10 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
  * - blueprint_creation_limit: New limit
  * - blueprint_saving_limit: New limit
  */
-export async function PATCH(request: NextRequest, { params }: { params: Promise<{ userId: string }> }) {
+export async function PATCH(
+  request: NextRequest,
+  { params }: { params: Promise<{ userId: string }> }
+) {
   try {
     // Verify admin access
     await requireAdmin();
@@ -154,7 +160,10 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
  * Query Parameters:
  * - hard: 'true' for hard delete, otherwise soft delete (default: soft)
  */
-export async function DELETE(request: NextRequest, { params }: { params: Promise<{ userId: string }> }) {
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: Promise<{ userId: string }> }
+) {
   try {
     // Verify admin access
     await requireAdmin();

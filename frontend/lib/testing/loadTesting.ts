@@ -77,8 +77,8 @@ class LoadTester {
     thinkTime: 0,
     headers: {
       'Content-Type': 'application/json',
-      'User-Agent': 'Polaris-LoadTester/1.0'
-    }
+      'User-Agent': 'Polaris-LoadTester/1.0',
+    },
   };
 
   /**
@@ -90,7 +90,7 @@ class LoadTester {
       endpoint: fullConfig.endpoint,
       concurrency: fullConfig.concurrency,
       duration: fullConfig.duration,
-      rampUp: fullConfig.rampUp
+      rampUp: fullConfig.rampUp,
     });
 
     const startTime = Date.now();
@@ -102,7 +102,8 @@ class LoadTester {
 
     try {
       // Calculate ramp-up delay between workers
-      const rampDelay = fullConfig.rampUp > 0 ? (fullConfig.rampUp * 1000) / fullConfig.concurrency : 0;
+      const rampDelay =
+        fullConfig.rampUp > 0 ? (fullConfig.rampUp * 1000) / fullConfig.concurrency : 0;
 
       // Create and run workers
       const workerPromises: Promise<WorkerResult>[] = [];
@@ -110,7 +111,7 @@ class LoadTester {
         const workerConfig = {
           ...fullConfig,
           workerId: i,
-          startDelay: i * rampDelay
+          startDelay: i * rampDelay,
         };
 
         workerPromises.push(this.runWorker(workerConfig));
@@ -130,11 +131,10 @@ class LoadTester {
         totalRequests: result.summary.totalRequests,
         successRate: result.summary.successRate,
         averageResponseTime: result.summary.averageResponseTime,
-        requestsPerSecond: result.summary.requestsPerSecond
+        requestsPerSecond: result.summary.requestsPerSecond,
       });
 
       return result;
-
     } catch (error) {
       clearInterval(timeline);
       console.error('[LoadTest] Load test failed:', error);
@@ -145,7 +145,9 @@ class LoadTester {
   /**
    * Run individual worker
    */
-  private async runWorker(config: LoadTestConfig & { workerId: number; startDelay: number }): Promise<WorkerResult> {
+  private async runWorker(
+    config: LoadTestConfig & { workerId: number; startDelay: number }
+  ): Promise<WorkerResult> {
     const { workerId, startDelay, duration, thinkTime } = config;
 
     // Wait for ramp-up delay
@@ -159,10 +161,10 @@ class LoadTester {
       totalRequests: 0,
       successfulRequests: 0,
       failedRequests: 0,
-      totalDuration: 0
+      totalDuration: 0,
     };
 
-    const endTime = Date.now() + (duration * 1000);
+    const endTime = Date.now() + duration * 1000;
     let requestId = 0;
 
     try {
@@ -180,11 +182,10 @@ class LoadTester {
             endTime: requestEnd,
             duration: requestEnd - requestStart,
             success: true,
-            statusCode: response.status
+            statusCode: response.status,
           });
 
           workerResult.successfulRequests++;
-
         } catch (error) {
           const requestEnd = Date.now();
 
@@ -194,7 +195,7 @@ class LoadTester {
             endTime: requestEnd,
             duration: requestEnd - requestStart,
             success: false,
-            error: error instanceof Error ? error.message : 'Unknown error'
+            error: error instanceof Error ? error.message : 'Unknown error',
           });
 
           workerResult.failedRequests++;
@@ -208,10 +209,9 @@ class LoadTester {
         }
       }
 
-      workerResult.totalDuration = Date.now() - (Date.now() - (duration * 1000));
+      workerResult.totalDuration = Date.now() - (Date.now() - duration * 1000);
 
       return workerResult;
-
     } catch (error) {
       console.error(`[LoadTest] Worker ${workerId} failed:`, error);
       throw error;
@@ -233,10 +233,10 @@ class LoadTester {
         headers: {
           ...headers,
           'X-Load-Test-Request-Id': requestId,
-          'X-Load-Test-Timestamp': Date.now().toString()
+          'X-Load-Test-Timestamp': Date.now().toString(),
         },
         body: body ? JSON.stringify(body) : undefined,
-        signal: controller.signal
+        signal: controller.signal,
       });
 
       if (!response.ok) {
@@ -244,7 +244,6 @@ class LoadTester {
       }
 
       return response;
-
     } finally {
       if (timeoutId) {
         clearTimeout(timeoutId);
@@ -260,27 +259,30 @@ class LoadTester {
     const recentWindow = 5000; // 5 seconds
 
     // Get recent requests
-    const recentRequests = results.flatMap(worker =>
-      worker.requests.filter(req => now - req.endTime <= recentWindow)
+    const recentRequests = results.flatMap((worker) =>
+      worker.requests.filter((req) => now - req.endTime <= recentWindow)
     );
 
-    const activeConnections = results.filter(worker =>
-      worker.requests.length > 0 &&
-      worker.requests[worker.requests.length - 1].endTime > now - 1000
+    const activeConnections = results.filter(
+      (worker) =>
+        worker.requests.length > 0 &&
+        worker.requests[worker.requests.length - 1].endTime > now - 1000
     ).length;
 
-    const successfulRequests = recentRequests.filter(req => req.success).length;
+    const successfulRequests = recentRequests.filter((req) => req.success).length;
     const totalRequests = recentRequests.length;
-    const averageResponseTime = totalRequests > 0
-      ? recentRequests.reduce((sum, req) => sum + req.duration, 0) / totalRequests
-      : 0;
+    const averageResponseTime =
+      totalRequests > 0
+        ? recentRequests.reduce((sum, req) => sum + req.duration, 0) / totalRequests
+        : 0;
 
     timeline.push({
       timestamp: now,
       activeConnections,
       requestsPerSecond: totalRequests / 5, // requests per second over 5 second window
       averageResponseTime,
-      errorRate: totalRequests > 0 ? ((totalRequests - successfulRequests) / totalRequests) * 100 : 0
+      errorRate:
+        totalRequests > 0 ? ((totalRequests - successfulRequests) / totalRequests) * 100 : 0,
     });
   }
 
@@ -293,11 +295,11 @@ class LoadTester {
     startTime: number,
     endTime: number
   ): LoadTestResult {
-    const allRequests = results.flatMap(worker => worker.requests);
-    const successfulRequests = allRequests.filter(req => req.success);
-    const failedRequests = allRequests.filter(req => !req.success);
+    const allRequests = results.flatMap((worker) => worker.requests);
+    const successfulRequests = allRequests.filter((req) => req.success);
+    const failedRequests = allRequests.filter((req) => !req.success);
 
-    const durations = allRequests.map(req => req.duration).sort((a, b) => a - b);
+    const durations = allRequests.map((req) => req.duration).sort((a, b) => a - b);
     const totalDuration = endTime - startTime;
 
     // Calculate percentiles
@@ -315,7 +317,7 @@ class LoadTester {
       totalRequests: allRequests.length,
       successRate: (successfulRequests.length / allRequests.length) * 100,
       averageResponseTime: durations.reduce((sum, d) => sum + d, 0) / durations.length,
-      p95: percentile(durations, 0.95)
+      p95: percentile(durations, 0.95),
     });
 
     return {
@@ -334,17 +336,19 @@ class LoadTester {
         p99: percentile(durations, 0.99),
         requestsPerSecond: allRequests.length / (totalDuration / 1000),
         totalDuration,
-        errors
+        errors,
       },
       timeline: results[0]?.workerId === 0 ? [] : [], // Timeline handled separately
-      recommendations
+      recommendations,
     };
   }
 
   /**
    * Analyze errors from failed requests
    */
-  private analyzeErrors(failedRequests: WorkerResult['requests']): LoadTestResult['summary']['errors'] {
+  private analyzeErrors(
+    failedRequests: WorkerResult['requests']
+  ): LoadTestResult['summary']['errors'] {
     const errorMap = new Map<string, { count: number; message: string }>();
 
     for (const request of failedRequests) {
@@ -361,7 +365,7 @@ class LoadTester {
     return Array.from(errorMap.entries()).map(([type, data]) => ({
       type,
       count: data.count,
-      message: data.message
+      message: data.message,
     }));
   }
 
@@ -381,38 +385,54 @@ class LoadTester {
 
     // Success rate recommendations
     if (metrics.successRate < 95) {
-      recommendations.push(`Success rate (${metrics.successRate.toFixed(1)}%) is below target (95%). Check for errors and resource constraints.`);
+      recommendations.push(
+        `Success rate (${metrics.successRate.toFixed(1)}%) is below target (95%). Check for errors and resource constraints.`
+      );
     }
 
     if (metrics.successRate < 99) {
-      recommendations.push(`Success rate (${metrics.successRate.toFixed(1)}%) could be improved. Review error handling and retry logic.`);
+      recommendations.push(
+        `Success rate (${metrics.successRate.toFixed(1)}%) could be improved. Review error handling and retry logic.`
+      );
     }
 
     // Response time recommendations
     if (metrics.averageResponseTime > 500) {
-      recommendations.push(`Average response time (${metrics.averageResponseTime.toFixed(2)}ms) exceeds 500ms target. Consider optimization or caching.`);
+      recommendations.push(
+        `Average response time (${metrics.averageResponseTime.toFixed(2)}ms) exceeds 500ms target. Consider optimization or caching.`
+      );
     }
 
     if (metrics.p95 > 1000) {
-      recommendations.push(`P95 response time (${metrics.p95.toFixed(2)}ms) exceeds 1s target. Some requests are significantly slower.`);
+      recommendations.push(
+        `P95 response time (${metrics.p95.toFixed(2)}ms) exceeds 1s target. Some requests are significantly slower.`
+      );
     }
 
     if (metrics.p95 > 2000) {
-      recommendations.push(`P95 response time (${metrics.p95.toFixed(2)}ms) exceeds 2s. Critical performance issues detected.`);
+      recommendations.push(
+        `P95 response time (${metrics.p95.toFixed(2)}ms) exceeds 2s. Critical performance issues detected.`
+      );
     }
 
     // Concurrency recommendations
     if (config.concurrency > 50 && metrics.successRate < 99) {
-      recommendations.push(`High concurrency (${config.concurrency}) with low success rate. Consider rate limiting or scaling infrastructure.`);
+      recommendations.push(
+        `High concurrency (${config.concurrency}) with low success rate. Consider rate limiting or scaling infrastructure.`
+      );
     }
 
     // Error pattern recommendations
     if (metrics.totalRequests > 100 && metrics.successRate < 90) {
-      recommendations.push('High error rate under load. Review database connections, memory usage, and external dependencies.');
+      recommendations.push(
+        'High error rate under load. Review database connections, memory usage, and external dependencies.'
+      );
     }
 
     if (recommendations.length === 0) {
-      recommendations.push('Performance looks good! Monitor for consistency and plan for increased load.');
+      recommendations.push(
+        'Performance looks good! Monitor for consistency and plan for increased load.'
+      );
     }
 
     return recommendations;
@@ -422,7 +442,7 @@ class LoadTester {
    * Sleep helper
    */
   private sleep(ms: number): Promise<void> {
-    return new Promise(resolve => setTimeout(resolve, ms));
+    return new Promise((resolve) => setTimeout(resolve, ms));
   }
 
   /**
@@ -459,10 +479,10 @@ class LoadTester {
 - **P99**: ${summary.p99.toFixed(2)}ms
 
 ## Errors
-${summary.errors.map(error => `- **${error.type}**: ${error.count} occurrences`).join('\n') || 'No errors detected'}
+${summary.errors.map((error) => `- **${error.type}**: ${error.count} occurrences`).join('\n') || 'No errors detected'}
 
 ## Recommendations
-${recommendations.map(rec => `- ${rec}`).join('\n')}
+${recommendations.map((rec) => `- ${rec}`).join('\n')}
 
 ## Performance Assessment
 ${this.getPerformanceAssessment(summary)}
@@ -500,7 +520,7 @@ export const loadTestConfigs = {
     rampUp: 30, // 30 seconds ramp-up
     endpoint: '/api/pricing',
     method: 'GET' as const,
-    thinkTime: 500 // 500ms between requests
+    thinkTime: 500, // 500ms between requests
   },
 
   // Subscription creation load test
@@ -516,10 +536,10 @@ export const loadTestConfigs = {
       customerInfo: {
         name: 'Load Test User',
         email: 'test@loadtest.com',
-        contact: '+1234567890'
-      }
+        contact: '+1234567890',
+      },
     },
-    thinkTime: 2000 // 2 seconds between requests
+    thinkTime: 2000, // 2 seconds between requests
   },
 
   // Blueprint generation load test
@@ -530,9 +550,9 @@ export const loadTestConfigs = {
     endpoint: '/api/blueprints/generate',
     method: 'POST' as const,
     body: {
-      blueprintId: 'test-blueprint-id'
+      blueprintId: 'test-blueprint-id',
     },
-    thinkTime: 5000 // 5 seconds between requests
+    thinkTime: 5000, // 5 seconds between requests
   },
 
   // Health check load test
@@ -542,8 +562,8 @@ export const loadTestConfigs = {
     rampUp: 10, // 10 seconds ramp-up
     endpoint: '/api/health',
     method: 'GET' as const,
-    thinkTime: 100 // 100ms between requests
-  }
+    thinkTime: 100, // 100ms between requests
+  },
 };
 
 export const loadTester = new LoadTester();

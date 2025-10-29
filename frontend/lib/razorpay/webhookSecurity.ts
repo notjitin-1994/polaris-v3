@@ -92,14 +92,14 @@ function validateWebhookEnvironment(): { valid: boolean; error?: string } {
   if (!webhookSecret) {
     return {
       valid: false,
-      error: 'RAZORPAY_WEBHOOK_SECRET environment variable is not configured'
+      error: 'RAZORPAY_WEBHOOK_SECRET environment variable is not configured',
     };
   }
 
   if (webhookSecret.length < 20) {
     return {
       valid: false,
-      error: 'Invalid RAZORPAY_WEBHOOK_SECRET format: must be at least 20 characters'
+      error: 'Invalid RAZORPAY_WEBHOOK_SECRET format: must be at least 20 characters',
     };
   }
 
@@ -107,7 +107,8 @@ function validateWebhookEnvironment(): { valid: boolean; error?: string } {
   if (!/^[a-zA-Z0-9_]+$/.test(webhookSecret)) {
     return {
       valid: false,
-      error: 'Invalid RAZORPAY_WEBHOOK_SECRET format: must contain only alphanumeric characters and underscores'
+      error:
+        'Invalid RAZORPAY_WEBHOOK_SECRET format: must contain only alphanumeric characters and underscores',
     };
   }
 
@@ -164,7 +165,7 @@ export function parseWebhookEvent(payload: string): {
     if (!payload || payload.trim().length === 0) {
       return {
         valid: false,
-        error: 'Empty webhook payload'
+        error: 'Empty webhook payload',
       };
     }
 
@@ -174,21 +175,21 @@ export function parseWebhookEvent(payload: string): {
     if (!webhook.event) {
       return {
         valid: false,
-        error: 'Missing event field in webhook payload'
+        error: 'Missing event field in webhook payload',
       };
     }
 
     if (!webhook.account_id) {
       return {
         valid: false,
-        error: 'Missing account_id field in webhook payload'
+        error: 'Missing account_id field in webhook payload',
       };
     }
 
     if (!webhook.payload?.entity) {
       return {
         valid: false,
-        error: 'Missing payload.entity field in webhook payload'
+        error: 'Missing payload.entity field in webhook payload',
       };
     }
 
@@ -197,7 +198,7 @@ export function parseWebhookEvent(payload: string): {
     if (!eventId) {
       return {
         valid: false,
-        error: 'Missing entity.id in webhook payload'
+        error: 'Missing entity.id in webhook payload',
       };
     }
 
@@ -206,7 +207,7 @@ export function parseWebhookEvent(payload: string): {
     if (eventParts.length !== 2) {
       return {
         valid: false,
-        error: `Invalid event format: ${webhook.event}. Expected format: "category.action"`
+        error: `Invalid event format: ${webhook.event}. Expected format: "category.action"`,
       };
     }
 
@@ -216,7 +217,7 @@ export function parseWebhookEvent(payload: string): {
     if (!validCategories.includes(category)) {
       return {
         valid: false,
-        error: `Invalid event category: ${category}. Must be one of: ${validCategories.join(', ')}`
+        error: `Invalid event category: ${category}. Must be one of: ${validCategories.join(', ')}`,
       };
     }
 
@@ -226,13 +227,13 @@ export function parseWebhookEvent(payload: string): {
         eventType: webhook.event,
         eventId,
         accountId: webhook.account_id,
-        payload: webhook.payload
-      }
+        payload: webhook.payload,
+      },
     };
   } catch (error) {
     return {
       valid: false,
-      error: `Failed to parse webhook payload: ${error instanceof Error ? error.message : 'Invalid JSON format'}`
+      error: `Failed to parse webhook payload: ${error instanceof Error ? error.message : 'Invalid JSON format'}`,
     };
   }
 }
@@ -261,7 +262,7 @@ export function verifyWebhookSignature(
   if (!payload || !signature || !secret) {
     return {
       valid: false,
-      error: 'Missing required parameters: payload, signature, and secret are required'
+      error: 'Missing required parameters: payload, signature, and secret are required',
     };
   }
 
@@ -269,21 +270,21 @@ export function verifyWebhookSignature(
   if (typeof payload !== 'string') {
     return {
       valid: false,
-      error: 'Payload must be a string'
+      error: 'Payload must be a string',
     };
   }
 
   if (typeof signature !== 'string') {
     return {
       valid: false,
-      error: 'Signature must be a string'
+      error: 'Signature must be a string',
     };
   }
 
   if (signature.length !== 64) {
     return {
       valid: false,
-      error: 'Invalid signature format: must be 64-character hexadecimal string'
+      error: 'Invalid signature format: must be 64-character hexadecimal string',
     };
   }
 
@@ -291,7 +292,7 @@ export function verifyWebhookSignature(
   if (!/^[a-fA-F0-9]{64}$/.test(signature)) {
     return {
       valid: false,
-      error: 'Invalid signature format: must contain only hexadecimal characters'
+      error: 'Invalid signature format: must contain only hexadecimal characters',
     };
   }
 
@@ -301,7 +302,7 @@ export function verifyWebhookSignature(
   } catch (error) {
     return {
       valid: false,
-      error: `Webhook signature verification failed: ${error instanceof Error ? error.message : 'Unknown error'}`
+      error: `Webhook signature verification failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
     };
   }
 }
@@ -328,7 +329,7 @@ export function validateWebhookHeaders(headers: Headers): {
   if (!signature) {
     return {
       valid: false,
-      error: 'Missing or invalid x-razorpay-signature header'
+      error: 'Missing or invalid x-razorpay-signature header',
     };
   }
 
@@ -337,13 +338,13 @@ export function validateWebhookHeaders(headers: Headers): {
     return {
       valid: false,
       signature,
-      error: 'Invalid signature format: must be 64-character hexadecimal string'
+      error: 'Invalid signature format: must be 64-character hexadecimal string',
     };
   }
 
   return {
     valid: true,
-    signature
+    signature,
   };
 }
 
@@ -381,7 +382,7 @@ export function validateWebhookSecurity(
   if (!envValidation.valid) {
     return {
       valid: false,
-      error: envValidation.error
+      error: envValidation.error,
     };
   }
 
@@ -392,7 +393,7 @@ export function validateWebhookSecurity(
   if (!headerValidation.valid) {
     return {
       valid: false,
-      error: headerValidation.error
+      error: headerValidation.error,
     };
   }
 
@@ -401,7 +402,7 @@ export function validateWebhookSecurity(
   if (!payloadValidation.valid) {
     return {
       valid: false,
-      error: payloadValidation.error
+      error: payloadValidation.error,
     };
   }
 
@@ -420,8 +421,8 @@ export function validateWebhookSecurity(
         webhookId: payloadValidation.event?.eventId,
         eventType: payloadValidation.event?.eventType,
         signatureValid: false,
-        timestamp: new Date().toISOString()
-      }
+        timestamp: new Date().toISOString(),
+      },
     };
   }
 
@@ -433,8 +434,8 @@ export function validateWebhookSecurity(
       eventType: payloadValidation.event?.eventType,
       signatureValid: true,
       eventId: payloadValidation.event?.eventId,
-      timestamp: new Date().toISOString()
-    }
+      timestamp: new Date().toISOString(),
+    },
   };
 }
 
@@ -482,9 +483,9 @@ export function createWebhookSecurityConfig(options?: {
       'order.paid',
       // Refund events
       'refund.created',
-      'refund.processed'
+      'refund.processed',
     ],
-    requireAccountVerification: options?.requireAccountVerification ?? true
+    requireAccountVerification: options?.requireAccountVerification ?? true,
   };
 }
 
@@ -510,7 +511,7 @@ export function validatePayloadAgainstConfig(
   if (!config.allowedEventTypes.includes(payload.eventType)) {
     return {
       valid: false,
-      error: `Event type not allowed: ${payload.eventType}`
+      error: `Event type not allowed: ${payload.eventType}`,
     };
   }
 
@@ -518,15 +519,18 @@ export function validatePayloadAgainstConfig(
   if (!payload.eventId || typeof payload.eventId !== 'string') {
     return {
       valid: false,
-      error: 'Invalid or missing event ID'
+      error: 'Invalid or missing event ID',
     };
   }
 
   // Validate account ID if required
-  if (config.requireAccountVerification && (!payload.accountId || typeof payload.accountId !== 'string')) {
+  if (
+    config.requireAccountVerification &&
+    (!payload.accountId || typeof payload.accountId !== 'string')
+  ) {
     return {
       valid: false,
-      error: 'Invalid or missing account ID'
+      error: 'Invalid or missing account ID',
     };
   }
 
@@ -587,14 +591,14 @@ export function createTestWebhookPayload(
         ...(entityId.startsWith('sub_') && {
           current_start: Math.floor(Date.now() / 1000),
           plan_id: 'plan_test123',
-          customer_id: 'cust_test456'
+          customer_id: 'cust_test456',
         }),
         ...(entityId.startsWith('pay_') && {
           amount: 50000, // ₹500
           currency: 'INR',
-          method: 'card'
-        })
-      }
-    }
+          method: 'card',
+        }),
+      },
+    },
   };
 }

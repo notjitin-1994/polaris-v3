@@ -16,7 +16,14 @@
 
 'use client';
 
-import React, { createContext, useContext, useEffect, useState, useCallback, ReactNode } from 'react';
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  useCallback,
+  ReactNode,
+} from 'react';
 import { getRazorpayConfig } from '@/lib/config/razorpayConfig';
 import type { RazorpayInstance } from '@/types/razorpay';
 
@@ -107,9 +114,11 @@ export function useRazorpay(): RazorpayContextType {
  * Check if Razorpay script is available in window
  */
 function isRazorpayScriptAvailable(): boolean {
-  return typeof window !== 'undefined' &&
-         typeof window.Razorpay !== 'undefined' &&
-         typeof window.Razorpay === 'function';
+  return (
+    typeof window !== 'undefined' &&
+    typeof window.Razorpay !== 'undefined' &&
+    typeof window.Razorpay === 'function'
+  );
 }
 
 /**
@@ -296,11 +305,7 @@ export function RazorpayProvider({
     isAvailable,
   };
 
-  return (
-    <RazorpayContext.Provider value={contextValue}>
-      {children}
-    </RazorpayContext.Provider>
-  );
+  return <RazorpayContext.Provider value={contextValue}>{children}</RazorpayContext.Provider>;
 }
 
 // ============================================================================

@@ -49,9 +49,13 @@ const isForce = args.includes('--force');
 if (!isDryRun && !isConfirm) {
   console.error('❌ Please specify --dry-run or --confirm');
   console.error('\nUsage:');
-  console.error('  npm run delete-old-razorpay-plans --dry-run     # Preview what would be deleted');
+  console.error(
+    '  npm run delete-old-razorpay-plans --dry-run     # Preview what would be deleted'
+  );
   console.error('  npm run delete-old-razorpay-plans --confirm     # Actually delete old plans');
-  console.error('  npm run delete-old-razorpay-plans --confirm --force # Skip confirmation prompts');
+  console.error(
+    '  npm run delete-old-razorpay-plans --confirm --force # Skip confirmation prompts'
+  );
   process.exit(1);
 }
 
@@ -64,16 +68,13 @@ if (isDryRun && isConfirm) {
  * Validate environment variables
  */
 function validateEnvironment(): void {
-  const required = [
-    'NEXT_PUBLIC_RAZORPAY_KEY_ID',
-    'RAZORPAY_KEY_SECRET'
-  ];
+  const required = ['NEXT_PUBLIC_RAZORPAY_KEY_ID', 'RAZORPAY_KEY_SECRET'];
 
-  const missing = required.filter(key => !process.env[key]);
+  const missing = required.filter((key) => !process.env[key]);
 
   if (missing.length > 0) {
     console.error('❌ Missing required environment variables:');
-    missing.forEach(key => console.error(`   - ${key}`));
+    missing.forEach((key) => console.error(`   - ${key}`));
     console.error('\nPlease add these to your .env.local file');
     process.exit(1);
   }
@@ -121,7 +122,7 @@ function formatDate(timestamp: number): string {
     month: 'short',
     day: 'numeric',
     hour: '2-digit',
-    minute: '2-digit'
+    minute: '2-digit',
   });
 }
 
@@ -151,7 +152,7 @@ async function checkActiveSubscriptions(razorpay: any, planId: string): Promise<
   try {
     const subscriptions = await razorpay.subscriptions.all({
       count: 1, // We only need to know if there are any
-      plan_id: planId
+      plan_id: planId,
     });
 
     return subscriptions.count || 0;
@@ -196,7 +197,7 @@ function promptConfirmation(message: string): boolean {
   const readline = require('readline');
   const rl = readline.createInterface({
     input: process.stdin,
-    output: process.stdout
+    output: process.stdout,
   });
 
   return new Promise((resolve) => {
@@ -244,7 +245,7 @@ async function main(): Promise<void> {
         const activeSubscriptions = await checkActiveSubscriptions(razorpay, plan.id);
         oldPlans.push({
           ...plan,
-          activeSubscriptions
+          activeSubscriptions,
         });
       }
     }
@@ -256,7 +257,7 @@ async function main(): Promise<void> {
     if (currentPlans.length > 0) {
       console.log('📋 CURRENT PLANS BEING PRESERVED:');
       console.log('─'.repeat(80));
-      currentPlans.forEach(plan => {
+      currentPlans.forEach((plan) => {
         console.log(`   ✅ ${extractPlanInfo(plan)}`);
         console.log(`      ID: ${plan.id}`);
       });
@@ -264,9 +265,9 @@ async function main(): Promise<void> {
     }
 
     // Analyze old plans
-    const safeToDelete = oldPlans.filter(p => p.activeSubscriptions === 0);
-    const cannotDelete = oldPlans.filter(p => p.activeSubscriptions > 0);
-    const unknownStatus = oldPlans.filter(p => p.activeSubscriptions === -1);
+    const safeToDelete = oldPlans.filter((p) => p.activeSubscriptions === 0);
+    const cannotDelete = oldPlans.filter((p) => p.activeSubscriptions > 0);
+    const unknownStatus = oldPlans.filter((p) => p.activeSubscriptions === -1);
 
     console.log('🗑️  OLD PLANS ANALYSIS:');
     console.log('─'.repeat(80));
@@ -283,7 +284,7 @@ async function main(): Promise<void> {
     if (safeToDelete.length > 0) {
       console.log('✅ PLANS SAFE TO DELETE:');
       console.log('─'.repeat(80));
-      safeToDelete.forEach(plan => {
+      safeToDelete.forEach((plan) => {
         console.log(`   🗑️  ${extractPlanInfo(plan)}`);
         console.log(`      ID: ${plan.id}`);
       });
@@ -293,7 +294,7 @@ async function main(): Promise<void> {
     if (cannotDelete.length > 0) {
       console.log('🔴 PLANS WITH ACTIVE SUBSCRIPTIONS (CANNOT DELETE):');
       console.log('─'.repeat(80));
-      cannotDelete.forEach(plan => {
+      cannotDelete.forEach((plan) => {
         console.log(`   ⚠️  ${extractPlanInfo(plan)}`);
         console.log(`      ID: ${plan.id} - ${plan.activeSubscriptions} active subscription(s)`);
       });
@@ -303,7 +304,7 @@ async function main(): Promise<void> {
     if (unknownStatus.length > 0) {
       console.log('⚠️  PLANS WITH UNKNOWN STATUS:');
       console.log('─'.repeat(80));
-      unknownStatus.forEach(plan => {
+      unknownStatus.forEach((plan) => {
         console.log(`   ❓ ${extractPlanInfo(plan)}`);
         console.log(`      ID: ${plan.id} - Could not verify subscription status`);
       });
@@ -314,7 +315,9 @@ async function main(): Promise<void> {
     if (isConfirm && safeToDelete.length > 0) {
       console.log('🚨 DELETION PROCESS:');
       console.log('─'.repeat(80));
-      console.log(`About to delete ${safeToDelete.length} old plan(s) with no active subscriptions.\n`);
+      console.log(
+        `About to delete ${safeToDelete.length} old plan(s) with no active subscriptions.\n`
+      );
 
       const confirmed = await promptConfirmation(
         `❓ Are you sure you want to delete these ${safeToDelete.length} plan(s)? Type 'yes' to confirm: `
@@ -351,7 +354,6 @@ async function main(): Promise<void> {
       }
 
       console.log('\n🔗 Dashboard URL: https://dashboard.razorpay.com/app/subscriptions/plans');
-
     } else if (isConfirm) {
       console.log('ℹ️  No safe-to-delete plans found');
       console.log('💡 Plans with active subscriptions must be migrated or cancelled first');
@@ -369,7 +371,6 @@ async function main(): Promise<void> {
         console.log('   npm run delete-old-razorpay-plans --confirm');
       }
     }
-
   } catch (error: any) {
     console.error('❌ Script failed:', error.message);
     console.error('This could be due to:');

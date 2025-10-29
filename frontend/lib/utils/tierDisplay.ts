@@ -450,9 +450,7 @@ const TEAM_TIER_HIERARCHY = ['crew', 'fleet', 'armada'];
  * getAvailableUpgradePlans('crew') // returns { individualPlans: [], teamPlans: ['fleet', 'armada'] }
  * getAvailableUpgradePlans('armada') // returns { individualPlans: [], teamPlans: [] }
  */
-export function getAvailableUpgradePlans(
-  currentTier: string | null | undefined
-): {
+export function getAvailableUpgradePlans(currentTier: string | null | undefined): {
   individualPlans: string[];
   teamPlans: string[];
 } {
@@ -501,14 +499,9 @@ export function getAvailableUpgradePlans(
  * shouldShowPlan('explorer', 'navigator') // returns false
  * shouldShowPlan('fleet', 'crew') // returns true
  */
-export function shouldShowPlan(
-  planId: string,
-  currentTier: string | null | undefined
-): boolean {
+export function shouldShowPlan(planId: string, currentTier: string | null | undefined): boolean {
   const { individualPlans, teamPlans } = getAvailableUpgradePlans(currentTier);
   const normalizedPlanId = planId.toLowerCase();
 
-  return (
-    individualPlans.includes(normalizedPlanId) || teamPlans.includes(normalizedPlanId)
-  );
+  return individualPlans.includes(normalizedPlanId) || teamPlans.includes(normalizedPlanId);
 }

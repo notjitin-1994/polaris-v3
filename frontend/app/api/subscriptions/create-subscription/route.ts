@@ -17,7 +17,7 @@ import {
   CreateSubscriptionResponseSchema,
   ErrorResponseSchema,
   validateCreateSubscriptionRequest,
-  type CreateSubscriptionRequest
+  type CreateSubscriptionRequest,
 } from '@/lib/schemas/razorpaySubscription';
 import { getSupabaseServerClient, getServerSession } from '@/lib/supabase/server';
 import type { Database } from '@/types/supabase';
@@ -36,7 +36,7 @@ export const dynamic = 'force-dynamic';
 const rateLimiter = createRateLimiter({
   windowMs: 60 * 1000, // 1 minute in milliseconds
   maxRequests: 10, // 10 requests per minute per IP
-  keyPrefix: 'subscription_api'
+  keyPrefix: 'subscription_api',
 });
 
 /**
@@ -60,7 +60,7 @@ function createErrorResponse(
     success: false,
     error: { code, message, details },
     requestId,
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
   };
 
   const response = NextResponse.json(errorResponse, { status });
@@ -70,15 +70,12 @@ function createErrorResponse(
 /**
  * Structured success response utility
  */
-function createSuccessResponse(
-  data: any,
-  requestId: string
-): NextResponse {
+function createSuccessResponse(data: any, requestId: string): NextResponse {
   const response = NextResponse.json({
     success: true,
     data,
     requestId,
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
   });
 
   return addApiSecurityHeaders(response);
@@ -93,9 +90,8 @@ export async function POST(request: Request): Promise<Response> {
 
   try {
     // Extract client IP for rate limiting
-    const ip = request.headers.get('x-forwarded-for') ||
-               request.headers.get('x-real-ip') ||
-               'unknown';
+    const ip =
+      request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'unknown';
 
     // Rate limiting check using Redis-based rate limiter
     const rateLimitResult = await rateLimiter.checkLimit(ip);
@@ -106,7 +102,7 @@ export async function POST(request: Request): Promise<Response> {
         limit: rateLimitResult.limit,
         remaining: rateLimitResult.remaining,
         resetTime: rateLimitResult.resetTime,
-        retryAfter: rateLimitResult.retryAfter
+        retryAfter: rateLimitResult.retryAfter,
       });
 
       const response = createErrorResponse(
@@ -119,16 +115,22 @@ export async function POST(request: Request): Promise<Response> {
           remaining: rateLimitResult.remaining,
           resetTime: rateLimitResult.resetTime.getTime(),
           windowMs: 60 * 1000,
-          retryAfter: rateLimitResult.retryAfter
+          retryAfter: rateLimitResult.retryAfter,
         }
       );
 
       // Add rate limit headers to response
       response.headers.set('X-RateLimit-Limit', rateLimitResult.limit.toString());
       response.headers.set('X-RateLimit-Remaining', rateLimitResult.remaining.toString());
-      response.headers.set('X-RateLimit-Reset', Math.ceil(rateLimitResult.resetTime.getTime() / 1000).toString());
+      response.headers.set(
+        'X-RateLimit-Reset',
+        Math.ceil(rateLimitResult.resetTime.getTime() / 1000).toString()
+      );
       if (rateLimitResult.retryAfter) {
-        response.headers.set('Retry-After', Math.ceil(rateLimitResult.retryAfter / 1000).toString());
+        response.headers.set(
+          'Retry-After',
+          Math.ceil(rateLimitResult.retryAfter / 1000).toString()
+        );
       }
 
       return response;
@@ -141,15 +143,10 @@ export async function POST(request: Request): Promise<Response> {
     } catch (error) {
       console.error('[Razorpay] Invalid JSON body', {
         requestId,
-        error: error instanceof Error ? error.message : 'Unknown error'
+        error: error instanceof Error ? error.message : 'Unknown error',
       });
 
-      return createErrorResponse(
-        'INVALID_JSON',
-        'Invalid JSON in request body',
-        400,
-        requestId
-      );
+      return createErrorResponse('INVALID_JSON', 'Invalid JSON in request body', 400, requestId);
     }
 
     // Validate request body using Zod schema
@@ -158,18 +155,12 @@ export async function POST(request: Request): Promise<Response> {
       console.error('[Razorpay] Validation failed', {
         requestId,
         errors: validationResult.error.flatten(),
-        body: requestBody
+        body: requestBody,
       });
 
-      return createErrorResponse(
-        'VALIDATION_ERROR',
-        'Invalid request parameters',
-        400,
-        requestId,
-        {
-          validationErrors: validationResult.error.flatten()
-        }
-      );
+      return createErrorResponse('VALIDATION_ERROR', 'Invalid request parameters', 400, requestId, {
+        validationErrors: validationResult.error.flatten(),
+      });
     }
 
     const { tier, billingCycle, seats, customerInfo, metadata } = validationResult.data;
@@ -180,7 +171,7 @@ export async function POST(request: Request): Promise<Response> {
       console.error('[Razorpay] Validation failed - seats required for team tier', {
         requestId,
         tier,
-        isTeamTier
+        isTeamTier,
       });
 
       return createErrorResponse(
@@ -191,7 +182,7 @@ export async function POST(request: Request): Promise<Response> {
         {
           tier,
           isTeamTier,
-          validationRule: 'team_tiers_require_seats'
+          validationRule: 'team_tiers_require_seats',
         }
       );
     }
@@ -201,7 +192,7 @@ export async function POST(request: Request): Promise<Response> {
         requestId,
         tier,
         seats,
-        isTeamTier
+        isTeamTier,
       });
 
       return createErrorResponse(
@@ -213,7 +204,7 @@ export async function POST(request: Request): Promise<Response> {
           tier,
           seats,
           isTeamTier,
-          validationRule: 'individual_tiers_no_seats'
+          validationRule: 'individual_tiers_no_seats',
         }
       );
     }
@@ -224,7 +215,7 @@ export async function POST(request: Request): Promise<Response> {
       console.error('[Razorpay] Authentication failed', {
         requestId,
         hasSession: !!sessionResult.session,
-        hasUser: !!sessionResult.session?.user
+        hasUser: !!sessionResult.session?.user,
       });
 
       return createErrorResponse(
@@ -253,7 +244,7 @@ export async function POST(request: Request): Promise<Response> {
       // Profile doesn't exist, create one
       console.log('[Razorpay] Creating user profile for new user', {
         requestId,
-        userId
+        userId,
       });
 
       const { data: newUserProfile, error: createError } = await supabase
@@ -266,7 +257,7 @@ export async function POST(request: Request): Promise<Response> {
           blueprint_creation_count: 0,
           blueprint_saving_count: 0,
           blueprint_creation_limit: 2, // Free tier limits
-          blueprint_saving_limit: 2
+          blueprint_saving_limit: 2,
         })
         .select('subscription_tier, full_name')
         .single();
@@ -275,7 +266,7 @@ export async function POST(request: Request): Promise<Response> {
         console.error('[Razorpay] Failed to create user profile', {
           requestId,
           userId,
-          error: createError
+          error: createError,
         });
 
         return createErrorResponse(
@@ -290,7 +281,7 @@ export async function POST(request: Request): Promise<Response> {
       console.log('[Razorpay] User profile created successfully', {
         requestId,
         userId,
-        profile: newUserProfile
+        profile: newUserProfile,
       });
 
       userProfile = newUserProfile;
@@ -299,7 +290,7 @@ export async function POST(request: Request): Promise<Response> {
       console.error('[Razorpay] Failed to fetch user profile', {
         requestId,
         userId,
-        error: profileError
+        error: profileError,
       });
 
       return createErrorResponse(
@@ -317,7 +308,7 @@ export async function POST(request: Request): Promise<Response> {
       console.error('[Razorpay] Plan not configured', {
         requestId,
         tier,
-        billingCycle
+        billingCycle,
       });
 
       return createErrorResponse(
@@ -335,12 +326,13 @@ export async function POST(request: Request): Promise<Response> {
     // Check for existing active subscriptions (duplicate prevention)
     console.log('[Razorpay] Checking for existing subscriptions', {
       requestId,
-      userId
+      userId,
     });
 
     const { data: existingSubscriptions, error: subscriptionCheckError } = await supabase
       .from('subscriptions')
-      .select(`
+      .select(
+        `
         subscription_id,
         razorpay_subscription_id,
         status,
@@ -349,7 +341,8 @@ export async function POST(request: Request): Promise<Response> {
         next_billing_date,
         created_at,
         updated_at
-      `)
+      `
+      )
       .eq('user_id', userId)
       .in('status', ['active', 'trialing'])
       .is('deleted_at', null)
@@ -359,7 +352,7 @@ export async function POST(request: Request): Promise<Response> {
       console.error('[Razorpay] Failed to check existing subscriptions', {
         requestId,
         userId,
-        error: subscriptionCheckError
+        error: subscriptionCheckError,
       });
 
       return createErrorResponse(
@@ -382,26 +375,27 @@ export async function POST(request: Request): Promise<Response> {
           id: activeSubscription.subscription_id,
           status: activeSubscription.status,
           tier: activeSubscription.subscription_tier,
-          nextBilling: activeSubscription.next_billing_date
+          nextBilling: activeSubscription.next_billing_date,
         },
         newRequest: {
           tier,
-          billingCycle
-        }
+          billingCycle,
+        },
       });
 
       // Allow upgrade to higher tier but prevent duplicate same tier
       const tierHierarchy = {
-        'free': 0,
-        'explorer': 1,
-        'navigator': 2,
-        'voyager': 3,
-        'crew': 4,
-        'fleet': 5,
-        'armada': 6
+        free: 0,
+        explorer: 1,
+        navigator: 2,
+        voyager: 3,
+        crew: 4,
+        fleet: 5,
+        armada: 6,
       };
 
-      const currentTierLevel = tierHierarchy[activeSubscription.subscription_tier as keyof typeof tierHierarchy] || 0;
+      const currentTierLevel =
+        tierHierarchy[activeSubscription.subscription_tier as keyof typeof tierHierarchy] || 0;
       const requestedTierLevel = tierHierarchy[tier] || 0;
 
       if (requestedTierLevel <= currentTierLevel) {
@@ -416,10 +410,10 @@ export async function POST(request: Request): Promise<Response> {
               tier: activeSubscription.subscription_tier,
               status: activeSubscription.status,
               planName: activeSubscription.plan_name,
-              nextBillingDate: activeSubscription.next_billing_date
+              nextBillingDate: activeSubscription.next_billing_date,
             },
             requestedTier: tier,
-            isUpgradeAttempt: requestedTierLevel <= currentTierLevel
+            isUpgradeAttempt: requestedTierLevel <= currentTierLevel,
           }
         );
       } else {
@@ -429,7 +423,7 @@ export async function POST(request: Request): Promise<Response> {
           userId,
           fromTier: activeSubscription.subscription_tier,
           toTier: tier,
-          currentStatus: activeSubscription.status
+          currentStatus: activeSubscription.status,
         });
       }
     }
@@ -444,7 +438,7 @@ export async function POST(request: Request): Promise<Response> {
       planId,
       planAmount,
       existingSubscriptionsCount: existingSubscriptions?.length || 0,
-      processingTime: Date.now() - startTime
+      processingTime: Date.now() - startTime,
     });
 
     // Create or retrieve Razorpay customer
@@ -452,7 +446,7 @@ export async function POST(request: Request): Promise<Response> {
       requestId,
       userId,
       email: user.email,
-      customerInfo
+      customerInfo,
     });
 
     let razorpayCustomer;
@@ -461,7 +455,7 @@ export async function POST(request: Request): Promise<Response> {
       if (user.email) {
         const existingCustomers = await razorpayClient.customers.all({
           email: user.email,
-          limit: 1
+          limit: 1,
         });
 
         if (existingCustomers.items.length > 0) {
@@ -469,7 +463,7 @@ export async function POST(request: Request): Promise<Response> {
           console.log('[Razorpay] Found existing customer', {
             requestId,
             customerId: razorpayCustomer.id,
-            customerEmail: razorpayCustomer.email
+            customerEmail: razorpayCustomer.email,
           });
         }
       }
@@ -484,8 +478,8 @@ export async function POST(request: Request): Promise<Response> {
             user_id: userId,
             source: 'polaris_v3',
             created_at: new Date().toISOString(),
-            ...(metadata && { user_metadata: JSON.stringify(metadata) })
-          }
+            ...(metadata && { user_metadata: JSON.stringify(metadata) }),
+          },
         };
 
         razorpayCustomer = await razorpayClient.customers.create(customerData);
@@ -493,7 +487,7 @@ export async function POST(request: Request): Promise<Response> {
           requestId,
           customerId: razorpayCustomer.id,
           customerName: razorpayCustomer.name,
-          customerEmail: razorpayCustomer.email
+          customerEmail: razorpayCustomer.email,
         });
       }
     } catch (razorpayError: any) {
@@ -503,7 +497,7 @@ export async function POST(request: Request): Promise<Response> {
         email: user.email,
         error: razorpayError,
         errorCode: razorpayError.error?.code,
-        errorMessage: razorpayError.error?.description
+        errorMessage: razorpayError.error?.description,
       });
 
       return createErrorResponse(
@@ -513,7 +507,7 @@ export async function POST(request: Request): Promise<Response> {
         requestId,
         {
           originalError: razorpayError.error?.description || razorpayError.message,
-          errorCode: razorpayError.error?.code
+          errorCode: razorpayError.error?.code,
         }
       );
     }
@@ -526,7 +520,7 @@ export async function POST(request: Request): Promise<Response> {
       planAmount,
       tier,
       billingCycle,
-      seats
+      seats,
     });
 
     let razorpaySubscription;
@@ -544,8 +538,8 @@ export async function POST(request: Request): Promise<Response> {
           seats: seats?.toString() || '1',
           source: 'polaris_v3_subscription',
           created_at: new Date().toISOString(),
-          ...(metadata && { subscription_metadata: JSON.stringify(metadata) })
-        }
+          ...(metadata && { subscription_metadata: JSON.stringify(metadata) }),
+        },
       };
 
       // Add callback URL for production
@@ -562,7 +556,7 @@ export async function POST(request: Request): Promise<Response> {
         status: razorpaySubscription.status,
         shortUrl: razorpaySubscription.short_url,
         currentStart: razorpaySubscription.current_start,
-        currentEnd: razorpaySubscription.current_end
+        currentEnd: razorpaySubscription.current_end,
       });
     } catch (razorpayError: any) {
       console.error('[Razorpay] Subscription creation failed', {
@@ -571,7 +565,7 @@ export async function POST(request: Request): Promise<Response> {
         planId,
         error: razorpayError,
         errorCode: razorpayError.error?.code,
-        errorMessage: razorpayError.error?.description
+        errorMessage: razorpayError.error?.description,
       });
 
       return createErrorResponse(
@@ -583,7 +577,7 @@ export async function POST(request: Request): Promise<Response> {
           originalError: razorpayError.error?.description || razorpayError.message,
           errorCode: razorpayError.error?.code,
           planId,
-          customerId: razorpayCustomer.id
+          customerId: razorpayCustomer.id,
         }
       );
     }
@@ -593,7 +587,7 @@ export async function POST(request: Request): Promise<Response> {
       requestId,
       razorpaySubscriptionId: razorpaySubscription.id,
       userId,
-      customerId: razorpayCustomer.id
+      customerId: razorpayCustomer.id,
     });
 
     try {
@@ -629,7 +623,8 @@ export async function POST(request: Request): Promise<Response> {
           : null,
         total_count: razorpaySubscription.total_count || (billingCycle === 'monthly' ? 12 : 1),
         paid_count: razorpaySubscription.paid_count || 0,
-        remaining_count: razorpaySubscription.remaining_count || (billingCycle === 'monthly' ? 12 : 1),
+        remaining_count:
+          razorpaySubscription.remaining_count || (billingCycle === 'monthly' ? 12 : 1),
         short_url: razorpaySubscription.short_url,
         metadata: {
           billing_cycle: billingCycle,
@@ -638,8 +633,8 @@ export async function POST(request: Request): Promise<Response> {
           customer_info: customerInfo,
           user_metadata: metadata,
           created_via_api: 'create-subscription',
-          api_request_id: requestId
-        }
+          api_request_id: requestId,
+        },
       };
 
       const { data: insertedSubscription, error: insertError } = await supabase
@@ -656,7 +651,7 @@ export async function POST(request: Request): Promise<Response> {
           error: insertError,
           errorCode: insertError.code,
           errorMessage: insertError.message,
-          details: insertError.details
+          details: insertError.details,
         });
 
         // If database insertion fails, we should attempt to cancel the Razorpay subscription
@@ -664,13 +659,13 @@ export async function POST(request: Request): Promise<Response> {
           await razorpayClient.subscriptions.cancel(razorpaySubscription.id);
           console.log('[Razorpay] Cancelled subscription due to database error', {
             requestId,
-            subscriptionId: razorpaySubscription.id
+            subscriptionId: razorpaySubscription.id,
           });
         } catch (cancelError: any) {
           console.error('[Razorpay] Failed to cancel subscription after database error', {
             requestId,
             subscriptionId: razorpaySubscription.id,
-            cancelError: cancelError.error?.description || cancelError.message
+            cancelError: cancelError.error?.description || cancelError.message,
           });
         }
 
@@ -684,7 +679,7 @@ export async function POST(request: Request): Promise<Response> {
             errorCode: insertError.code,
             details: insertError.details,
             razorpaySubscriptionId: razorpaySubscription.id,
-            subscriptionCancelled: true
+            subscriptionCancelled: true,
           }
         );
       }
@@ -694,15 +689,14 @@ export async function POST(request: Request): Promise<Response> {
         databaseSubscriptionId: insertedSubscription.subscription_id,
         razorpaySubscriptionId: razorpaySubscription.id,
         userId,
-        status: insertedSubscription.status
+        status: insertedSubscription.status,
       });
-
     } catch (databaseError: any) {
       console.error('[Razorpay] Unexpected database error', {
         requestId,
         razorpaySubscriptionId: razorpaySubscription.id,
         userId,
-        error: databaseError
+        error: databaseError,
       });
 
       // Attempt to cancel Razorpay subscription on unexpected database error
@@ -710,13 +704,13 @@ export async function POST(request: Request): Promise<Response> {
         await razorpayClient.subscriptions.cancel(razorpaySubscription.id);
         console.log('[Razorpay] Cancelled subscription due to unexpected database error', {
           requestId,
-          subscriptionId: razorpaySubscription.id
+          subscriptionId: razorpaySubscription.id,
         });
       } catch (cancelError: any) {
         console.error('[Razorpay] Failed to cancel subscription after unexpected database error', {
           requestId,
           subscriptionId: razorpaySubscription.id,
-          cancelError: cancelError.error?.description || cancelError.message
+          cancelError: cancelError.error?.description || cancelError.message,
         });
       }
 
@@ -728,41 +722,43 @@ export async function POST(request: Request): Promise<Response> {
         {
           originalError: databaseError.message || 'Unknown error',
           razorpaySubscriptionId: razorpaySubscription.id,
-          subscriptionCancelled: true
+          subscriptionCancelled: true,
         }
       );
     }
 
-    return createSuccessResponse({
-      message: 'Subscription created successfully',
-      subscription: {
-        subscriptionId: razorpaySubscription.id,
-        customerId: razorpayCustomer.id,
-        shortUrl: razorpaySubscription.short_url,
-        status: razorpaySubscription.status,
-        planName: razorpaySubscription.plan?.name || `${tier} (${billingCycle})`,
-        planAmount: razorpaySubscription.plan?.amount || planAmount,
-        planCurrency: razorpaySubscription.plan?.currency || 'INR',
-        billingCycle,
-        nextBillingDate: razorpaySubscription.current_end
-          ? new Date(razorpaySubscription.current_end * 1000).toISOString()
-          : null,
-        currentStart: razorpaySubscription.current_start
-          ? new Date(razorpaySubscription.current_start * 1000).toISOString()
-          : null,
-        tier,
-        seats,
-        customerName: razorpayCustomer.name,
-        customerEmail: razorpayCustomer.email
-      }
-    }, requestId);
-
+    return createSuccessResponse(
+      {
+        message: 'Subscription created successfully',
+        subscription: {
+          subscriptionId: razorpaySubscription.id,
+          customerId: razorpayCustomer.id,
+          shortUrl: razorpaySubscription.short_url,
+          status: razorpaySubscription.status,
+          planName: razorpaySubscription.plan?.name || `${tier} (${billingCycle})`,
+          planAmount: razorpaySubscription.plan?.amount || planAmount,
+          planCurrency: razorpaySubscription.plan?.currency || 'INR',
+          billingCycle,
+          nextBillingDate: razorpaySubscription.current_end
+            ? new Date(razorpaySubscription.current_end * 1000).toISOString()
+            : null,
+          currentStart: razorpaySubscription.current_start
+            ? new Date(razorpaySubscription.current_start * 1000).toISOString()
+            : null,
+          tier,
+          seats,
+          customerName: razorpayCustomer.name,
+          customerEmail: razorpayCustomer.email,
+        },
+      },
+      requestId
+    );
   } catch (error: unknown) {
     console.error('[Razorpay] Unexpected error in subscription creation', {
       requestId,
       error: error instanceof Error ? error.message : 'Unknown error',
       stack: error instanceof Error ? error.stack : undefined,
-      processingTime: Date.now() - startTime
+      processingTime: Date.now() - startTime,
     });
 
     return createErrorResponse(
@@ -772,7 +768,7 @@ export async function POST(request: Request): Promise<Response> {
       requestId,
       {
         timestamp: new Date().toISOString(),
-        processingTime: Date.now() - startTime
+        processingTime: Date.now() - startTime,
       }
     );
   }
@@ -787,9 +783,9 @@ export async function GET(): Promise<Response> {
       success: false,
       error: {
         code: 'METHOD_NOT_ALLOWED',
-        message: 'Only POST method is allowed for this endpoint'
+        message: 'Only POST method is allowed for this endpoint',
       },
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     },
     { status: 405 }
   );

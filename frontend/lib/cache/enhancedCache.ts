@@ -62,7 +62,7 @@ class EnhancedCache<T = any> {
       redisKeyPrefix: 'polaris_cache:',
       enableMetrics: true,
       serialize: true,
-      ...options
+      ...options,
     };
 
     this.metrics = {
@@ -74,7 +74,7 @@ class EnhancedCache<T = any> {
       redisHits: 0,
       redisMisses: 0,
       memorySize: 0,
-      hitRate: 0
+      hitRate: 0,
     };
 
     // Initialize LRU memory cache
@@ -86,7 +86,7 @@ class EnhancedCache<T = any> {
       dispose: (value, key) => {
         this.metrics.evictions++;
         this.updateMemorySize(-1);
-      }
+      },
     });
 
     // Initialize Redis client if enabled
@@ -162,16 +162,14 @@ class EnhancedCache<T = any> {
           const redisValue = await this.redisClient.get(fullKey);
 
           if (redisValue) {
-            const parsedValue = this.options.serialize
-              ? JSON.parse(redisValue)
-              : redisValue;
+            const parsedValue = this.options.serialize ? JSON.parse(redisValue) : redisValue;
 
             // Store in memory cache for faster future access
             const cacheEntry: CacheEntry<T> = {
               value: parsedValue,
               timestamp: now,
               ttl: this.options.ttl,
-              hits: 1
+              hits: 1,
             };
 
             this.memoryCache.set(fullKey, cacheEntry);
@@ -194,7 +192,6 @@ class EnhancedCache<T = any> {
       this.metrics.misses++;
       this.updateHitRate();
       return null;
-
     } catch (error) {
       console.error('Enhanced cache: Get operation failed', error);
       this.metrics.misses++;
@@ -216,7 +213,7 @@ class EnhancedCache<T = any> {
         value,
         timestamp: now,
         ttl,
-        hits: 0
+        hits: 0,
       };
 
       // Set in memory cache
@@ -230,9 +227,7 @@ class EnhancedCache<T = any> {
       // Set in Redis if available
       if (this.redisClient) {
         try {
-          const serializedValue = this.options.serialize
-            ? JSON.stringify(value)
-            : String(value);
+          const serializedValue = this.options.serialize ? JSON.stringify(value) : String(value);
 
           await this.redisClient.setex(fullKey, Math.ceil(ttl / 1000), serializedValue);
         } catch (redisError) {
@@ -243,7 +238,6 @@ class EnhancedCache<T = any> {
 
       this.metrics.sets++;
       return true;
-
     } catch (error) {
       console.error('Enhanced cache: Set operation failed', error);
       return false;
@@ -277,7 +271,6 @@ class EnhancedCache<T = any> {
 
       this.metrics.deletes++;
       return true;
-
     } catch (error) {
       console.error('Enhanced cache: Delete operation failed', error);
       return false;
@@ -331,7 +324,6 @@ class EnhancedCache<T = any> {
       }
 
       return true;
-
     } catch (error) {
       console.error('Enhanced cache: Clear operation failed', error);
       return false;
@@ -341,11 +333,7 @@ class EnhancedCache<T = any> {
   /**
    * Get or set pattern - fetches from cache or executes function
    */
-  async getOrSet(
-    key: string,
-    fetchFn: () => Promise<T> | T,
-    customTtl?: number
-  ): Promise<T> {
+  async getOrSet(key: string, fetchFn: () => Promise<T> | T, customTtl?: number): Promise<T> {
     const cached = await this.get(key);
 
     if (cached !== null) {
@@ -394,7 +382,7 @@ class EnhancedCache<T = any> {
     const stats: CacheStats = {
       memory: { ...this.metrics },
       totalHitRate: this.metrics.hitRate,
-      lastReset: new Date()
+      lastReset: new Date(),
     };
 
     // Add Redis stats if available
@@ -404,15 +392,16 @@ class EnhancedCache<T = any> {
         const keyCount = await this.redisClient.dbsize();
 
         const memoryUsage = this.parseRedisMemoryInfo(info);
-        const redisHitRate = this.metrics.redisHits + this.metrics.redisMisses > 0
-          ? (this.metrics.redisHits / (this.metrics.redisHits + this.metrics.redisMisses)) * 100
-          : 0;
+        const redisHitRate =
+          this.metrics.redisHits + this.metrics.redisMisses > 0
+            ? (this.metrics.redisHits / (this.metrics.redisHits + this.metrics.redisMisses)) * 100
+            : 0;
 
         stats.redis = {
           connected: this.redisClient.status === 'ready',
           keyCount,
           memoryUsage,
-          hitRate: redisHitRate
+          hitRate: redisHitRate,
         };
       } catch (error) {
         console.warn('Enhanced cache: Failed to get Redis stats', error);
@@ -420,7 +409,7 @@ class EnhancedCache<T = any> {
           connected: false,
           keyCount: 0,
           memoryUsage: 'unknown',
-          hitRate: 0
+          hitRate: 0,
         };
       }
     }
@@ -441,7 +430,7 @@ class EnhancedCache<T = any> {
       redisHits: 0,
       redisMisses: 0,
       memorySize: this.memoryCache.size,
-      hitRate: 0
+      hitRate: 0,
     };
   }
 
@@ -456,9 +445,7 @@ class EnhancedCache<T = any> {
    * Get all memory cache keys
    */
   keys(): string[] {
-    return this.memoryCache.keys().map(key =>
-      key.replace(this.options.redisKeyPrefix, '')
-    );
+    return this.memoryCache.keys().map((key) => key.replace(this.options.redisKeyPrefix, ''));
   }
 
   /**
@@ -492,14 +479,12 @@ class EnhancedCache<T = any> {
 
   private updateHitRate(): void {
     const totalRequests = this.metrics.hits + this.metrics.misses;
-    this.metrics.hitRate = totalRequests > 0
-      ? (this.metrics.hits / totalRequests) * 100
-      : 0;
+    this.metrics.hitRate = totalRequests > 0 ? (this.metrics.hits / totalRequests) * 100 : 0;
   }
 
   private parseRedisMemoryInfo(info: string): string {
     const lines = info.split('\r\n');
-    const memoryLine = lines.find(line => line.startsWith('used_memory_human:'));
+    const memoryLine = lines.find((line) => line.startsWith('used_memory_human:'));
 
     if (memoryLine) {
       return memoryLine.split(':')[1];
@@ -515,7 +500,7 @@ export const apiCache = new EnhancedCache({
   ttl: 5 * 60 * 1000, // 5 minutes
   enableRedis: true,
   redisKeyPrefix: 'api_cache:',
-  enableMetrics: true
+  enableMetrics: true,
 });
 
 export const userCache = new EnhancedCache({
@@ -523,7 +508,7 @@ export const userCache = new EnhancedCache({
   ttl: 15 * 60 * 1000, // 15 minutes
   enableRedis: true,
   redisKeyPrefix: 'user_cache:',
-  enableMetrics: true
+  enableMetrics: true,
 });
 
 export const blueprintCache = new EnhancedCache({
@@ -531,7 +516,7 @@ export const blueprintCache = new EnhancedCache({
   ttl: 30 * 60 * 1000, // 30 minutes
   enableRedis: true,
   redisKeyPrefix: 'blueprint_cache:',
-  enableMetrics: true
+  enableMetrics: true,
 });
 
 export const questionCache = new EnhancedCache({
@@ -539,7 +524,7 @@ export const questionCache = new EnhancedCache({
   ttl: 60 * 60 * 1000, // 1 hour
   enableRedis: true,
   redisKeyPrefix: 'question_cache:',
-  enableMetrics: true
+  enableMetrics: true,
 });
 
 // Utility functions
@@ -552,14 +537,14 @@ export async function getCachesStats(): Promise<Record<string, CacheStats>> {
     apiCache.getStats(),
     userCache.getStats(),
     blueprintCache.getStats(),
-    questionCache.getStats()
+    questionCache.getStats(),
   ]);
 
   return {
     api,
     user,
     blueprint,
-    question
+    question,
   };
 }
 
@@ -569,7 +554,7 @@ export async function clearAllCaches(): Promise<boolean> {
       apiCache.clear(),
       userCache.clear(),
       blueprintCache.clear(),
-      questionCache.clear()
+      questionCache.clear(),
     ]);
     return true;
   } catch (error) {

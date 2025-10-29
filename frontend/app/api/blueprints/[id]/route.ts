@@ -91,7 +91,7 @@ export async function DELETE(
       return NextResponse.json(
         {
           success: false,
-          error: 'Blueprint not found or already deleted'
+          error: 'Blueprint not found or already deleted',
         },
         { status: 404 }
       );
@@ -188,7 +188,7 @@ export async function POST(
       return NextResponse.json(
         {
           success: false,
-          error: 'Blueprint not found or not deleted'
+          error: 'Blueprint not found or not deleted',
         },
         { status: 404 }
       );

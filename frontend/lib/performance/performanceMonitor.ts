@@ -62,7 +62,7 @@ class PerformanceMonitor {
       webhookProcessing: { warning: 1000, critical: 2000 },
       blueprintGeneration: { warning: 20000, critical: 45000 },
       fileUpload: { warning: 5000, critical: 10000 },
-      ...thresholds
+      ...thresholds,
     };
     this.maxMetricsPerCategory = maxMetricsPerCategory;
   }
@@ -70,7 +70,11 @@ class PerformanceMonitor {
   /**
    * Start measuring a performance operation
    */
-  startTimer(name: string, metadata?: Record<string, any>, tags?: Record<string, string>): () => PerformanceMetric {
+  startTimer(
+    name: string,
+    metadata?: Record<string, any>,
+    tags?: Record<string, string>
+  ): () => PerformanceMetric {
     const startTime = performance.now();
     const startTimestamp = Date.now();
 
@@ -87,7 +91,7 @@ class PerformanceMonitor {
         success: true,
         metadata,
         tags,
-        thresholds: this.thresholds[this.getThresholdCategory(name)]
+        thresholds: this.thresholds[this.getThresholdCategory(name)],
       };
 
       this.addMetric(metric);
@@ -101,7 +105,7 @@ class PerformanceMonitor {
   recordMetric(metric: Omit<PerformanceMetric, 'thresholds'>): void {
     const fullMetric: PerformanceMetric = {
       ...metric,
-      thresholds: this.thresholds[this.getThresholdCategory(metric.name)]
+      thresholds: this.thresholds[this.getThresholdCategory(metric.name)],
     };
 
     this.addMetric(fullMetric);
@@ -129,7 +133,8 @@ class PerformanceMonitor {
    */
   private getThresholdCategory(name: string): keyof PerformanceThresholds {
     if (name.includes('api') || name.includes('route')) return 'apiResponse';
-    if (name.includes('database') || name.includes('query') || name.includes('supabase')) return 'databaseQuery';
+    if (name.includes('database') || name.includes('query') || name.includes('supabase'))
+      return 'databaseQuery';
     if (name.includes('webhook')) return 'webhookProcessing';
     if (name.includes('blueprint') || name.includes('generation')) return 'blueprintGeneration';
     if (name.includes('upload') || name.includes('file')) return 'fileUpload';
@@ -143,8 +148,8 @@ class PerformanceMonitor {
     const metrics = this.metrics.get(name);
     if (!metrics || metrics.length === 0) return null;
 
-    const durations = metrics.map(m => m.duration).sort((a, b) => a - b);
-    const successCount = metrics.filter(m => m.success).length;
+    const durations = metrics.map((m) => m.duration).sort((a, b) => a - b);
+    const successCount = metrics.filter((m) => m.success).length;
 
     return {
       count: metrics.length,
@@ -157,7 +162,7 @@ class PerformanceMonitor {
       p95: this.percentile(durations, 0.95),
       p99: this.percentile(durations, 0.99),
       successRate: (successCount / metrics.length) * 100,
-      errorRate: ((metrics.length - successCount) / metrics.length) * 100
+      errorRate: ((metrics.length - successCount) / metrics.length) * 100,
     };
   }
 
@@ -186,10 +191,14 @@ class PerformanceMonitor {
     // Check P95 against thresholds
     if (stats.p95 > thresholds.critical) {
       health = 'critical';
-      recommendations.push(`P95 response time (${stats.p95.toFixed(2)}ms) exceeds critical threshold (${thresholds.critical}ms)`);
+      recommendations.push(
+        `P95 response time (${stats.p95.toFixed(2)}ms) exceeds critical threshold (${thresholds.critical}ms)`
+      );
     } else if (stats.p95 > thresholds.warning) {
       health = 'warning';
-      recommendations.push(`P95 response time (${stats.p95.toFixed(2)}ms) exceeds warning threshold (${thresholds.warning}ms)`);
+      recommendations.push(
+        `P95 response time (${stats.p95.toFixed(2)}ms) exceeds warning threshold (${thresholds.warning}ms)`
+      );
     }
 
     // Check error rate
@@ -226,7 +235,7 @@ class PerformanceMonitor {
       thresholds,
       health,
       recommendations,
-      generatedAt: new Date().toISOString()
+      generatedAt: new Date().toISOString(),
     };
   }
 
@@ -250,7 +259,7 @@ class PerformanceMonitor {
    */
   getMetricsInTimeRange(name: string, startTime: number, endTime: number): PerformanceMetric[] {
     const metrics = this.metrics.get(name) || [];
-    return metrics.filter(m => m.startTime >= startTime && m.endTime <= endTime);
+    return metrics.filter((m) => m.startTime >= startTime && m.endTime <= endTime);
   }
 
   /**
@@ -314,8 +323,8 @@ class PerformanceMonitor {
         totalMetrics,
         healthyCategories: healthyCount,
         warningCategories: warningCount,
-        criticalCategories: criticalCount
-      }
+        criticalCategories: criticalCount,
+      },
     };
   }
 
@@ -342,7 +351,7 @@ class PerformanceMonitor {
       timestamp: new Date().toISOString(),
       thresholds: this.thresholds,
       systemHealth: this.getSystemHealth(),
-      reports
+      reports,
     };
   }
 
@@ -372,14 +381,16 @@ export function measureApiCall<T>(
 ): Promise<{ result: T; metric: PerformanceMetric }> {
   const endTimer = performanceMonitor.startTimer(apiName, metadata, { type: 'api' });
 
-  return Promise.resolve(fn()).then(result => {
-    const metric = endTimer();
-    return { result, metric };
-  }).catch(error => {
-    const metric = endTimer();
-    metric.success = false;
-    throw error;
-  });
+  return Promise.resolve(fn())
+    .then((result) => {
+      const metric = endTimer();
+      return { result, metric };
+    })
+    .catch((error) => {
+      const metric = endTimer();
+      metric.success = false;
+      throw error;
+    });
 }
 
 export function measureDatabaseQuery<T>(
@@ -389,14 +400,16 @@ export function measureDatabaseQuery<T>(
 ): Promise<{ result: T; metric: PerformanceMetric }> {
   const endTimer = performanceMonitor.startTimer(queryName, metadata, { type: 'database' });
 
-  return Promise.resolve(fn()).then(result => {
-    const metric = endTimer();
-    return { result, metric };
-  }).catch(error => {
-    const metric = endTimer();
-    metric.success = false;
-    throw error;
-  });
+  return Promise.resolve(fn())
+    .then((result) => {
+      const metric = endTimer();
+      return { result, metric };
+    })
+    .catch((error) => {
+      const metric = endTimer();
+      metric.success = false;
+      throw error;
+    });
 }
 
 export function measureAsyncOperation<T>(
@@ -406,14 +419,16 @@ export function measureAsyncOperation<T>(
 ): Promise<{ result: T; metric: PerformanceMetric }> {
   const endTimer = performanceMonitor.startTimer(operationName, metadata, { type: 'async' });
 
-  return Promise.resolve(fn()).then(result => {
-    const metric = endTimer();
-    return { result, metric };
-  }).catch(error => {
-    const metric = endTimer();
-    metric.success = false;
-    throw error;
-  });
+  return Promise.resolve(fn())
+    .then((result) => {
+      const metric = endTimer();
+      return { result, metric };
+    })
+    .catch((error) => {
+      const metric = endTimer();
+      metric.success = false;
+      throw error;
+    });
 }
 
 export default performanceMonitor;

@@ -61,7 +61,8 @@ interface ErrorMetrics {
 class ErrorTracker {
   private errors: Map<string, ErrorEvent> = new Map();
   private errorCounts: Map<string, number> = new Map();
-  private alertThresholds: Map<string, { count: number; timeWindow: number; lastAlert: number }> = new Map();
+  private alertThresholds: Map<string, { count: number; timeWindow: number; lastAlert: number }> =
+    new Map();
   private maxErrors = 10000;
   private retentionPeriod = 7 * 24 * 60 * 60 * 1000; // 7 days
 
@@ -107,9 +108,11 @@ class ErrorTracker {
       stack,
       context: {
         ...context,
-        userAgent: context.userAgent || (typeof window !== 'undefined' ? window.navigator.userAgent : 'server'),
+        userAgent:
+          context.userAgent ||
+          (typeof window !== 'undefined' ? window.navigator.userAgent : 'server'),
         url: context.url || (typeof window !== 'undefined' ? window.location.href : 'server'),
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       },
       severity,
       category,
@@ -118,7 +121,7 @@ class ErrorTracker {
       firstSeen: now,
       lastSeen: now,
       resolved: false,
-      tags: this.generateTags(error, context, category)
+      tags: this.generateTags(error, context, category),
     };
 
     this.errors.set(errorId, errorEvent);
@@ -144,13 +147,13 @@ class ErrorTracker {
         category,
         severity: severity.level,
         message,
-        fingerprint
+        fingerprint,
       },
       tags: {
         type: 'error',
         category,
-        severity: severity.level
-      }
+        severity: severity.level,
+      },
     });
 
     return errorId;
@@ -228,7 +231,7 @@ class ErrorTracker {
     const errorsBySeverity: Record<string, number> = {};
     const errorsByHour: Record<number, number> = {};
 
-    errors.forEach(error => {
+    errors.forEach((error) => {
       // Category counting
       errorsByCategory[error.category] = (errorsByCategory[error.category] || 0) + 1;
 
@@ -246,20 +249,21 @@ class ErrorTracker {
     const topErrors = errors
       .sort((a, b) => b.count - a.count)
       .slice(0, 10)
-      .map(error => ({
+      .map((error) => ({
         message: error.message,
         count: error.count,
         category: error.category,
-        severity: error.severity.level
+        severity: error.severity.level,
       }));
 
     // Resolution rate
-    const resolvedErrors = errors.filter(error => error.resolved).length;
+    const resolvedErrors = errors.filter((error) => error.resolved).length;
     const resolutionRate = errors.length > 0 ? (resolvedErrors / errors.length) * 100 : 0;
 
     // Check if any alerts have been triggered
-    const alertTriggered = Array.from(this.alertThresholds.values())
-      .some(threshold => now - threshold.lastAlert < threshold.timeWindow);
+    const alertTriggered = Array.from(this.alertThresholds.values()).some(
+      (threshold) => now - threshold.lastAlert < threshold.timeWindow
+    );
 
     return {
       totalErrors: errors.length,
@@ -268,7 +272,7 @@ class ErrorTracker {
       errorsByHour,
       topErrors,
       resolutionRate,
-      alertTriggered
+      alertTriggered,
     };
   }
 
@@ -280,14 +284,12 @@ class ErrorTracker {
 
     if (category) {
       return errors
-        .filter(error => error.category === category)
+        .filter((error) => error.category === category)
         .sort((a, b) => b.lastSeen - a.lastSeen)
         .slice(0, limit);
     }
 
-    return errors
-      .sort((a, b) => b.lastSeen - a.lastSeen)
-      .slice(0, limit);
+    return errors.sort((a, b) => b.lastSeen - a.lastSeen).slice(0, limit);
   }
 
   /**
@@ -295,7 +297,7 @@ class ErrorTracker {
    */
   getUnresolvedErrors(limit = 50): ErrorEvent[] {
     return Array.from(this.errors.values())
-      .filter(error => !error.resolved)
+      .filter((error) => !error.resolved)
       .sort((a, b) => b.lastSeen - a.lastSeen)
       .slice(0, limit);
   }
@@ -353,36 +355,40 @@ class ErrorTracker {
 
     if (format === 'csv') {
       const headers = ['id', 'timestamp', 'message', 'category', 'severity', 'count', 'resolved'];
-      const rows = errors.map(error => [
+      const rows = errors.map((error) => [
         error.id,
         new Date(error.timestamp).toISOString(),
         error.message,
         error.category,
         error.severity.level,
         error.count,
-        error.resolved
+        error.resolved,
       ]);
 
-      return [headers, ...rows].map(row => row.join(',')).join('\n');
+      return [headers, ...rows].map((row) => row.join(',')).join('\n');
     }
 
-    return JSON.stringify({
-      exportedAt: new Date().toISOString(),
-      totalErrors: errors.length,
-      errors: errors.map(error => ({
-        ...error,
-        // Remove potentially sensitive context for export
-        context: {
-          userId: error.context.userId ? '[REDACTED]' : undefined,
-          sessionId: error.context.sessionId ? '[REDACTED]' : undefined,
-          ...Object.fromEntries(
-            Object.entries(error.context).filter(([key]) =>
-              !['userId', 'sessionId'].includes(key)
-            )
-          )
-        }
-      }))
-    }, null, 2);
+    return JSON.stringify(
+      {
+        exportedAt: new Date().toISOString(),
+        totalErrors: errors.length,
+        errors: errors.map((error) => ({
+          ...error,
+          // Remove potentially sensitive context for export
+          context: {
+            userId: error.context.userId ? '[REDACTED]' : undefined,
+            sessionId: error.context.sessionId ? '[REDACTED]' : undefined,
+            ...Object.fromEntries(
+              Object.entries(error.context).filter(
+                ([key]) => !['userId', 'sessionId'].includes(key)
+              )
+            ),
+          },
+        })),
+      },
+      null,
+      2
+    );
   }
 
   // Private helper methods
@@ -398,7 +404,7 @@ class ErrorTracker {
     const fingerprintData = [
       message,
       category,
-      stack ? stack.split('\n')[0] : '' // First line of stack
+      stack ? stack.split('\n')[0] : '', // First line of stack
     ].join('|');
 
     return this.simpleHash(fingerprintData);
@@ -472,7 +478,7 @@ class ErrorTracker {
       threshold = {
         count: 0,
         timeWindow: severity.shouldAlert ? 5 * 60 * 1000 : 60 * 60 * 1000, // 5 min for alerts, 1 hour for non-alerts
-        lastAlert: 0
+        lastAlert: 0,
       };
       this.alertThresholds.set(fingerprint, threshold);
     }
@@ -480,7 +486,8 @@ class ErrorTracker {
     threshold.count++;
 
     // Check if we should trigger an alert
-    const shouldAlert = severity.shouldAlert ||
+    const shouldAlert =
+      severity.shouldAlert ||
       (severity.alertThreshold && threshold.count >= severity.alertThreshold);
 
     if (shouldAlert && now - threshold.lastAlert > threshold.timeWindow) {
@@ -502,15 +509,20 @@ class ErrorTracker {
       category: error.category,
       severity: error.severity.level,
       count: error.count,
-      timestamp: new Date(error.timestamp).toISOString()
+      timestamp: new Date(error.timestamp).toISOString(),
     });
   }
 
   private logError(error: ErrorEvent, isAlert = false): void {
-    const logLevel = isAlert ? 'error' :
-                   error.severity.level === 'critical' ? 'error' :
-                   error.severity.level === 'high' ? 'error' :
-                   error.severity.level === 'medium' ? 'warn' : 'info';
+    const logLevel = isAlert
+      ? 'error'
+      : error.severity.level === 'critical'
+        ? 'error'
+        : error.severity.level === 'high'
+          ? 'error'
+          : error.severity.level === 'medium'
+            ? 'warn'
+            : 'info';
 
     const logData = {
       id: error.id,
@@ -520,7 +532,7 @@ class ErrorTracker {
       count: error.count,
       timestamp: new Date(error.timestamp).toISOString(),
       context: error.context,
-      fingerprint: error.fingerprint
+      fingerprint: error.fingerprint,
     };
 
     if (logLevel === 'error') {
@@ -548,7 +560,8 @@ class ErrorTracker {
 
     // Also clean up old alert thresholds
     for (const [fingerprint, threshold] of this.alertThresholds.entries()) {
-      if (now - threshold.lastAlert > 24 * 60 * 60 * 1000) { // 24 hours
+      if (now - threshold.lastAlert > 24 * 60 * 60 * 1000) {
+        // 24 hours
         this.alertThresholds.delete(fingerprint);
       }
     }
@@ -558,7 +571,7 @@ class ErrorTracker {
     let hash = 0;
     for (let i = 0; i < str.length; i++) {
       const char = str.charCodeAt(i);
-      hash = ((hash << 5) - hash) + char;
+      hash = (hash << 5) - hash + char;
       hash = hash & hash; // Convert to 32-bit integer
     }
     return Math.abs(hash).toString(36);

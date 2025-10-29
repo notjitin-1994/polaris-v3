@@ -13,7 +13,12 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { NextRequest, NextResponse } from 'next/server';
 import { GET } from '@/app/api/subscriptions/status/route';
 import { POST } from '@/app/api/subscriptions/cancel/route';
-import { createMockSupabaseClient, mockUser, mockSubscription, supabaseErrors } from '@/__tests__/mocks/supabase';
+import {
+  createMockSupabaseClient,
+  mockUser,
+  mockSubscription,
+  supabaseErrors,
+} from '@/__tests__/mocks/supabase';
 import { createMockRazorpayClient, mockRazorpaySubscription } from '@/__tests__/mocks/razorpay';
 import { createSubscription } from '@/__tests__/mocks/factories';
 
@@ -40,7 +45,7 @@ describe('Subscription Status and Cancellation API', () => {
     // Setup authenticated user by default
     mockSupabase.auth.getUser.mockResolvedValue({
       data: { user: mockUser },
-      error: null
+      error: null,
     });
   });
 
@@ -53,7 +58,7 @@ describe('Subscription Status and Cancellation API', () => {
       it('should return 401 if user is not authenticated', async () => {
         mockSupabase.auth.getUser.mockResolvedValue({
           data: { user: null },
-          error: { message: 'Invalid token' }
+          error: { message: 'Invalid token' },
         });
 
         const request = new NextRequest('http://localhost:3000/api/subscriptions/status');
@@ -75,12 +80,12 @@ describe('Subscription Status and Cancellation API', () => {
                 is: vi.fn().mockReturnValue({
                   order: vi.fn().mockResolvedValue({
                     data: [mockSubscription],
-                    error: null
-                  })
-                })
-              })
-            })
-          })
+                    error: null,
+                  }),
+                }),
+              }),
+            }),
+          }),
         });
 
         const request = new NextRequest('http://localhost:3000/api/subscriptions/status');
@@ -100,8 +105,8 @@ describe('Subscription Status and Cancellation API', () => {
             plan_period: mockSubscription.plan_period,
             current_start: mockSubscription.current_start,
             current_end: mockSubscription.current_end,
-            next_billing_date: mockSubscription.next_billing_date
-          })
+            next_billing_date: mockSubscription.next_billing_date,
+          }),
         });
       });
 
@@ -113,12 +118,12 @@ describe('Subscription Status and Cancellation API', () => {
                 is: vi.fn().mockReturnValue({
                   order: vi.fn().mockResolvedValue({
                     data: [],
-                    error: null
-                  })
-                })
-              })
-            })
-          })
+                    error: null,
+                  }),
+                }),
+              }),
+            }),
+          }),
         });
 
         const request = new NextRequest('http://localhost:3000/api/subscriptions/status');
@@ -140,7 +145,7 @@ describe('Subscription Status and Cancellation API', () => {
           blueprint_creation_count: 5,
           blueprint_creation_limit: 25,
           blueprint_saving_count: 3,
-          blueprint_saving_limit: 25
+          blueprint_saving_limit: 25,
         };
 
         // Mock subscription query
@@ -151,12 +156,12 @@ describe('Subscription Status and Cancellation API', () => {
                 is: vi.fn().mockReturnValue({
                   order: vi.fn().mockResolvedValue({
                     data: [mockSubscription],
-                    error: null
-                  })
-                })
-              })
-            })
-          })
+                    error: null,
+                  }),
+                }),
+              }),
+            }),
+          }),
         });
 
         // Mock user profile query
@@ -165,10 +170,10 @@ describe('Subscription Status and Cancellation API', () => {
             eq: vi.fn().mockReturnValue({
               single: vi.fn().mockResolvedValue({
                 data: mockProfile,
-                error: null
-              })
-            })
-          })
+                error: null,
+              }),
+            }),
+          }),
         });
 
         const request = new NextRequest('http://localhost:3000/api/subscriptions/status');
@@ -185,7 +190,7 @@ describe('Subscription Status and Cancellation API', () => {
           blueprint_saving_count: 3,
           blueprint_saving_limit: 25,
           remaining_creations: 20,
-          remaining_savings: 22
+          remaining_savings: 22,
         });
       });
 
@@ -196,7 +201,7 @@ describe('Subscription Status and Cancellation API', () => {
           blueprint_creation_count: 23,
           blueprint_creation_limit: 25,
           blueprint_saving_count: 24,
-          blueprint_saving_limit: 25
+          blueprint_saving_limit: 25,
         };
 
         mockSupabase.from.mockReturnValueOnce({
@@ -206,12 +211,12 @@ describe('Subscription Status and Cancellation API', () => {
                 is: vi.fn().mockReturnValue({
                   order: vi.fn().mockResolvedValue({
                     data: [mockSubscription],
-                    error: null
-                  })
-                })
-              })
-            })
-          })
+                    error: null,
+                  }),
+                }),
+              }),
+            }),
+          }),
         });
 
         mockSupabase.from.mockReturnValueOnce({
@@ -219,10 +224,10 @@ describe('Subscription Status and Cancellation API', () => {
             eq: vi.fn().mockReturnValue({
               single: vi.fn().mockResolvedValue({
                 data: mockProfile,
-                error: null
-              })
-            })
-          })
+                error: null,
+              }),
+            }),
+          }),
         });
 
         const request = new NextRequest('http://localhost:3000/api/subscriptions/status');
@@ -244,11 +249,11 @@ describe('Subscription Status and Cancellation API', () => {
             eq: vi.fn().mockReturnValue({
               eq: vi.fn().mockReturnValue({
                 is: vi.fn().mockReturnValue({
-                  order: vi.fn().mockRejectedValue(supabaseErrors.connectionError)
-                })
-              })
-            })
-          })
+                  order: vi.fn().mockRejectedValue(supabaseErrors.connectionError),
+                }),
+              }),
+            }),
+          }),
         });
 
         const request = new NextRequest('http://localhost:3000/api/subscriptions/status');
@@ -268,20 +273,20 @@ describe('Subscription Status and Cancellation API', () => {
                 is: vi.fn().mockReturnValue({
                   order: vi.fn().mockResolvedValue({
                     data: [mockSubscription],
-                    error: null
-                  })
-                })
-              })
-            })
-          })
+                    error: null,
+                  }),
+                }),
+              }),
+            }),
+          }),
         });
 
         mockSupabase.from.mockReturnValueOnce({
           select: vi.fn().mockReturnValue({
             eq: vi.fn().mockReturnValue({
-              single: vi.fn().mockRejectedValue(supabaseErrors.timeoutError)
-            })
-          })
+              single: vi.fn().mockRejectedValue(supabaseErrors.timeoutError),
+            }),
+          }),
         });
 
         const request = new NextRequest('http://localhost:3000/api/subscriptions/status');
@@ -303,15 +308,15 @@ describe('Subscription Status and Cancellation API', () => {
       it('should return 401 if user is not authenticated', async () => {
         mockSupabase.auth.getUser.mockResolvedValue({
           data: { user: null },
-          error: { message: 'Invalid token' }
+          error: { message: 'Invalid token' },
         });
 
         const request = new NextRequest('http://localhost:3000/api/subscriptions/cancel', {
           method: 'POST',
           body: JSON.stringify({
             subscriptionId: 'sub_test123',
-            reason: 'No longer needed'
-          })
+            reason: 'No longer needed',
+          }),
         });
 
         const response = await POST(request);
@@ -328,19 +333,19 @@ describe('Subscription Status and Cancellation API', () => {
               eq: vi.fn().mockReturnValue({
                 single: vi.fn().mockResolvedValue({
                   data: null,
-                  error: supabaseErrors.recordNotFound
-                })
-              })
-            })
-          })
+                  error: supabaseErrors.recordNotFound,
+                }),
+              }),
+            }),
+          }),
         });
 
         const request = new NextRequest('http://localhost:3000/api/subscriptions/cancel', {
           method: 'POST',
           body: JSON.stringify({
             subscriptionId: 'nonexistent_sub',
-            reason: 'No longer needed'
-          })
+            reason: 'No longer needed',
+          }),
         });
 
         const response = await POST(request);
@@ -353,7 +358,7 @@ describe('Subscription Status and Cancellation API', () => {
       it('should return 403 if user does not own the subscription', async () => {
         const otherUserSubscription = {
           ...mockSubscription,
-          user_id: 'other_user_id'
+          user_id: 'other_user_id',
         };
 
         mockSupabase.from.mockReturnValue({
@@ -362,19 +367,19 @@ describe('Subscription Status and Cancellation API', () => {
               eq: vi.fn().mockReturnValue({
                 single: vi.fn().mockResolvedValue({
                   data: otherUserSubscription,
-                  error: null
-                })
-              })
-            })
-          })
+                  error: null,
+                }),
+              }),
+            }),
+          }),
         });
 
         const request = new NextRequest('http://localhost:3000/api/subscriptions/cancel', {
           method: 'POST',
           body: JSON.stringify({
             subscriptionId: 'sub_test123',
-            reason: 'No longer needed'
-          })
+            reason: 'No longer needed',
+          }),
         });
 
         const response = await POST(request);
@@ -390,9 +395,9 @@ describe('Subscription Status and Cancellation API', () => {
         const request = new NextRequest('http://localhost:3000/api/subscriptions/cancel', {
           method: 'POST',
           body: JSON.stringify({
-            reason: 'No longer needed'
+            reason: 'No longer needed',
             // Missing subscriptionId
-          })
+          }),
         });
 
         const response = await POST(request);
@@ -406,9 +411,9 @@ describe('Subscription Status and Cancellation API', () => {
         const request = new NextRequest('http://localhost:3000/api/subscriptions/cancel', {
           method: 'POST',
           body: JSON.stringify({
-            subscriptionId: 'sub_test123'
+            subscriptionId: 'sub_test123',
             // Missing reason
-          })
+          }),
         });
 
         const response = await POST(request);
@@ -423,8 +428,8 @@ describe('Subscription Status and Cancellation API', () => {
           method: 'POST',
           body: JSON.stringify({
             subscriptionId: 'sub_test123',
-            reason: 'OK' // Too short
-          })
+            reason: 'OK', // Too short
+          }),
         });
 
         const response = await POST(request);
@@ -441,8 +446,8 @@ describe('Subscription Status and Cancellation API', () => {
           method: 'POST',
           body: JSON.stringify({
             subscriptionId: 'sub_test123',
-            reason: longReason
-          })
+            reason: longReason,
+          }),
         });
 
         const response = await POST(request);
@@ -458,7 +463,7 @@ describe('Subscription Status and Cancellation API', () => {
         const activeSubscription = {
           ...mockSubscription,
           status: 'active',
-          razorpay_subscription_id: 'sub_test123'
+          razorpay_subscription_id: 'sub_test123',
         };
 
         mockSupabase.from.mockReturnValueOnce({
@@ -467,24 +472,24 @@ describe('Subscription Status and Cancellation API', () => {
               eq: vi.fn().mockReturnValue({
                 single: vi.fn().mockResolvedValue({
                   data: activeSubscription,
-                  error: null
-                })
-              })
-            })
-          })
+                  error: null,
+                }),
+              }),
+            }),
+          }),
         });
 
         mockRazorpay.subscriptions.cancel.mockResolvedValue({
           id: 'sub_test123',
-          status: 'cancelled'
+          status: 'cancelled',
         });
 
         const request = new NextRequest('http://localhost:3000/api/subscriptions/cancel', {
           method: 'POST',
           body: JSON.stringify({
             subscriptionId: 'sub_test123',
-            reason: 'Service no longer needed'
-          })
+            reason: 'Service no longer needed',
+          }),
         });
 
         const response = await POST(request);
@@ -498,7 +503,7 @@ describe('Subscription Status and Cancellation API', () => {
       it('should not allow cancellation of already cancelled subscriptions', async () => {
         const cancelledSubscription = {
           ...mockSubscription,
-          status: 'cancelled'
+          status: 'cancelled',
         };
 
         mockSupabase.from.mockReturnValue({
@@ -507,19 +512,19 @@ describe('Subscription Status and Cancellation API', () => {
               eq: vi.fn().mockReturnValue({
                 single: vi.fn().mockResolvedValue({
                   data: cancelledSubscription,
-                  error: null
-                })
-              })
-            })
-          })
+                  error: null,
+                }),
+              }),
+            }),
+          }),
         });
 
         const request = new NextRequest('http://localhost:3000/api/subscriptions/cancel', {
           method: 'POST',
           body: JSON.stringify({
             subscriptionId: 'sub_test123',
-            reason: 'No longer needed'
-          })
+            reason: 'No longer needed',
+          }),
         });
 
         const response = await POST(request);
@@ -532,7 +537,7 @@ describe('Subscription Status and Cancellation API', () => {
       it('should allow cancellation of subscriptions with pending payments', async () => {
         const pendingSubscription = {
           ...mockSubscription,
-          status: 'created'
+          status: 'created',
         };
 
         mockSupabase.from.mockReturnValueOnce({
@@ -541,24 +546,24 @@ describe('Subscription Status and Cancellation API', () => {
               eq: vi.fn().mockReturnValue({
                 single: vi.fn().mockResolvedValue({
                   data: pendingSubscription,
-                  error: null
-                })
-              })
-            })
-          })
+                  error: null,
+                }),
+              }),
+            }),
+          }),
         });
 
         mockRazorpay.subscriptions.cancel.mockResolvedValue({
           id: 'sub_test123',
-          status: 'cancelled'
+          status: 'cancelled',
         });
 
         const request = new NextRequest('http://localhost:3000/api/subscriptions/cancel', {
           method: 'POST',
           body: JSON.stringify({
             subscriptionId: 'sub_test123',
-            reason: 'Changed mind'
-          })
+            reason: 'Changed mind',
+          }),
         });
 
         const response = await POST(request);
@@ -572,7 +577,7 @@ describe('Subscription Status and Cancellation API', () => {
         const activeSubscription = {
           ...mockSubscription,
           status: 'active',
-          razorpay_subscription_id: 'sub_test123'
+          razorpay_subscription_id: 'sub_test123',
         };
 
         mockSupabase.from.mockReturnValueOnce({
@@ -581,17 +586,17 @@ describe('Subscription Status and Cancellation API', () => {
               eq: vi.fn().mockReturnValue({
                 single: vi.fn().mockResolvedValue({
                   data: activeSubscription,
-                  error: null
-                })
-              })
-            })
-          })
+                  error: null,
+                }),
+              }),
+            }),
+          }),
         });
 
         mockRazorpay.subscriptions.cancel.mockResolvedValue({
           id: 'sub_test123',
           status: 'cancelled',
-          refund_amount: 0
+          refund_amount: 0,
         });
 
         const request = new NextRequest('http://localhost:3000/api/subscriptions/cancel', {
@@ -599,8 +604,8 @@ describe('Subscription Status and Cancellation API', () => {
           body: JSON.stringify({
             subscriptionId: 'sub_test123',
             reason: 'No longer needed',
-            cancelAtCycleEnd: false // Immediate cancellation
-          })
+            cancelAtCycleEnd: false, // Immediate cancellation
+          }),
         });
 
         const response = await POST(request);
@@ -616,7 +621,7 @@ describe('Subscription Status and Cancellation API', () => {
         const activeSubscription = {
           ...mockSubscription,
           status: 'active',
-          razorpay_subscription_id: 'sub_test123'
+          razorpay_subscription_id: 'sub_test123',
         };
 
         mockSupabase.from.mockReturnValueOnce({
@@ -625,19 +630,19 @@ describe('Subscription Status and Cancellation API', () => {
               eq: vi.fn().mockReturnValue({
                 single: vi.fn().mockResolvedValue({
                   data: activeSubscription,
-                  error: null
-                })
-              })
-            })
-          })
+                  error: null,
+                }),
+              }),
+            }),
+          }),
         });
 
         const request = new NextRequest('http://localhost:3000/api/subscriptions/cancel', {
           method: 'POST',
           body: JSON.stringify({
             subscriptionId: 'sub_test123',
-            reason: 'Service no longer needed'
-          })
+            reason: 'Service no longer needed',
+          }),
         });
 
         await POST(request);
@@ -649,7 +654,7 @@ describe('Subscription Status and Cancellation API', () => {
         const activeSubscription = {
           ...mockSubscription,
           status: 'active',
-          razorpay_subscription_id: 'sub_test123'
+          razorpay_subscription_id: 'sub_test123',
         };
 
         mockSupabase.from.mockReturnValueOnce({
@@ -658,25 +663,25 @@ describe('Subscription Status and Cancellation API', () => {
               eq: vi.fn().mockReturnValue({
                 single: vi.fn().mockResolvedValue({
                   data: activeSubscription,
-                  error: null
-                })
-              })
-            })
-          })
+                  error: null,
+                }),
+              }),
+            }),
+          }),
         });
 
         mockRazorpay.subscriptions.cancel.mockResolvedValue({
           id: 'sub_test123',
           status: 'cancelled',
-          ended_at: 1701254400
+          ended_at: 1701254400,
         });
 
         const request = new NextRequest('http://localhost:3000/api/subscriptions/cancel', {
           method: 'POST',
           body: JSON.stringify({
             subscriptionId: 'sub_test123',
-            reason: 'No longer needed'
-          })
+            reason: 'No longer needed',
+          }),
         });
 
         const response = await POST(request);
@@ -685,7 +690,7 @@ describe('Subscription Status and Cancellation API', () => {
           expect.objectContaining({
             status: 'cancelled',
             ended_at: expect.any(String),
-            cancellation_reason: 'No longer needed'
+            cancellation_reason: 'No longer needed',
           })
         );
       });
@@ -694,7 +699,7 @@ describe('Subscription Status and Cancellation API', () => {
         const activeSubscription = {
           ...mockSubscription,
           status: 'active',
-          razorpay_subscription_id: 'sub_test123'
+          razorpay_subscription_id: 'sub_test123',
         };
 
         mockSupabase.from.mockReturnValueOnce({
@@ -703,24 +708,24 @@ describe('Subscription Status and Cancellation API', () => {
               eq: vi.fn().mockReturnValue({
                 single: vi.fn().mockResolvedValue({
                   data: activeSubscription,
-                  error: null
-                })
-              })
-            })
-          })
+                  error: null,
+                }),
+              }),
+            }),
+          }),
         });
 
         mockRazorpay.subscriptions.cancel.mockResolvedValue({
           id: 'sub_test123',
-          status: 'cancelled'
+          status: 'cancelled',
         });
 
         const request = new NextRequest('http://localhost:3000/api/subscriptions/cancel', {
           method: 'POST',
           body: JSON.stringify({
             subscriptionId: 'sub_test123',
-            reason: 'No longer needed'
-          })
+            reason: 'No longer needed',
+          }),
         });
 
         await POST(request);
@@ -729,7 +734,7 @@ describe('Subscription Status and Cancellation API', () => {
         expect(mockSupabase.from).toHaveBeenCalledWith('user_profiles');
         expect(mockSupabase.update).toHaveBeenCalledWith(
           expect.objectContaining({
-            subscription_tier: 'explorer'
+            subscription_tier: 'explorer',
           })
         );
       });
@@ -740,7 +745,7 @@ describe('Subscription Status and Cancellation API', () => {
         const activeSubscription = {
           ...mockSubscription,
           status: 'active',
-          razorpay_subscription_id: 'sub_test123'
+          razorpay_subscription_id: 'sub_test123',
         };
 
         mockSupabase.from.mockReturnValueOnce({
@@ -749,25 +754,25 @@ describe('Subscription Status and Cancellation API', () => {
               eq: vi.fn().mockReturnValue({
                 single: vi.fn().mockResolvedValue({
                   data: activeSubscription,
-                  error: null
-                })
-              })
-            })
-          })
+                  error: null,
+                }),
+              }),
+            }),
+          }),
         });
 
         mockRazorpay.subscriptions.cancel.mockResolvedValue({
           id: 'sub_test123',
           status: 'cancelled',
-          ended_at: 1701254400
+          ended_at: 1701254400,
         });
 
         const request = new NextRequest('http://localhost:3000/api/subscriptions/cancel', {
           method: 'POST',
           body: JSON.stringify({
             subscriptionId: 'sub_test123',
-            reason: 'Service no longer needed'
-          })
+            reason: 'Service no longer needed',
+          }),
         });
 
         const response = await POST(request);
@@ -782,8 +787,8 @@ describe('Subscription Status and Cancellation API', () => {
             subscription_id: mockSubscription.subscription_id,
             status: 'cancelled',
             ended_at: expect.any(String),
-            cancellation_reason: 'Service no longer needed'
-          })
+            cancellation_reason: 'Service no longer needed',
+          }),
         });
       });
     });
@@ -793,7 +798,7 @@ describe('Subscription Status and Cancellation API', () => {
         const activeSubscription = {
           ...mockSubscription,
           status: 'active',
-          razorpay_subscription_id: 'sub_test123'
+          razorpay_subscription_id: 'sub_test123',
         };
 
         mockSupabase.from.mockReturnValueOnce({
@@ -802,11 +807,11 @@ describe('Subscription Status and Cancellation API', () => {
               eq: vi.fn().mockReturnValue({
                 single: vi.fn().mockResolvedValue({
                   data: activeSubscription,
-                  error: null
-                })
-              })
-            })
-          })
+                  error: null,
+                }),
+              }),
+            }),
+          }),
         });
 
         mockRazorpay.subscriptions.cancel.mockRejectedValue(
@@ -817,8 +822,8 @@ describe('Subscription Status and Cancellation API', () => {
           method: 'POST',
           body: JSON.stringify({
             subscriptionId: 'sub_test123',
-            reason: 'No longer needed'
-          })
+            reason: 'No longer needed',
+          }),
         });
 
         const response = await POST(request);
@@ -832,7 +837,7 @@ describe('Subscription Status and Cancellation API', () => {
         const activeSubscription = {
           ...mockSubscription,
           status: 'active',
-          razorpay_subscription_id: 'sub_test123'
+          razorpay_subscription_id: 'sub_test123',
         };
 
         mockSupabase.from.mockReturnValueOnce({
@@ -841,29 +846,29 @@ describe('Subscription Status and Cancellation API', () => {
               eq: vi.fn().mockReturnValue({
                 single: vi.fn().mockResolvedValue({
                   data: activeSubscription,
-                  error: null
-                })
-              })
-            })
-          })
+                  error: null,
+                }),
+              }),
+            }),
+          }),
         });
 
         mockRazorpay.subscriptions.cancel.mockResolvedValue({
           id: 'sub_test123',
-          status: 'cancelled'
+          status: 'cancelled',
         });
 
         mockSupabase.update.mockResolvedValue({
           data: null,
-          error: supabaseErrors.connectionError
+          error: supabaseErrors.connectionError,
         });
 
         const request = new NextRequest('http://localhost:3000/api/subscriptions/cancel', {
           method: 'POST',
           body: JSON.stringify({
             subscriptionId: 'sub_test123',
-            reason: 'No longer needed'
-          })
+            reason: 'No longer needed',
+          }),
         });
 
         const response = await POST(request);
@@ -877,7 +882,7 @@ describe('Subscription Status and Cancellation API', () => {
         const activeSubscription = {
           ...mockSubscription,
           status: 'active',
-          razorpay_subscription_id: 'sub_test123'
+          razorpay_subscription_id: 'sub_test123',
         };
 
         mockSupabase.from.mockReturnValueOnce({
@@ -886,36 +891,36 @@ describe('Subscription Status and Cancellation API', () => {
               eq: vi.fn().mockReturnValue({
                 single: vi.fn().mockResolvedValue({
                   data: activeSubscription,
-                  error: null
-                })
-              })
-            })
-          })
+                  error: null,
+                }),
+              }),
+            }),
+          }),
         });
 
         mockRazorpay.subscriptions.cancel.mockResolvedValue({
           id: 'sub_test123',
-          status: 'cancelled'
+          status: 'cancelled',
         });
 
         // First update (subscription) succeeds
         mockSupabase.update.mockResolvedValueOnce({
           data: { ...activeSubscription, status: 'cancelled' },
-          error: null
+          error: null,
         });
 
         // Second update (user profile) fails
         mockSupabase.update.mockResolvedValueOnce({
           data: null,
-          error: supabaseErrors.timeoutError
+          error: supabaseErrors.timeoutError,
         });
 
         const request = new NextRequest('http://localhost:3000/api/subscriptions/cancel', {
           method: 'POST',
           body: JSON.stringify({
             subscriptionId: 'sub_test123',
-            reason: 'No longer needed'
-          })
+            reason: 'No longer needed',
+          }),
         });
 
         const response = await POST(request);

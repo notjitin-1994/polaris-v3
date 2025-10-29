@@ -214,7 +214,9 @@ describe('Claude Prompts', () => {
       const objectives = extractLearningObjectives(dynamicAnswers);
 
       expect(objectives).toHaveLength(1);
-      expect(objectives[0]).toContain('Enhance organizational learning and development capabilities');
+      expect(objectives[0]).toContain(
+        'Enhance organizational learning and development capabilities'
+      );
     });
 
     it('should prioritize learning_objectives over other keys', () => {

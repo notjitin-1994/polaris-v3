@@ -42,16 +42,13 @@ const CURRENT_PLAN_IDS = [
  * Validate environment variables
  */
 function validateEnvironment(): void {
-  const required = [
-    'NEXT_PUBLIC_RAZORPAY_KEY_ID',
-    'RAZORPAY_KEY_SECRET'
-  ];
+  const required = ['NEXT_PUBLIC_RAZORPAY_KEY_ID', 'RAZORPAY_KEY_SECRET'];
 
-  const missing = required.filter(key => !process.env[key]);
+  const missing = required.filter((key) => !process.env[key]);
 
   if (missing.length > 0) {
     console.error('❌ Missing required environment variables:');
-    missing.forEach(key => console.error(`   - ${key}`));
+    missing.forEach((key) => console.error(`   - ${key}`));
     console.error('\nPlease add these to your .env.local file');
     process.exit(1);
   }
@@ -99,7 +96,7 @@ function formatDate(timestamp: number): string {
     month: 'short',
     day: 'numeric',
     hour: '2-digit',
-    minute: '2-digit'
+    minute: '2-digit',
   });
 }
 
@@ -124,13 +121,13 @@ function extractPlanInfo(plan: any): { tier?: string; billing?: string; isOld?: 
   const tierMatch = name.match(/(explorer|navigator|voyager|crew|fleet|armada)/i);
   const billingMatch = name.match(/(monthly|yearly)/i);
 
-  let tier = tierMatch ? tierMatch[1].toLowerCase() : notes.tier;
-  let billing = billingMatch ? billingMatch[1].toLowerCase() : notes.billing_cycle;
+  const tier = tierMatch ? tierMatch[1].toLowerCase() : notes.tier;
+  const billing = billingMatch ? billingMatch[1].toLowerCase() : notes.billing_cycle;
 
   return {
     tier,
     billing,
-    isOld: getPlanStatus(plan.id) === 'OLD'
+    isOld: getPlanStatus(plan.id) === 'OLD',
   };
 }
 
@@ -143,7 +140,7 @@ async function checkActiveSubscriptions(razorpay: any, planId: string): Promise<
     // We'll use the subscriptions API with a reasonable limit
     const subscriptions = await razorpay.subscriptions.all({
       count: 100, // Maximum we can check efficiently
-      plan_id: planId
+      plan_id: planId,
     });
 
     return subscriptions.count || 0;
@@ -193,7 +190,7 @@ async function main(): Promise<void> {
         ...plan,
         ...info,
         activeSubscriptions,
-        status
+        status,
       };
 
       if (activeSubscriptions > 0) {
@@ -213,11 +210,13 @@ async function main(): Promise<void> {
     if (currentPlans.length === 0) {
       console.log('⚠️  No current plans found! This might indicate a configuration issue.');
     } else {
-      currentPlans.forEach(plan => {
+      currentPlans.forEach((plan) => {
         console.log(`📋 ${plan.item?.name || 'Unnamed Plan'}`);
         console.log(`   ID: ${plan.id}`);
         console.log(`   Amount: ${formatAmount(plan.item?.amount || 0)}`);
-        console.log(`   Period: ${plan.period} (every ${plan.interval} ${plan.period}${plan.interval > 1 ? 's' : ''})`);
+        console.log(
+          `   Period: ${plan.period} (every ${plan.interval} ${plan.period}${plan.interval > 1 ? 's' : ''})`
+        );
         console.log(`   Created: ${formatDate(plan.created_at)}`);
         console.log(`   Active Subscriptions: ${plan.activeSubscriptions}`);
         console.log(`   Description: ${plan.item?.description || 'No description'}`);
@@ -231,17 +230,20 @@ async function main(): Promise<void> {
     if (oldPlans.length === 0) {
       console.log('✨ No old plans found - your dashboard is clean!');
     } else {
-      oldPlans.forEach(plan => {
-        const subscriptionStatus = plan.activeSubscriptions > 0
-          ? `🔴 ${plan.activeSubscriptions} active - CANNOT DELETE`
-          : plan.activeSubscriptions === 0
-            ? '✅ No active subscriptions - Safe to delete'
-            : '⚠️  Could not verify subscription status';
+      oldPlans.forEach((plan) => {
+        const subscriptionStatus =
+          plan.activeSubscriptions > 0
+            ? `🔴 ${plan.activeSubscriptions} active - CANNOT DELETE`
+            : plan.activeSubscriptions === 0
+              ? '✅ No active subscriptions - Safe to delete'
+              : '⚠️  Could not verify subscription status';
 
         console.log(`📋 ${plan.item?.name || 'Unnamed Plan'}`);
         console.log(`   ID: ${plan.id}`);
         console.log(`   Amount: ${formatAmount(plan.item?.amount || 0)}`);
-        console.log(`   Period: ${plan.period} (every ${plan.interval} ${plan.period}${plan.interval > 1 ? 's' : ''})`);
+        console.log(
+          `   Period: ${plan.period} (every ${plan.interval} ${plan.period}${plan.interval > 1 ? 's' : ''})`
+        );
         console.log(`   Created: ${formatDate(plan.created_at)}`);
         console.log(`   Status: ${subscriptionStatus}`);
         console.log(`   Description: ${plan.item?.description || 'No description'}`);
@@ -257,9 +259,9 @@ async function main(): Promise<void> {
     console.log(`Plans with Active Subscriptions: ${plansWithSubscriptions}`);
 
     if (oldPlans.length > 0) {
-      const safeToDelete = oldPlans.filter(p => p.activeSubscriptions === 0).length;
-      const cannotDelete = oldPlans.filter(p => p.activeSubscriptions > 0).length;
-      const unknown = oldPlans.filter(p => p.activeSubscriptions === -1).length;
+      const safeToDelete = oldPlans.filter((p) => p.activeSubscriptions === 0).length;
+      const cannotDelete = oldPlans.filter((p) => p.activeSubscriptions > 0).length;
+      const unknown = oldPlans.filter((p) => p.activeSubscriptions === -1).length;
 
       console.log(`\n🎯 RECOMMENDATIONS:`);
       console.log(`   • Safe to delete immediately: ${safeToDelete} plan(s)`);
@@ -284,7 +286,6 @@ async function main(): Promise<void> {
     }
 
     console.log('\n🔗 Dashboard URL: https://dashboard.razorpay.com/app/subscriptions/plans');
-
   } catch (error: any) {
     console.error('❌ Failed to fetch plans:', error.message);
     console.error('This could be due to:');

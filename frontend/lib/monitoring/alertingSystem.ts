@@ -22,7 +22,13 @@ interface AlertRule {
 }
 
 interface AlertCondition {
-  type: 'error_rate' | 'response_time' | 'error_pattern' | 'uptime' | 'metric_threshold' | 'health_check';
+  type:
+    | 'error_rate'
+    | 'response_time'
+    | 'error_pattern'
+    | 'uptime'
+    | 'metric_threshold'
+    | 'health_check';
   operator: '>' | '<' | '>=' | '<=' | '==' | '!=';
   threshold: number;
   timeWindow?: number; // milliseconds
@@ -85,7 +91,7 @@ class AlertingSystem {
       ...rule,
       id,
       triggerCount: 0,
-      lastTriggered: undefined
+      lastTriggered: undefined,
     };
 
     this.rules.set(id, fullRule);
@@ -117,7 +123,7 @@ class AlertingSystem {
     const id = `channel_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
     const fullChannel: NotificationChannel = {
       ...channel,
-      id
+      id,
     };
 
     this.channels.set(id, fullChannel);
@@ -177,13 +183,10 @@ class AlertingSystem {
   getEvents(limit = 50, resolved?: boolean): AlertEvent[] {
     const events = Array.from(this.events.values());
 
-    const filtered = resolved !== undefined
-      ? events.filter(event => event.resolved === resolved)
-      : events;
+    const filtered =
+      resolved !== undefined ? events.filter((event) => event.resolved === resolved) : events;
 
-    return filtered
-      .sort((a, b) => b.timestamp - a.timestamp)
-      .slice(0, limit);
+    return filtered.sort((a, b) => b.timestamp - a.timestamp).slice(0, limit);
   }
 
   /**
@@ -200,7 +203,7 @@ class AlertingSystem {
     console.log(`Alert resolved: ${event.message}`, {
       eventId,
       reason: reason || 'Manual resolution',
-      resolvedAt: new Date(event.resolvedAt).toISOString()
+      resolvedAt: new Date(event.resolvedAt).toISOString(),
     });
 
     return true;
@@ -222,9 +225,9 @@ class AlertingSystem {
     const rules = Array.from(this.rules.values());
     const events = Array.from(this.events.values());
 
-    const enabledRules = rules.filter(rule => rule.enabled).length;
-    const activeEvents = events.filter(event => !event.resolved).length;
-    const resolvedEvents = events.filter(event => event.resolved).length;
+    const enabledRules = rules.filter((rule) => rule.enabled).length;
+    const activeEvents = events.filter((event) => !event.resolved).length;
+    const resolvedEvents = events.filter((event) => event.resolved).length;
 
     const eventsBySeverity: Record<string, number> = {};
     const eventsByRule: Record<string, number> = {};
@@ -254,7 +257,7 @@ class AlertingSystem {
       resolvedEvents,
       eventsBySeverity,
       eventsByRule,
-      averageResolutionTime: resolvedCount > 0 ? totalResolutionTime / resolvedCount : 0
+      averageResolutionTime: resolvedCount > 0 ? totalResolutionTime / resolvedCount : 0,
     };
   }
 
@@ -268,21 +271,26 @@ class AlertingSystem {
       enabled: true,
       severity: 'error',
       cooldownPeriod: 5 * 60 * 1000, // 5 minutes
-      conditions: [{
-        type: 'error_rate',
-        operator: '>',
-        threshold: 10, // 10% error rate
-        timeWindow: 5 * 60 * 1000 // 5 minutes
-      }],
-      actions: [{
-        type: 'console',
-        enabled: true,
-        config: { level: 'error' }
-      }, {
-        type: 'log',
-        enabled: true,
-        config: { level: 'error' }
-      }]
+      conditions: [
+        {
+          type: 'error_rate',
+          operator: '>',
+          threshold: 10, // 10% error rate
+          timeWindow: 5 * 60 * 1000, // 5 minutes
+        },
+      ],
+      actions: [
+        {
+          type: 'console',
+          enabled: true,
+          config: { level: 'error' },
+        },
+        {
+          type: 'log',
+          enabled: true,
+          config: { level: 'error' },
+        },
+      ],
     });
 
     // Slow response time rule
@@ -292,17 +300,21 @@ class AlertingSystem {
       enabled: true,
       severity: 'warning',
       cooldownPeriod: 10 * 60 * 1000, // 10 minutes
-      conditions: [{
-        type: 'response_time',
-        operator: '>',
-        threshold: 2000, // 2 seconds
-        metric: 'api_p95_response_time'
-      }],
-      actions: [{
-        type: 'console',
-        enabled: true,
-        config: { level: 'warn' }
-      }]
+      conditions: [
+        {
+          type: 'response_time',
+          operator: '>',
+          threshold: 2000, // 2 seconds
+          metric: 'api_p95_response_time',
+        },
+      ],
+      actions: [
+        {
+          type: 'console',
+          enabled: true,
+          config: { level: 'warn' },
+        },
+      ],
     });
 
     // Service health check rule
@@ -312,21 +324,26 @@ class AlertingSystem {
       enabled: true,
       severity: 'critical',
       cooldownPeriod: 2 * 60 * 1000, // 2 minutes
-      conditions: [{
-        type: 'health_check',
-        operator: '!=',
-        healthCheck: 'healthy',
-        threshold: 1
-      }],
-      actions: [{
-        type: 'console',
-        enabled: true,
-        config: { level: 'error' }
-      }, {
-        type: 'log',
-        enabled: true,
-        config: { level: 'error' }
-      }]
+      conditions: [
+        {
+          type: 'health_check',
+          operator: '!=',
+          healthCheck: 'healthy',
+          threshold: 1,
+        },
+      ],
+      actions: [
+        {
+          type: 'console',
+          enabled: true,
+          config: { level: 'error' },
+        },
+        {
+          type: 'log',
+          enabled: true,
+          config: { level: 'error' },
+        },
+      ],
     });
 
     // Specific error pattern rule
@@ -336,22 +353,27 @@ class AlertingSystem {
       enabled: true,
       severity: 'critical',
       cooldownPeriod: 1 * 60 * 1000, // 1 minute
-      conditions: [{
-        type: 'error_pattern',
-        operator: '==',
-        threshold: 1,
-        pattern: 'database|connection|timeout|memory',
-        category: 'database'
-      }],
-      actions: [{
-        type: 'console',
-        enabled: true,
-        config: { level: 'error' }
-      }, {
-        type: 'log',
-        enabled: true,
-        config: { level: 'error' }
-      }]
+      conditions: [
+        {
+          type: 'error_pattern',
+          operator: '==',
+          threshold: 1,
+          pattern: 'database|connection|timeout|memory',
+          category: 'database',
+        },
+      ],
+      actions: [
+        {
+          type: 'console',
+          enabled: true,
+          config: { level: 'error' },
+        },
+        {
+          type: 'log',
+          enabled: true,
+          config: { level: 'error' },
+        },
+      ],
     });
 
     // Uptime rule
@@ -361,17 +383,21 @@ class AlertingSystem {
       enabled: true,
       severity: 'error',
       cooldownPeriod: 15 * 60 * 1000, // 15 minutes
-      conditions: [{
-        type: 'uptime',
-        operator: '<',
-        threshold: 95, // 95% uptime
-        timeWindow: 60 * 60 * 1000 // 1 hour
-      }],
-      actions: [{
-        type: 'console',
-        enabled: true,
-        config: { level: 'error' }
-      }]
+      conditions: [
+        {
+          type: 'uptime',
+          operator: '<',
+          threshold: 95, // 95% uptime
+          timeWindow: 60 * 60 * 1000, // 1 hour
+        },
+      ],
+      actions: [
+        {
+          type: 'console',
+          enabled: true,
+          config: { level: 'error' },
+        },
+      ],
     });
   }
 
@@ -383,8 +409,8 @@ class AlertingSystem {
       enabled: true,
       config: {
         timestamp: true,
-        color: true
-      }
+        color: true,
+      },
     });
 
     // Log channel
@@ -394,8 +420,8 @@ class AlertingSystem {
       enabled: true,
       config: {
         timestamp: true,
-        level: 'info'
-      }
+        level: 'info',
+      },
     });
   }
 
@@ -437,7 +463,8 @@ class AlertingSystem {
 
     // In a real implementation, you'd query errors by timestamp
     // For now, use overall error rate
-    const errorRate = totalErrors > 0 ? (metrics.errorsBySeverity.high || 0) / totalErrors * 100 : 0;
+    const errorRate =
+      totalErrors > 0 ? ((metrics.errorsBySeverity.high || 0) / totalErrors) * 100 : 0;
 
     return this.compareValues(errorRate, condition.operator, condition.threshold);
   }
@@ -464,8 +491,8 @@ class AlertingSystem {
     const errors = errorTracker.getErrorsByCategory(condition.category);
     const regex = new RegExp(condition.pattern, 'i');
 
-    const matchingErrors = errors.filter(error =>
-      regex.test(error.message) || regex.test(error.stack || '')
+    const matchingErrors = errors.filter(
+      (error) => regex.test(error.message) || regex.test(error.stack || '')
     );
 
     return this.compareValues(matchingErrors.length, condition.operator, condition.threshold);
@@ -475,7 +502,7 @@ class AlertingSystem {
     if (!condition.healthCheck) return false;
 
     const healthStatus = await uptimeMonitor.getHealthStatus();
-    const check = healthStatus.checkes.find(c => c.name === condition.healthCheck);
+    const check = healthStatus.checkes.find((c) => c.name === condition.healthCheck);
 
     if (!check) return false;
 
@@ -493,7 +520,8 @@ class AlertingSystem {
     let uptimePercent = 100;
 
     for (const [name, metric] of Object.entries(metrics)) {
-      const uptime = metric.uptime / (Date.now() - metric.incidents[0]?.timestamp || Date.now()) * 100;
+      const uptime =
+        (metric.uptime / (Date.now() - metric.incidents[0]?.timestamp || Date.now())) * 100;
       uptimePercent = Math.min(uptimePercent, uptime);
     }
 
@@ -510,13 +538,20 @@ class AlertingSystem {
 
   private compareValues(actual: number, operator: string, threshold: number): boolean {
     switch (operator) {
-      case '>': return actual > threshold;
-      case '<': return actual < threshold;
-      case '>=': return actual >= threshold;
-      case '<=': return actual <= threshold;
-      case '==': return actual === threshold;
-      case '!=': return actual !== threshold;
-      default: return false;
+      case '>':
+        return actual > threshold;
+      case '<':
+        return actual < threshold;
+      case '>=':
+        return actual >= threshold;
+      case '<=':
+        return actual <= threshold;
+      case '==':
+        return actual === threshold;
+      case '!=':
+        return actual !== threshold;
+      default:
+        return false;
     }
   }
 
@@ -533,10 +568,10 @@ class AlertingSystem {
       data: {
         ruleId: rule.id,
         triggerCount: rule.triggerCount + 1,
-        conditions: rule.conditions
+        conditions: rule.conditions,
       },
       actions: [],
-      resolved: false
+      resolved: false,
     };
 
     // Update rule
@@ -552,14 +587,14 @@ class AlertingSystem {
             type: action.type,
             status: actionResult.success ? 'success' : 'failed',
             message: actionResult.message,
-            timestamp: Date.now()
+            timestamp: Date.now(),
           });
         } catch (error) {
           event.actions.push({
             type: action.type,
             status: 'failed',
             message: error instanceof Error ? error.message : 'Unknown error',
-            timestamp: Date.now()
+            timestamp: Date.now(),
           });
         }
       }
@@ -571,7 +606,10 @@ class AlertingSystem {
     return event;
   }
 
-  private async executeAction(action: AlertAction, event: AlertEvent): Promise<{ success: boolean; message: string }> {
+  private async executeAction(
+    action: AlertAction,
+    event: AlertEvent
+  ): Promise<{ success: boolean; message: string }> {
     switch (action.type) {
       case 'console':
         return this.executeConsoleAction(action, event);
@@ -588,7 +626,10 @@ class AlertingSystem {
     }
   }
 
-  private async executeConsoleAction(action: AlertAction, event: AlertEvent): Promise<{ success: boolean; message: string }> {
+  private async executeConsoleAction(
+    action: AlertAction,
+    event: AlertEvent
+  ): Promise<{ success: boolean; message: string }> {
     const level = action.config.level || 'info';
     const message = `[${event.severity.toUpperCase()}] ${event.message}`;
 
@@ -606,13 +647,16 @@ class AlertingSystem {
     return { success: true, message: 'Console alert sent' };
   }
 
-  private async executeLogAction(action: AlertAction, event: AlertEvent): Promise<{ success: boolean; message: string }> {
+  private async executeLogAction(
+    action: AlertAction,
+    event: AlertEvent
+  ): Promise<{ success: boolean; message: string }> {
     const level = action.config.level || 'info';
     const logData = {
       timestamp: new Date(event.timestamp).toISOString(),
       level,
       message: event.message,
-      event: event.data
+      event: event.data,
     };
 
     // In a real implementation, this would send to your logging service
@@ -621,7 +665,10 @@ class AlertingSystem {
     return { success: true, message: 'Log entry created' };
   }
 
-  private async executeWebhookAction(action: AlertAction, event: AlertEvent): Promise<{ success: boolean; message: string }> {
+  private async executeWebhookAction(
+    action: AlertAction,
+    event: AlertEvent
+  ): Promise<{ success: boolean; message: string }> {
     const url = action.config.url;
     if (!url) {
       return { success: false, message: 'Webhook URL not configured' };
@@ -632,37 +679,49 @@ class AlertingSystem {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          ...action.config.headers
+          ...action.config.headers,
         },
         body: JSON.stringify({
           event,
-          rule: action.config.additionalData || {}
-        })
+          rule: action.config.additionalData || {},
+        }),
       });
 
       if (response.ok) {
         return { success: true, message: 'Webhook sent successfully' };
       } else {
-        return { success: false, message: `Webhook failed: ${response.status} ${response.statusText}` };
+        return {
+          success: false,
+          message: `Webhook failed: ${response.status} ${response.statusText}`,
+        };
       }
     } catch (error) {
-      return { success: false, message: `Webhook error: ${error instanceof Error ? error.message : 'Unknown error'}` };
+      return {
+        success: false,
+        message: `Webhook error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      };
     }
   }
 
-  private async executeEmailAction(action: AlertAction, event: AlertEvent): Promise<{ success: boolean; message: string }> {
+  private async executeEmailAction(
+    action: AlertAction,
+    event: AlertEvent
+  ): Promise<{ success: boolean; message: string }> {
     // In a real implementation, this would integrate with your email service
     console.log('EMAIL ALERT:', {
       to: action.config.to,
       subject: `[${event.severity.toUpperCase()}] ${event.ruleName}`,
       message: event.message,
-      data: event.data
+      data: event.data,
     });
 
     return { success: true, message: 'Email alert sent (simulated)' };
   }
 
-  private async executeSlackAction(action: AlertAction, event: AlertEvent): Promise<{ success: boolean; message: string }> {
+  private async executeSlackAction(
+    action: AlertAction,
+    event: AlertEvent
+  ): Promise<{ success: boolean; message: string }> {
     const webhookUrl = action.config.webhookUrl;
     if (!webhookUrl) {
       return { success: false, message: 'Slack webhook URL not configured' };
@@ -671,21 +730,23 @@ class AlertingSystem {
     try {
       const slackMessage = {
         text: `🚨 ${event.severity.toUpperCase()} Alert: ${event.message}`,
-        attachments: [{
-          color: this.getSlackColor(event.severity),
-          fields: [
-            { title: 'Rule', value: event.ruleName, short: true },
-            { title: 'Severity', value: event.severity, short: true },
-            { title: 'Time', value: new Date(event.timestamp).toISOString(), short: true }
-          ],
-          timestamp: Math.floor(event.timestamp / 1000)
-        }]
+        attachments: [
+          {
+            color: this.getSlackColor(event.severity),
+            fields: [
+              { title: 'Rule', value: event.ruleName, short: true },
+              { title: 'Severity', value: event.severity, short: true },
+              { title: 'Time', value: new Date(event.timestamp).toISOString(), short: true },
+            ],
+            timestamp: Math.floor(event.timestamp / 1000),
+          },
+        ],
       };
 
       const response = await fetch(webhookUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(slackMessage)
+        body: JSON.stringify(slackMessage),
       });
 
       if (response.ok) {
@@ -694,22 +755,29 @@ class AlertingSystem {
         return { success: false, message: `Slack webhook failed: ${response.status}` };
       }
     } catch (error) {
-      return { success: false, message: `Slack error: ${error instanceof Error ? error.message : 'Unknown error'}` };
+      return {
+        success: false,
+        message: `Slack error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      };
     }
   }
 
   private getSlackColor(severity: string): string {
     switch (severity) {
-      case 'critical': return 'danger';
-      case 'error': return 'danger';
-      case 'warning': return 'warning';
-      default: return 'good';
+      case 'critical':
+        return 'danger';
+      case 'error':
+        return 'danger';
+      case 'warning':
+        return 'warning';
+      default:
+        return 'good';
     }
   }
 
   private cleanupOldEvents(): void {
     const now = Date.now();
-    const cutoff = now - (7 * 24 * 60 * 60 * 1000); // 7 days
+    const cutoff = now - 7 * 24 * 60 * 60 * 1000; // 7 days
 
     for (const [id, event] of this.events.entries()) {
       if (event.timestamp < cutoff) {
@@ -719,8 +787,9 @@ class AlertingSystem {
 
     // Limit total events
     if (this.events.size > this.maxEvents) {
-      const events = Array.from(this.events.entries())
-        .sort((a, b) => a[1].timestamp - b[1].timestamp);
+      const events = Array.from(this.events.entries()).sort(
+        (a, b) => a[1].timestamp - b[1].timestamp
+      );
 
       const toDelete = events.slice(0, events.length - this.maxEvents);
       for (const [id] of toDelete) {
@@ -734,7 +803,9 @@ class AlertingSystem {
 export const alertingSystem = new AlertingSystem();
 
 // Utility functions
-export function addAlertRule(rule: Omit<AlertRule, 'id' | 'triggerCount' | 'lastTriggered'>): string {
+export function addAlertRule(
+  rule: Omit<AlertRule, 'id' | 'triggerCount' | 'lastTriggered'>
+): string {
   return alertingSystem.addRule(rule);
 }
 

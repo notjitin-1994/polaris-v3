@@ -41,7 +41,10 @@ export function useSubscriptionData(
       setIsLoading(true);
 
       // Get user session
-      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      const {
+        data: { session },
+        error: sessionError,
+      } = await supabase.auth.getSession();
       if (sessionError) throw sessionError;
       if (!session) throw new Error('No active session');
 
@@ -141,7 +144,7 @@ export function useSubscriptionData(
   }, [fetchSubscriptionData]);
 
   const updateSubscription = useCallback((data: Partial<SubscriptionInfo>) => {
-    setSubscription(prev => prev ? { ...prev, ...data } : null);
+    setSubscription((prev) => (prev ? { ...prev, ...data } : null));
   }, []);
 
   // Initial fetch
@@ -223,72 +226,78 @@ export function usePaymentHistory(initialPage = 1, perPage = 10) {
 
   const supabase = createBrowserClient();
 
-  const fetchPaymentHistory = useCallback(async (page: number = currentPage) => {
-    try {
-      setError(null);
-      setIsLoading(true);
+  const fetchPaymentHistory = useCallback(
+    async (page: number = currentPage) => {
+      try {
+        setError(null);
+        setIsLoading(true);
 
-      const offset = (page - 1) * perPage;
+        const offset = (page - 1) * perPage;
 
-      const { data: paymentData, error: paymentError } = await supabase.rpc(
-        'get_user_payment_history',
-        {
-          p_limit: perPage,
-          p_offset: offset,
+        const { data: paymentData, error: paymentError } = await supabase.rpc(
+          'get_user_payment_history',
+          {
+            p_limit: perPage,
+            p_offset: offset,
+          }
+        );
+
+        if (paymentError) {
+          throw paymentError;
         }
-      );
 
-      if (paymentError) {
-        throw paymentError;
-      }
+        if (paymentData && paymentData.length > 0) {
+          // Transform the data and extract total count from first row
+          const totalCount = paymentData[0]?.total_count || 0;
 
-      if (paymentData && paymentData.length > 0) {
-        // Transform the data and extract total count from first row
-        const totalCount = paymentData[0]?.total_count || 0;
+          const transformedPayments = paymentData.map((payment: any) => ({
+            payment_id: payment.payment_id,
+            subscription_id: payment.subscription_id,
+            razorpay_payment_id: payment.razorpay_payment_id,
+            razorpay_order_id: payment.razorpay_order_id,
+            amount: payment.amount,
+            currency: payment.currency,
+            status: payment.status,
+            payment_method: payment.payment_method,
+            description: payment.description,
+            invoice_id: payment.invoice_id,
+            invoice_url: payment.invoice_url,
+            created_at: payment.created_at,
+            updated_at: payment.updated_at,
+          }));
 
-        const transformedPayments = paymentData.map((payment: any) => ({
-          payment_id: payment.payment_id,
-          subscription_id: payment.subscription_id,
-          razorpay_payment_id: payment.razorpay_payment_id,
-          razorpay_order_id: payment.razorpay_order_id,
-          amount: payment.amount,
-          currency: payment.currency,
-          status: payment.status,
-          payment_method: payment.payment_method,
-          description: payment.description,
-          invoice_id: payment.invoice_id,
-          invoice_url: payment.invoice_url,
-          created_at: payment.created_at,
-          updated_at: payment.updated_at,
-        }));
-
-        setPayments(transformedPayments);
-        setTotal(totalCount);
-        setTotalPages(Math.ceil(totalCount / perPage));
-      } else {
+          setPayments(transformedPayments);
+          setTotal(totalCount);
+          setTotalPages(Math.ceil(totalCount / perPage));
+        } else {
+          setPayments([]);
+          setTotal(0);
+          setTotalPages(0);
+        }
+      } catch (err: any) {
+        console.error('Error fetching payment history:', err);
+        setError(err.message || 'Failed to fetch payment history');
         setPayments([]);
         setTotal(0);
         setTotalPages(0);
+      } finally {
+        setIsLoading(false);
       }
-    } catch (err: any) {
-      console.error('Error fetching payment history:', err);
-      setError(err.message || 'Failed to fetch payment history');
-      setPayments([]);
-      setTotal(0);
-      setTotalPages(0);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [currentPage, perPage, supabase]);
+    },
+    [currentPage, perPage, supabase]
+  );
 
   useEffect(() => {
     fetchPaymentHistory();
   }, [fetchPaymentHistory]);
 
-  const onPageChange = useCallback((page: number) => {
-    setCurrentPage(page);
-    fetchPaymentHistory(page);
-  }, [fetchPaymentHistory]);
+  const onPageChange = useCallback(
+    (page: number) => {
+      setCurrentPage(page);
+      fetchPaymentHistory(page);
+    },
+    [fetchPaymentHistory]
+  );
 
   return {
     payments,
@@ -309,10 +318,7 @@ export function useSubscriptionCancellation() {
   const [isCancelling, setIsCancelling] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const cancelSubscription = useCallback(async (
-    cancelAtCycleEnd: boolean,
-    reason?: string
-  ) => {
+  const cancelSubscription = useCallback(async (cancelAtCycleEnd: boolean, reason?: string) => {
     try {
       setIsCancelling(true);
       setError(null);

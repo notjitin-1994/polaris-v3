@@ -5,14 +5,7 @@
  * like memoization, lazy loading, and intersection observer.
  */
 
-import React, {
-  ComponentType,
-  memo,
-  forwardRef,
-  lazy,
-  Suspense,
-  ComponentProps
-} from 'react';
+import React, { ComponentType, memo, forwardRef, lazy, Suspense, ComponentProps } from 'react';
 import { usePerformanceMonitor } from '@/lib/hooks/usePerformanceOptimization';
 
 interface OptimizationOptions {
@@ -41,7 +34,7 @@ export function withOptimization<P extends object>(
     lazy: shouldLazy = false,
     fallback = <div>Loading...</div>,
     monitorPerformance = false,
-    componentName = Component.displayName || Component.name || 'Component'
+    componentName = Component.displayName || Component.name || 'Component',
   } = options;
 
   let OptimizedComponent = Component;
@@ -103,23 +96,21 @@ export function withListOptimization<P extends { items: any[] }>(
     itemName?: string;
   } = {}
 ) {
-  const {
-    itemHeight = 50,
-    threshold = 100,
-    itemName = 'items'
-  } = options;
+  const { itemHeight = 50, threshold = 100, itemName = 'items' } = options;
 
-  const ListOptimizedComponent = memo(forwardRef<any, P>((props, ref) => {
-    const { items } = props;
+  const ListOptimizedComponent = memo(
+    forwardRef<any, P>((props, ref) => {
+      const { items } = props;
 
-    // Only apply virtual scrolling for large lists
-    if (items.length > threshold) {
-      // Would integrate with virtual scrolling here
-      console.log(`Virtual scrolling enabled for ${items.length} ${itemName}`);
-    }
+      // Only apply virtual scrolling for large lists
+      if (items.length > threshold) {
+        // Would integrate with virtual scrolling here
+        console.log(`Virtual scrolling enabled for ${items.length} ${itemName}`);
+      }
 
-    return <Component {...props} ref={ref} />;
-  }));
+      return <Component {...props} ref={ref} />;
+    })
+  );
 
   ListOptimizedComponent.displayName = `ListOptimized(${Component.displayName || Component.name})`;
   return ListOptimizedComponent;
@@ -141,14 +132,16 @@ export function withAsyncData<P extends object>(
     loadingComponent: LoadingComponent = () => <div>Loading...</div>,
     errorComponent: ErrorComponent = ({ error }) => <div>Error: {error.message}</div>,
     cacheKey,
-    cacheTTL
+    cacheTTL,
   } = options;
 
-  const AsyncOptimizedComponent = memo(forwardRef<any, P>((props, ref) => {
-    // Would integrate with useAsyncState and caching here
-    // For now, just pass through
-    return <Component {...props} ref={ref} />;
-  }));
+  const AsyncOptimizedComponent = memo(
+    forwardRef<any, P>((props, ref) => {
+      // Would integrate with useAsyncState and caching here
+      // For now, just pass through
+      return <Component {...props} ref={ref} />;
+    })
+  );
 
   AsyncOptimizedComponent.displayName = `AsyncOptimized(${Component.displayName || Component.name})`;
   return AsyncOptimizedComponent;
@@ -165,17 +158,15 @@ export function withIntersectionObserver<P extends object>(
     fallback?: React.ReactNode;
   } = {}
 ) {
-  const {
-    threshold = 0.1,
-    rootMargin = '50px',
-    fallback = <div>Loading...</div>
-  } = options;
+  const { threshold = 0.1, rootMargin = '50px', fallback = <div>Loading...</div> } = options;
 
-  const IntersectionOptimizedComponent = memo(forwardRef<any, P>((props, ref) => {
-    // Would integrate with useLazyLoad here
-    // For now, just pass through
-    return <Component {...props} ref={ref} />;
-  }));
+  const IntersectionOptimizedComponent = memo(
+    forwardRef<any, P>((props, ref) => {
+      // Would integrate with useLazyLoad here
+      // For now, just pass through
+      return <Component {...props} ref={ref} />;
+    })
+  );
 
   IntersectionOptimizedComponent.displayName = `IntersectionOptimized(${Component.displayName || Component.name})`;
   return IntersectionOptimizedComponent;
@@ -191,7 +182,7 @@ export const optimizationPresets = {
   heavy: {
     memo: true,
     monitorPerformance: true,
-    lazy: false
+    lazy: false,
   },
 
   /**
@@ -201,7 +192,7 @@ export const optimizationPresets = {
     memo: true,
     monitorPerformance: true,
     lazy: true,
-    fallback: <div>Loading chart...</div>
+    fallback: <div>Loading chart...</div>,
   },
 
   /**
@@ -210,7 +201,7 @@ export const optimizationPresets = {
   list: {
     memo: true,
     monitorPerformance: false,
-    lazy: false
+    lazy: false,
   },
 
   /**
@@ -220,7 +211,7 @@ export const optimizationPresets = {
     memo: true,
     monitorPerformance: false,
     lazy: true,
-    fallback: <div>Loading...</div>
+    fallback: <div>Loading...</div>,
   },
 
   /**
@@ -229,8 +220,8 @@ export const optimizationPresets = {
   form: {
     memo: true,
     monitorPerformance: false,
-    lazy: false
-  }
+    lazy: false,
+  },
 };
 
 /**
@@ -243,7 +234,7 @@ export function withPresetOptimization<P extends object>(
 ): ComponentType<P & OptimizedComponentProps> {
   return withOptimization(Component, {
     ...optimizationPresets[preset],
-    ...additionalOptions
+    ...additionalOptions,
   });
 }
 
@@ -253,5 +244,5 @@ export default {
   withAsyncData,
   withIntersectionObserver,
   withPresetOptimization,
-  optimizationPresets
+  optimizationPresets,
 };

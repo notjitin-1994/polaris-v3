@@ -131,8 +131,7 @@ export function useRazorpayCheckout() {
   /**
    * Generate default checkout options
    */
-  const generateCheckoutOptions = useCallback(
-    (options: CheckoutOptions): ModalCheckoutOptions => {
+  const generateCheckoutOptions = useCallback((options: CheckoutOptions): ModalCheckoutOptions => {
     const config = getRazorpayConfig();
 
     const baseOptions: ModalCheckoutOptions = {
@@ -154,7 +153,7 @@ export function useRazorpayCheckout() {
         ...options.theme,
       },
       handler: (response: RazorpaySuccessResponse) => {
-        setState(prev => ({
+        setState((prev) => ({
           ...prev,
           isLoading: false,
           lastResponse: response,
@@ -166,12 +165,12 @@ export function useRazorpayCheckout() {
 
         // Close modal if not redirecting
         if (!options.redirect) {
-          setState(prev => ({ ...prev, isOpen: false }));
+          setState((prev) => ({ ...prev, isOpen: false }));
         }
       },
       modal: {
         ondismiss: () => {
-          setState(prev => ({
+          setState((prev) => ({
             ...prev,
             isOpen: false,
             isLoading: false,
@@ -183,7 +182,7 @@ export function useRazorpayCheckout() {
         escape: true,
         backdropclose: true,
         animate: true,
-        ...options.theme?.hide_topbar ? { backdropclose: false } : {},
+        ...(options.theme?.hide_topbar ? { backdropclose: false } : {}),
       },
       callback_url: config.callbackUrl,
       redirect: options.redirect ?? false,
@@ -215,7 +214,7 @@ export function useRazorpayCheckout() {
       // Check if Razorpay is available
       if (typeof window === 'undefined' || !window.Razorpay) {
         const error = 'Razorpay not available. Please ensure the script is loaded.';
-        setState(prev => ({
+        setState((prev) => ({
           ...prev,
           error,
           isLoading: false,
@@ -230,7 +229,7 @@ export function useRazorpayCheckout() {
         return null;
       }
 
-      setState(prev => ({
+      setState((prev) => ({
         ...prev,
         isLoading: true,
         error: null,
@@ -242,7 +241,9 @@ export function useRazorpayCheckout() {
         const checkoutOptions = generateCheckoutOptions(options);
 
         if (!checkoutOptions.key) {
-          throw new Error('Razorpay key is not configured. Please check NEXT_PUBLIC_RAZORPAY_KEY_ID environment variable.');
+          throw new Error(
+            'Razorpay key is not configured. Please check NEXT_PUBLIC_RAZORPAY_KEY_ID environment variable.'
+          );
         }
 
         // Create Razorpay instance
@@ -275,12 +276,11 @@ export function useRazorpayCheckout() {
           // Open checkout with modified handlers
           checkoutRef.current!.open(checkoutOptions);
         });
-
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
         console.error('[useRazorpayCheckout] Failed to open checkout:', error);
 
-        setState(prev => ({
+        setState((prev) => ({
           ...prev,
           error: errorMessage,
           isLoading: false,
@@ -290,7 +290,9 @@ export function useRazorpayCheckout() {
         options.onFailure?.(error instanceof Error ? error : new Error(errorMessage));
         return null;
       }
-    }, [state.isLoading, state.lastResponse, generateCheckoutOptions]);
+    },
+    [state.isLoading, state.lastResponse, generateCheckoutOptions]
+  );
 
   /**
    * Close checkout modal
@@ -300,7 +302,7 @@ export function useRazorpayCheckout() {
       try {
         // Razorpay doesn't provide a direct close method
         // The modal will close automatically on success/failure/dismiss
-        setState(prev => ({
+        setState((prev) => ({
           ...prev,
           isOpen: false,
           isLoading: false,
@@ -315,7 +317,7 @@ export function useRazorpayCheckout() {
    * Clear error state
    */
   const clearError = useCallback(() => {
-    setState(prev => ({ ...prev, error: null }));
+    setState((prev) => ({ ...prev, error: null }));
   }, []);
 
   /**

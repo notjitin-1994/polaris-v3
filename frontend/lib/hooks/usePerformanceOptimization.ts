@@ -39,12 +39,16 @@ export function useDebounce<T>(value: T, options: UseDebounceOptions): T {
   const [debouncedValue, setDebouncedValue] = useState<T>(value);
 
   useEffect(() => {
-    const debounced = debounce((newValue: T) => {
-      setDebouncedValue(newValue);
-    }, options.delay, {
-      leading: options.leading,
-      trailing: options.trailing
-    });
+    const debounced = debounce(
+      (newValue: T) => {
+        setDebouncedValue(newValue);
+      },
+      options.delay,
+      {
+        leading: options.leading,
+        trailing: options.trailing,
+      }
+    );
 
     debounced(value);
 
@@ -63,12 +67,16 @@ export function useThrottle<T>(value: T, options: UseThrottleOptions): T {
   const [throttledValue, setThrottledValue] = useState<T>(value);
 
   useEffect(() => {
-    const throttled = throttle((newValue: T) => {
-      setThrottledValue(newValue);
-    }, options.wait, {
-      leading: options.leading,
-      trailing: options.trailing
-    });
+    const throttled = throttle(
+      (newValue: T) => {
+        setThrottledValue(newValue);
+      },
+      options.wait,
+      {
+        leading: options.leading,
+        trailing: options.trailing,
+      }
+    );
 
     throttled(value);
 
@@ -89,7 +97,7 @@ export function useDeepMemo<T>(factory: () => T, deps: React.DependencyList): T 
   if (!ref.current || !depsEqual(deps, ref.current.deps)) {
     ref.current = {
       deps,
-      value: factory()
+      value: factory(),
     };
   }
 
@@ -99,10 +107,7 @@ export function useDeepMemo<T>(factory: () => T, deps: React.DependencyList): T 
 /**
  * Hook for optimized async state management
  */
-export function useAsyncState<T>(
-  asyncFn: () => Promise<T>,
-  options: UseAsyncStateOptions<T> = {}
-) {
+export function useAsyncState<T>(asyncFn: () => Promise<T>, options: UseAsyncStateOptions<T> = {}) {
   const [data, setData] = useState<T | undefined>(options.initialData);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
@@ -130,7 +135,7 @@ export function useAsyncState<T>(
   const retry = useCallback(() => {
     const maxRetries = options.retryCount || 3;
     if (retryCount < maxRetries) {
-      setRetryCount(prev => prev + 1);
+      setRetryCount((prev) => prev + 1);
       return execute();
     }
   }, [execute, retryCount, options.retryCount]);
@@ -149,7 +154,7 @@ export function useAsyncState<T>(
     execute,
     retry,
     reset,
-    retryCount
+    retryCount,
   };
 }
 
@@ -173,7 +178,7 @@ export function useLazyLoad(
       {
         threshold: 0.1,
         rootMargin: '50px',
-        ...options
+        ...options,
       }
     );
 
@@ -190,11 +195,7 @@ export function useLazyLoad(
 /**
  * Hook for virtual scrolling (simplified version)
  */
-export function useVirtualScroll<T>(
-  items: T[],
-  itemHeight: number,
-  containerHeight: number
-) {
+export function useVirtualScroll<T>(items: T[], itemHeight: number, containerHeight: number) {
   const [scrollTop, setScrollTop] = useState(0);
 
   const visibleItems = useMemo(() => {
@@ -208,7 +209,7 @@ export function useVirtualScroll<T>(
       startIndex,
       endIndex,
       items: items.slice(startIndex, endIndex),
-      offsetY: startIndex * itemHeight
+      offsetY: startIndex * itemHeight,
     };
   }, [items, itemHeight, containerHeight, scrollTop]);
 
@@ -219,7 +220,7 @@ export function useVirtualScroll<T>(
   return {
     visibleItems,
     handleScroll,
-    totalHeight: items.length * itemHeight
+    totalHeight: items.length * itemHeight,
   };
 }
 
@@ -229,7 +230,7 @@ export function useVirtualScroll<T>(
 export function useWindowSize(debounceMs = 250) {
   const [windowSize, setWindowSize] = useState({
     width: typeof window !== 'undefined' ? window.innerWidth : 0,
-    height: typeof window !== 'undefined' ? window.innerHeight : 0
+    height: typeof window !== 'undefined' ? window.innerHeight : 0,
   });
 
   useEffect(() => {
@@ -238,7 +239,7 @@ export function useWindowSize(debounceMs = 250) {
     const handleResize = debounce(() => {
       setWindowSize({
         width: window.innerWidth,
-        height: window.innerHeight
+        height: window.innerHeight,
       });
     }, debounceMs);
 
@@ -269,7 +270,8 @@ export function usePerformanceMonitor(componentName: string) {
       const renderTime = performance.now() - renderStartTime.current;
 
       // Log slow renders
-      if (renderTime > 16) { // More than one frame
+      if (renderTime > 16) {
+        // More than one frame
         console.warn(`Slow render detected in ${componentName}: ${renderTime.toFixed(2)}ms`);
       }
     }
@@ -279,15 +281,18 @@ export function usePerformanceMonitor(componentName: string) {
     renderStartTime.current = performance.now();
   }, []);
 
-  const getMetrics = useCallback(() => ({
-    componentName,
-    mountTime: mountTime.current,
-    renderCount: 1 // Would need actual counting in production
-  }), [componentName]);
+  const getMetrics = useCallback(
+    () => ({
+      componentName,
+      mountTime: mountTime.current,
+      renderCount: 1, // Would need actual counting in production
+    }),
+    [componentName]
+  );
 
   return {
     startRender,
-    getMetrics
+    getMetrics,
   };
 }
 
@@ -317,27 +322,30 @@ export function useCachedCall<T extends (...args: any[]) => Promise<any>>(
 ) {
   const cache = useRef(new Map<string, { data: any; timestamp: number }>());
 
-  const execute = useCallback(async (...args: Parameters<T>) => {
-    const cacheKey = `${key}:${JSON.stringify(args)}`;
-    const cached = cache.current.get(cacheKey);
+  const execute = useCallback(
+    async (...args: Parameters<T>) => {
+      const cacheKey = `${key}:${JSON.stringify(args)}`;
+      const cached = cache.current.get(cacheKey);
 
-    if (cached && Date.now() - cached.timestamp < ttl) {
-      return cached.data;
-    }
+      if (cached && Date.now() - cached.timestamp < ttl) {
+        return cached.data;
+      }
 
-    try {
-      const result = await asyncFn(...args);
-      cache.current.set(cacheKey, {
-        data: result,
-        timestamp: Date.now()
-      });
-      return result;
-    } catch (error) {
-      // Don't cache errors
-      cache.current.delete(cacheKey);
-      throw error;
-    }
-  }, [key, asyncFn, ttl]);
+      try {
+        const result = await asyncFn(...args);
+        cache.current.set(cacheKey, {
+          data: result,
+          timestamp: Date.now(),
+        });
+        return result;
+      } catch (error) {
+        // Don't cache errors
+        cache.current.delete(cacheKey);
+        throw error;
+      }
+    },
+    [key, asyncFn, ttl]
+  );
 
   const invalidate = useCallback(() => {
     // Clear all cache entries for this key

@@ -31,7 +31,8 @@ vi.mock('@/src/lib/services/dynamicQuestionGenerationV2', () => ({
       {
         id: 'learning_objectives',
         title: 'Learning Objectives & Outcomes',
-        description: 'Define what learners should be able to do after completing the learning experience',
+        description:
+          'Define what learners should be able to do after completing the learning experience',
         questions: [
           {
             id: 'q1_s1',

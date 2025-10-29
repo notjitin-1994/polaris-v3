@@ -57,7 +57,7 @@ class BackgroundMonitor {
       cleanupInterval: 300000, // 5 minutes
       maxEvents: 1000,
       retentionPeriod: 7 * 24 * 60 * 60 * 1000, // 7 days
-      ...config
+      ...config,
     };
 
     this.startTime = Date.now();
@@ -143,7 +143,7 @@ class BackgroundMonitor {
       uptime: Date.now() - this.startTime,
       lastReport: this.reports[this.reports.length - 1],
       reportCount: this.reports.length,
-      config: this.config
+      config: this.config,
     };
   }
 
@@ -151,9 +151,7 @@ class BackgroundMonitor {
    * Get monitoring reports
    */
   getReports(limit = 50): MonitoringReport[] {
-    return this.reports
-      .sort((a, b) => b.timestamp - a.timestamp)
-      .slice(0, limit);
+    return this.reports.sort((a, b) => b.timestamp - a.timestamp).slice(0, limit);
   }
 
   /**
@@ -174,7 +172,7 @@ class BackgroundMonitor {
         totalRequests: 0,
         errorRate: 0,
         uptime: 0,
-        memoryUsage: process.memoryUsage()
+        memoryUsage: process.memoryUsage(),
       };
     }
 
@@ -186,14 +184,14 @@ class BackgroundMonitor {
     const totalAlerts = reports.reduce((sum, report) => sum + report.alertsTriggered, 0);
 
     const errorRate = totalErrors > 0 ? (totalErrors / (totalHealthChecks + totalErrors)) * 100 : 0;
-    const uptime = (Date.now() - this.startTime) / (Date.now() - this.startTime) * 100; // Simplified uptime calculation
+    const uptime = ((Date.now() - this.startTime) / (Date.now() - this.startTime)) * 100; // Simplified uptime calculation
 
     return {
       averageResponseTime,
       totalRequests: totalHealthChecks,
       errorRate,
       uptime,
-      memoryUsage: process.memoryUsage()
+      memoryUsage: process.memoryUsage(),
     };
   }
 
@@ -212,13 +210,13 @@ class BackgroundMonitor {
         alertsTriggered: 0,
         systemMetrics: {
           memory: process.memoryUsage(),
-          uptime: process.uptime()
+          uptime: process.uptime(),
         },
         summary: {
           overall: 'healthy',
           issues: [],
-          recommendations: []
-        }
+          recommendations: [],
+        },
       };
 
       // Collect health check metrics
@@ -298,13 +296,13 @@ class BackgroundMonitor {
         console.error('🚨 CRITICAL MONITORING ISSUES:', {
           timestamp: new Date(report.timestamp).toISOString(),
           issues: report.summary.issues,
-          recommendations: report.summary.recommendations
+          recommendations: report.summary.recommendations,
         });
       } else if (report.summary.overall === 'degraded') {
         console.warn('⚠️ MONITORING ISSUES DETECTED:', {
           timestamp: new Date(report.timestamp).toISOString(),
           issues: report.summary.issues,
-          recommendations: report.summary.recommendations
+          recommendations: report.summary.recommendations,
         });
       }
 
@@ -313,14 +311,13 @@ class BackgroundMonitor {
         healthChecks: report.healthChecks,
         errors: report.errorsTracked,
         alerts: report.alertsTriggered,
-        status: report.summary.overall
+        status: report.summary.overall,
       });
-
     } catch (error) {
       console.error('Background monitoring cycle failed:', error);
       errorTracker.trackError(error, {
         component: 'background-monitor',
-        action: 'monitoring-cycle'
+        action: 'monitoring-cycle',
       });
     }
   }
@@ -331,11 +328,11 @@ class BackgroundMonitor {
 
       if (events.length > 0) {
         console.log(`🚨 ${events.length} alert(s) triggered:`, {
-          alerts: events.map(e => ({
+          alerts: events.map((e) => ({
             rule: e.ruleName,
             severity: e.severity,
-            message: e.message
-          }))
+            message: e.message,
+          })),
         });
 
         // Track alert events
@@ -344,7 +341,7 @@ class BackgroundMonitor {
             component: 'background-monitor',
             action: 'alert-check',
             alertRule: event.ruleName,
-            severity: event.severity
+            severity: event.severity,
           });
         }
       }
@@ -352,7 +349,7 @@ class BackgroundMonitor {
       console.error('Alert checking failed:', error);
       errorTracker.trackError(error, {
         component: 'background-monitor',
-        action: 'alert-check'
+        action: 'alert-check',
       });
     }
   }
@@ -366,7 +363,7 @@ class BackgroundMonitor {
           healthy: healthStatus.summary.healthyChecks,
           degraded: healthStatus.summary.degradedChecks,
           unhealthy: healthStatus.summary.unhealthyChecks,
-          availability: healthStatus.summary.availability
+          availability: healthStatus.summary.availability,
         });
 
         // Track health check issues
@@ -376,14 +373,14 @@ class BackgroundMonitor {
           healthyChecks: healthStatus.summary.healthyChecks,
           degradedChecks: healthStatus.summary.degradedChecks,
           unhealthyChecks: healthStatus.summary.unhealthyChecks,
-          availability: healthStatus.summary.availability
+          availability: healthStatus.summary.availability,
         });
       }
     } catch (error) {
       console.error('Health check failed:', error);
       errorTracker.trackError(error, {
         component: 'background-monitor',
-        action: 'health-check'
+        action: 'health-check',
       });
     }
   }
@@ -392,7 +389,7 @@ class BackgroundMonitor {
     try {
       // Clean up old reports
       const cutoff = Date.now() - this.config.retentionPeriod;
-      this.reports = this.reports.filter(report => report.timestamp > cutoff);
+      this.reports = this.reports.filter((report) => report.timestamp > cutoff);
 
       // Limit reports
       if (this.reports.length > this.config.maxEvents) {
@@ -412,7 +409,7 @@ class BackgroundMonitor {
       console.error('Background monitoring cleanup failed:', error);
       errorTracker.trackError(error, {
         component: 'background-monitor',
-        action: 'cleanup'
+        action: 'cleanup',
       });
     }
   }
@@ -430,7 +427,7 @@ class BackgroundMonitor {
       memory: process.memoryUsage(),
       cpu: process.cpuUsage(),
       uptime: process.uptime(),
-      timestamp: Date.now()
+      timestamp: Date.now(),
     };
   }
 
@@ -456,13 +453,13 @@ class BackgroundMonitor {
       reports: this.reports,
       summary: {
         totalReports: this.reports.length,
-        ...this.getPerformanceSummary()
+        ...this.getPerformanceSummary(),
       },
       status: {
         isRunning: this.isRunning,
         config: this.config,
-        resourceUsage: this.getResourceUsage()
-      }
+        resourceUsage: this.getResourceUsage(),
+      },
     };
   }
 }

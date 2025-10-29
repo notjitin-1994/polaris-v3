@@ -37,7 +37,7 @@ const nextConfig: NextConfig = {
         new BundleAnalyzerPlugin({
           analyzerMode: 'static',
           openAnalyzer: false,
-          reportFilename: isServer ? '../analyze-server.html' : '../analyze-client.html'
+          reportFilename: isServer ? '../analyze-server.html' : '../analyze-client.html',
         })
       );
     }
@@ -88,7 +88,7 @@ const nextConfig: NextConfig = {
       alias: {
         ...config.resolve.alias,
         // Prefer ES modules for better tree shaking
-        'lodash': 'lodash-es',
+        lodash: 'lodash-es',
       },
     };
 

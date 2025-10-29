@@ -141,7 +141,9 @@ describe('POST /api/subscriptions/create-subscription', () => {
       expect(response.status).toBe(401);
       expect(data.success).toBe(false);
       expect(data.error.code).toBe('UNAUTHORIZED');
-      expect(data.error.message).toBe('Authentication required. Please sign in to create a subscription.');
+      expect(data.error.message).toBe(
+        'Authentication required. Please sign in to create a subscription.'
+      );
     });
 
     it('should return 401 if session exists but user is missing', async () => {
@@ -243,7 +245,9 @@ describe('POST /api/subscriptions/create-subscription', () => {
 
     it('should return 429 when rate limit exceeded', async () => {
       // Make multiple requests to trigger rate limit
-      const requests = Array(15).fill(null).map(() => POST(mockRequest));
+      const requests = Array(15)
+        .fill(null)
+        .map(() => POST(mockRequest));
 
       const lastResponse = await requests[requests.length - 1];
       const data = await lastResponse.json();
@@ -282,14 +286,16 @@ describe('POST /api/subscriptions/create-subscription', () => {
       });
 
       mockSupabase.order.mockResolvedValue({
-        data: [{
-          subscription_id: 'sub-existing',
-          razorpay_subscription_id: 'raz_sub_existing',
-          status: 'active',
-          subscription_tier: 'navigator',
-          plan_name: 'Navigator Plan (Monthly)',
-          next_billing_date: '2025-11-29T00:00:00.000Z',
-        }],
+        data: [
+          {
+            subscription_id: 'sub-existing',
+            razorpay_subscription_id: 'raz_sub_existing',
+            status: 'active',
+            subscription_tier: 'navigator',
+            plan_name: 'Navigator Plan (Monthly)',
+            next_billing_date: '2025-11-29T00:00:00.000Z',
+          },
+        ],
         error: null,
       });
 
@@ -314,14 +320,16 @@ describe('POST /api/subscriptions/create-subscription', () => {
       });
 
       mockSupabase.order.mockResolvedValue({
-        data: [{
-          subscription_id: 'sub-existing',
-          razorpay_subscription_id: 'raz_sub_existing',
-          status: 'active',
-          subscription_tier: 'navigator',
-          plan_name: 'Navigator Plan (Monthly)',
-          next_billing_date: '2025-11-29T00:00:00.000Z',
-        }],
+        data: [
+          {
+            subscription_id: 'sub-existing',
+            razorpay_subscription_id: 'raz_sub_existing',
+            status: 'active',
+            subscription_tier: 'navigator',
+            plan_name: 'Navigator Plan (Monthly)',
+            next_billing_date: '2025-11-29T00:00:00.000Z',
+          },
+        ],
         error: null,
       });
 

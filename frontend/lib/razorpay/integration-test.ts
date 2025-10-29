@@ -30,7 +30,7 @@ import {
   createSubscription,
   fetchSubscription,
   createPlan,
-  fetchAllPlans
+  fetchAllPlans,
 } from './client';
 
 import {
@@ -135,7 +135,9 @@ function testClientInitialization() {
 
     console.log(`[Integration Test] Razorpay Mode: ${apiMode}`);
     console.log(`[Integration Test] Test Mode: ${testMode}`);
-    console.log(`[Integration Test] Key ID Format: ${keyId.startsWith('rzp_') ? 'Valid' : 'Invalid'}`);
+    console.log(
+      `[Integration Test] Key ID Format: ${keyId.startsWith('rzp_') ? 'Valid' : 'Invalid'}`
+    );
 
     // Test client is properly initialized
     if (!razorpayClient) {
@@ -191,12 +193,15 @@ function testPlanConfiguration() {
     { fn: 'getPlanLimit', args: ['navigator'], expected: 25 },
   ];
 
-  const utilityResults = testCases.map(testCase => {
+  const utilityResults = testCases.map((testCase) => {
     let result: any;
 
     switch (testCase.fn) {
       case 'getPlanPrice':
-        result = getPlanPrice(testCase.args[0] as SubscriptionTier, testCase.args[1] as BillingCycle);
+        result = getPlanPrice(
+          testCase.args[0] as SubscriptionTier,
+          testCase.args[1] as BillingCycle
+        );
         break;
       case 'formatPrice':
         result = formatPrice(testCase.args[0] as number);
@@ -301,8 +306,10 @@ export function runIntegrationTests() {
 
   // Log results
   console.log('[Integration Test] TypeScript Types: ✅ PASS');
-  console.log('[Integration Test] Client Initialization:',
-    results.clientInitialization.success ? '✅ PASS' : '❌ FAIL');
+  console.log(
+    '[Integration Test] Client Initialization:',
+    results.clientInitialization.success ? '✅ PASS' : '❌ FAIL'
+  );
   console.log('[Integration Test] Plan Configuration: ✅ PASS');
   console.log('[Integration Test] API Functions: ✅ PASS');
 
@@ -317,7 +324,9 @@ export function runIntegrationTests() {
   const allPassed = passedTests === totalTests;
 
   console.log(`\n[Integration Test] Results: ${passedTests}/${totalTests} tests passed`);
-  console.log(`[Integration Test] Overall Status: ${allPassed ? '✅ ALL TESTS PASSED' : '❌ SOME TESTS FAILED'}`);
+  console.log(
+    `[Integration Test] Overall Status: ${allPassed ? '✅ ALL TESTS PASSED' : '❌ SOME TESTS FAILED'}`
+  );
 
   return {
     ...results,
@@ -331,12 +340,7 @@ export function runIntegrationTests() {
 }
 
 // Export test functions for individual testing
-export {
-  testTypeScriptTypes,
-  testClientInitialization,
-  testPlanConfiguration,
-  testAPIFunctions,
-};
+export { testTypeScriptTypes, testClientInitialization, testPlanConfiguration, testAPIFunctions };
 
 // Auto-run if this file is executed directly
 if (require.main === module) {

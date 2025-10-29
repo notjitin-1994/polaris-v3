@@ -17,7 +17,7 @@ import { createRateLimiter } from '@/lib/rate-limiting/redisRateLimit';
 const monitoringRateLimiter = createRateLimiter({
   windowMs: 60 * 1000, // 1 minute
   maxRequests: 60, // 60 requests per minute
-  keyPrefix: 'monitoring_status'
+  keyPrefix: 'monitoring_status',
 });
 
 // Set runtime configuration
@@ -45,7 +45,7 @@ function createErrorResponse(
     success: false,
     error: { code, message, details },
     requestId,
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
   };
 
   const response = NextResponse.json(errorResponse, { status });
@@ -55,17 +55,16 @@ function createErrorResponse(
 /**
  * Create success response
  */
-function createSuccessResponse(
-  data: any,
-  requestId: string,
-  status = 200
-): NextResponse {
-  const response = NextResponse.json({
-    success: true,
-    data,
-    requestId,
-    timestamp: new Date().toISOString()
-  }, { status });
+function createSuccessResponse(data: any, requestId: string, status = 200): NextResponse {
+  const response = NextResponse.json(
+    {
+      success: true,
+      data,
+      requestId,
+      timestamp: new Date().toISOString(),
+    },
+    { status }
+  );
 
   return addApiSecurityHeaders(response);
 }
@@ -79,9 +78,8 @@ export async function GET(request: Request): Promise<Response> {
 
   try {
     // Extract client IP for rate limiting
-    const ip = request.headers.get('x-forwarded-for') ||
-               request.headers.get('x-real-ip') ||
-               'unknown';
+    const ip =
+      request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'unknown';
 
     // Rate limiting check
     const rateLimitResult = await monitoringRateLimiter.checkLimit(ip);
@@ -94,13 +92,16 @@ export async function GET(request: Request): Promise<Response> {
         {
           limit: rateLimitResult.limit,
           remaining: rateLimitResult.remaining,
-          retryAfter: rateLimitResult.retryAfter
+          retryAfter: rateLimitResult.retryAfter,
         }
       );
 
       response.headers.set('X-RateLimit-Limit', rateLimitResult.limit.toString());
       response.headers.set('X-RateLimit-Remaining', rateLimitResult.remaining.toString());
-      response.headers.set('Retry-After', Math.ceil((rateLimitResult.retryAfter || 60) / 1000).toString());
+      response.headers.set(
+        'Retry-After',
+        Math.ceil((rateLimitResult.retryAfter || 60) / 1000).toString()
+      );
 
       return response;
     }
@@ -116,7 +117,7 @@ export async function GET(request: Request): Promise<Response> {
       include,
       format,
       timeRange,
-      processingTime: Date.now() - startTime
+      processingTime: Date.now() - startTime,
     });
 
     // Gather monitoring data
@@ -134,22 +135,24 @@ export async function GET(request: Request): Promise<Response> {
     const response = createSuccessResponse(responseData, requestId);
     response.headers.set('X-RateLimit-Limit', rateLimitResult.limit.toString());
     response.headers.set('X-RateLimit-Remaining', rateLimitResult.remaining.toString());
-    response.headers.set('X-RateLimit-Reset', Math.ceil(rateLimitResult.resetTime.getTime() / 1000).toString());
+    response.headers.set(
+      'X-RateLimit-Reset',
+      Math.ceil(rateLimitResult.resetTime.getTime() / 1000).toString()
+    );
 
     console.log(`[Monitoring] Status response sent`, {
       requestId,
       responseSize: JSON.stringify(responseData).length,
-      processingTime: Date.now() - startTime
+      processingTime: Date.now() - startTime,
     });
 
     return response;
-
   } catch (error: unknown) {
     console.error('[Monitoring] Unexpected error in status endpoint', {
       requestId,
       error: error instanceof Error ? error.message : 'Unknown error',
       stack: error instanceof Error ? error.stack : undefined,
-      processingTime: Date.now() - startTime
+      processingTime: Date.now() - startTime,
     });
 
     return createErrorResponse(
@@ -159,7 +162,7 @@ export async function GET(request: Request): Promise<Response> {
       requestId,
       {
         timestamp: new Date().toISOString(),
-        processingTime: Date.now() - startTime
+        processingTime: Date.now() - startTime,
       }
     );
   }
@@ -178,12 +181,7 @@ export async function POST(request: Request): Promise<Response> {
     try {
       requestBody = await request.json();
     } catch (error) {
-      return createErrorResponse(
-        'INVALID_JSON',
-        'Invalid JSON in request body',
-        400,
-        requestId
-      );
+      return createErrorResponse('INVALID_JSON', 'Invalid JSON in request body', 400, requestId);
     }
 
     const { action, target } = requestBody as { action?: string; target?: string };
@@ -192,7 +190,7 @@ export async function POST(request: Request): Promise<Response> {
       requestId,
       action,
       target,
-      processingTime: Date.now() - startTime
+      processingTime: Date.now() - startTime,
     });
 
     let result;
@@ -217,19 +215,21 @@ export async function POST(request: Request): Promise<Response> {
         );
     }
 
-    return createSuccessResponse({
-      message: `Action ${action} completed successfully`,
-      action,
-      target,
-      result,
-      executedAt: new Date().toISOString()
-    }, requestId);
-
+    return createSuccessResponse(
+      {
+        message: `Action ${action} completed successfully`,
+        action,
+        target,
+        result,
+        executedAt: new Date().toISOString(),
+      },
+      requestId
+    );
   } catch (error: unknown) {
     console.error('[Monitoring] Error in action endpoint', {
       requestId,
       error: error instanceof Error ? error.message : 'Unknown error',
-      processingTime: Date.now() - startTime
+      processingTime: Date.now() - startTime,
     });
 
     return createErrorResponse(
@@ -248,7 +248,7 @@ async function gatherMonitoringData(include: string[], timeRange: string): Promi
   const data: any = {
     timestamp: new Date().toISOString(),
     timeRange,
-    uptime: Date.now() - process.uptime() * 1000
+    uptime: Date.now() - process.uptime() * 1000,
   };
 
   // System information
@@ -259,7 +259,7 @@ async function gatherMonitoringData(include: string[], timeRange: string): Promi
       architecture: process.arch,
       memory: process.memoryUsage(),
       uptime: process.uptime(),
-      pid: process.pid
+      pid: process.pid,
     };
   }
 
@@ -284,7 +284,7 @@ async function gatherMonitoringData(include: string[], timeRange: string): Promi
     data.alerts = {
       statistics: alertingSystem.getStatistics(),
       recentEvents: alertingSystem.getEvents(20, false),
-      rules: Array.from(alertingSystem.getRules?.values() || [])
+      rules: Array.from(alertingSystem.getRules?.values() || []),
     };
   }
 
@@ -309,12 +309,13 @@ function formatPrometheusMetrics(data: any): string {
 
   // Health status
   if (data.health) {
-    lines.push('# HELP polaris_health_status Health check status (1=healthy, 0.5=degraded, 0=unhealthy)');
+    lines.push(
+      '# HELP polaris_health_status Health check status (1=healthy, 0.5=degraded, 0=unhealthy)'
+    );
     lines.push('# TYPE polaris_health_status gauge');
 
     for (const check of data.health.checks) {
-      const status = check.status === 'healthy' ? 1 :
-                    check.status === 'degraded' ? 0.5 : 0;
+      const status = check.status === 'healthy' ? 1 : check.status === 'degraded' ? 0.5 : 0;
       lines.push(`polaris_health_status{name="${check.name}"} ${status}`);
     }
 
@@ -388,13 +389,13 @@ async function triggerAlertCheck(): Promise<any> {
   const events = await alertingSystem.checkRules();
   return {
     triggeredEvents: events.length,
-    events: events.map(event => ({
+    events: events.map((event) => ({
       id: event.id,
       ruleName: event.ruleName,
       severity: event.severity,
       message: event.message,
-      timestamp: event.timestamp
-    }))
+      timestamp: event.timestamp,
+    })),
   };
 }
 

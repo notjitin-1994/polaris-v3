@@ -13,7 +13,13 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { NextRequest, NextResponse } from 'next/server';
 import { POST } from '@/app/api/webhooks/razorpay/route';
-import { createMockSupabaseClient, mockSubscription, mockPayment, mockWebhookEvent, supabaseErrors } from '@/__tests__/mocks/supabase';
+import {
+  createMockSupabaseClient,
+  mockSubscription,
+  mockPayment,
+  mockWebhookEvent,
+  supabaseErrors,
+} from '@/__tests__/mocks/supabase';
 import { createSubscription, createPayment, createWebhookEvent } from '@/__tests__/mocks/factories';
 import * as crypto from 'crypto';
 
@@ -50,16 +56,16 @@ describe('POST /api/webhooks/razorpay', () => {
     it('should return 401 if webhook signature is missing', async () => {
       const payload = {
         event: 'subscription.activated',
-        payload: { subscription: { id: 'sub_test123' } }
+        payload: { subscription: { id: 'sub_test123' } },
       };
 
       const request = new NextRequest('http://localhost:3000/api/webhooks/razorpay', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
           // Missing X-Razorpay-Signature
         },
-        body: JSON.stringify(payload)
+        body: JSON.stringify(payload),
       });
 
       const response = await POST(request);
@@ -75,16 +81,16 @@ describe('POST /api/webhooks/razorpay', () => {
 
       const payload = {
         event: 'subscription.activated',
-        payload: { subscription: { id: 'sub_test123' } }
+        payload: { subscription: { id: 'sub_test123' } },
       };
 
       const request = new NextRequest('http://localhost:3000/api/webhooks/razorpay', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-Razorpay-Signature': 'invalid_signature'
+          'X-Razorpay-Signature': 'invalid_signature',
         },
-        body: JSON.stringify(payload)
+        body: JSON.stringify(payload),
       });
 
       const response = await POST(request);
@@ -99,9 +105,9 @@ describe('POST /api/webhooks/razorpay', () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-Razorpay-Signature': 'valid_signature'
+          'X-Razorpay-Signature': 'valid_signature',
         },
-        body: 'invalid json {'
+        body: 'invalid json {',
       });
 
       const response = await POST(request);
@@ -130,19 +136,19 @@ describe('POST /api/webhooks/razorpay', () => {
               notes: {
                 user_id: 'user_test123',
                 subscription_tier: 'navigator',
-                billing_cycle: 'monthly'
-              }
-            }
-          }
+                billing_cycle: 'monthly',
+              },
+            },
+          },
         };
 
         const request = new NextRequest('http://localhost:3000/api/webhooks/razorpay', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'X-Razorpay-Signature': 'valid_signature'
+            'X-Razorpay-Signature': 'valid_signature',
           },
-          body: JSON.stringify(payload)
+          body: JSON.stringify(payload),
         });
 
         const response = await POST(request);
@@ -157,7 +163,7 @@ describe('POST /api/webhooks/razorpay', () => {
           expect.objectContaining({
             status: 'active',
             current_start: expect.any(String),
-            current_end: expect.any(String)
+            current_end: expect.any(String),
           })
         );
       });
@@ -169,18 +175,18 @@ describe('POST /api/webhooks/razorpay', () => {
             subscription: {
               id: 'sub_test123',
               status: 'completed',
-              ended_at: 1701254400
-            }
-          }
+              ended_at: 1701254400,
+            },
+          },
         };
 
         const request = new NextRequest('http://localhost:3000/api/webhooks/razorpay', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'X-Razorpay-Signature': 'valid_signature'
+            'X-Razorpay-Signature': 'valid_signature',
           },
-          body: JSON.stringify(payload)
+          body: JSON.stringify(payload),
         });
 
         const response = await POST(request);
@@ -191,7 +197,7 @@ describe('POST /api/webhooks/razorpay', () => {
         expect(mockSupabase.update).toHaveBeenCalledWith(
           expect.objectContaining({
             status: 'completed',
-            ended_at: expect.any(String)
+            ended_at: expect.any(String),
           })
         );
       });
@@ -203,18 +209,18 @@ describe('POST /api/webhooks/razorpay', () => {
             subscription: {
               id: 'sub_test123',
               status: 'cancelled',
-              ended_at: 1701254400
-            }
-          }
+              ended_at: 1701254400,
+            },
+          },
         };
 
         const request = new NextRequest('http://localhost:3000/api/webhooks/razorpay', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'X-Razorpay-Signature': 'valid_signature'
+            'X-Razorpay-Signature': 'valid_signature',
           },
-          body: JSON.stringify(payload)
+          body: JSON.stringify(payload),
         });
 
         const response = await POST(request);
@@ -225,7 +231,7 @@ describe('POST /api/webhooks/razorpay', () => {
         expect(mockSupabase.update).toHaveBeenCalledWith(
           expect.objectContaining({
             status: 'cancelled',
-            ended_at: expect.any(String)
+            ended_at: expect.any(String),
           })
         );
       });
@@ -236,18 +242,18 @@ describe('POST /api/webhooks/razorpay', () => {
           payload: {
             subscription: {
               id: 'sub_test123',
-              status: 'halted'
-            }
-          }
+              status: 'halted',
+            },
+          },
         };
 
         const request = new NextRequest('http://localhost:3000/api/webhooks/razorpay', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'X-Razorpay-Signature': 'valid_signature'
+            'X-Razorpay-Signature': 'valid_signature',
           },
-          body: JSON.stringify(payload)
+          body: JSON.stringify(payload),
         });
 
         const response = await POST(request);
@@ -257,7 +263,7 @@ describe('POST /api/webhooks/razorpay', () => {
         // Should mark subscription as halted
         expect(mockSupabase.update).toHaveBeenCalledWith(
           expect.objectContaining({
-            status: 'halted'
+            status: 'halted',
           })
         );
       });
@@ -276,19 +282,19 @@ describe('POST /api/webhooks/razorpay', () => {
               order_id: null,
               invoice_id: null,
               notes: {
-                subscription_id: 'sub_test123'
-              }
-            }
-          }
+                subscription_id: 'sub_test123',
+              },
+            },
+          },
         };
 
         const request = new NextRequest('http://localhost:3000/api/webhooks/razorpay', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'X-Razorpay-Signature': 'valid_signature'
+            'X-Razorpay-Signature': 'valid_signature',
           },
-          body: JSON.stringify(payload)
+          body: JSON.stringify(payload),
         });
 
         const response = await POST(request);
@@ -302,7 +308,7 @@ describe('POST /api/webhooks/razorpay', () => {
             razorpay_payment_id: 'pay_test123',
             amount: 290000,
             currency: 'INR',
-            status: 'captured'
+            status: 'captured',
           })
         );
       });
@@ -318,19 +324,19 @@ describe('POST /api/webhooks/razorpay', () => {
               error_code: 'CARD_DECLINED',
               error_description: 'Card was declined',
               notes: {
-                subscription_id: 'sub_test123'
-              }
-            }
-          }
+                subscription_id: 'sub_test123',
+              },
+            },
+          },
         };
 
         const request = new NextRequest('http://localhost:3000/api/webhooks/razorpay', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'X-Razorpay-Signature': 'valid_signature'
+            'X-Razorpay-Signature': 'valid_signature',
           },
-          body: JSON.stringify(payload)
+          body: JSON.stringify(payload),
         });
 
         const response = await POST(request);
@@ -342,7 +348,7 @@ describe('POST /api/webhooks/razorpay', () => {
           expect.objectContaining({
             razorpay_payment_id: 'pay_test123',
             status: 'failed',
-            failure_reason: 'CARD_DECLINED'
+            failure_reason: 'CARD_DECLINED',
           })
         );
       });
@@ -353,17 +359,17 @@ describe('POST /api/webhooks/razorpay', () => {
         const payload = {
           event: 'unknown.event',
           payload: {
-            some_data: 'value'
-          }
+            some_data: 'value',
+          },
         };
 
         const request = new NextRequest('http://localhost:3000/api/webhooks/razorpay', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'X-Razorpay-Signature': 'valid_signature'
+            'X-Razorpay-Signature': 'valid_signature',
           },
-          body: JSON.stringify(payload)
+          body: JSON.stringify(payload),
         });
 
         const response = await POST(request);
@@ -383,17 +389,17 @@ describe('POST /api/webhooks/razorpay', () => {
       const payload = {
         event: 'subscription.activated',
         payload: {
-          subscription: { id: 'sub_test123' }
-        }
+          subscription: { id: 'sub_test123' },
+        },
       };
 
       const request = new NextRequest('http://localhost:3000/api/webhooks/razorpay', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-Razorpay-Signature': 'valid_signature'
+          'X-Razorpay-Signature': 'valid_signature',
         },
-        body: JSON.stringify(payload)
+        body: JSON.stringify(payload),
       });
 
       await POST(request);
@@ -404,7 +410,7 @@ describe('POST /api/webhooks/razorpay', () => {
         expect.objectContaining({
           event_type: 'subscription.activated',
           payload: payload,
-          processed: true
+          processed: true,
         })
       );
     });
@@ -415,9 +421,9 @@ describe('POST /api/webhooks/razorpay', () => {
         payload: {
           subscription: {
             id: 'sub_test123',
-            status: 'active'
-          }
-        }
+            status: 'active',
+          },
+        },
       };
 
       // Mock existing subscription lookup
@@ -426,19 +432,19 @@ describe('POST /api/webhooks/razorpay', () => {
           eq: vi.fn().mockReturnValue({
             single: vi.fn().mockResolvedValue({
               data: mockSubscription,
-              error: null
-            })
-          })
-        })
+              error: null,
+            }),
+          }),
+        }),
       });
 
       const request = new NextRequest('http://localhost:3000/api/webhooks/razorpay', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-Razorpay-Signature': 'valid_signature'
+          'X-Razorpay-Signature': 'valid_signature',
         },
-        body: JSON.stringify(payload)
+        body: JSON.stringify(payload),
       });
 
       await POST(request);
@@ -454,9 +460,9 @@ describe('POST /api/webhooks/razorpay', () => {
         payload: {
           subscription: {
             id: 'sub_nonexistent',
-            status: 'active'
-          }
-        }
+            status: 'active',
+          },
+        },
       };
 
       // Mock subscription not found
@@ -465,19 +471,19 @@ describe('POST /api/webhooks/razorpay', () => {
           eq: vi.fn().mockReturnValue({
             single: vi.fn().mockResolvedValue({
               data: null,
-              error: supabaseErrors.recordNotFound
-            })
-          })
-        })
+              error: supabaseErrors.recordNotFound,
+            }),
+          }),
+        }),
       });
 
       const request = new NextRequest('http://localhost:3000/api/webhooks/razorpay', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-Razorpay-Signature': 'valid_signature'
+          'X-Razorpay-Signature': 'valid_signature',
         },
-        body: JSON.stringify(payload)
+        body: JSON.stringify(payload),
       });
 
       const response = await POST(request);
@@ -494,8 +500,8 @@ describe('POST /api/webhooks/razorpay', () => {
       const payload = {
         event: 'subscription.activated',
         payload: {
-          subscription: { id: 'sub_test123' }
-        }
+          subscription: { id: 'sub_test123' },
+        },
       };
 
       // Mock existing webhook event
@@ -504,10 +510,10 @@ describe('POST /api/webhooks/razorpay', () => {
           eq: vi.fn().mockReturnValue({
             single: vi.fn().mockResolvedValue({
               data: { webhook_event_id: webhookId, processed: true },
-              error: null
-            })
-          })
-        })
+              error: null,
+            }),
+          }),
+        }),
       });
 
       const request = new NextRequest('http://localhost:3000/api/webhooks/razorpay', {
@@ -515,9 +521,9 @@ describe('POST /api/webhooks/razorpay', () => {
         headers: {
           'Content-Type': 'application/json',
           'X-Razorpay-Signature': 'valid_signature',
-          'X-Razorpay-Webhook-Id': webhookId
+          'X-Razorpay-Webhook-Id': webhookId,
         },
-        body: JSON.stringify(payload)
+        body: JSON.stringify(payload),
       });
 
       const response = await POST(request);
@@ -536,8 +542,8 @@ describe('POST /api/webhooks/razorpay', () => {
       const payload = {
         event: 'subscription.activated',
         payload: {
-          subscription: { id: 'sub_test123' }
-        }
+          subscription: { id: 'sub_test123' },
+        },
       };
 
       // Check that webhook ID is being processed
@@ -546,10 +552,10 @@ describe('POST /api/webhooks/razorpay', () => {
           eq: vi.fn().mockReturnValue({
             single: vi.fn().mockResolvedValue({
               data: null, // Not processed before
-              error: supabaseErrors.recordNotFound
-            })
-          })
-        })
+              error: supabaseErrors.recordNotFound,
+            }),
+          }),
+        }),
       });
 
       const request = new NextRequest('http://localhost:3000/api/webhooks/razorpay', {
@@ -557,9 +563,9 @@ describe('POST /api/webhooks/razorpay', () => {
         headers: {
           'Content-Type': 'application/json',
           'X-Razorpay-Signature': 'valid_signature',
-          'X-Razorpay-Webhook-Id': 'webhook_test123'
+          'X-Razorpay-Webhook-Id': 'webhook_test123',
         },
-        body: JSON.stringify(payload)
+        body: JSON.stringify(payload),
       });
 
       await POST(request);
@@ -567,7 +573,7 @@ describe('POST /api/webhooks/razorpay', () => {
       // Should save webhook event with Razorpay ID
       expect(mockSupabase.insert).toHaveBeenCalledWith(
         expect.objectContaining({
-          razorpay_webhook_id: 'webhook_test123'
+          razorpay_webhook_id: 'webhook_test123',
         })
       );
     });
@@ -578,26 +584,26 @@ describe('POST /api/webhooks/razorpay', () => {
       const payload = {
         event: 'subscription.activated',
         payload: {
-          subscription: { id: 'sub_test123' }
-        }
+          subscription: { id: 'sub_test123' },
+        },
       };
 
       // Mock database error
       mockSupabase.from.mockReturnValueOnce({
         select: vi.fn().mockReturnValue({
           eq: vi.fn().mockReturnValue({
-            single: vi.fn().mockRejectedValue(new Error('Database connection failed'))
-          })
-        })
+            single: vi.fn().mockRejectedValue(new Error('Database connection failed')),
+          }),
+        }),
       });
 
       const request = new NextRequest('http://localhost:3000/api/webhooks/razorpay', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-Razorpay-Signature': 'valid_signature'
+          'X-Razorpay-Signature': 'valid_signature',
         },
-        body: JSON.stringify(payload)
+        body: JSON.stringify(payload),
       });
 
       const response = await POST(request);
@@ -614,16 +620,16 @@ describe('POST /api/webhooks/razorpay', () => {
       const payload = {
         event: 'subscription.activated',
         // Missing required payload.subscription
-        payload: {}
+        payload: {},
       };
 
       const request = new NextRequest('http://localhost:3000/api/webhooks/razorpay', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-Razorpay-Signature': 'valid_signature'
+          'X-Razorpay-Signature': 'valid_signature',
         },
-        body: JSON.stringify(payload)
+        body: JSON.stringify(payload),
       });
 
       const response = await POST(request);
@@ -637,8 +643,8 @@ describe('POST /api/webhooks/razorpay', () => {
       const payload = {
         event: 'subscription.activated',
         payload: {
-          subscription: { id: 'sub_test123' }
-        }
+          subscription: { id: 'sub_test123' },
+        },
       };
 
       // Mock first attempt failure, second attempt success
@@ -646,28 +652,28 @@ describe('POST /api/webhooks/razorpay', () => {
         .mockReturnValueOnce({
           select: vi.fn().mockReturnValue({
             eq: vi.fn().mockReturnValue({
-              single: vi.fn().mockRejectedValue(supabaseErrors.connectionError)
-            })
-          })
+              single: vi.fn().mockRejectedValue(supabaseErrors.connectionError),
+            }),
+          }),
         })
         .mockReturnValueOnce({
           select: vi.fn().mockReturnValue({
             eq: vi.fn().mockReturnValue({
               single: vi.fn().mockResolvedValue({
                 data: mockSubscription,
-                error: null
-              })
-            })
-          })
+                error: null,
+              }),
+            }),
+          }),
         });
 
       const request = new NextRequest('http://localhost:3000/api/webhooks/razorpay', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-Razorpay-Signature': 'valid_signature'
+          'X-Razorpay-Signature': 'valid_signature',
         },
-        body: JSON.stringify(payload)
+        body: JSON.stringify(payload),
       });
 
       const response = await POST(request);
@@ -684,18 +690,18 @@ describe('POST /api/webhooks/razorpay', () => {
         payload: {
           subscription: {
             // Missing required ID
-            status: 'active'
-          }
-        }
+            status: 'active',
+          },
+        },
       };
 
       const request = new NextRequest('http://localhost:3000/api/webhooks/razorpay', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-Razorpay-Signature': 'valid_signature'
+          'X-Razorpay-Signature': 'valid_signature',
         },
-        body: JSON.stringify(payload)
+        body: JSON.stringify(payload),
       });
 
       const response = await POST(request);
@@ -714,19 +720,19 @@ describe('POST /api/webhooks/razorpay', () => {
             status: 'active',
             notes: {
               user_id: 'user_test123',
-              malicious_data: '<script>alert("xss")</script>'
-            }
-          }
-        }
+              malicious_data: '<script>alert("xss")</script>',
+            },
+          },
+        },
       };
 
       const request = new NextRequest('http://localhost:3000/api/webhooks/razorpay', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-Razorpay-Signature': 'valid_signature'
+          'X-Razorpay-Signature': 'valid_signature',
         },
-        body: JSON.stringify(payload)
+        body: JSON.stringify(payload),
       });
 
       await POST(request);
@@ -734,7 +740,7 @@ describe('POST /api/webhooks/razorpay', () => {
       // Should sanitize malicious content in payload
       expect(mockSupabase.insert).toHaveBeenCalledWith(
         expect.objectContaining({
-          payload: expect.not.toContain('<script>')
+          payload: expect.not.toContain('<script>'),
         })
       );
     });
@@ -747,18 +753,18 @@ describe('POST /api/webhooks/razorpay', () => {
             id: 'pay_test123',
             amount: -1000, // Invalid negative amount
             currency: 'INVALID', // Invalid currency
-            status: 'captured'
-          }
-        }
+            status: 'captured',
+          },
+        },
       };
 
       const request = new NextRequest('http://localhost:3000/api/webhooks/razorpay', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-Razorpay-Signature': 'valid_signature'
+          'X-Razorpay-Signature': 'valid_signature',
         },
-        body: JSON.stringify(payload)
+        body: JSON.stringify(payload),
       });
 
       const response = await POST(request);
@@ -776,18 +782,18 @@ describe('POST /api/webhooks/razorpay', () => {
         payload: {
           subscription: {
             id: 'sub_test123',
-            status: 'active'
-          }
-        }
+            status: 'active',
+          },
+        },
       };
 
       const request = new NextRequest('http://localhost:3000/api/webhooks/razorpay', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-Razorpay-Signature': 'valid_signature'
+          'X-Razorpay-Signature': 'valid_signature',
         },
-        body: JSON.stringify(payload)
+        body: JSON.stringify(payload),
       });
 
       const startTime = Date.now();
@@ -809,19 +815,19 @@ describe('POST /api/webhooks/razorpay', () => {
             line_items: Array.from({ length: 1000 }, (_, i) => ({
               id: `item_${i}`,
               name: `Line Item ${i}`,
-              amount: 1000
-            }))
-          }
-        }
+              amount: 1000,
+            })),
+          },
+        },
       };
 
       const request = new NextRequest('http://localhost:3000/api/webhooks/razorpay', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-Razorpay-Signature': 'valid_signature'
+          'X-Razorpay-Signature': 'valid_signature',
         },
-        body: JSON.stringify(largePayload)
+        body: JSON.stringify(largePayload),
       });
 
       const response = await POST(request);
@@ -837,18 +843,18 @@ describe('POST /api/webhooks/razorpay', () => {
       const payload = {
         event: 'subscription.activated',
         payload: {
-          subscription: { id: 'sub_test123' }
+          subscription: { id: 'sub_test123' },
         },
-        created_at: oldTimestamp
+        created_at: oldTimestamp,
       };
 
       const request = new NextRequest('http://localhost:3000/api/webhooks/razorpay', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-Razorpay-Signature': 'valid_signature'
+          'X-Razorpay-Signature': 'valid_signature',
         },
-        body: JSON.stringify(payload)
+        body: JSON.stringify(payload),
       });
 
       const response = await POST(request);
@@ -863,8 +869,8 @@ describe('POST /api/webhooks/razorpay', () => {
       const payload = {
         event: 'subscription.activated',
         payload: {
-          subscription: { id: 'sub_test123' }
-        }
+          subscription: { id: 'sub_test123' },
+        },
       };
 
       const request = new NextRequest('http://localhost:3000/api/webhooks/razorpay', {
@@ -872,9 +878,9 @@ describe('POST /api/webhooks/razorpay', () => {
         headers: {
           'Content-Type': 'application/json',
           'X-Razorpay-Signature': 'valid_signature',
-          'X-Forwarded-For': '192.168.1.100' // Unauthorized IP
+          'X-Forwarded-For': '192.168.1.100', // Unauthorized IP
         },
-        body: JSON.stringify(payload)
+        body: JSON.stringify(payload),
       });
 
       // This test depends on IP whitelist configuration

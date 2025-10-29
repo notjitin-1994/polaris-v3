@@ -29,7 +29,7 @@ import type {
   RazorpayPlanMapping,
   SubscriptionRecord,
   PaymentRecord,
-  WebhookEventRecord
+  WebhookEventRecord,
 } from '../../../types/razorpay';
 
 describe('Razorpay Type Definitions', () => {
@@ -59,7 +59,7 @@ describe('Razorpay Type Definitions', () => {
 
     it('should validate order status types', () => {
       const validStatuses = ['created', 'attempted', 'paid'];
-      validStatuses.forEach(status => {
+      validStatuses.forEach((status) => {
         const order: RazorpayOrder = {
           id: 'order_test',
           entity: 'order',
@@ -108,8 +108,17 @@ describe('Razorpay Type Definitions', () => {
     });
 
     it('should validate subscription status types', () => {
-      const validStatuses = ['created', 'authenticated', 'active', 'halted', 'cancelled', 'completed', 'expired', 'paused'];
-      validStatuses.forEach(status => {
+      const validStatuses = [
+        'created',
+        'authenticated',
+        'active',
+        'halted',
+        'cancelled',
+        'completed',
+        'expired',
+        'paused',
+      ];
+      validStatuses.forEach((status) => {
         const subscription: RazorpaySubscription = {
           id: 'sub_test',
           entity: 'subscription',
@@ -161,7 +170,7 @@ describe('Razorpay Type Definitions', () => {
 
     it('should validate plan period types', () => {
       const validPeriods = ['daily', 'weekly', 'monthly', 'yearly'];
-      validPeriods.forEach(period => {
+      validPeriods.forEach((period) => {
         const plan: RazorpayPlan = {
           id: 'plan_test',
           entity: 'plan',
@@ -284,8 +293,16 @@ describe('Razorpay Type Definitions', () => {
 
   describe('Utility Types', () => {
     it('should validate subscription tier types', () => {
-      const validTiers: SubscriptionTier[] = ['free', 'explorer', 'navigator', 'voyager', 'crew', 'fleet', 'armada'];
-      validTiers.forEach(tier => {
+      const validTiers: SubscriptionTier[] = [
+        'free',
+        'explorer',
+        'navigator',
+        'voyager',
+        'crew',
+        'fleet',
+        'armada',
+      ];
+      validTiers.forEach((tier) => {
         expect(typeof tier).toBe('string');
         expect(validTiers).toContain(tier);
       });
@@ -293,7 +310,7 @@ describe('Razorpay Type Definitions', () => {
 
     it('should validate billing cycle types', () => {
       const validCycles: BillingCycle[] = ['monthly', 'yearly'];
-      validCycles.forEach(cycle => {
+      validCycles.forEach((cycle) => {
         expect(typeof cycle).toBe('string');
         expect(validCycles).toContain(cycle);
       });

@@ -12,7 +12,10 @@ import { getSupabaseAdminClient } from '@/lib/supabase/admin';
  * - Profile updates
  * - Tier changes
  */
-export async function GET(request: NextRequest, { params }: { params: Promise<{ userId: string }> }) {
+export async function GET(
+  request: NextRequest,
+  { params }: { params: Promise<{ userId: string }> }
+) {
   try {
     // Verify admin access
     await requireAdmin();
@@ -142,7 +145,10 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
  * - description: Activity description
  * - metadata: Additional metadata (optional)
  */
-export async function POST(request: NextRequest, { params }: { params: Promise<{ userId: string }> }) {
+export async function POST(
+  request: NextRequest,
+  { params }: { params: Promise<{ userId: string }> }
+) {
   try {
     // Verify admin access
     await requireAdmin();

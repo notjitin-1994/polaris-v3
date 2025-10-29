@@ -46,14 +46,14 @@ export class VercelAnalyticsIntegration {
           currency: event.currency,
           plan: event.plan,
           user_id: event.userId,
-          ...event.metadata
+          ...event.metadata,
         });
       }
 
       console.log('[Vercel Analytics] Tracked payment event:', event.type, {
         amount: event.amount,
         plan: event.plan,
-        userId: event.userId ? '****' + event.userId.slice(-4) : undefined
+        userId: event.userId ? '****' + event.userId.slice(-4) : undefined,
       });
     } catch (error) {
       console.error('[Vercel Analytics] Failed to track payment event:', error);
@@ -77,14 +77,14 @@ export class VercelAnalyticsIntegration {
           route: metrics.route,
           response_time: metrics.responseTime,
           status: metrics.status,
-          method: metrics.method
+          method: metrics.method,
         });
       }
 
       console.log('[Vercel Analytics] Tracked performance metrics:', {
         route: metrics.route,
         responseTime: metrics.responseTime,
-        status: metrics.status
+        status: metrics.status,
       });
     } catch (error) {
       console.error('[Vercel Analytics] Failed to track performance metrics:', error);
@@ -107,7 +107,7 @@ export class VercelAnalyticsIntegration {
         window.va('track', interaction.type, {
           element: interaction.element,
           context: interaction.context,
-          error: interaction.error
+          error: interaction.error,
         });
       }
     } catch (error) {
@@ -127,9 +127,9 @@ export class VercelSpeedInsightsIntegration {
   private isEnabled: boolean;
   private thresholds = {
     lcp: 2500, // Largest Contentful Paint (ms)
-    fid: 100,  // First Input Delay (ms)
-    cls: 0.1,  // Cumulative Layout Shift
-    ttfb: 600  // Time to First Byte (ms)
+    fid: 100, // First Input Delay (ms)
+    cls: 0.1, // Cumulative Layout Shift
+    ttfb: 600, // Time to First Byte (ms)
   };
 
   constructor() {
@@ -157,7 +157,7 @@ export class VercelSpeedInsightsIntegration {
         metric: metric.name,
         value: metric.value,
         threshold,
-        rating: metric.rating
+        rating: metric.rating,
       });
 
       // Trigger alert for significant performance issues
@@ -168,17 +168,21 @@ export class VercelSpeedInsightsIntegration {
           enabled: true,
           severity: 'warning',
           cooldownPeriod: 15 * 60 * 1000, // 15 minutes
-          conditions: [{
-            type: 'response_time',
-            operator: '>',
-            threshold: metric.value,
-            metric: `web_vitals_${metric.name}`
-          }],
-          actions: [{
-            type: 'console',
-            enabled: true,
-            config: { level: 'warn' }
-          }]
+          conditions: [
+            {
+              type: 'response_time',
+              operator: '>',
+              threshold: metric.value,
+              metric: `web_vitals_${metric.name}`,
+            },
+          ],
+          actions: [
+            {
+              type: 'console',
+              enabled: true,
+              config: { level: 'warn' },
+            },
+          ],
         });
       }
     }
@@ -196,11 +200,12 @@ export class VercelSpeedInsightsIntegration {
     if (!this.isEnabled) return;
 
     // Alert if route load time exceeds threshold
-    if (loadTime > 3000) { // 3 seconds
+    if (loadTime > 3000) {
+      // 3 seconds
       console.warn(`[Vercel Speed Insights] Slow route detected:`, {
         route,
         loadTime,
-        threshold: 3000
+        threshold: 3000,
       });
 
       alertingSystem.addRule({
@@ -209,17 +214,21 @@ export class VercelSpeedInsightsIntegration {
         enabled: true,
         severity: 'warning',
         cooldownPeriod: 10 * 60 * 1000, // 10 minutes
-        conditions: [{
-          type: 'response_time',
-          operator: '>',
-          threshold: loadTime,
-          metric: `route_load_${route.replace(/[^a-zA-Z0-9]/g, '_')}`
-        }],
-        actions: [{
-          type: 'console',
-          enabled: true,
-          config: { level: 'warn' }
-        }]
+        conditions: [
+          {
+            type: 'response_time',
+            operator: '>',
+            threshold: loadTime,
+            metric: `route_load_${route.replace(/[^a-zA-Z0-9]/g, '_')}`,
+          },
+        ],
+        actions: [
+          {
+            type: 'console',
+            enabled: true,
+            config: { level: 'warn' },
+          },
+        ],
       });
     }
   }
@@ -244,7 +253,11 @@ export class VercelLogsIntegration {
   /**
    * Log structured events to Vercel
    */
-  log(level: 'error' | 'warn' | 'info' | 'debug', message: string, metadata?: Record<string, any>): void {
+  log(
+    level: 'error' | 'warn' | 'info' | 'debug',
+    message: string,
+    metadata?: Record<string, any>
+  ): void {
     if (!this.isEnabled) return;
 
     // Check if we should log this level
@@ -261,7 +274,7 @@ export class VercelLogsIntegration {
       service: 'smartslate-polaris',
       environment: process.env.NODE_ENV,
       version: process.env.VERCEL_GIT_COMMIT_SHA || 'unknown',
-      ...metadata
+      ...metadata,
     };
 
     // Log to console (Vercel will capture this)
@@ -286,10 +299,10 @@ export class VercelLogsIntegration {
       /webhook.*signature.*invalid/i,
       /payment.*processing.*failed/i,
       /out of memory/i,
-      /timeout.*exceeded/i
+      /timeout.*exceeded/i,
     ];
 
-    const isCritical = criticalPatterns.some(pattern => pattern.test(message));
+    const isCritical = criticalPatterns.some((pattern) => pattern.test(message));
 
     if (isCritical) {
       alertingSystem.addRule({
@@ -298,17 +311,19 @@ export class VercelLogsIntegration {
         enabled: true,
         severity: 'critical',
         cooldownPeriod: 1 * 60 * 1000, // 1 minute
-        conditions: [{
-          type: 'error_pattern',
-          operator: '>=',
-          threshold: 1,
-          pattern: message.substring(0, 100),
-          category: 'critical_error'
-        }],
+        conditions: [
+          {
+            type: 'error_pattern',
+            operator: '>=',
+            threshold: 1,
+            pattern: message.substring(0, 100),
+            category: 'critical_error',
+          },
+        ],
         actions: [
           { type: 'console', enabled: true, config: { level: 'error' } },
-          { type: 'log', enabled: true, config: { level: 'error' } }
-        ]
+          { type: 'log', enabled: true, config: { level: 'error' } },
+        ],
       });
     }
   }
@@ -324,8 +339,8 @@ export class VercelLogsIntegration {
     error?: string;
     duration?: number;
   }): void {
-    const level = event.status === 'failed' ? 'error' :
-                 event.status === 'pending' ? 'warn' : 'info';
+    const level =
+      event.status === 'failed' ? 'error' : event.status === 'pending' ? 'warn' : 'info';
 
     this.log(level, `Payment event: ${event.type}`, {
       event_type: event.type,
@@ -334,7 +349,7 @@ export class VercelLogsIntegration {
       user_id: event.userId ? '****' + event.userId.slice(-4) : undefined,
       error: event.error,
       duration: event.duration,
-      category: 'payment'
+      category: 'payment',
     });
   }
 
@@ -348,8 +363,7 @@ export class VercelLogsIntegration {
     processingTime?: number;
     error?: string;
   }): void {
-    const level = event.status === 'failed' ? 'error' :
-                 event.status === 'retry' ? 'warn' : 'info';
+    const level = event.status === 'failed' ? 'error' : event.status === 'retry' ? 'warn' : 'info';
 
     this.log(level, `Webhook event: ${event.type}`, {
       event_type: event.type,
@@ -357,7 +371,7 @@ export class VercelLogsIntegration {
       event_id: event.eventId,
       processing_time: event.processingTime,
       error: event.error,
-      category: 'webhook'
+      category: 'webhook',
     });
   }
 }
@@ -374,29 +388,29 @@ export const VERCEL_CRON_CONFIG = {
   health_check: {
     schedule: '*/5 * * * *',
     path: '/api/cron/health-check',
-    description: 'Automated health checks'
+    description: 'Automated health checks',
   },
 
   // Metrics aggregation every hour
   metrics_aggregation: {
     schedule: '0 * * * *',
     path: '/api/cron/metrics-aggregation',
-    description: 'Aggregate and store performance metrics'
+    description: 'Aggregate and store performance metrics',
   },
 
   // Alert cleanup every 6 hours
   alert_cleanup: {
     schedule: '0 */6 * * *',
     path: '/api/cron/alert-cleanup',
-    description: 'Clean up old alerts and logs'
+    description: 'Clean up old alerts and logs',
   },
 
   // Backup monitoring data daily
   backup_monitoring: {
     schedule: '0 2 * * *',
     path: '/api/cron/backup-monitoring',
-    description: 'Backup monitoring data and logs'
-  }
+    description: 'Backup monitoring data and logs',
+  },
 };
 
 // ============================================================================
@@ -450,7 +464,7 @@ export class VercelCustomMetrics {
       min: sorted[0],
       max: sorted[sorted.length - 1],
       avg: sum / values.length,
-      p95: sorted[Math.floor(sorted.length * 0.95)]
+      p95: sorted[Math.floor(sorted.length * 0.95)],
     };
   }
 
@@ -466,7 +480,7 @@ export class VercelCustomMetrics {
 
     return {
       timestamp: new Date().toISOString(),
-      metrics: exported
+      metrics: exported,
     };
   }
 }
@@ -494,10 +508,13 @@ export function initializeVercelMonitoring(): void {
 
   // Set up periodic metric reporting
   if (typeof setInterval !== 'undefined') {
-    setInterval(() => {
-      const metrics = vercelCustomMetrics.exportMetrics();
-      console.log('[Vercel Integration] Metrics report:', metrics);
-    }, 5 * 60 * 1000); // Every 5 minutes
+    setInterval(
+      () => {
+        const metrics = vercelCustomMetrics.exportMetrics();
+        console.log('[Vercel Integration] Metrics report:', metrics);
+      },
+      5 * 60 * 1000
+    ); // Every 5 minutes
   }
 
   console.log('[Vercel Integration] Vercel monitoring initialized');
@@ -517,5 +534,5 @@ export default {
   vercelLogs,
   vercelCustomMetrics,
   VERCEL_CRON_CONFIG,
-  initializeVercelMonitoring
+  initializeVercelMonitoring,
 };

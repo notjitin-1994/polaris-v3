@@ -37,7 +37,7 @@ describe('Razorpay Plans Configuration', () => {
       const expectedTiers = ['free', 'explorer', 'navigator', 'voyager', 'crew', 'fleet', 'armada'];
       const actualTiers = Object.keys(RAZORPAY_PLANS);
 
-      expectedTiers.forEach(tier => {
+      expectedTiers.forEach((tier) => {
         expect(actualTiers).toContain(tier);
       });
 
@@ -48,11 +48,11 @@ describe('Razorpay Plans Configuration', () => {
       const paidTiers = ['explorer', 'navigator', 'voyager', 'crew', 'fleet', 'armada'];
       const billingCycles: BillingCycle[] = ['monthly', 'yearly'];
 
-      paidTiers.forEach(tier => {
+      paidTiers.forEach((tier) => {
         expect(RAZORPAY_PLANS[tier as keyof typeof RAZORPAY_PLANS]).toHaveProperty('monthly');
         expect(RAZORPAY_PLANS[tier as keyof typeof RAZORPAY_PLANS]).toHaveProperty('yearly');
 
-        billingCycles.forEach(cycle => {
+        billingCycles.forEach((cycle) => {
           expect(RAZORPAY_PLANS[tier as keyof typeof RAZORPAY_PLANS][cycle]).toBeDefined();
         });
       });
@@ -76,7 +76,7 @@ describe('Razorpay Plans Configuration', () => {
 
       // Verify all expected tiers exist
       const expectedTiers = ['free', 'explorer', 'navigator', 'voyager', 'crew', 'fleet', 'armada'];
-      expectedTiers.forEach(tier => {
+      expectedTiers.forEach((tier) => {
         expect(RAZORPAY_PLANS).toHaveProperty(tier);
         expect(RAZORPAY_PLANS[tier as keyof typeof RAZORPAY_PLANS]).toHaveProperty('monthly');
         expect(RAZORPAY_PLANS[tier as keyof typeof RAZORPAY_PLANS]).toHaveProperty('yearly');
@@ -89,10 +89,10 @@ describe('Razorpay Plans Configuration', () => {
       const paidTiers = ['explorer', 'navigator', 'voyager', 'crew', 'fleet', 'armada'];
       const billingCycles: BillingCycle[] = ['monthly', 'yearly'];
 
-      paidTiers.forEach(tier => {
+      paidTiers.forEach((tier) => {
         expect(PLAN_PRICING[tier as keyof typeof PLAN_PRICING]).toBeDefined();
 
-        billingCycles.forEach(cycle => {
+        billingCycles.forEach((cycle) => {
           const price = PLAN_PRICING[tier as keyof typeof PLAN_PRICING][cycle];
           expect(typeof price).toBe('number');
           expect(price).toBeGreaterThan(0);
@@ -116,7 +116,7 @@ describe('Razorpay Plans Configuration', () => {
 
     it('should apply yearly discount (16% annual discount)', () => {
       // Monthly price * 12 should be greater than yearly price
-      Object.values(PLAN_PRICING).forEach(pricing => {
+      Object.values(PLAN_PRICING).forEach((pricing) => {
         const expectedYearlyCost = pricing.monthly * 12;
         const actualYearlyCost = pricing.yearly;
         const discount = expectedYearlyCost - actualYearlyCost;
@@ -131,7 +131,7 @@ describe('Razorpay Plans Configuration', () => {
     it('should contain limits for all tiers', () => {
       const allTiers = ['free', 'explorer', 'navigator', 'voyager', 'crew', 'fleet', 'armada'];
 
-      allTiers.forEach(tier => {
+      allTiers.forEach((tier) => {
         expect(PLAN_LIMITS[tier as keyof typeof PLAN_LIMITS]).toBeDefined();
         expect(typeof PLAN_LIMITS[tier as keyof typeof PLAN_LIMITS]).toBe('number');
         expect(PLAN_LIMITS[tier as keyof typeof PLAN_LIMITS]).toBeGreaterThanOrEqual(0);
@@ -214,18 +214,27 @@ describe('Razorpay Plans Configuration', () => {
       getPlanId('navigator', 'monthly');
 
       expect(consoleSpy).not.toHaveBeenCalledWith(
-        expect.stringContaining('Plan ID not configured for tier "navigator" with billing "monthly"')
+        expect.stringContaining(
+          'Plan ID not configured for tier "navigator" with billing "monthly"'
+        )
       );
 
       consoleSpy.mockRestore();
     });
 
     it('should handle all valid tier and billing cycle combinations', () => {
-      const paidTiers: SubscriptionTier[] = ['explorer', 'navigator', 'voyager', 'crew', 'fleet', 'armada'];
+      const paidTiers: SubscriptionTier[] = [
+        'explorer',
+        'navigator',
+        'voyager',
+        'crew',
+        'fleet',
+        'armada',
+      ];
       const billingCycles: BillingCycle[] = ['monthly', 'yearly'];
 
-      paidTiers.forEach(tier => {
-        billingCycles.forEach(cycle => {
+      paidTiers.forEach((tier) => {
+        billingCycles.forEach((cycle) => {
           // Should not throw error and should return string (plan ID)
           const result = getPlanId(tier, cycle);
           expect(typeof result).toBe('string'); // all plans are configured
@@ -254,11 +263,18 @@ describe('Razorpay Plans Configuration', () => {
     });
 
     it('should handle all valid combinations', () => {
-      const paidTiers: SubscriptionTier[] = ['explorer', 'navigator', 'voyager', 'crew', 'fleet', 'armada'];
+      const paidTiers: SubscriptionTier[] = [
+        'explorer',
+        'navigator',
+        'voyager',
+        'crew',
+        'fleet',
+        'armada',
+      ];
       const billingCycles: BillingCycle[] = ['monthly', 'yearly'];
 
-      paidTiers.forEach(tier => {
-        billingCycles.forEach(cycle => {
+      paidTiers.forEach((tier) => {
+        billingCycles.forEach((cycle) => {
           const price = getPlanPrice(tier, cycle);
           expect(typeof price).toBe('number');
           expect(price).toBeGreaterThan(0);

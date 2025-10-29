@@ -38,16 +38,11 @@ class PerformanceMiddleware {
       trackPages: false, // Disabled by default to reduce overhead
       trackDatabaseQueries: true,
       sampleRate: 1.0, // Sample all requests in development
-      excludePaths: [
-        '/api/health',
-        '/api/performance/metrics',
-        '/_next/static',
-        '/favicon.ico'
-      ],
+      excludePaths: ['/api/health', '/api/performance/metrics', '/_next/static', '/favicon.ico'],
       includeHeaders: false, // Disabled for security/privacy
       includeQueryParams: false, // Disabled for privacy
       maxPayloadSize: 1024 * 1024, // 1MB
-      ...config
+      ...config,
     };
 
     // Adjust sampling rate for production
@@ -69,7 +64,10 @@ class PerformanceMiddleware {
     }
   ) {
     return async (...args: T): Promise<R> => {
-      if (!this.config.enabled || Math.random() > (options?.customSampling || this.config.sampleRate)) {
+      if (
+        !this.config.enabled ||
+        Math.random() > (options?.customSampling || this.config.sampleRate)
+      ) {
         // Skip monitoring if disabled or not sampled
         return handler(...args);
       }
@@ -89,13 +87,13 @@ class PerformanceMiddleware {
         path: request.nextUrl.pathname,
         userAgent: request.headers.get('user-agent') || 'unknown',
         ip: this.getClientIP(request),
-        ...options?.metadata
+        ...options?.metadata,
       };
 
       const tags = {
         type: category,
         method: request.method,
-        path: this.sanitizePath(request.nextUrl.pathname)
+        path: this.sanitizePath(request.nextUrl.pathname),
       };
 
       // Start performance measurement
@@ -119,12 +117,11 @@ class PerformanceMiddleware {
             duration: metric.duration,
             threshold: thresholds[thresholdKey].warning,
             method: request.method,
-            path: request.nextUrl.pathname
+            path: request.nextUrl.pathname,
           });
         }
 
         return result;
-
       } catch (error) {
         // Record failed metric
         const metric = endTimer();
@@ -132,7 +129,7 @@ class PerformanceMiddleware {
         metric.metadata = {
           ...metric.metadata,
           error: error instanceof Error ? error.message : 'Unknown error',
-          errorType: error.constructor.name
+          errorType: error.constructor.name,
         };
 
         console.error(`[Performance] API request failed`, {
@@ -141,7 +138,7 @@ class PerformanceMiddleware {
           duration: metric.duration,
           error: error instanceof Error ? error.message : 'Unknown error',
           method: request.method,
-          path: request.nextUrl.pathname
+          path: request.nextUrl.pathname,
         });
 
         throw error;
@@ -176,13 +173,13 @@ class PerformanceMiddleware {
           method: request.method,
           path: pathname,
           userAgent: request.headers.get('user-agent') || 'unknown',
-          ip: this.getClientIP(request)
+          ip: this.getClientIP(request),
         },
         tags: {
           type: 'middleware',
           method: request.method,
-          path: this.sanitizePath(pathname)
-        }
+          path: this.sanitizePath(pathname),
+        },
       };
 
       this.contexts.set(requestId, context);
@@ -199,7 +196,6 @@ class PerformanceMiddleware {
         response.headers.set('x-performance-start-time', startTime.toString());
 
         return response;
-
       } catch (error) {
         this.contexts.delete(requestId);
         throw error;
@@ -219,31 +215,37 @@ class PerformanceMiddleware {
       return queryFn();
     }
 
-    const endTimer = performanceMonitor.startTimer(queryName, {
-      ...metadata,
-      type: 'database'
-    }, {
-      type: 'database'
-    });
-
-    return endTimer().then(metric => {
-      if (metric.duration > performanceMonitor.getThresholds().databaseQuery.warning) {
-        console.warn(`[Performance] Slow database query detected`, {
-          queryName,
-          duration: metric.duration,
-          threshold: performanceMonitor.getThresholds().databaseQuery.warning
-        });
+    const endTimer = performanceMonitor.startTimer(
+      queryName,
+      {
+        ...metadata,
+        type: 'database',
+      },
+      {
+        type: 'database',
       }
+    );
 
-      // Return the original result (endTimer returns the metric, not the result)
-      return queryFn();
-    }).catch(error => {
-      console.error(`[Performance] Database query failed`, {
-        queryName,
-        error: error instanceof Error ? error.message : 'Unknown error'
+    return endTimer()
+      .then((metric) => {
+        if (metric.duration > performanceMonitor.getThresholds().databaseQuery.warning) {
+          console.warn(`[Performance] Slow database query detected`, {
+            queryName,
+            duration: metric.duration,
+            threshold: performanceMonitor.getThresholds().databaseQuery.warning,
+          });
+        }
+
+        // Return the original result (endTimer returns the metric, not the result)
+        return queryFn();
+      })
+      .catch((error) => {
+        console.error(`[Performance] Database query failed`, {
+          queryName,
+          error: error instanceof Error ? error.message : 'Unknown error',
+        });
+        throw error;
       });
-      throw error;
-    });
   }
 
   /**
@@ -267,7 +269,9 @@ class PerformanceMiddleware {
   /**
    * Get threshold category for monitoring
    */
-  private getThresholdCategory(category: string): keyof import('./performanceMonitor').PerformanceThresholds {
+  private getThresholdCategory(
+    category: string
+  ): keyof import('./performanceMonitor').PerformanceThresholds {
     if (category.includes('database')) return 'databaseQuery';
     if (category.includes('webhook')) return 'webhookProcessing';
     if (category.includes('blueprint')) return 'blueprintGeneration';
@@ -279,9 +283,7 @@ class PerformanceMiddleware {
    * Check if path should be excluded from monitoring
    */
   private shouldExcludePath(pathname: string): boolean {
-    return this.config.excludePaths.some(excludePath =>
-      pathname.startsWith(excludePath)
-    );
+    return this.config.excludePaths.some((excludePath) => pathname.startsWith(excludePath));
   }
 
   /**
@@ -295,10 +297,12 @@ class PerformanceMiddleware {
    * Get client IP from request
    */
   private getClientIP(request: NextRequest): string {
-    return request.headers.get('x-forwarded-for') ||
-           request.headers.get('x-real-ip') ||
-           request.ip ||
-           'unknown';
+    return (
+      request.headers.get('x-forwarded-for') ||
+      request.headers.get('x-real-ip') ||
+      request.ip ||
+      'unknown'
+    );
   }
 
   /**
@@ -336,7 +340,8 @@ class PerformanceMiddleware {
   /**
    * Clean up old contexts
    */
-  cleanup(maxAge = 5 * 60 * 1000): void { // 5 minutes default
+  cleanup(maxAge = 5 * 60 * 1000): void {
+    // 5 minutes default
     const now = Date.now();
     for (const [id, context] of this.contexts.entries()) {
       if (now - context.startTime > maxAge) {
@@ -349,7 +354,7 @@ class PerformanceMiddleware {
 // Global performance middleware instance
 export const performanceMiddleware = new PerformanceMiddleware({
   enabled: process.env.NODE_ENV !== 'test', // Disable in tests
-  sampleRate: process.env.NODE_ENV === 'production' ? 0.1 : 1.0
+  sampleRate: process.env.NODE_ENV === 'production' ? 0.1 : 1.0,
 });
 
 // Utility functions for easy integration
@@ -374,8 +379,11 @@ export function measureDatabase<T>(
 }
 
 // Auto-cleanup contexts every 5 minutes
-setInterval(() => {
-  performanceMiddleware.cleanup();
-}, 5 * 60 * 1000);
+setInterval(
+  () => {
+    performanceMiddleware.cleanup();
+  },
+  5 * 60 * 1000
+);
 
 export default performanceMiddleware;

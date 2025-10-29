@@ -18,16 +18,13 @@ export const SubscriptionTierSchema = z.enum([
   'voyager',
   'crew',
   'fleet',
-  'armada'
+  'armada',
 ]);
 
 /**
  * Valid billing cycles
  */
-export const BillingCycleSchema = z.enum([
-  'monthly',
-  'yearly'
-]);
+export const BillingCycleSchema = z.enum(['monthly', 'yearly']);
 
 /**
  * Request body schema for creating a subscription
@@ -42,8 +39,8 @@ export const CreateSubscriptionRequestSchema = z.object({
    * - fleet: ₹64/seat/month or ₹640/seat/year
    * - armada: ₹129/seat/month or ₹1,290/seat/year
    */
-  tier: SubscriptionTierSchema.refine(tier => tier !== 'free', {
-    message: "Cannot create subscription for free tier. Choose a paid tier.",
+  tier: SubscriptionTierSchema.refine((tier) => tier !== 'free', {
+    message: 'Cannot create subscription for free tier. Choose a paid tier.',
   }),
 
   /**
@@ -60,11 +57,16 @@ export const CreateSubscriptionRequestSchema = z.object({
   /**
    * Optional customer information for pre-filling Razorpay checkout
    */
-  customerInfo: z.object({
-    name: z.string().min(1).max(100).optional(),
-    email: z.string().email().optional(),
-    contact: z.string().regex(/^[6-9]\d{9}$/).optional(), // Indian mobile number format
-  }).optional(),
+  customerInfo: z
+    .object({
+      name: z.string().min(1).max(100).optional(),
+      email: z.string().email().optional(),
+      contact: z
+        .string()
+        .regex(/^[6-9]\d{9}$/)
+        .optional(), // Indian mobile number format
+    })
+    .optional(),
 
   /**
    * Optional metadata to store with the subscription

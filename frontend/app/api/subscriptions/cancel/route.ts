@@ -18,7 +18,7 @@ import {
   CancelSubscriptionResponseSchema,
   ErrorResponseSchema,
   validateCancelSubscriptionRequest,
-  type CancelSubscriptionRequest
+  type CancelSubscriptionRequest,
 } from '@/lib/schemas/razorpaySubscription';
 import { getSupabaseServerClient, getServerSession } from '@/lib/supabase/server';
 import type { Database } from '@/types/supabase';
@@ -48,7 +48,7 @@ function createErrorResponse(
   const errorResponse = {
     success: false,
     error: { code, message, details },
-    requestId
+    requestId,
   };
 
   return NextResponse.json(errorResponse, { status });
@@ -57,14 +57,11 @@ function createErrorResponse(
 /**
  * Structured success response utility
  */
-function createSuccessResponse(
-  data: any,
-  requestId: string
-): NextResponse {
+function createSuccessResponse(data: any, requestId: string): NextResponse {
   return NextResponse.json({
     success: true,
     data,
-    requestId
+    requestId,
   });
 }
 
@@ -83,15 +80,10 @@ export async function POST(request: Request): Promise<Response> {
     } catch (error) {
       console.error('[Subscription Cancel] Invalid JSON body', {
         requestId,
-        error: error instanceof Error ? error.message : 'Unknown error'
+        error: error instanceof Error ? error.message : 'Unknown error',
       });
 
-      return createErrorResponse(
-        'INVALID_JSON',
-        'Invalid JSON in request body',
-        400,
-        requestId
-      );
+      return createErrorResponse('INVALID_JSON', 'Invalid JSON in request body', 400, requestId);
     }
 
     // Validate request body using Zod schema
@@ -100,18 +92,12 @@ export async function POST(request: Request): Promise<Response> {
       console.error('[Subscription Cancel] Validation failed', {
         requestId,
         errors: validationResult.error.flatten(),
-        body: requestBody
+        body: requestBody,
       });
 
-      return createErrorResponse(
-        'VALIDATION_ERROR',
-        'Invalid request parameters',
-        400,
-        requestId,
-        {
-          validationErrors: validationResult.error.flatten()
-        }
-      );
+      return createErrorResponse('VALIDATION_ERROR', 'Invalid request parameters', 400, requestId, {
+        validationErrors: validationResult.error.flatten(),
+      });
     }
 
     const { cancelAtCycleEnd, reason } = validationResult.data;
@@ -122,7 +108,7 @@ export async function POST(request: Request): Promise<Response> {
       console.error('[Subscription Cancel] Authentication failed', {
         requestId,
         hasSession: !!sessionResult.session,
-        hasUser: !!sessionResult.session?.user
+        hasUser: !!sessionResult.session?.user,
       });
 
       return createErrorResponse(
@@ -150,7 +136,7 @@ export async function POST(request: Request): Promise<Response> {
       console.error('[Subscription Cancel] Failed to fetch user profile', {
         requestId,
         userId,
-        error: profileError
+        error: profileError,
       });
 
       return createErrorResponse(
@@ -165,12 +151,13 @@ export async function POST(request: Request): Promise<Response> {
     // Check for existing active subscriptions
     console.log('[Subscription Cancel] Checking for active subscriptions', {
       requestId,
-      userId
+      userId,
     });
 
     const { data: activeSubscriptions, error: subscriptionCheckError } = await supabase
       .from('subscriptions')
-      .select(`
+      .select(
+        `
         subscription_id,
         razorpay_subscription_id,
         status,
@@ -179,7 +166,8 @@ export async function POST(request: Request): Promise<Response> {
         next_billing_date,
         current_end,
         metadata
-      `)
+      `
+      )
       .eq('user_id', userId)
       .in('status', ['created', 'authenticated', 'active', 'trialing'])
       .is('deleted_at', null)
@@ -190,7 +178,7 @@ export async function POST(request: Request): Promise<Response> {
       console.error('[Subscription Cancel] Failed to check active subscriptions', {
         requestId,
         userId,
-        error: subscriptionCheckError
+        error: subscriptionCheckError,
       });
 
       return createErrorResponse(
@@ -208,7 +196,7 @@ export async function POST(request: Request): Promise<Response> {
         requestId,
         userId,
         currentTier: userProfile?.subscription_tier,
-        currentStatus: userProfile?.subscription_status
+        currentStatus: userProfile?.subscription_status,
       });
 
       return createErrorResponse(
@@ -218,7 +206,7 @@ export async function POST(request: Request): Promise<Response> {
         requestId,
         {
           currentTier: userProfile?.subscription_tier,
-          currentStatus: userProfile?.subscription_status
+          currentStatus: userProfile?.subscription_status,
         }
       );
     }
@@ -233,7 +221,7 @@ export async function POST(request: Request): Promise<Response> {
       status: activeSubscription.status,
       tier: activeSubscription.subscription_tier,
       cancelAtCycleEnd,
-      reason
+      reason,
     });
 
     // Additional validation for cancellation timing
@@ -242,14 +230,17 @@ export async function POST(request: Request): Promise<Response> {
       console.log('[Subscription Cancel] Cancelling unauthenticated subscription immediately', {
         requestId,
         subscriptionId: activeSubscription.subscription_id,
-        status: activeSubscription.status
+        status: activeSubscription.status,
       });
-    } else if (activeSubscription.status !== 'active' && activeSubscription.status !== 'authenticated') {
+    } else if (
+      activeSubscription.status !== 'active' &&
+      activeSubscription.status !== 'authenticated'
+    ) {
       // Only allow cancellation of active/authenticated subscriptions
       console.warn('[Subscription Cancel] Invalid subscription status for cancellation', {
         requestId,
         subscriptionId: activeSubscription.subscription_id,
-        status: activeSubscription.status
+        status: activeSubscription.status,
       });
 
       return createErrorResponse(
@@ -260,7 +251,7 @@ export async function POST(request: Request): Promise<Response> {
         {
           subscriptionId: activeSubscription.subscription_id,
           status: activeSubscription.status,
-          allowedStatuses: ['active', 'authenticated', 'created']
+          allowedStatuses: ['active', 'authenticated', 'created'],
         }
       );
     }
@@ -273,14 +264,14 @@ export async function POST(request: Request): Promise<Response> {
       razorpaySubscriptionId: activeSubscription.razorpay_subscription_id,
       cancelAtCycleEnd,
       reason,
-      processingTime: Date.now() - startTime
+      processingTime: Date.now() - startTime,
     });
 
     // Integrate Razorpay SDK cancellation logic
     console.log('[Subscription Cancel] Initiating Razorpay subscription cancellation', {
       requestId,
       razorpaySubscriptionId: activeSubscription.razorpay_subscription_id,
-      cancelAtCycleEnd
+      cancelAtCycleEnd,
     });
 
     let razorpayCancelledSubscription;
@@ -296,16 +287,15 @@ export async function POST(request: Request): Promise<Response> {
         razorpaySubscriptionId: activeSubscription.razorpay_subscription_id,
         razorpayStatus: razorpayCancelledSubscription.status,
         cancelledAtCycleEnd: cancelAtCycleEnd,
-        razorpayEndAt: razorpayCancelledSubscription.end_at
+        razorpayEndAt: razorpayCancelledSubscription.end_at,
       });
-
     } catch (razorpayError: any) {
       console.error('[Subscription Cancel] Razorpay subscription cancellation failed', {
         requestId,
         razorpaySubscriptionId: activeSubscription.razorpay_subscription_id,
         error: razorpayError,
         errorCode: razorpayError.error?.code,
-        errorMessage: razorpayError.error?.description
+        errorMessage: razorpayError.error?.description,
       });
 
       return createErrorResponse(
@@ -316,7 +306,7 @@ export async function POST(request: Request): Promise<Response> {
         {
           originalError: razorpayError.error?.description || razorpayError.message,
           errorCode: razorpayError.error?.code,
-          razorpaySubscriptionId: activeSubscription.razorpay_subscription_id
+          razorpaySubscriptionId: activeSubscription.razorpay_subscription_id,
         }
       );
     }
@@ -327,7 +317,7 @@ export async function POST(request: Request): Promise<Response> {
       cancelAtCycleEnd,
       subscriptionTier: activeSubscription.subscription_tier,
       currentEnd: activeSubscription.current_end,
-      nextBillingDate: activeSubscription.next_billing_date
+      nextBillingDate: activeSubscription.next_billing_date,
     });
 
     let cancellationDate: string;
@@ -343,25 +333,24 @@ export async function POST(request: Request): Promise<Response> {
         requestId,
         cancellationDate,
         accessUntilDate,
-        userRetainsTier: true
+        userRetainsTier: true,
       });
 
       // For end-of-cycle cancellation, user keeps current tier until access expires
       // The database trigger will handle tier downgrade when subscription expires
-
     } else {
       // Immediate cancellation: Downgrade user to free tier immediately
       cancellationDate = new Date().toISOString();
       userTierUpdate = {
         subscription_tier: 'explorer', // Free tier
-        user_role: 'explorer'
+        user_role: 'explorer',
       };
 
       console.log('[Subscription Cancel] Immediate cancellation configured', {
         requestId,
         cancellationDate,
         userTierUpdate,
-        userDowngradedImmediately: true
+        userDowngradedImmediately: true,
       });
 
       // Update user profile immediately for immediate cancellation
@@ -373,16 +362,19 @@ export async function POST(request: Request): Promise<Response> {
             user_role: 'explorer',
             blueprint_creation_limit: 2,
             blueprint_saving_limit: 2,
-            updated_at: new Date().toISOString()
+            updated_at: new Date().toISOString(),
           })
           .eq('user_id', userId);
 
         if (profileUpdateError) {
-          console.error('[Subscription Cancel] Failed to update user profile for immediate cancellation', {
-            requestId,
-            userId,
-            error: profileUpdateError
-          });
+          console.error(
+            '[Subscription Cancel] Failed to update user profile for immediate cancellation',
+            {
+              requestId,
+              userId,
+              error: profileUpdateError,
+            }
+          );
 
           // Don't fail the entire operation, but log the error
           // The subscription will still be cancelled in Razorpay
@@ -390,14 +382,14 @@ export async function POST(request: Request): Promise<Response> {
           console.log('[Subscription Cancel] User profile updated for immediate cancellation', {
             requestId,
             userId,
-            newTier: 'explorer'
+            newTier: 'explorer',
           });
         }
       } catch (profileUpdateError: any) {
         console.error('[Subscription Cancel] Unexpected error updating user profile', {
           requestId,
           userId,
-          error: profileUpdateError
+          error: profileUpdateError,
         });
       }
     }
@@ -408,7 +400,7 @@ export async function POST(request: Request): Promise<Response> {
       subscriptionId: activeSubscription.subscription_id,
       razorpayStatus: razorpayCancelledSubscription.status,
       cancelAtCycleEnd,
-      cancellationDate
+      cancellationDate,
     });
 
     // Use database transaction for consistency
@@ -425,10 +417,10 @@ export async function POST(request: Request): Promise<Response> {
             cancel_at_cycle_end: cancelAtCycleEnd,
             cancellation_reason: reason || 'User requested cancellation',
             access_until_date: accessUntilDate,
-            api_request_id: requestId
-          }
+            api_request_id: requestId,
+          },
         },
-        updated_at: new Date().toISOString()
+        updated_at: new Date().toISOString(),
       })
       .eq('subscription_id', activeSubscription.subscription_id)
       .eq('user_id', userId)
@@ -441,7 +433,7 @@ export async function POST(request: Request): Promise<Response> {
         subscriptionId: activeSubscription.subscription_id,
         error: updateError,
         errorCode: updateError.code,
-        errorMessage: updateError.message
+        errorMessage: updateError.message,
       });
 
       return createErrorResponse(
@@ -453,7 +445,7 @@ export async function POST(request: Request): Promise<Response> {
           originalError: updateError.message,
           errorCode: updateError.code,
           razorpaySubscriptionId: activeSubscription.razorpay_subscription_id,
-          databaseInconsistency: true
+          databaseInconsistency: true,
         }
       );
     }
@@ -479,47 +471,45 @@ export async function POST(request: Request): Promise<Response> {
               access_until_date: accessUntilDate,
               api_request_id: requestId,
               user_id: userId,
-              email: user.email
-            }
+              email: user.email,
+            },
           },
-          created_at: Math.floor(Date.now() / 1000)
-        }
+          created_at: Math.floor(Date.now() / 1000),
+        },
       };
 
       // Insert manual event record for audit trail (using service role if needed)
-      const { error: eventLogError } = await supabase
-        .from('webhook_events')
-        .insert({
-          event_id: `manual_cancel_${activeSubscription.subscription_id}_${Date.now()}`,
-          event_type: 'subscription.cancelled',
-          account_id: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID?.split('_')[1] || 'unknown',
-          payload: cancellationEventPayload,
-          processing_status: 'processed',
-          processing_attempts: 1,
-          signature_verified: false, // Manual event, no signature
-          related_subscription_id: activeSubscription.subscription_id,
-          processed_at: new Date().toISOString(),
-          processing_started_at: new Date().toISOString()
-        });
+      const { error: eventLogError } = await supabase.from('webhook_events').insert({
+        event_id: `manual_cancel_${activeSubscription.subscription_id}_${Date.now()}`,
+        event_type: 'subscription.cancelled',
+        account_id: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID?.split('_')[1] || 'unknown',
+        payload: cancellationEventPayload,
+        processing_status: 'processed',
+        processing_attempts: 1,
+        signature_verified: false, // Manual event, no signature
+        related_subscription_id: activeSubscription.subscription_id,
+        processed_at: new Date().toISOString(),
+        processing_started_at: new Date().toISOString(),
+      });
 
       if (eventLogError) {
         console.warn('[Subscription Cancel] Failed to create cancellation event log', {
           requestId,
           subscriptionId: activeSubscription.subscription_id,
-          error: eventLogError
+          error: eventLogError,
         });
         // Don't fail the operation for logging failure
       } else {
         console.log('[Subscription Cancel] Cancellation event logged successfully', {
           requestId,
-          subscriptionId: activeSubscription.subscription_id
+          subscriptionId: activeSubscription.subscription_id,
         });
       }
     } catch (eventLogError: any) {
       console.warn('[Subscription Cancel] Unexpected error creating cancellation event log', {
         requestId,
         subscriptionId: activeSubscription.subscription_id,
-        error: eventLogError
+        error: eventLogError,
       });
     }
 
@@ -527,33 +517,35 @@ export async function POST(request: Request): Promise<Response> {
       requestId,
       subscriptionId: activeSubscription.subscription_id,
       updatedStatus: updatedSubscription?.status,
-      cancellationDate
+      cancellationDate,
     });
 
-    return createSuccessResponse({
-      message: `Subscription ${cancelAtCycleEnd ? 'scheduled for cancellation at end of billing cycle' : 'cancelled immediately'}`,
-      subscription: {
-        subscriptionId: activeSubscription.subscription_id,
-        razorpaySubscriptionId: activeSubscription.razorpay_subscription_id,
-        status: updatedSubscription?.status || razorpayCancelledSubscription.status,
-        tier: activeSubscription.subscription_tier,
-        nextBillingDate: activeSubscription.next_billing_date,
-        cancelAtCycleEnd,
-        cancellationDate,
-        accessUntilDate,
-        userTierUpdate,
-        razorpayEndAt: razorpayCancelledSubscription.end_at
-          ? new Date(razorpayCancelledSubscription.end_at * 1000).toISOString()
-          : null
-      }
-    }, requestId);
-
+    return createSuccessResponse(
+      {
+        message: `Subscription ${cancelAtCycleEnd ? 'scheduled for cancellation at end of billing cycle' : 'cancelled immediately'}`,
+        subscription: {
+          subscriptionId: activeSubscription.subscription_id,
+          razorpaySubscriptionId: activeSubscription.razorpay_subscription_id,
+          status: updatedSubscription?.status || razorpayCancelledSubscription.status,
+          tier: activeSubscription.subscription_tier,
+          nextBillingDate: activeSubscription.next_billing_date,
+          cancelAtCycleEnd,
+          cancellationDate,
+          accessUntilDate,
+          userTierUpdate,
+          razorpayEndAt: razorpayCancelledSubscription.end_at
+            ? new Date(razorpayCancelledSubscription.end_at * 1000).toISOString()
+            : null,
+        },
+      },
+      requestId
+    );
   } catch (error: unknown) {
     console.error('[Subscription Cancel] Unexpected error', {
       requestId,
       error: error instanceof Error ? error.message : 'Unknown error',
       stack: error instanceof Error ? error.stack : undefined,
-      processingTime: Date.now() - startTime
+      processingTime: Date.now() - startTime,
     });
 
     return createErrorResponse(
@@ -563,7 +555,7 @@ export async function POST(request: Request): Promise<Response> {
       requestId,
       {
         timestamp: new Date().toISOString(),
-        processingTime: Date.now() - startTime
+        processingTime: Date.now() - startTime,
       }
     );
   }
@@ -578,8 +570,8 @@ export async function GET(): Promise<Response> {
       success: false,
       error: {
         code: 'METHOD_NOT_ALLOWED',
-        message: 'Only POST method is allowed for this endpoint'
-      }
+        message: 'Only POST method is allowed for this endpoint',
+      },
     },
     { status: 405 }
   );

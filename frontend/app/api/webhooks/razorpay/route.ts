@@ -25,28 +25,32 @@ import {
   validateWebhookSecurity,
   extractRazorpaySignature,
   parseWebhookEvent,
-  type ParsedWebhookEvent
+  type ParsedWebhookEvent,
 } from '../../../../lib/razorpay/webhookSecurity';
 import {
   createWebhookIdempotencyService,
-  type WebhookEventRecord
+  type WebhookEventRecord,
 } from '../../../../lib/razorpay/idempotency';
 import {
   createWebhookEventRouter,
   type EventHandlerResult,
-  type RoutingResult
+  type RoutingResult,
 } from '../../../../lib/razorpay/eventRouter';
 import { subscriptionHandlers } from '../../../../lib/razorpay/handlers/subscriptionHandlers';
 import { paymentHandlers } from '../../../../lib/razorpay/handlers/paymentHandlers';
 import {
   createWebhookStateManager,
-  type WebhookProcessingState
+  type WebhookProcessingState,
 } from '../../../../lib/razorpay/webhookStateManagement';
 import {
   createWebhookLogger,
-  type WebhookLoggingService
+  type WebhookLoggingService,
 } from '../../../../lib/logging/webhookLogging';
-import { rateLimitMiddleware, RATE_LIMIT_CONFIGS, createRateLimitHeaders } from '../../../../lib/middleware/rateLimiting';
+import {
+  rateLimitMiddleware,
+  RATE_LIMIT_CONFIGS,
+  createRateLimitHeaders,
+} from '../../../../lib/middleware/rateLimiting';
 
 // Set runtime configuration
 export const runtime = 'nodejs';
@@ -73,7 +77,7 @@ Object.entries(subscriptionHandlers).forEach(([eventType, handler]) => {
     handler,
     description: `Handle ${eventType}`,
     enabled: true,
-    required: ['id', 'status']
+    required: ['id', 'status'],
   });
 });
 
@@ -84,7 +88,7 @@ Object.entries(paymentHandlers).forEach(([eventType, handler]) => {
     handler,
     description: `Handle ${eventType}`,
     enabled: true,
-    required: ['id', 'status', 'amount', 'currency']
+    required: ['id', 'status', 'amount', 'currency'],
   });
 });
 
@@ -101,14 +105,14 @@ function validateEnvironment(): { valid: boolean; error?: string } {
   if (!webhookSecret) {
     return {
       valid: false,
-      error: 'RAZORPAY_WEBHOOK_SECRET environment variable is not configured'
+      error: 'RAZORPAY_WEBHOOK_SECRET environment variable is not configured',
     };
   }
 
   if (webhookSecret.length < 20) {
     return {
       valid: false,
-      error: 'Invalid RAZORPAY_WEBHOOK_SECRET format: must be at least 20 characters'
+      error: 'Invalid RAZORPAY_WEBHOOK_SECRET format: must be at least 20 characters',
     };
   }
 
@@ -139,15 +143,15 @@ function createWebhookResponse(
     success,
     message,
     timestamp: new Date().toISOString(),
-    ...additionalData
+    ...additionalData,
   };
 
   return new Response(JSON.stringify(response), {
     status: statusCode,
     headers: {
       'Content-Type': 'application/json',
-      'X-Webhook-Processed-At': new Date().toISOString()
-    }
+      'X-Webhook-Processed-At': new Date().toISOString(),
+    },
   });
 }
 
@@ -173,19 +177,14 @@ async function handleProcessingError(
     error: errorMessage,
     retryable: true,
     totalProcessingTime: duration,
-    originalError: error instanceof Error ? error : undefined
+    originalError: error instanceof Error ? error : undefined,
   });
 
-  return createWebhookResponse(
-    false,
-    'Webhook processing failed',
-    500,
-    {
-      requestId: context.requestId,
-      processingTime: duration,
-      error: errorMessage
-    }
-  );
+  return createWebhookResponse(false, 'Webhook processing failed', 500, {
+    requestId: context.requestId,
+    processingTime: duration,
+    error: errorMessage,
+  });
 }
 
 // ============================================================================
@@ -211,30 +210,20 @@ export async function POST(request: Request): Promise<Response> {
         eventType: 'unknown',
         error: envValidation.error!,
         retryable: false,
-        totalProcessingTime: Date.now() - startTime
+        totalProcessingTime: Date.now() - startTime,
       });
 
-      return createWebhookResponse(
-        false,
-        'Service configuration error',
-        500,
-        { requestId }
-      );
+      return createWebhookResponse(false, 'Service configuration error', 500, { requestId });
     }
 
     // Apply rate limiting
     const rateLimitResult = await rateLimitMiddleware(RATE_LIMIT_CONFIGS.GENERAL_API)(request);
 
     if (!rateLimitResult.allowed) {
-      return createWebhookResponse(
-        false,
-        'Rate limit exceeded',
-        429,
-        {
-          requestId,
-          retryAfter: rateLimitResult.error?.retryAfter || 60
-        }
-      );
+      return createWebhookResponse(false, 'Rate limit exceeded', 429, {
+        requestId,
+        retryAfter: rateLimitResult.error?.retryAfter || 60,
+      });
     }
 
     // Get request body
@@ -251,7 +240,7 @@ export async function POST(request: Request): Promise<Response> {
       requestId,
       signatureValid: securityValidation.valid,
       processingTime: Date.now() - startTime,
-      request
+      request,
     });
 
     if (!securityValidation.valid) {
@@ -262,7 +251,7 @@ export async function POST(request: Request): Promise<Response> {
         error: securityValidation.error || 'Security validation failed',
         errorCode: 'SECURITY_VALIDATION_FAILED',
         retryable: false,
-        totalProcessingTime: Date.now() - startTime
+        totalProcessingTime: Date.now() - startTime,
       });
 
       return createWebhookResponse(
@@ -283,15 +272,12 @@ export async function POST(request: Request): Promise<Response> {
         error: parseResult.error || 'Failed to parse webhook event',
         errorCode: 'PARSE_ERROR',
         retryable: false,
-        totalProcessingTime: Date.now() - startTime
+        totalProcessingTime: Date.now() - startTime,
       });
 
-      return createWebhookResponse(
-        false,
-        parseResult.error || 'Invalid webhook payload',
-        400,
-        { requestId }
-      );
+      return createWebhookResponse(false, parseResult.error || 'Invalid webhook payload', 400, {
+        requestId,
+      });
     }
 
     const event = parseResult.event;
@@ -304,7 +290,7 @@ export async function POST(request: Request): Promise<Response> {
       requestId,
       isDuplicate: idempotencyCheck.exists,
       existingRecord: idempotencyCheck.details?.existingRecord,
-      processingTime: Date.now() - startTime
+      processingTime: Date.now() - startTime,
     });
 
     if (idempotencyCheck.exists) {
@@ -314,20 +300,15 @@ export async function POST(request: Request): Promise<Response> {
         requestId,
         action: 'duplicate_event_skipped',
         details: {
-          existingStatus: idempotencyCheck.details?.existingRecord?.processingStatus
-        }
+          existingStatus: idempotencyCheck.details?.existingRecord?.processingStatus,
+        },
       });
 
-      return createWebhookResponse(
-        true,
-        'Duplicate event acknowledged',
-        200,
-        {
-          requestId,
-          eventId: event.eventId,
-          status: 'duplicate'
-        }
-      );
+      return createWebhookResponse(true, 'Duplicate event acknowledged', 200, {
+        requestId,
+        eventId: event.eventId,
+        status: 'duplicate',
+      });
     }
 
     // Record webhook event
@@ -347,15 +328,10 @@ export async function POST(request: Request): Promise<Response> {
         error: recordResult.error || 'Failed to record webhook event',
         errorCode: 'RECORD_ERROR',
         retryable: false,
-        totalProcessingTime: Date.now() - startTime
+        totalProcessingTime: Date.now() - startTime,
       });
 
-      return createWebhookResponse(
-        false,
-        'Failed to record webhook event',
-        500,
-        { requestId }
-      );
+      return createWebhookResponse(false, 'Failed to record webhook event', 500, { requestId });
     }
 
     // Initialize processing state
@@ -368,15 +344,10 @@ export async function POST(request: Request): Promise<Response> {
         error: stateInit.error || 'Failed to initialize processing state',
         errorCode: 'STATE_INIT_ERROR',
         retryable: true,
-        totalProcessingTime: Date.now() - startTime
+        totalProcessingTime: Date.now() - startTime,
       });
 
-      return createWebhookResponse(
-        false,
-        'Failed to initialize processing',
-        500,
-        { requestId }
-      );
+      return createWebhookResponse(false, 'Failed to initialize processing', 500, { requestId });
     }
 
     let processingState = stateInit.state;
@@ -387,8 +358,10 @@ export async function POST(request: Request): Promise<Response> {
       eventType: event.eventType,
       requestId,
       userId: undefined, // Will be determined by handlers
-      subscriptionId: event.payload.entity.id?.startsWith('sub_') ? event.payload.entity.id : undefined,
-      paymentId: event.payload.entity.id?.startsWith('pay_') ? event.payload.entity.id : undefined
+      subscriptionId: event.payload.entity.id?.startsWith('sub_')
+        ? event.payload.entity.id
+        : undefined,
+      paymentId: event.payload.entity.id?.startsWith('pay_') ? event.payload.entity.id : undefined,
     });
 
     // Route event to handler
@@ -396,7 +369,10 @@ export async function POST(request: Request): Promise<Response> {
 
     if (!routingResult.success) {
       // Mark event as failed
-      await idempotencyService.markEventFailed(event.eventId, routingResult.error || 'Routing failed');
+      await idempotencyService.markEventFailed(
+        event.eventId,
+        routingResult.error || 'Routing failed'
+      );
 
       logger.logProcessingFailed({
         eventId: event.eventId,
@@ -406,15 +382,12 @@ export async function POST(request: Request): Promise<Response> {
         errorCode: 'ROUTING_ERROR',
         retryable: true,
         totalProcessingTime: Date.now() - startTime,
-        state: processingState
+        state: processingState,
       });
 
-      return createWebhookResponse(
-        false,
-        routingResult.error || 'Failed to route event',
-        500,
-        { requestId }
-      );
+      return createWebhookResponse(false, routingResult.error || 'Failed to route event', 500, {
+        requestId,
+      });
     }
 
     // Execute handler with state tracking
@@ -447,7 +420,7 @@ export async function POST(request: Request): Promise<Response> {
         requestId,
         handlerResult: handlerResult!,
         totalProcessingTime,
-        state: processingState
+        state: processingState,
       });
 
       // Log business event
@@ -459,22 +432,16 @@ export async function POST(request: Request): Promise<Response> {
         subscriptionId: handlerResult.details?.subscriptionId,
         paymentId: handlerResult.details?.paymentId,
         action: handlerResult.details?.action || 'webhook_processed',
-        details: handlerResult.details?.metadata
+        details: handlerResult.details?.metadata,
       });
 
-      return createWebhookResponse(
-        true,
-        'Webhook processed successfully',
-        200,
-        {
-          requestId,
-          eventId: event.eventId,
-          eventType: event.eventType,
-          processingTime: totalProcessingTime,
-          details: handlerResult.details
-        }
-      );
-
+      return createWebhookResponse(true, 'Webhook processed successfully', 200, {
+        requestId,
+        eventId: event.eventId,
+        eventType: event.eventType,
+        processingTime: totalProcessingTime,
+        details: handlerResult.details,
+      });
     } else {
       const errorMessage = handlerResult?.error || 'Handler execution failed';
       await idempotencyService.markEventFailed(event.eventId, errorMessage);
@@ -487,28 +454,22 @@ export async function POST(request: Request): Promise<Response> {
         errorCode: handlerResult?.details ? 'HANDLER_ERROR' : 'UNKNOWN_ERROR',
         retryable: handlerResult?.retryable ?? true,
         totalProcessingTime,
-        state: processingState
+        state: processingState,
       });
 
-      return createWebhookResponse(
-        false,
-        errorMessage,
-        500,
-        {
-          requestId,
-          eventId: event.eventId,
-          processingTime: totalProcessingTime,
-          retryable: handlerResult?.retryable
-        }
-      );
+      return createWebhookResponse(false, errorMessage, 500, {
+        requestId,
+        eventId: event.eventId,
+        processingTime: totalProcessingTime,
+        retryable: handlerResult?.retryable,
+      });
     }
-
   } catch (error) {
     return await handleProcessingError(error, {
       eventId: 'unknown',
       eventType: 'unknown',
       requestId,
-      startTime
+      startTime,
     });
   }
 }
@@ -527,33 +488,23 @@ export async function GET(): Promise<Response> {
     const routerStats = eventRouter.getStatistics();
     const logStats = logger.getStatistics();
 
-    return createWebhookResponse(
-      true,
-      'Webhook service is healthy',
-      200,
-      {
-        service: 'razorpay-webhook-handler',
-        version: '1.0.0',
-        timestamp: new Date().toISOString(),
-        statistics: {
-          router: routerStats,
-          logging: {
-            totalLogs: logStats.totalLogs,
-            errorRate: logStats.errorRate,
-            averageProcessingTime: logStats.averageProcessingTime
-          }
-        }
-      }
-    );
+    return createWebhookResponse(true, 'Webhook service is healthy', 200, {
+      service: 'razorpay-webhook-handler',
+      version: '1.0.0',
+      timestamp: new Date().toISOString(),
+      statistics: {
+        router: routerStats,
+        logging: {
+          totalLogs: logStats.totalLogs,
+          errorRate: logStats.errorRate,
+          averageProcessingTime: logStats.averageProcessingTime,
+        },
+      },
+    });
   } catch (error) {
-    return createWebhookResponse(
-      false,
-      'Health check failed',
-      500,
-      {
-        error: error instanceof Error ? error.message : 'Unknown error'
-      }
-    );
+    return createWebhookResponse(false, 'Health check failed', 500, {
+      error: error instanceof Error ? error.message : 'Unknown error',
+    });
   }
 }
 
@@ -572,15 +523,10 @@ export async function handleError(error: unknown): Promise<Response> {
     error: error instanceof Error ? error.message : 'Uncaught error',
     errorCode: 'UNCAUGHT_ERROR',
     retryable: false,
-    totalProcessingTime: 0
+    totalProcessingTime: 0,
   });
 
-  return createWebhookResponse(
-    false,
-    'Internal server error',
-    500,
-    {
-      error: 'An unexpected error occurred'
-    }
-  );
+  return createWebhookResponse(false, 'Internal server error', 500, {
+    error: 'An unexpected error occurred',
+  });
 }

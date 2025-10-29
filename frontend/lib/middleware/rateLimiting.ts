@@ -209,7 +209,9 @@ function getClientIP(request: Request): string {
  * const rateLimiter = createRateLimit(RATE_LIMIT_CONFIGS.PAYMENT_VERIFICATION);
  * const result = await rateLimiter(request);
  */
-export function createRateLimit(config: RateLimitConfig): (request: Request) => Promise<RateLimitResult> {
+export function createRateLimit(
+  config: RateLimitConfig
+): (request: Request) => Promise<RateLimitResult> {
   return async (request: Request): Promise<RateLimitResult> => {
     const now = Date.now();
     const key = config.keyGenerator ? config.keyGenerator(request) : getClientIP(request);
@@ -307,7 +309,7 @@ export function rateLimitMiddleware(config: RateLimitConfig) {
  */
 export function isRateLimited(key: string, config: RateLimitConfig): RateLimitStatus {
   const now = Date.now();
-  let entry = memoryStore.get(key);
+  const entry = memoryStore.get(key);
 
   if (!entry || now > entry.resetTime) {
     return {

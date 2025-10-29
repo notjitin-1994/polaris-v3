@@ -23,9 +23,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   // This ensures useAuth hook works in admin pages
   return (
     <AuthProvider>
-      <QueryProvider>
-        {children}
-      </QueryProvider>
+      <QueryProvider>{children}</QueryProvider>
     </AuthProvider>
   );
 }

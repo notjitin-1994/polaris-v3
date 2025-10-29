@@ -140,26 +140,20 @@ class MemoryLogStore {
   }
 
   getByUserId(userId: string, limit = 100): PaymentVerificationLog[] {
-    return this.logs
-      .filter(log => log.userId === userId)
-      .slice(-limit);
+    return this.logs.filter((log) => log.userId === userId).slice(-limit);
   }
 
   getByEvent(event: PaymentVerificationEventType, limit = 100): PaymentVerificationLog[] {
-    return this.logs
-      .filter(log => log.event === event)
-      .slice(-limit);
+    return this.logs.filter((log) => log.event === event).slice(-limit);
   }
 
   getByLevel(level: PaymentVerificationLogLevel, limit = 100): PaymentVerificationLog[] {
-    return this.logs
-      .filter(log => log.level === level)
-      .slice(-limit);
+    return this.logs.filter((log) => log.level === level).slice(-limit);
   }
 
   getSecurityLogs(limit = 100): PaymentVerificationLog[] {
     return this.logs
-      .filter(log => log.level === 'security' || log.security?.threatLevel !== 'low')
+      .filter((log) => log.level === 'security' || log.security?.threatLevel !== 'low')
       .slice(-limit);
   }
 
@@ -577,22 +571,23 @@ export function calculateMetrics(timeWindowMinutes: number = 60): PaymentVerific
   const windowStartStr = windowStart.toISOString();
   const windowEndStr = now.toISOString();
 
-  const logs = logStore.get().filter(log => log.timestamp >= windowStartStr);
+  const logs = logStore.get().filter((log) => log.timestamp >= windowStartStr);
 
-  const totalAttempts = logs.filter(log => log.event === 'verification_attempt').length;
-  const successfulVerifications = logs.filter(log => log.event === 'verification_success').length;
-  const failedVerifications = logs.filter(log => log.event === 'verification_failed').length;
-  const signatureMismatches = logs.filter(log => log.event === 'signature_mismatch').length;
-  const rateLimitHits = logs.filter(log => log.event === 'rate_limit_exceeded').length;
-  const unauthorizedAttempts = logs.filter(log => log.event === 'unauthorized_access').length;
+  const totalAttempts = logs.filter((log) => log.event === 'verification_attempt').length;
+  const successfulVerifications = logs.filter((log) => log.event === 'verification_success').length;
+  const failedVerifications = logs.filter((log) => log.event === 'verification_failed').length;
+  const signatureMismatches = logs.filter((log) => log.event === 'signature_mismatch').length;
+  const rateLimitHits = logs.filter((log) => log.event === 'rate_limit_exceeded').length;
+  const unauthorizedAttempts = logs.filter((log) => log.event === 'unauthorized_access').length;
 
   // Calculate average verification time
   const verificationTimes = logs
-    .filter(log => log.duration !== undefined && log.duration > 0)
-    .map(log => log.duration!);
-  const averageVerificationTime = verificationTimes.length > 0
-    ? verificationTimes.reduce((sum, time) => sum + time, 0) / verificationTimes.length
-    : 0;
+    .filter((log) => log.duration !== undefined && log.duration > 0)
+    .map((log) => log.duration!);
+  const averageVerificationTime =
+    verificationTimes.length > 0
+      ? verificationTimes.reduce((sum, time) => sum + time, 0) / verificationTimes.length
+      : 0;
 
   const successRate = totalAttempts > 0 ? (successfulVerifications / totalAttempts) * 100 : 0;
 
@@ -623,7 +618,10 @@ export function getSecurityEvents(limit: number = 100): PaymentVerificationLog[]
 /**
  * Get recent verification attempts for a user
  */
-export function getUserVerificationHistory(userId: string, limit: number = 50): PaymentVerificationLog[] {
+export function getUserVerificationHistory(
+  userId: string,
+  limit: number = 50
+): PaymentVerificationLog[] {
   return logStore.getByUserId(userId, limit);
 }
 

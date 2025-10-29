@@ -45,15 +45,9 @@ class BlueprintCache {
     const version = 'v1'; // Cache version for invalidation
 
     // Generate hashes for different components
-    const staticHash = crypto
-      .createHash('md5')
-      .update(JSON.stringify(staticAnswers))
-      .digest('hex');
+    const staticHash = crypto.createHash('md5').update(JSON.stringify(staticAnswers)).digest('hex');
 
-    const domainHash = crypto
-      .createHash('md5')
-      .update(domain.toLowerCase().trim())
-      .digest('hex');
+    const domainHash = crypto.createHash('md5').update(domain.toLowerCase().trim()).digest('hex');
 
     const complexityHash = crypto
       .createHash('md5')
@@ -64,7 +58,7 @@ class BlueprintCache {
       staticHash,
       domainHash,
       complexityHash,
-      version
+      version,
     };
   }
 
@@ -84,7 +78,7 @@ class BlueprintCache {
       'goal_type',
       'timeline',
       'audience_type',
-      'skill_level'
+      'skill_level',
     ];
 
     let matchingFields = 0;
@@ -101,7 +95,10 @@ class BlueprintCache {
           matchingFields++;
         } else if (typeof originalValue === 'string' && typeof newValue === 'string') {
           // Calculate string similarity for text fields
-          const similarity = this.stringSimilarity(originalValue.toLowerCase(), newValue.toLowerCase());
+          const similarity = this.stringSimilarity(
+            originalValue.toLowerCase(),
+            newValue.toLowerCase()
+          );
           if (similarity > 0.7) {
             matchingFields += similarity;
           }
@@ -119,7 +116,7 @@ class BlueprintCache {
     const words1 = new Set(str1.split(/\s+/));
     const words2 = new Set(str2.split(/\s+/));
 
-    const intersection = new Set([...words1].filter(x => words2.has(x)));
+    const intersection = new Set([...words1].filter((x) => words2.has(x)));
     const union = new Set([...words1, ...words2]);
 
     return union.size > 0 ? intersection.size / union.size : 0;
@@ -149,9 +146,7 @@ class BlueprintCache {
   /**
    * Try to find cached blueprint for similar questionnaire
    */
-  async findSimilarBlueprint(
-    staticAnswers: Record<string, any>
-  ): Promise<CacheHitResult | null> {
+  async findSimilarBlueprint(staticAnswers: Record<string, any>): Promise<CacheHitResult | null> {
     try {
       const components = this.generateCacheKeyComponents(staticAnswers);
       const cacheKeys = this.generateCacheKeys(components);
@@ -172,14 +167,13 @@ class BlueprintCache {
               cachedBlueprint: cached.blueprint,
               similarity,
               cacheAge: Date.now() - cached.generatedAt,
-              useCount: cached.useCount
+              useCount: cached.useCount,
             };
           }
         }
       }
 
       return null;
-
     } catch (error) {
       console.error('Blueprint cache: Failed to find similar blueprint', error);
       return null;
@@ -203,7 +197,7 @@ class BlueprintCache {
         questionnaireHash: staticAnswers,
         generatedAt: Date.now(),
         similarity: similarityScore,
-        useCount: 1
+        useCount: 1,
       };
 
       // Store with different TTLs based on specificity
@@ -211,7 +205,7 @@ class BlueprintCache {
         exact: 7 * 24 * 60 * 60 * 1000, // 7 days for exact matches
         domain: 24 * 60 * 60 * 1000, // 1 day for domain matches
         complexity: 24 * 60 * 60 * 1000, // 1 day for complexity matches
-        combined: 3 * 24 * 60 * 60 * 1000 // 3 days for combined matches
+        combined: 3 * 24 * 60 * 60 * 1000, // 3 days for combined matches
       };
 
       // Store all cache keys with appropriate TTLs
@@ -224,7 +218,6 @@ class BlueprintCache {
       }
 
       console.log(`Blueprint cache: Stored blueprint with ${similarityScore * 100}% similarity`);
-
     } catch (error) {
       console.error('Blueprint cache: Failed to store blueprint', error);
     }
@@ -233,7 +226,9 @@ class BlueprintCache {
   /**
    * Get cached blueprint by exact match
    */
-  async getExactBlueprint(staticAnswers: Record<string, any>): Promise<Partial<BlueprintGenerator> | null> {
+  async getExactBlueprint(
+    staticAnswers: Record<string, any>
+  ): Promise<Partial<BlueprintGenerator> | null> {
     try {
       const components = this.generateCacheKeyComponents(staticAnswers);
       const exactKey = `blueprint:exact:${components.staticHash}`;
@@ -249,7 +244,6 @@ class BlueprintCache {
       }
 
       return null;
-
     } catch (error) {
       console.error('Blueprint cache: Failed to get exact blueprint', error);
       return null;
@@ -273,7 +267,6 @@ class BlueprintCache {
         // Invalidate all blueprint cache entries
         await this.cache.clear('blueprint:*');
       }
-
     } catch (error) {
       console.error('Blueprint cache: Failed to invalidate cache', error);
     }
@@ -308,10 +301,9 @@ class BlueprintCache {
         cacheAge: {
           newest: 0, // Would need custom tracking
           oldest: 0, // Would need custom tracking
-          average: 0 // Would need custom tracking
-        }
+          average: 0, // Would need custom tracking
+        },
       };
-
     } catch (error) {
       console.error('Blueprint cache: Failed to get stats', error);
       return {
@@ -320,7 +312,7 @@ class BlueprintCache {
         similarMatches: 0,
         averageUseCount: 0,
         hitRate: 0,
-        cacheAge: { newest: 0, oldest: 0, average: 0 }
+        cacheAge: { newest: 0, oldest: 0, average: 0 },
       };
     }
   }
@@ -368,9 +360,7 @@ export async function cacheBlueprint(
   await blueprintCache.storeBlueprint(staticAnswers, blueprint);
 }
 
-export async function invalidateBlueprintCache(
-  staticAnswers?: Record<string, any>
-): Promise<void> {
+export async function invalidateBlueprintCache(staticAnswers?: Record<string, any>): Promise<void> {
   await blueprintCache.invalidate(staticAnswers);
 }
 
