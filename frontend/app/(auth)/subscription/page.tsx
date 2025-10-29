@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSession } from '@/hooks/useSession';
-import { createBrowserClient } from '@/lib/supabase/client';
+import { getSupabaseBrowserClient } from '@/lib/supabase/client';
 import SubscriptionManagementContent from '@/components/subscription/SubscriptionManagementContent';
 import type { SubscriptionManagementPageProps } from '@/types/subscription';
 
@@ -37,7 +37,7 @@ export default function SubscriptionManagementPage() {
     // Fetch subscription data
     const fetchSubscriptionData = async () => {
       try {
-        const supabase = createBrowserClient();
+        const supabase = getSupabaseBrowserClient();
         setSubscriptionData((prev) => ({ ...prev, isLoading: true, error: null }));
 
         // Get user profile

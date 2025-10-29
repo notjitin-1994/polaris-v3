@@ -12,7 +12,7 @@ export const useZustandQueryIntegration = () => {
 
   // Sync blueprint store with React Query cache
   useEffect(() => {
-    const unsubscribe = useBlueprintStore.subscribe((state) => {
+    const unsubscribe = (useBlueprintStore as any).subscribe((state: any) => {
       // When blueprint store changes, update React Query cache
       if (state.currentBlueprint) {
         queryClient.setQueryData(['blueprints', state.currentBlueprint.id], state.currentBlueprint);
@@ -24,7 +24,7 @@ export const useZustandQueryIntegration = () => {
 
   // Sync auth changes with query invalidation
   useEffect(() => {
-    const unsubscribe = useAuthStore.subscribe((state) => {
+    const unsubscribe = (useAuthStore as any).subscribe((state: any) => {
       // When user logs out, clear all queries
       if (!state.user && !state.session) {
         queryClient.clear();

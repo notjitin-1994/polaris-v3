@@ -21,50 +21,7 @@ import {
   getSectionValidationStatus,
 } from '@/lib/validation/dynamicQuestionSchemaBuilder';
 import '@/styles/dynamic-questionnaire.css';
-
-// Types from validation schema
-interface Question {
-  id: string;
-  label: string;
-  type: string;
-  required: boolean;
-  helpText?: string;
-  placeholder?: string;
-  options?: Array<{
-    value: string;
-    label: string;
-    description?: string;
-    icon?: string;
-  }>;
-  scaleConfig?: {
-    min: number;
-    max: number;
-    minLabel?: string;
-    maxLabel?: string;
-    labels?: string[];
-    step?: number;
-  };
-  sliderConfig?: {
-    min: number;
-    max: number;
-    step: number;
-    unit: string;
-    markers?: number[];
-  };
-  validation?: Array<{
-    rule: string;
-    value?: string | number | boolean;
-    message: string;
-  }>;
-}
-
-interface Section {
-  id: string;
-  title: string;
-  description?: string;
-  order: number;
-  questions: Question[];
-}
+import type { Question, Section } from '@/lib/validation/dynamicQuestionSchemas';
 
 interface DynamicQuestionsData {
   sections: Section[];

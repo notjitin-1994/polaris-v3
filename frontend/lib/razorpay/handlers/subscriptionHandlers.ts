@@ -235,7 +235,7 @@ export const handleSubscriptionActivated: EventHandler = async (
   event: ParsedWebhookEvent
 ): Promise<EventHandlerResult> => {
   const subscription = extractSubscriptionEntity(event);
-  const supabase = getSupabaseServerClient();
+  const supabase = await getSupabaseServerClient();
 
   try {
     // Find user for this subscription
@@ -320,7 +320,7 @@ export const handleSubscriptionCharged: EventHandler = async (
   event: ParsedWebhookEvent
 ): Promise<EventHandlerResult> => {
   const subscription = extractSubscriptionEntity(event);
-  const supabase = getSupabaseServerClient();
+  const supabase = await getSupabaseServerClient();
 
   try {
     // Find user for this subscription
@@ -429,7 +429,7 @@ export const handleSubscriptionCompleted: EventHandler = async (
   event: ParsedWebhookEvent
 ): Promise<EventHandlerResult> => {
   const subscription = extractSubscriptionEntity(event);
-  const supabase = getSupabaseServerClient();
+  const supabase = await getSupabaseServerClient();
 
   try {
     // Find user for this subscription
@@ -505,7 +505,7 @@ export const handleSubscriptionCancelled: EventHandler = async (
   event: ParsedWebhookEvent
 ): Promise<EventHandlerResult> => {
   const subscription = extractSubscriptionEntity(event);
-  const supabase = getSupabaseServerClient();
+  const supabase = await getSupabaseServerClient();
 
   try {
     // Find user for this subscription
@@ -583,7 +583,7 @@ export const handleSubscriptionHalted: EventHandler = async (
   event: ParsedWebhookEvent
 ): Promise<EventHandlerResult> => {
   const subscription = extractSubscriptionEntity(event);
-  const supabase = getSupabaseServerClient();
+  const supabase = await getSupabaseServerClient();
 
   try {
     // Find user for this subscription
@@ -657,7 +657,7 @@ export const handleSubscriptionPaused: EventHandler = async (
   event: ParsedWebhookEvent
 ): Promise<EventHandlerResult> => {
   const subscription = extractSubscriptionEntity(event);
-  const supabase = getSupabaseServerClient();
+  const supabase = await getSupabaseServerClient();
 
   try {
     // Find user for this subscription
@@ -730,7 +730,7 @@ export const handleSubscriptionResumed: EventHandler = async (
   event: ParsedWebhookEvent
 ): Promise<EventHandlerResult> => {
   const subscription = extractSubscriptionEntity(event);
-  const supabase = getSupabaseServerClient();
+  const supabase = await getSupabaseServerClient();
 
   try {
     // Find user for this subscription
@@ -807,7 +807,7 @@ export const handleSubscriptionPending: EventHandler = async (
   event: ParsedWebhookEvent
 ): Promise<EventHandlerResult> => {
   const subscription = extractSubscriptionEntity(event);
-  const supabase = getSupabaseServerClient();
+  const supabase = await getSupabaseServerClient();
 
   try {
     // Find user for this subscription

@@ -439,7 +439,7 @@ describe('Razorpay Plans Configuration', () => {
       const individualTier: SubscriptionTier = 'explorer';
 
       // Team tier workflow
-      const teamPlanId = getPlanId(teamTier, 'monthly');
+      const _teamPlanId = getPlanId(teamTier, 'monthly');
       const teamPrice = getPlanPrice(teamTier, 'monthly');
       const teamLimit = getPlanLimit(teamTier);
       const isTeam = isTeamTier(teamTier);
@@ -449,7 +449,7 @@ describe('Razorpay Plans Configuration', () => {
       expect(teamLimit).toBe(10); // per seat
 
       // Individual tier workflow
-      const individualPlanId = getPlanId(individualTier, 'monthly');
+      const _individualPlanId = getPlanId(individualTier, 'monthly');
       const individualPrice = getPlanPrice(individualTier, 'monthly');
       const individualLimit = getPlanLimit(individualTier);
       const isIndividualTeam = isTeamTier(individualTier);

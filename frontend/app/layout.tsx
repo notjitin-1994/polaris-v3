@@ -5,6 +5,7 @@ import './globals.css';
 import { ThemeProvider } from '@/components/theme';
 import { GlobalErrorBoundary } from '@/components/error/GlobalErrorBoundary';
 import { RazorpayProvider } from '@/components/providers/RazorpayProvider';
+import { AuthProvider } from '@/contexts/AuthContext';
 
 const quicksand = Quicksand({
   variable: '--font-quicksand',
@@ -76,7 +77,9 @@ export default function RootLayout({
 
         <GlobalErrorBoundary>
           <ThemeProvider defaultTheme="dark">
-            <RazorpayProvider>{children}</RazorpayProvider>
+            <AuthProvider>
+              <RazorpayProvider>{children}</RazorpayProvider>
+            </AuthProvider>
           </ThemeProvider>
         </GlobalErrorBoundary>
       </body>

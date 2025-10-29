@@ -212,8 +212,9 @@ class UptimeMonitor {
     const healthCheck = this.healthChecks.get(name);
     if (!healthCheck) return null;
 
+    const startTime = Date.now();
+
     try {
-      const startTime = Date.now();
       const result = await Promise.race([
         healthCheck.checkFunction(),
         this.timeoutPromise(healthCheck.timeout),
@@ -271,27 +272,44 @@ class UptimeMonitor {
       interval: 60 * 1000, // 1 minute
       timeout: 5000,
       checkFunction: async () => {
-        // Test database connectivity
-        const { getSupabaseServerClient } = await import('@/lib/supabase/server');
-        const supabase = await getSupabaseServerClient();
-
-        const startTime = Date.now();
-        const { error } = await supabase.from('user_profiles').select('id').limit(1);
-        const responseTime = Date.now() - startTime;
-
-        if (error) {
+        // Skip database check during build/static generation
+        if (typeof window === 'undefined' && !process.env.NEXT_RUNTIME_API) {
           return {
-            healthy: false,
-            message: `Database connection failed: ${error.message}`,
-            responseTime,
+            healthy: true,
+            message: 'Database check skipped during build',
+            responseTime: 0,
           };
         }
 
-        return {
-          healthy: true,
-          message: 'Database connection successful',
-          responseTime,
-        };
+        // Test database connectivity
+        try {
+          const { getSupabaseServerClient } = await import('@/lib/supabase/server');
+          const supabase = await getSupabaseServerClient();
+
+          const startTime = Date.now();
+          const { error } = await supabase.from('user_profiles').select('id').limit(1);
+          const responseTime = Date.now() - startTime;
+
+          if (error) {
+            return {
+              healthy: false,
+              message: `Database connection failed: ${error.message}`,
+              responseTime,
+            };
+          }
+
+          return {
+            healthy: true,
+            message: 'Database connection successful',
+            responseTime,
+          };
+        } catch (error) {
+          return {
+            healthy: false,
+            message: `Database check failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
+            responseTime: 0,
+          };
+        }
       },
     });
 

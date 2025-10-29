@@ -11,6 +11,9 @@ import { Telescope, Compass, CheckCircle, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
 
+// Force dynamic rendering to avoid static generation issues with auth
+export const dynamic = 'force-dynamic';
+
 type LoadingType = 'dynamic-questions' | 'blueprint-generation';
 
 function DemoContent(): React.JSX.Element {

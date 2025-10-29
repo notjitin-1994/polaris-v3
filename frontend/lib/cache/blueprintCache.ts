@@ -6,7 +6,7 @@
  */
 
 import crypto from 'crypto';
-import { enhancedCache } from './enhancedCache';
+import { blueprintCache as enhancedCache } from './enhancedCache';
 import type { BlueprintGenerator } from '@/types/supabase';
 
 interface CacheKeyComponents {

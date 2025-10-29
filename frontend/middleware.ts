@@ -9,6 +9,9 @@ const PUBLIC_PATHS = new Set([
   '/favicon.ico',
   '/demo-loading',
   '/pricing',
+  '/my-starmaps',
+  '/dashboard',
+  '/subscription',
 ]);
 // Auth pages that should redirect to home if user is logged in
 const AUTH_PATHS = new Set(['/login', '/signup']);

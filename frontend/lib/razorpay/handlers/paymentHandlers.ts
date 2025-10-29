@@ -283,7 +283,7 @@ export const handlePaymentAuthorized: EventHandler = async (
   event: ParsedWebhookEvent
 ): Promise<EventHandlerResult> => {
   const payment = extractPaymentEntity(event);
-  const supabase = getSupabaseServerClient();
+  const supabase = await getSupabaseServerClient();
 
   try {
     // Find user for this payment
@@ -391,7 +391,7 @@ export const handlePaymentCaptured: EventHandler = async (
   event: ParsedWebhookEvent
 ): Promise<EventHandlerResult> => {
   const payment = extractPaymentEntity(event);
-  const supabase = getSupabaseServerClient();
+  const supabase = await getSupabaseServerClient();
 
   try {
     // Find user for this payment
@@ -479,7 +479,7 @@ export const handlePaymentFailed: EventHandler = async (
   event: ParsedWebhookEvent
 ): Promise<EventHandlerResult> => {
   const payment = extractPaymentEntity(event);
-  const supabase = getSupabaseServerClient();
+  const supabase = await getSupabaseServerClient();
 
   try {
     // Find user for this payment
@@ -573,7 +573,7 @@ export const handlePaymentPending: EventHandler = async (
   event: ParsedWebhookEvent
 ): Promise<EventHandlerResult> => {
   const payment = extractPaymentEntity(event);
-  const supabase = getSupabaseServerClient();
+  const supabase = await getSupabaseServerClient();
 
   try {
     // Find user for this payment
@@ -667,7 +667,7 @@ export const handleRefundProcessed: EventHandler = async (
   event: ParsedWebhookEvent
 ): Promise<EventHandlerResult> => {
   const payment = extractPaymentEntity(event);
-  const supabase = getSupabaseServerClient();
+  const supabase = await getSupabaseServerClient();
 
   try {
     // Find user for this payment
@@ -740,7 +740,7 @@ export const handleRefundCreated: EventHandler = async (
   event: ParsedWebhookEvent
 ): Promise<EventHandlerResult> => {
   const payment = extractPaymentEntity(event);
-  const supabase = getSupabaseServerClient();
+  const supabase = await getSupabaseServerClient();
 
   try {
     // Find user for this payment

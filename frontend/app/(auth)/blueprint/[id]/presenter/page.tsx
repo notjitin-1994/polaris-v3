@@ -31,7 +31,7 @@ interface SlideData {
 
 export default function PresenterPage({ params }: PageProps) {
   const { id } = use(params);
-  const [blueprintData, setBlueprintData] = useState<Blueprint | null>(null);
+  const [blueprintData, setBlueprintData] = useState<BlueprintData | null>(null);
   const [slidesData, setSlidesData] = useState<SlideData[]>([]);
   const [currentSlide, setCurrentSlide] = useState(0);
   const [totalSlides, setTotalSlides] = useState(0);

@@ -549,4 +549,5 @@ export function createWebhookEventRouter(config?: Partial<RouterConfig>): Webhoo
 // Default Export
 // ============================================================================
 
-export const webhookEventRouter = createWebhookEventRouter();
+// Remove module-level instantiation to avoid cookies context error
+// export const webhookEventRouter = createWebhookEventRouter();

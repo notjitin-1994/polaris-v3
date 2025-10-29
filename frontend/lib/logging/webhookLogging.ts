@@ -745,4 +745,5 @@ export function createWebhookLogger(config?: Partial<LoggingConfig>): WebhookLog
 // Default Export
 // ============================================================================
 
-export const webhookLogger = createWebhookLogger();
+// Remove module-level instantiation to avoid cookies context error
+// export const webhookLogger = createWebhookLogger();

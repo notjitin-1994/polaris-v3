@@ -101,7 +101,15 @@ export class WebhookStateManagement {
 
   constructor(config: StateManagementConfig = DEFAULT_STATE_CONFIG) {
     this.config = config;
-    this.supabase = getSupabaseServerClient();
+    // Initialize supabase client asynchronously to avoid cookies context error
+    this.supabase = null;
+  }
+
+  private async initializeClient() {
+    if (!this.supabase) {
+      this.supabase = await getSupabaseServerClient();
+    }
+    return this.supabase;
   }
 
   /**
@@ -587,4 +595,5 @@ export function createWebhookStateManager(
 // Default Export
 // ============================================================================
 
-export const webhookStateManager = createWebhookStateManager();
+// Remove module-level instantiation to avoid cookies context error
+// export const webhookStateManager = createWebhookStateManager();

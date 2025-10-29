@@ -670,7 +670,7 @@ describe('Subscription Lifecycle Integration Tests', () => {
 
 describe('GET /api/subscriptions/create-subscription', () => {
   it('should return 405 for GET requests', async () => {
-    const request = createMockRequest(
+    const _request = createMockRequest(
       'http://localhost:3000/api/subscriptions/create-subscription',
       {
         method: 'GET',

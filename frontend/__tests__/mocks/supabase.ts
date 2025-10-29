@@ -279,7 +279,7 @@ export const mockBlueprintGenerator = {
 // Database query builder mock
 export const createMockQueryBuilder = (defaultData: any = null) => {
   let queryData = defaultData;
-  let error = null;
+  let error: unknown = null;
 
   const builder = {
     select: vi.fn().mockImplementation((columns = '*') => {
@@ -353,10 +353,10 @@ export const createMockQueryBuilder = (defaultData: any = null) => {
     then: vi.fn().mockImplementation((callback) => {
       return Promise.resolve(callback({ data: queryData, error }));
     }),
-  };
+  } as any;
 
   // Helper to set data and error
-  builder.setMockData = (data: any, err: any = null) => {
+  (builder as any).setMockData = (data: any, err: any = null) => {
     queryData = data;
     error = err;
     return builder;
@@ -377,21 +377,22 @@ export const createMockSupabaseClient = () => {
         blueprint_generator: mockBlueprintGenerator,
       };
 
-      const queryBuilder = createMockQueryBuilder(mockData[table]);
+      const tableData = (mockData as any)[table] || null;
+      const queryBuilder = createMockQueryBuilder(tableData);
 
       // Add insert method
-      queryBuilder.insert = vi.fn().mockImplementation((data) => {
+      (queryBuilder as any).insert = vi.fn().mockImplementation((data) => {
         const insertedData = Array.isArray(data) ? data[0] : data;
         return createMockQueryBuilder(insertedData);
       });
 
       // Add update method
-      queryBuilder.update = vi.fn().mockImplementation((data) => {
-        return createMockQueryBuilder({ ...mockData[table], ...data });
+      (queryBuilder as any).update = vi.fn().mockImplementation((data) => {
+        return createMockQueryBuilder({ ...tableData, ...data });
       });
 
       // Add delete method
-      queryBuilder.delete = vi.fn().mockImplementation(() => {
+      (queryBuilder as any).delete = vi.fn().mockImplementation(() => {
         return createMockQueryBuilder(null);
       });
 

@@ -56,41 +56,47 @@ import {
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
+// Type assertion to workaround Next.js 15 generated types issue
+type RouteHandler = typeof POST & typeof GET & typeof handleError;
+
 // ============================================================================
 // Service Initialization
 // ============================================================================
 
-// Initialize services
-const idempotencyService = createWebhookIdempotencyService();
-const eventRouter = createWebhookEventRouter();
-const stateManager = createWebhookStateManager();
-const logger = createWebhookLogger();
+/**
+ * Initialize services for webhook processing
+ * Services are created within the request context to avoid cookies issues
+ */
+function initializeWebhookServices() {
+  const idempotencyService = createWebhookIdempotencyService();
+  const eventRouter = createWebhookEventRouter();
+  const stateManager = createWebhookStateManager();
+  const logger = createWebhookLogger();
 
-// ============================================================================
-// Event Handler Registration
-// ============================================================================
-
-// Register subscription event handlers
-Object.entries(subscriptionHandlers).forEach(([eventType, handler]) => {
-  eventRouter.register({
-    eventType,
-    handler,
-    description: `Handle ${eventType}`,
-    enabled: true,
-    required: ['id', 'status'],
+  // Register subscription event handlers
+  Object.entries(subscriptionHandlers).forEach(([eventType, handler]) => {
+    eventRouter.register({
+      eventType,
+      handler,
+      description: `Handle ${eventType}`,
+      enabled: true,
+      required: ['id', 'status'],
+    });
   });
-});
 
-// Register payment event handlers
-Object.entries(paymentHandlers).forEach(([eventType, handler]) => {
-  eventRouter.register({
-    eventType,
-    handler,
-    description: `Handle ${eventType}`,
-    enabled: true,
-    required: ['id', 'status', 'amount', 'currency'],
+  // Register payment event handlers
+  Object.entries(paymentHandlers).forEach(([eventType, handler]) => {
+    eventRouter.register({
+      eventType,
+      handler,
+      description: `Handle ${eventType}`,
+      enabled: true,
+      required: ['id', 'status', 'amount', 'currency'],
+    });
   });
-});
+
+  return { idempotencyService, eventRouter, stateManager, logger };
+}
 
 // ============================================================================
 // Environment Validation
@@ -199,6 +205,9 @@ async function handleProcessingError(
 export async function POST(request: Request): Promise<Response> {
   const startTime = Date.now();
   const requestId = generateRequestId();
+
+  // Initialize services within request context
+  const { idempotencyService, eventRouter, stateManager, logger } = initializeWebhookServices();
 
   try {
     // Validate environment
@@ -485,6 +494,8 @@ export async function POST(request: Request): Promise<Response> {
  */
 export async function GET(): Promise<Response> {
   try {
+    // Initialize services for health check
+    const { eventRouter, logger } = initializeWebhookServices();
     const routerStats = eventRouter.getStatistics();
     const logStats = logger.getStatistics();
 

@@ -13,7 +13,7 @@ import {
   type AlertRule,
   type NotificationChannel,
 } from '@/lib/monitoring/alertingSystem';
-import { webhookLogger } from '@/lib/logging/webhookLogging';
+import { createWebhookLogger } from '@/lib/logging/webhookLogging';
 
 // ============================================================================
 // Production Notification Channels
@@ -484,6 +484,7 @@ export function configureProductionMonitoring(): void {
   });
 
   // Configure webhook logging for production
+  const webhookLogger = createWebhookLogger();
   webhookLogger.updateConfig({
     enableConsoleOutput: false,
     enableStructuredOutput: true,

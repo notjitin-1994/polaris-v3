@@ -1,6 +1,9 @@
 // State debugging tools for development
 export class StateDebugger {
   private static isDevelopment = process.env.NODE_ENV === 'development';
+  public static get isDevMode() {
+    return StateDebugger.isDevelopment;
+  }
   private static logHistory: Array<{
     timestamp: Date;
     store: string;
@@ -115,7 +118,7 @@ export class StateDebugger {
   static startPerformanceMonitoring(): void {
     if (!this.isDevelopment) return;
 
-    const _frameCount = 0;
+    let frameCount = 0;
     let lastTime = performance.now();
 
     const measurePerformance = () => {
@@ -225,7 +228,7 @@ export class StateDebugger {
 export const devToolsIntegration = {
   // Connect to Redux DevTools
   connect: (stores: Record<string, any>): void => {
-    if (!StateDebugger.isDevelopment || typeof window === 'undefined') return;
+    if (!StateDebugger.isDevMode || typeof window === 'undefined') return;
 
     const devTools = (window as any).__REDUX_DEVTOOLS_EXTENSION__;
     if (!devTools) return;
@@ -265,7 +268,7 @@ export class TimeTravelDebugger {
 
   // Take snapshot
   static takeSnapshot(store: string, state: any): void {
-    if (!StateDebugger.isDevelopment) return;
+    if (!StateDebugger.isDevMode) return;
 
     this.snapshots.push({
       timestamp: new Date(),

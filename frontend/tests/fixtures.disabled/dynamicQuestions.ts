@@ -467,7 +467,6 @@ export const edgeCaseDynamicQuestions: Section[] = [
           {
             rule: 'pattern',
             value: '^[A-Za-z0-9\\s]+$',
-            disabled: false,
             message: 'Only alphanumeric characters allowed',
           },
         ],

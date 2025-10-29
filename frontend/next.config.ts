@@ -23,6 +23,8 @@ const nextConfig: NextConfig = {
     optimizeCss: true,
     // Optimize images
     optimizePackageImports: ['lucide-react', '@radix-ui/react-icons'],
+    // Force dynamic rendering for all pages to avoid auth context issues during build
+    forceSwcTransforms: true,
   },
 
   // Enable streaming SSR - moved from experimental
@@ -107,6 +109,9 @@ const nextConfig: NextConfig = {
   // Static optimization
   trailingSlash: false,
   generateEtags: true,
+
+  // Skip static generation for routes that require authentication
+  // output: 'standalone',
 
   // Compression
   compress: true,

@@ -101,7 +101,15 @@ export class WebhookIdempotencyService {
   private supabase: any;
 
   constructor() {
-    this.supabase = getSupababaseServerClient();
+    // Initialize supabase client asynchronously - fix for build error
+    this.supabase = null;
+  }
+
+  private async initializeClient() {
+    if (!this.supabase) {
+      this.supabase = await getSupabaseServerClient();
+    }
+    return this.supabase;
   }
 
   /**
@@ -130,8 +138,10 @@ export class WebhookIdempotencyService {
         };
       }
 
-      // Use the database function for atomic check
-      const { data, error } = await this.supabase.rpc('is_webhook_event_processed', {
+      // Initialize client and use the database function for atomic check
+      const { data, error } = await (
+        await this.initializeClient()
+      ).rpc('is_webhook_event_processed', {
         p_event_id: eventId,
       });
 
@@ -370,7 +380,7 @@ export class WebhookIdempotencyService {
         return null;
       }
 
-      const { data, error } = await this.supabase
+      const { data, error } = await (await this.initializeClient())
         .from('webhook_events')
         .select('*')
         .eq('event_id', eventId)
@@ -401,7 +411,7 @@ export class WebhookIdempotencyService {
    */
   async getEventsByStatus(status: string, limit: number = 100): Promise<WebhookEventRecord[]> {
     try {
-      const { data, error } = await this.supabase
+      const { data, error } = await (await this.initializeClient())
         .from('webhook_events')
         .select('*')
         .eq('processing_status', status)
@@ -432,7 +442,7 @@ export class WebhookIdempotencyService {
    */
   async getEventsByType(eventType: string, limit: number = 100): Promise<WebhookEventRecord[]> {
     try {
-      const { data, error } = await this.supabase
+      const { data, error } = await (await this.initializeClient())
         .from('webhook_events')
         .select('*')
         .eq('event_type', eventType)
@@ -463,7 +473,7 @@ export class WebhookIdempotencyService {
   async getWebhookStatistics(): Promise<WebhookEventStats> {
     try {
       // Use the database function for statistics
-      const { data, error } = await this.supabase.rpc('get_webhook_statistics');
+      const { data, error } = await (await this.initializeClient()).rpc('get_webhook_statistics');
 
       if (error) {
         console.error('Failed to get webhook statistics:', error);
@@ -565,7 +575,7 @@ export class WebhookIdempotencyService {
       const cutoffDate = new Date();
       cutoffDate.setDate(cutoffDate.getDate() - daysToKeep);
 
-      const { error } = await this.supabase
+      const { error } = await (await this.initializeClient())
         .from('webhook_events')
         .delete()
         .lt('created_at', cutoffDate.toISOString());
@@ -598,7 +608,7 @@ export class WebhookIdempotencyService {
    */
   private async getFallbackStatistics(): Promise<WebhookEventStats> {
     try {
-      const { data, error } = await this.supabase
+      const { data, error } = await (await this.initializeClient())
         .from('webhook_events')
         .select('processing_status')
         .order('created_at', 'desc');
@@ -676,4 +686,5 @@ export function createWebhookIdempotencyService(): WebhookIdempotencyService {
 // Default Export
 // ============================================================================
 
-export const idempotencyService = createWebhookIdempotencyService();
+// Remove module-level instantiation to avoid cookies context error
+// export const idempotencyService = createWebhookIdempotencyService();

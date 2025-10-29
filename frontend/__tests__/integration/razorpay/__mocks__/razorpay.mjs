@@ -3,7 +3,7 @@
  * Provides mock implementations for all required Razorpay SDK methods
  */
 
-const { vi } = require('vitest');
+import { vi } from 'vitest';
 
 const mockRazorpayInstance = {
   subscriptions: {

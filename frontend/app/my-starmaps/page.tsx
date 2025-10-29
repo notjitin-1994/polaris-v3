@@ -31,6 +31,9 @@ import { useBlueprintLimits } from '@/lib/hooks/useBlueprintLimits';
 import { UpgradePromptModal } from '@/components/modals/UpgradePromptModal';
 import { cn } from '@/lib/utils';
 
+// Force dynamic rendering to avoid static generation issues with auth
+export const dynamic = 'force-dynamic';
+
 function DashboardContent() {
   const { user, signOut: _signOut } = useAuth();
   const router = useRouter();
