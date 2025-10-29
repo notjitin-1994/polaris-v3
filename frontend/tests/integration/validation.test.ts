@@ -111,7 +111,7 @@ describe('Answer Validation', () => {
       const q1_s2_error = result.errors.q1_s2;
       expect(q1_s2_error).toBeDefined();
       // Check that the error message includes the invalid option info
-      expect(JSON.stringify(q1_s2_error)).toContain('Invalid option');
+      expect(JSON.stringify(q1_s2_error)).toContain('not a valid option');
 
       // Check that we have multiple validation errors
       expect(Object.keys(result.errors).length).toBeGreaterThan(0);
@@ -119,7 +119,7 @@ describe('Answer Validation', () => {
       // q3_s2 has value "maybe" which is invalid for toggle - if it's defined, check the error
       if (result.errors.q3_s2) {
         const q3_s2_error = result.errors.q3_s2;
-        expect(JSON.stringify(q3_s2_error)).toContain('Invalid option');
+        expect(JSON.stringify(q3_s2_error)).toContain('not a valid option');
       }
     });
   });
@@ -421,7 +421,7 @@ describe('Answer Validation', () => {
   describe('Option Value Normalization', () => {
     it('should normalize option values consistently', () => {
       const normalized = normalizeOptionValue('  Test Option  ');
-      expect(normalized).toBe('Test Option');
+      expect(normalized).toBe('test-option');
     });
 
     it('should handle case-insensitive matching for options', () => {

@@ -19,7 +19,7 @@ const faqData: FAQItem[] = [
   {
     question: 'What\'s the difference between "generations" and "saved Starmaps"?',
     answer:
-      'Generations are your monthly creation limit — how many new AI-powered learning blueprints you can create each month. Saved Starmaps is your storage library — how many you can keep and access anytime. For example, Navigator gives you 20 new generations each month, and you can save up to 20 Starmaps in your library that roll over and accumulate.',
+      'Generations are your monthly creation limit — how many new AI-powered learning blueprints you can create each month. Saved Starmaps is your storage library — how many you can keep and access anytime. For example, Navigator gives you 25 new generations each month, and you can save up to 25 Starmaps in your library that roll over and accumulate.',
     category: 'features',
   },
   {
@@ -31,7 +31,7 @@ const faqData: FAQItem[] = [
   {
     question: 'Is there a maximum number of Starmaps I can save?',
     answer:
-      'Yes, to ensure system performance: Explorer can save up to 5 Starmaps (60 with rollover over 12 months), Navigator up to 20 Starmaps (240 with 12-month accumulation), and Voyager up to 50 saved Starmaps (600 with 12-month accumulation). Team plans have shared pools: Crew (10/user), Fleet (30/user), Armada (60/user).',
+      'Yes, to ensure system performance: Explorer can save up to 5 Starmaps (60 with rollover over 12 months), Navigator up to 25 Starmaps (300 with 12-month accumulation), and Voyager up to 50 saved Starmaps (600 with 12-month accumulation). Team plans have shared pools: Crew (10/user), Fleet (30/user), Armada (60/user).',
     category: 'features',
   },
   {

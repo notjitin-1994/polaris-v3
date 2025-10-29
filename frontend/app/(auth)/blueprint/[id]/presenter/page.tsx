@@ -9,7 +9,7 @@ import React, { useEffect, useState } from 'react';
 import { use } from 'react';
 import { PresenterViewWindow } from '@/components/blueprint/viewer/presenter/PresenterViewWindow';
 import { getSupabaseBrowserClient } from '@/lib/supabase/client';
-import type { Blueprint } from '@/lib/ollama/schema';
+import type { BlueprintData } from '@/lib/stores/types';
 
 interface PageProps {
   params: Promise<{ id: string }>;

@@ -9,7 +9,6 @@ const PUBLIC_PATHS = new Set([
   '/favicon.ico',
   '/demo-loading',
   '/pricing',
-  '/',
 ]);
 // Auth pages that should redirect to home if user is logged in
 const AUTH_PATHS = new Set(['/login', '/signup']);
@@ -49,12 +48,12 @@ export async function middleware(req: NextRequest) {
 
   // If user is logged in and trying to access auth pages, redirect to home
   if (session && AUTH_PATHS.has(url.pathname)) {
-    return NextResponse.redirect(new URL('/', req.url));
+    return NextResponse.redirect(new URL('/', url.origin));
   }
 
   // If user is not logged in and trying to access protected pages, redirect to login
   if (!session && !PUBLIC_PATHS.has(url.pathname)) {
-    const redirectUrl = new URL('/login', req.url);
+    const redirectUrl = new URL('/login', url.origin);
     redirectUrl.searchParams.set('redirect', url.pathname);
     return NextResponse.redirect(redirectUrl);
   }
@@ -64,6 +63,7 @@ export async function middleware(req: NextRequest) {
 
 export const config = {
   matcher: [
-    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:png|jpg|jpeg|gif|webp|svg|ico|txt|xml|woff|woff2|ttf|otf)|api/public).*)',
+    '/',
+    '/((?!_next/static|_next/image|favicon.ico).*)',
   ],
 };

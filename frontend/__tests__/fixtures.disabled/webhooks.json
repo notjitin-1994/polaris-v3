@@ -1,0 +1,260 @@
+{
+  "subscriptionActivated": {
+    "webhook_event_id": "we-db-activated-123",
+    "razorpay_webhook_id": "we_test_activated_123",
+    "event_type": "subscription.activated",
+    "event_timestamp": 1737826800,
+    "payload": {
+      "event": "subscription.activated",
+      "payload": {
+        "subscription": {
+          "id": "sub_test_activated_123",
+          "entity": "subscription",
+          "plan_id": "plan_test_navigator_monthly",
+          "customer_id": "cust_test_activated_123",
+          "status": "active",
+          "current_start": 1737826800,
+          "current_end": 1740505200,
+          "ended_at": null,
+          "start_at": 1737826800,
+          "total_count": 12,
+          "paid_count": 1,
+          "remaining_count": 11,
+          "customer_notify": 1,
+          "created_at": 1737826800,
+          "started_at": 1737826800,
+          "notes": {
+            "user_id": "user-navigator-test-456",
+            "subscription_tier": "navigator",
+            "billing_cycle": "monthly",
+            "seats": "1",
+            "source": "polaris_v3_subscription"
+          }
+        },
+        "payment": {
+          "id": "pay_test_activated_123",
+          "entity": "payment",
+          "amount": 290000,
+          "currency": "INR",
+          "status": "captured",
+          "order_id": "order_test_activated_123",
+          "invoice_id": "inv_test_activated_123",
+          "international": false,
+          "method": "card",
+          "amount_refunded": 0,
+          "refund_status": null,
+          "captured": true,
+          "description": "Navigator Plan (Monthly) - Navigator Test User",
+          "card_id": "card_test_activated_123",
+          "bank": null,
+          "wallet": null,
+          "vpa": null,
+          "email": "navigator@example.com",
+          "contact": "+919876543211",
+          "notes": {
+            "subscription_id": "sub_test_activated_123"
+          },
+          "fee": 8700,
+          "tax": 1305,
+          "error_code": null,
+          "error_description": null,
+          "error_source": null,
+          "error_step": null,
+          "error_reason": null,
+          "acquirer_data": {
+            "auth_code": "123456"
+          },
+          "created_at": 1737826800
+        }
+      },
+      "created_at": 1737826800
+    },
+    "processed": false,
+    "processing_status": "pending",
+    "processing_error": null,
+    "retry_count": 0,
+    "created_at": "2025-01-25T18:00:00.000Z",
+    "updated_at": "2025-01-25T18:00:00.000Z"
+  },
+  "subscriptionCancelled": {
+    "webhook_event_id": "we-db-cancelled-456",
+    "razorpay_webhook_id": "we_test_cancelled_456",
+    "event_type": "subscription.cancelled",
+    "event_timestamp": 1737913200,
+    "payload": {
+      "event": "subscription.cancelled",
+      "payload": {
+        "subscription": {
+          "id": "sub_test_cancelled_456",
+          "entity": "subscription",
+          "plan_id": "plan_test_crew_monthly",
+          "customer_id": "cust_test_cancelled_456",
+          "status": "cancelled",
+          "current_start": 1737826800,
+          "current_end": 1738431600,
+          "ended_at": 1738431600,
+          "start_at": 1737826800,
+          "total_count": 12,
+          "paid_count": 1,
+          "remaining_count": 11,
+          "customer_notify": 1,
+          "created_at": 1737826800,
+          "started_at": 1737826800,
+          "ended_at": 1738431600,
+          "notes": {
+            "user_id": "user-crew-test-012",
+            "subscription_tier": "crew",
+            "billing_cycle": "monthly",
+            "seats": "5",
+            "source": "polaris_v3_subscription",
+            "cancel_reason": "user_requested"
+          }
+        }
+      },
+      "created_at": 1737913200
+    },
+    "processed": false,
+    "processing_status": "pending",
+    "processing_error": null,
+    "retry_count": 0,
+    "created_at": "2025-01-26T18:00:00.000Z",
+    "updated_at": "2025-01-26T18:00:00.000Z"
+  },
+  "paymentFailed": {
+    "webhook_event_id": "we-db-payment-failed-789",
+    "razorpay_webhook_id": "we_test_payment_failed_789",
+    "event_type": "payment.failed",
+    "event_timestamp": 1737999600,
+    "payload": {
+      "event": "payment.failed",
+      "payload": {
+        "payment": {
+          "id": "pay_test_failed_789",
+          "entity": "payment",
+          "amount": 590000,
+          "currency": "INR",
+          "status": "failed",
+          "order_id": "order_test_failed_789",
+          "invoice_id": null,
+          "international": false,
+          "method": "card",
+          "amount_refunded": 0,
+          "refund_status": null,
+          "captured": false,
+          "description": "Voyager Plan (Monthly) - Voyager Test User",
+          "card_id": "card_test_failed_789",
+          "bank": null,
+          "wallet": null,
+          "vpa": null,
+          "email": "voyager@example.com",
+          "contact": "+919876543212",
+          "notes": {
+            "subscription_id": "sub_test_failed_789"
+          },
+          "fee": 17700,
+          "tax": 2655,
+          "error_code": "CARD_DECLINED",
+          "error_description": "The card was declined.",
+          "error_source": "acquirer",
+          "error_step": "payment_authentication",
+          "error_reason": "card_declined_by_bank",
+          "acquirer_data": {
+            "auth_code": null
+          },
+          "created_at": 1737999600
+        }
+      },
+      "created_at": 1737999600
+    },
+    "processed": false,
+    "processing_status": "pending",
+    "processing_error": null,
+    "retry_count": 0,
+    "created_at": "2025-01-27T18:00:00.000Z",
+    "updated_at": "2025-01-27T18:00:00.000Z"
+  },
+  "subscriptionCreated": {
+    "webhook_event_id": "we-db-created-012",
+    "razorpay_webhook_id": "we_test_created_012",
+    "event_type": "subscription.created",
+    "event_timestamp": 1738086000,
+    "payload": {
+      "event": "subscription.created",
+      "payload": {
+        "subscription": {
+          "id": "sub_test_created_012",
+          "entity": "subscription",
+          "plan_id": "plan_test_fleet_yearly",
+          "customer_id": "cust_test_created_012",
+          "status": "created",
+          "current_start": null,
+          "current_end": null,
+          "ended_at": null,
+          "start_at": 1738086000,
+          "total_count": 1,
+          "paid_count": 0,
+          "remaining_count": 1,
+          "customer_notify": 0,
+          "created_at": 1738086000,
+          "started_at": null,
+          "notes": {
+            "user_id": "user-fleet-test-345",
+            "subscription_tier": "fleet",
+            "billing_cycle": "yearly",
+            "seats": "10",
+            "source": "polaris_v3_subscription"
+          }
+        }
+      },
+      "created_at": 1738086000
+    },
+    "processed": false,
+    "processing_status": "pending",
+    "processing_error": null,
+    "retry_count": 0,
+    "created_at": "2025-01-28T18:00:00.000Z",
+    "updated_at": "2025-01-28T18:00:00.000Z"
+  },
+  "subscriptionAuthenticated": {
+    "webhook_event_id": "we-db-authenticated-345",
+    "razorpay_webhook_id": "we_test_authenticated_345",
+    "event_type": "subscription.authenticated",
+    "event_timestamp": 1738172400,
+    "payload": {
+      "event": "subscription.authenticated",
+      "payload": {
+        "subscription": {
+          "id": "sub_test_authenticated_345",
+          "entity": "subscription",
+          "plan_id": "plan_test_armada_monthly",
+          "customer_id": "cust_test_authenticated_345",
+          "status": "authenticated",
+          "current_start": null,
+          "current_end": null,
+          "ended_at": null,
+          "start_at": 1738172400,
+          "total_count": 12,
+          "paid_count": 0,
+          "remaining_count": 12,
+          "customer_notify": 1,
+          "created_at": 1738172400,
+          "started_at": null,
+          "notes": {
+            "user_id": "user-armada-test-678",
+            "subscription_tier": "armada",
+            "billing_cycle": "monthly",
+            "seats": "25",
+            "source": "polaris_v3_subscription"
+          }
+        }
+      },
+      "created_at": 1738172400
+    },
+    "processed": false,
+    "processing_status": "pending",
+    "processing_error": null,
+    "retry_count": 0,
+    "created_at": "2025-01-29T18:00:00.000Z",
+    "updated_at": "2025-01-29T18:00:00.000Z"
+  }
+}

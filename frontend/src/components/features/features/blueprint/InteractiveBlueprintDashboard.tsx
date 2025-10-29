@@ -114,7 +114,7 @@ export function InteractiveBlueprintDashboard({
       gradient: 'bg-secondary/20',
       iconColor: 'text-secondary',
       description: 'Demographics and learning preferences',
-    }
+    });
   }
 
   if (blueprint.content_outline) {
@@ -125,7 +125,7 @@ export function InteractiveBlueprintDashboard({
       gradient: 'bg-primary/20',
       iconColor: 'text-primary',
       description: `${modules.length} comprehensive learning modules`,
-    }
+    });
   }
 
   if (blueprint.resources) {
@@ -136,7 +136,7 @@ export function InteractiveBlueprintDashboard({
       gradient: 'bg-success/20',
       iconColor: 'text-success',
       description: 'Team, tools, and financial allocation',
-    }
+    });
   }
 
   if (blueprint.assessment_strategy) {
@@ -147,7 +147,7 @@ export function InteractiveBlueprintDashboard({
       gradient: 'bg-primary/20',
       iconColor: 'text-primary',
       description: 'Evaluation methods and KPIs',
-    }
+    });
   }
 
   if (blueprint.implementation_timeline) {
@@ -158,7 +158,7 @@ export function InteractiveBlueprintDashboard({
       gradient: 'bg-secondary/20',
       iconColor: 'text-secondary',
       description: `${blueprint.implementation_timeline.phases.length} phases`,
-    }
+    });
   }
 
   if (blueprint.risk_mitigation) {
@@ -169,7 +169,7 @@ export function InteractiveBlueprintDashboard({
       gradient: 'bg-warning/20',
       iconColor: 'text-warning',
       description: `${blueprint.risk_mitigation.risks.length} risks addressed`,
-    }
+    });
   }
 
   if (blueprint.success_metrics) {
@@ -180,7 +180,7 @@ export function InteractiveBlueprintDashboard({
       gradient: 'bg-success/20',
       iconColor: 'text-success',
       description: 'Performance indicators and tracking',
-    }
+    });
   }
 
   if (blueprint.instructional_strategy) {
@@ -191,7 +191,7 @@ export function InteractiveBlueprintDashboard({
       gradient: 'bg-primary/20',
       iconColor: 'text-primary',
       description: 'Learning approach and methodology',
-    }
+    });
   }
 
   if (blueprint.sustainability_plan) {
@@ -202,7 +202,7 @@ export function InteractiveBlueprintDashboard({
       gradient: 'bg-success/20',
       iconColor: 'text-success',
       description: 'Long-term maintenance and scaling',
-    }
+    });
   }
 
   const toggleSection = (sectionId: string) => {
@@ -214,11 +214,11 @@ export function InteractiveBlueprintDashboard({
         next.add(sectionId);
       }
       return next;
-    }
+    });
   };
 
   const scrollToSection = (sectionId: string) => {
-    sectionRefs.current[sectionId]?.scrollIntoView({ behavior: 'smooth', block: 'start' }
+    sectionRefs.current[sectionId]?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     if (!expandedSections.has(sectionId)) {
       toggleSection(sectionId);
     }
@@ -335,10 +335,102 @@ export function InteractiveBlueprintDashboard({
               </div>
             </motion.div>
           );
-        }
-      }),
+      });
+
+      MetricCard.displayName = 'MetricCard';
+
+      return MetricCard;
+    },
     [hasAnimated, mounted, shouldReduceAnimations]
   );
+
+  // Expandable Section Component
+  const ExpandableSection = React.forwardRef<
+    HTMLDivElement,
+    {
+      section: SectionDef;
+      isExpanded: boolean;
+      onToggle: () => void;
+      children: React.ReactNode;
+      isPublicView?: boolean;
+    }
+  >(({ section, isExpanded, onToggle, children, isPublicView = false }, ref) => {
+    const Icon = section.icon;
+
+    const handleModify = (e: React.MouseEvent) => {
+      e.stopPropagation();
+      console.log(`Modify ${section.title}`);
+    };
+
+    return (
+      <motion.div
+        ref={ref}
+        className="rounded-xl bg-surface border border-border overflow-hidden"
+        variants={itemVariants}
+      >
+        <motion.button
+          type="button"
+          onClick={onToggle}
+          className={`w-full px-6 py-4 flex items-center justify-between text-left transition-colors ${
+            isExpanded ? 'bg-primary/5 border-b border-border' : 'hover:bg-surface-secondary'
+          }`}
+        >
+          <div className="flex items-center gap-4">
+            <div
+              className={`rounded-xl p-3 ${section.gradient} bg-opacity-20 transition-transform group-hover:scale-110`}
+            >
+              <Icon className={`drop-shadow-glow h-6 w-6 ${section.iconColor}`} />
+            </div>
+            <div>
+              <h3 className="text-lg font-semibold">{section.title}</h3>
+              <p className="text-text-secondary text-sm">{section.description}</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            {!isPublicView && (
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="p-2 rounded-lg bg-primary/10 hover:bg-primary/20 transition-colors cursor-pointer"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  handleModify(e as any);
+                }}
+              >
+                <Wand2 className="h-4 w-4 drop-shadow-[0_0_8px_rgba(167,218,219,0.9)]" />
+              </motion.div>
+            )}
+
+            {/* Collapse/Expand Button */}
+            <motion.div
+              animate={{ rotate: isExpanded ? 180 : 0 }}
+              transition={{ duration: 0.3 }}
+              className="rounded-full bg-white/5 p-2"
+            >
+              <Maximize2 className="h-4 w-4 text-text-secondary" />
+            </motion.div>
+          </div>
+        </motion.button>
+
+        <AnimatePresence>
+          {isExpanded && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: 'auto', opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.3, ease: 'easeInOut' }}
+              className="overflow-hidden"
+            >
+              <div className="p-6">
+                {children}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </motion.div>
+    );
+  });
 
   return (
     <motion.div
@@ -357,19 +449,12 @@ export function InteractiveBlueprintDashboard({
             isPublicView={isPublicView}
           />
         </motion.div>
-      );
+      )}
 
-      MetricCard.displayName = 'MetricCard';
-
-      return MetricCard;
-    },
-    [hasAnimated, mounted, shouldReduceAnimations]
-  );
-
-  <motion.div
-    variants={containerVariants}
-    className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4"
-  >
+      <motion.div
+        variants={containerVariants}
+        className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4"
+      >
         <StatCard
           icon={Clock}
           label="Total Duration"
@@ -670,116 +755,4 @@ export function InteractiveBlueprintDashboard({
       </div>
     </motion.div>
   );
-}
-
-// Expandable Section Component
-const ExpandableSection = React.forwardRef<
-  HTMLDivElement,
-  {
-    section: SectionDef;
-    isExpanded: boolean;
-    onToggle: () => void;
-    children: React.ReactNode;
-    isPublicView?: boolean;
-  }
->(({ section, isExpanded, onToggle, children, isPublicView = false }, ref) => {
-  const Icon = section.icon;
-
-  const handleModify = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    console.log(`Modify ${section.title}`);
-  };
-
-  return (
-    <motion.div
-      ref={ref}
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="glass-card overflow-hidden rounded-2xl border border-white/10 transition-all"
-    >
-      {/* Section Header - Always Visible, Clickable */}
-      <button
-        onClick={onToggle}
-        className="flex w-full items-center justify-between p-6 text-left transition-all hover:bg-white/5"
-      >
-        <div className="flex min-w-0 flex-1 items-center gap-4">
-          <div className={`rounded-xl p-3 ${section.gradient}`}>
-            <Icon className={`h-6 w-6 ${section.iconColor}`} />
-          </div>
-          <div>
-            <h3 className="text-xl font-bold text-white">{section.title}</h3>
-            <p className="text-text-secondary text-sm">{section.description}</p>
-          </div>
-        </div>
-
-        {/* Right Side Controls */}
-        <div className="ml-4 flex shrink-0 items-center gap-2">
-          {/* AI Modify Button with Vibrant Glow & Pulse - Hidden in public view */}
-          {isExpanded && !isPublicView && (
-            <motion.div
-              animate={{
-                boxShadow: [
-                  '0 0 15px rgba(167,218,219,0.5)',
-                  '0 0 20px rgba(167,218,219,0.7)',
-                  '0 0 15px rgba(167,218,219,0.5)',
-                ],
-              }}
-              transition={{
-                duration: 2.5,
-                repeat: Infinity,
-                ease: 'easeInOut',
-              }}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={(e) => {
-                e.stopPropagation();
-                handleModify(e);
-              }}
-              className="pressable border-primary bg-primary/10 text-primary hover:bg-primary/20 hover:border-primary inline-flex h-8 w-8 cursor-pointer items-center justify-center rounded-full border-2 transition-all hover:shadow-[0_0_25px_rgba(167,218,219,0.8)]"
-              title="Modify with AI"
-              aria-label="Modify section with AI"
-              role="button"
-              tabIndex={0}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  handleModify(e as any);
-                }
-              }}
-            >
-              <Wand2 className="h-4 w-4 drop-shadow-[0_0_8px_rgba(167,218,219,0.9)]" />
-            </motion.div>
-          )}
-
-          {/* Collapse/Expand Button */}
-          <motion.div
-            animate={{ rotate: isExpanded ? 180 : 0 }}
-            transition={{ duration: 0.3 }}
-            className="rounded-full bg-white/5 p-2"
-          >
-            <ChevronDown className="text-text-secondary h-5 w-5" />
-          </motion.div>
-        </div>
-      </button>
-
-      {/* Expandable Content */}
-      <AnimatePresence>
-        {isExpanded && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: 'auto', opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.3, ease: 'easeInOut' }}
-            className="overflow-hidden"
-          >
-            <div className="border-t border-white/10 p-6">{children}</div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </motion.div>
-  );
-}
-
-ExpandableSection.displayName = 'ExpandableSection';
 }

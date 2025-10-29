@@ -13,10 +13,10 @@ import { DynamicQuestionRenderer } from '@/components/demo-dynamicv2/DynamicQues
 import { QuestionnaireProgress } from '@/components/demo-v2-questionnaire/QuestionnaireProgress';
 import { QuestionnaireButton } from '@/components/demo-v2-questionnaire/QuestionnaireButton';
 import { FormErrorBoundary } from '@/components/error/FormErrorBoundary';
-import { _cn } from '@/lib/utils';
+import { cn } from '@/lib/utils';
 import {
   createDynamicSchema,
-  _validateSection,
+  validateSection,
   calculateCompletionPercentage,
   getSectionValidationStatus,
 } from '@/lib/validation/dynamicQuestionSchemaBuilder';

@@ -191,7 +191,7 @@ export function getUpgradeMessage(limitType: 'creation' | 'saving', currentTier:
   const tierLimits: Record<string, { creation: number; saving: number }> = {
     free: { creation: 2, saving: 2 },
     explorer: { creation: 5, saving: 5 },
-    navigator: { creation: 20, saving: 20 },
+    navigator: { creation: 25, saving: 25 },
     voyager: { creation: 50, saving: 50 },
     crew: { creation: 10, saving: 10 },
     fleet: { creation: 30, saving: 30 },

@@ -21,8 +21,22 @@ import { ComprehensiveBlueprintViewer } from '@/components/blueprint/Comprehensi
 import { getSupabaseBrowserClient } from '@/lib/supabase/client';
 import { useBlueprintStore } from '@/store/blueprintStore';
 import { createBrowserBlueprintService } from '@/lib/db/blueprints.client';
-import { parseAndValidateBlueprintJSON } from '@/lib/ollama/blueprintValidation';
-import { AnyBlueprint, isFullBlueprint } from '@/lib/ollama/schema';
+// Removed Ollama imports - using Claude-based validation
+// import { parseAndValidateBlueprintJSON } from '@/lib/ollama/blueprintValidation';
+// import { AnyBlueprint, isFullBlueprint } from '@/lib/ollama/schema';
+
+// Simple replacements for removed Ollama functions
+type AnyBlueprint = any;
+const isFullBlueprint = (data: any): boolean => {
+  return data && typeof data === 'object' && 'blueprint_json' in data;
+};
+const parseAndValidateBlueprintJSON = (jsonString: string): any => {
+  try {
+    return JSON.parse(jsonString);
+  } catch {
+    return null;
+  }
+};
 
 interface PageProps {
   params: Promise<{ id: string }>;

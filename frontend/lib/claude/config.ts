@@ -1,6 +1,6 @@
 /**
  * Claude API Configuration
- * Secure server-side configuration for Claude Sonnet 4 and Opus 4
+ * Secure server-side configuration for Claude Sonnet 4.5 and Sonnet 4
  */
 
 export interface ClaudeConfig {
@@ -33,7 +33,7 @@ export function getClaudeConfig(): ClaudeConfig {
   if (!apiKey) {
     return {
       primaryModel: 'claude-sonnet-4-5',
-      fallbackModel: 'claude-opus-4-20250514',
+      fallbackModel: 'claude-sonnet-4',
       apiKey: '',
       baseUrl: 'https://api.anthropic.com',
       version: '2023-06-01',
@@ -52,7 +52,7 @@ export function getClaudeConfig(): ClaudeConfig {
 
   return {
     primaryModel: 'claude-sonnet-4-5',
-    fallbackModel: 'claude-opus-4-20250514',
+    fallbackModel: 'claude-sonnet-4',
     apiKey,
     baseUrl,
     version,

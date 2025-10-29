@@ -416,6 +416,22 @@ export const DynamicFormRenderer = React.forwardRef<DynamicFormRef, DynamicFormR
           <DynamicFormCard showLogo={false}>
             <FormProvider {...methods}>
               <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-6">
+                {/* Form Title and Description */}
+                {formSchema.title && (
+                  <div className="animate-fade-in-up mb-10 space-y-6">
+                    <div className="text-center">
+                      <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
+                        {formSchema.title}
+                      </h1>
+                      {formSchema.description && (
+                        <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+                          {formSchema.description}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                )}
+
                 {/* Progress indicator */}
                 <DynamicFormProgress
                   currentSection={currentSectionIndex}

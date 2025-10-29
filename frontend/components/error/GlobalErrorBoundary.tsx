@@ -6,7 +6,16 @@
 'use client';
 
 import React, { Component, ErrorInfo, ReactNode } from 'react';
-import { clientErrorTracker } from '@/lib/logging/clientErrorTracker';
+
+// Dynamic import to avoid server-side issues
+let clientErrorTracker: any = null;
+try {
+  if (typeof window !== 'undefined') {
+    clientErrorTracker = require('@/lib/logging/clientErrorTracker').clientErrorTracker;
+  }
+} catch {
+  // Fallback - error tracker not available
+}
 
 interface Props {
   children: ReactNode;
@@ -38,10 +47,17 @@ export class GlobalErrorBoundary extends Component<Props, State> {
   }
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo): void {
-    // Log error to server
-    clientErrorTracker.captureReactError(error, {
-      componentStack: errorInfo.componentStack || undefined,
-    });
+    // Log error to server - only if clientErrorTracker is available
+    try {
+      if (typeof clientErrorTracker !== 'undefined' && clientErrorTracker.captureReactError) {
+        clientErrorTracker.captureReactError(error, {
+          componentStack: errorInfo.componentStack || undefined,
+        });
+      }
+    } catch (trackingError) {
+      // Fallback to console logging if error tracker fails
+      console.error('[Error Boundary] Failed to track error:', trackingError);
+    }
 
     // Update state with error info
     this.setState({

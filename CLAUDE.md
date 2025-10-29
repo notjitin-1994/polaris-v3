@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-SmartSlate Polaris v3 is an AI-powered learning blueprint generation platform. It uses a two-phase questionnaire system (static → dynamic) to capture context, then generates comprehensive learning blueprints using Claude AI with triple-fallback architecture (Claude Sonnet 4 → Claude Opus 4 → Ollama Qwen3:32b).
+SmartSlate Polaris v3 is an AI-powered learning blueprint generation platform. It uses a two-phase questionnaire system (static → dynamic) to capture context, then generates comprehensive learning blueprints using Claude AI with dual-fallback architecture (Claude Sonnet 4.5 → Claude Sonnet 4).
 
 **Tech Stack**: Next.js 15 App Router, TypeScript 5.7 (strict mode), Supabase PostgreSQL, Tailwind CSS v4, Radix UI, Zustand, React Hook Form, Zod validation
 
@@ -22,7 +22,7 @@ npm run format           # Prettier formatting
 # Testing
 npm run test             # Run all tests with Vitest
 npm run test:watch       # Watch mode for development
-npm run test:integration # Ollama integration tests (requires local Ollama)
+npm run test:integration # Integration tests
 
 # Database (from project root)
 npm run db:reset         # Reset local Supabase database
@@ -34,7 +34,7 @@ npm run db:migrations:new <name> # Create new migration
 ### Running a Single Test
 ```bash
 cd frontend
-npm run test -- __tests__/claude/client.test.ts
+npm run test -- tests/claude/client.test.ts
 npm run test -- --grep "specific test name"
 ```
 
@@ -42,27 +42,26 @@ npm run test -- --grep "specific test name"
 
 ### Data Flow Architecture
 ```
-User Auth (Supabase) 
+User Auth (Supabase)
   → Static Questionnaire (3 sections, 30+ fields)
-  → AI Dynamic Question Gen (Claude/Ollama → 10 sections, 50-70 questions)
+  → AI Dynamic Question Gen (Claude → 10 sections, 50-70 questions)
   → Dynamic Questionnaire (user answers)
-  → AI Blueprint Generation (Claude/Ollama → comprehensive blueprint)
+  → AI Blueprint Generation (Claude → comprehensive blueprint)
   → Multi-format Export (PDF/Word/Markdown) + Shareable Links
 ```
 
-### Triple-Fallback AI System
+### Dual-Fallback AI System
 The platform uses a sophisticated fallback mechanism for reliability:
 
-1. **Primary**: Claude Sonnet 4 (cost-effective, high-quality)
-2. **Fallback**: Claude Opus 4 (complex scenarios)  
-3. **Emergency**: Ollama Qwen3:32b (local, no API costs)
+1. **Primary**: Claude Sonnet 4.5 (cost-effective, high-quality)
+2. **Fallback**: Claude Sonnet 4 (reliability and capacity management)
 
 **Location**: `frontend/lib/claude/fallback.ts`, `frontend/lib/services/blueprintGenerationService.ts`
 
 Each AI provider has:
-- HTTP client with retry logic (`frontend/lib/claude/client.ts`, `frontend/lib/ollama/client.ts`)
-- Zod schema validation for responses (`frontend/lib/claude/validation.ts`, `frontend/lib/ollama/schema.ts`)
-- Prompt templates (`frontend/lib/claude/prompts.ts`, `frontend/lib/ollama/prompts.ts`)
+- HTTP client with retry logic (`frontend/lib/claude/client.ts`)
+- Zod schema validation for responses (`frontend/lib/claude/validation.ts`)
+- Prompt templates (`frontend/lib/claude/prompts.ts`)
 - Error handling with automatic failover
 
 ### Database Schema

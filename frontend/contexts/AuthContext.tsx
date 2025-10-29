@@ -44,11 +44,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }): React
       setUser(newSession?.user ?? null);
       setAuth(newSession?.user ?? null, newSession ?? null);
 
-      // Redirect to home after successful login
+      // Only redirect from auth pages to dashboard after successful login
+      // Avoid interfering with root page routing
       if (newSession && typeof window !== 'undefined') {
-        // Check if we're on login/signup page and redirect to home
-        if (window.location.pathname === '/login' || window.location.pathname === '/signup') {
-          router.push('/');
+        const currentPath = window.location.pathname;
+        // Only redirect from auth pages, not from root
+        if (currentPath === '/login' || currentPath === '/signup') {
+          router.push('/dashboard');
         }
       }
     });

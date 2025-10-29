@@ -1,8 +1,8 @@
 import { useEffect } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
-import { useBlueprintStore } from './blueprintStore';
+import { useBlueprintStore, blueprintSelectors } from './blueprintStore';
 import { useAuthStore } from './authStore';
-import { queryKeys } from './types';
+import type { BlueprintData } from './types';
 
 // Integration hook that syncs Zustand stores with React Query
 export const useZustandQueryIntegration = () => {
@@ -12,22 +12,19 @@ export const useZustandQueryIntegration = () => {
 
   // Sync blueprint store with React Query cache
   useEffect(() => {
-    const unsubscribe = blueprintStore.subscribe((state) => {
+    const unsubscribe = useBlueprintStore.subscribe((state) => {
       // When blueprint store changes, update React Query cache
       if (state.currentBlueprint) {
-        queryClient.setQueryData(
-          queryKeys.blueprints.detail(state.currentBlueprint.id),
-          state.currentBlueprint
-        );
+        queryClient.setQueryData(['blueprints', state.currentBlueprint.id], state.currentBlueprint);
       }
     });
 
     return unsubscribe;
-  }, [blueprintStore, queryClient]);
+  }, [queryClient]);
 
   // Sync auth changes with query invalidation
   useEffect(() => {
-    const unsubscribe = authStore.subscribe((state) => {
+    const unsubscribe = useAuthStore.subscribe((state) => {
       // When user logs out, clear all queries
       if (!state.user && !state.session) {
         queryClient.clear();
@@ -35,15 +32,13 @@ export const useZustandQueryIntegration = () => {
     });
 
     return unsubscribe;
-  }, [authStore, queryClient]);
+  }, [queryClient]);
 
   // Return integration utilities
   return {
     // Sync a blueprint from React Query to Zustand
     syncBlueprintFromQuery: (blueprintId: string) => {
-      const cachedBlueprint = queryClient.getQueryData<BlueprintData>(
-        queryKeys.blueprints.detail(blueprintId)
-      );
+      const cachedBlueprint = queryClient.getQueryData<BlueprintData>(['blueprints', blueprintId]);
 
       if (cachedBlueprint) {
         blueprintStore.setCurrentBlueprint(cachedBlueprint);
@@ -52,9 +47,7 @@ export const useZustandQueryIntegration = () => {
 
     // Sync all blueprints from React Query to Zustand
     syncBlueprintsFromQuery: () => {
-      const cachedBlueprints = queryClient.getQueryData<BlueprintData[]>(
-        queryKeys.blueprints.lists()
-      );
+      const cachedBlueprints = queryClient.getQueryData<BlueprintData[]>(['blueprints']);
 
       if (cachedBlueprints) {
         blueprintStore.setBlueprints(cachedBlueprints);
@@ -80,28 +73,25 @@ export const useOptimisticBlueprintUpdate = () => {
     rollbackData?: BlueprintData
   ) => {
     // Store current state for potential rollback
-    const currentBlueprint = blueprintStore.currentBlueprint;
+    const currentBlueprint = blueprintSelectors.currentBlueprint(blueprintStore.getState());
 
     // Update Zustand store optimistically
     blueprintStore.updateBlueprint(updates);
 
     // Update React Query cache optimistically
-    queryClient.setQueryData(
-      queryKeys.blueprints.detail(blueprintId),
-      (old: BlueprintData | undefined) => {
-        if (!old) return old;
-        return { ...old, ...updates };
-      }
-    );
+    queryClient.setQueryData(['blueprints', blueprintId], (old: BlueprintData | undefined) => {
+      if (!old) return old;
+      return { ...old, ...updates };
+    });
 
     // Return rollback function
     return () => {
       if (rollbackData) {
         blueprintStore.setCurrentBlueprint(rollbackData);
-        queryClient.setQueryData(queryKeys.blueprints.detail(blueprintId), rollbackData);
+        queryClient.setQueryData(['blueprints', blueprintId], rollbackData);
       } else if (currentBlueprint) {
         blueprintStore.setCurrentBlueprint(currentBlueprint);
-        queryClient.setQueryData(queryKeys.blueprints.detail(blueprintId), currentBlueprint);
+        queryClient.setQueryData(['blueprints', blueprintId], currentBlueprint);
       }
     };
   };
@@ -114,12 +104,12 @@ export const useBackgroundSync = () => {
   const queryClient = useQueryClient();
 
   const syncAll = () => {
-    queryClient.invalidateQueries({ queryKey: queryKeys.blueprints.all });
+    queryClient.invalidateQueries({ queryKey: ['blueprints'] });
   };
 
   const syncBlueprint = (blueprintId: string) => {
     queryClient.invalidateQueries({
-      queryKey: queryKeys.blueprints.detail(blueprintId),
+      queryKey: ['blueprints', blueprintId],
     });
   };
 

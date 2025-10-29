@@ -7,7 +7,7 @@ export { useWizardStore } from './wizardStore';
 
 // Re-export types
 export type { AuthStatus } from './authStore';
-export type { BlueprintStatus, BlueprintProgress } from './blueprintStore';
+export type { BlueprintData } from '../lib/stores/types';
 export type {
   NotificationType,
   Notification,
@@ -19,6 +19,7 @@ export type {
 // Store composition utilities
 import { useAuthStore } from './authStore';
 import { useBlueprintStore } from './blueprintStore';
+import { blueprintSelectors } from '../lib/stores/blueprintStore';
 import { useUIStore } from './uiStore';
 
 /**
@@ -37,7 +38,7 @@ export function useStoreComposition() {
       // Enhanced auth operations that affect other stores
       logout: () => {
         authStore.clearAuth();
-        blueprintStore.resetAll();
+        blueprintStore.reset();
         uiStore.reset();
         uiStore.addNotification({
           type: 'info',
@@ -130,7 +131,7 @@ export function useStoreComposition() {
       // Reset all stores (useful for logout or app reset)
       resetAll: () => {
         authStore.reset();
-        blueprintStore.resetAll();
+        blueprintStore.reset();
         uiStore.reset();
       },
 
@@ -179,8 +180,8 @@ export const storeSelectors = {
 
   // Blueprint selectors
   getCurrentBlueprint: () => useBlueprintStore.getState().currentBlueprint,
-  getBlueprintProgress: () => useBlueprintStore.getState().progress,
-  isBlueprintGenerating: () => useBlueprintStore.getState().isGenerating,
+  getBlueprintProgress: () => blueprintSelectors.progress(useBlueprintStore.getState()),
+  isBlueprintGenerating: () => useBlueprintStore.getState().isLoading,
 
   // UI selectors
   getCurrentPage: () => useUIStore.getState().currentPage,

@@ -61,23 +61,36 @@ describe('Claude Configuration', () => {
       expect(config.baseUrl).toBe('https://test.api.com');
     });
 
-    it('should throw error if API key is missing', () => {
+    it('should return safe default config if API key is missing', () => {
       delete process.env.ANTHROPIC_API_KEY;
       delete process.env.NEXT_PUBLIC_ANTHROPIC_API_KEY;
 
-      expect(() => getClaudeConfig()).toThrow('ANTHROPIC_API_KEY environment variable is required');
+      const config = getClaudeConfig();
+
+      expect(config.apiKey).toBe('');
+      expect(config.primaryModel).toBe('claude-sonnet-4-5');
+      expect(config.fallbackModel).toBe('claude-sonnet-4');
+      expect(config.baseUrl).toBe('https://api.anthropic.com');
     });
 
-    it('should throw error if API key is empty string', () => {
+    it('should return safe default config if API key is empty string', () => {
       process.env.ANTHROPIC_API_KEY = '';
 
-      expect(() => getClaudeConfig()).toThrow('ANTHROPIC_API_KEY environment variable is required');
+      const config = getClaudeConfig();
+
+      expect(config.apiKey).toBe('');
+      expect(config.primaryModel).toBe('claude-sonnet-4-5');
+      expect(config.fallbackModel).toBe('claude-sonnet-4');
     });
 
-    it('should throw error if API key is only whitespace', () => {
+    it('should return safe default config if API key is only whitespace', () => {
       process.env.ANTHROPIC_API_KEY = '   ';
 
-      expect(() => getClaudeConfig()).toThrow('ANTHROPIC_API_KEY environment variable is required');
+      const config = getClaudeConfig();
+
+      expect(config.apiKey).toBe('');
+      expect(config.primaryModel).toBe('claude-sonnet-4-5');
+      expect(config.fallbackModel).toBe('claude-sonnet-4');
     });
 
     it('should return correct model names', () => {
@@ -85,8 +98,8 @@ describe('Claude Configuration', () => {
 
       const config = getClaudeConfig();
 
-      expect(config.primaryModel).toBe('claude-sonnet-4-20250514');
-      expect(config.fallbackModel).toBe('claude-opus-4-20250514');
+      expect(config.primaryModel).toBe('claude-sonnet-4-5');
+      expect(config.fallbackModel).toBe('claude-sonnet-4');
     });
 
     it('should return correct configuration values', () => {
@@ -94,9 +107,9 @@ describe('Claude Configuration', () => {
 
       const config = getClaudeConfig();
 
-      expect(config.maxTokens).toBe(12000);
+      expect(config.maxTokens).toBe(16000);
       expect(config.temperature).toBe(0.2);
-      expect(config.timeout).toBe(120000);
+      expect(config.timeout).toBe(840000);
       expect(config.retries).toBe(2);
     });
 

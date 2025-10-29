@@ -5,7 +5,6 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { BlueprintGenerationService } from '@/lib/services/blueprintGenerationService';
 import { ClaudeClient, ClaudeApiError } from '@/lib/claude/client';
-import { OllamaClient } from '@/lib/ollama/client';
 import type { BlueprintContext } from '@/lib/claude/prompts';
 
 // Mock Claude client
@@ -27,21 +26,13 @@ vi.mock('@/lib/claude/client', () => {
   };
 });
 
-// Mock Ollama client
-vi.mock('@/lib/ollama/client', () => {
-  return {
-    OllamaClient: vi.fn().mockImplementation(() => ({
-      generateBlueprint: vi.fn(),
-    })),
-  };
-});
 
 // Mock config
 vi.mock('@/lib/claude/config', () => {
   return {
     getClaudeConfig: vi.fn(() => ({
-      primaryModel: 'claude-sonnet-4-20250514',
-      fallbackModel: 'claude-opus-4-20250514',
+      primaryModel: 'claude-sonnet-4-5',
+      fallbackModel: 'claude-sonnet-4',
       apiKey: 'test-key',
       baseUrl: 'https://api.anthropic.com',
       version: '2023-06-01',
@@ -120,7 +111,7 @@ describe('BlueprintGenerationService', () => {
         }),
       },
     ],
-    model: 'claude-sonnet-4-20250514',
+    model: 'claude-sonnet-4-5',
     stop_reason: 'end_turn',
     stop_sequence: null,
     usage: {
@@ -146,7 +137,7 @@ describe('BlueprintGenerationService', () => {
 
       expect(result.success).toBe(true);
       expect(result.blueprint.normalized).toBe(true);
-      expect(result.metadata.model).toBe('claude-sonnet-4');
+      expect(result.metadata.model).toBe('claude-sonnet-4-5');
       expect(result.metadata.fallbackUsed).toBe(false);
       expect(result.metadata.attempts).toBe(1);
       expect(result.usage).toEqual({
@@ -163,7 +154,7 @@ describe('BlueprintGenerationService', () => {
 
       expect(mockGenerate).toHaveBeenCalledWith(
         expect.objectContaining({
-          model: 'claude-sonnet-4-20250514',
+          model: 'claude-sonnet-4-5',
           max_tokens: 12000,
           temperature: 0.2,
           system: expect.stringContaining('Learning Experience Designer'),
@@ -177,13 +168,13 @@ describe('BlueprintGenerationService', () => {
       );
     });
 
-    it('should fallback to Claude Opus 4 on Sonnet 4 failure', async () => {
+    it('should fallback to Claude Sonnet 4 on Sonnet 4 failure', async () => {
       const mockGenerate = vi
         .fn()
         .mockRejectedValueOnce(new ClaudeApiError('Timeout', 408, 'timeout'))
         .mockResolvedValueOnce({
           ...mockClaudeResponse,
-          model: 'claude-opus-4-20250514',
+          model: 'claude-sonnet-4',
         });
 
       (service as any).claudeClient.generate = mockGenerate;
@@ -192,13 +183,13 @@ describe('BlueprintGenerationService', () => {
       const result = await service.generate(mockContext);
 
       expect(result.success).toBe(true);
-      expect(result.metadata.model).toBe('claude-opus-4');
+      expect(result.metadata.model).toBe('claude-sonnet-4');
       expect(result.metadata.fallbackUsed).toBe(true);
       expect(result.metadata.attempts).toBe(2);
       expect(mockGenerate).toHaveBeenCalledTimes(2);
     });
 
-    it('should call Claude Opus 4 with higher max_tokens', async () => {
+    it('should call Claude Sonnet 4 with higher max_tokens', async () => {
       const mockGenerate = vi
         .fn()
         .mockRejectedValueOnce(new ClaudeApiError('Error', 500))
@@ -213,61 +204,52 @@ describe('BlueprintGenerationService', () => {
       expect(mockGenerate).toHaveBeenNthCalledWith(
         2,
         expect.objectContaining({
-          model: 'claude-opus-4-20250514',
+          model: 'claude-sonnet-4',
           max_tokens: 16000,
         })
       );
     });
 
-    it('should fallback to Ollama when both Claude models fail', async () => {
+    it('should fallback to Sonnet 4 when Sonnet 4.5 fails', async () => {
       const mockClaudeGenerate = vi
         .fn()
-        .mockRejectedValueOnce(new ClaudeApiError('Sonnet error', 500))
-        .mockRejectedValueOnce(new ClaudeApiError('Opus error', 500));
+        .mockRejectedValueOnce(new ClaudeApiError('Sonnet 4.5 error', 500))
+        .mockResolvedValueOnce({
+          ...mockClaudeResponse,
+          usage: { input_tokens: 1000, output_tokens: 2000 },
+        });
 
       (service as any).claudeClient.generate = mockClaudeGenerate;
-
-      const mockOllamaResponse = {
-        metadata: {
-          title: 'Ollama Blueprint',
-          organization: 'Acme',
-          role: 'Manager',
-          generated_at: '2025-10-01T12:00:00Z',
-        },
-        executive_summary: {
-          content: 'Ollama summary',
-          displayType: 'markdown',
-        },
-      };
-
-      const mockOllamaGenerate = vi.fn().mockResolvedValue(mockOllamaResponse);
-      (service as any).ollamaClient.generateBlueprint = mockOllamaGenerate;
 
       const result = await service.generate(mockContext);
 
       expect(result.success).toBe(true);
-      expect(result.metadata.model).toBe('ollama');
+      expect(result.metadata.model).toBe('claude-sonnet-4');
       expect(result.metadata.fallbackUsed).toBe(true);
-      expect(result.metadata.attempts).toBe(3);
-      expect(mockOllamaGenerate).toHaveBeenCalledTimes(1);
+      expect(result.metadata.attempts).toBe(2);
+
+      expect(mockClaudeGenerate).toHaveBeenCalledTimes(2);
+      expect(mockClaudeGenerate).toHaveBeenNthCalledWith(1, expect.objectContaining({
+        model: 'claude-sonnet-4-5',
+      }));
+      expect(mockClaudeGenerate).toHaveBeenNthCalledWith(2, expect.objectContaining({
+        model: 'claude-sonnet-4',
+      }));
     });
 
-    it('should return error when all models fail', async () => {
+    it('should return error when all Claude models fail', async () => {
       const mockClaudeGenerate = vi
         .fn()
-        .mockRejectedValueOnce(new ClaudeApiError('Sonnet error', 500))
-        .mockRejectedValueOnce(new ClaudeApiError('Opus error', 500));
+        .mockRejectedValueOnce(new ClaudeApiError('Sonnet 4.5 error', 500))
+        .mockRejectedValueOnce(new ClaudeApiError('Sonnet 4 error', 500));
 
       (service as any).claudeClient.generate = mockClaudeGenerate;
-
-      const mockOllamaGenerate = vi.fn().mockRejectedValue(new Error('Ollama unavailable'));
-      (service as any).ollamaClient.generateBlueprint = mockOllamaGenerate;
 
       const result = await service.generate(mockContext);
 
       expect(result.success).toBe(false);
-      expect(result.error).toContain('All blueprint generation methods failed');
-      expect(result.metadata.attempts).toBe(3);
+      expect(result.error).toContain('All Claude generation methods failed');
+      expect(result.metadata.attempts).toBe(2);
     });
 
     it('should not fallback if error does not warrant it', async () => {

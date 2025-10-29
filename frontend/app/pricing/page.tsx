@@ -28,6 +28,10 @@ import { useCurrency } from '@/contexts/CurrencyContext';
 import { Footer } from '@/components/layout/Footer';
 import { getSupabaseBrowserClient } from '@/lib/supabase/client';
 import { getAvailableUpgradePlans } from '@/lib/utils/tierDisplay';
+import { CheckoutButton } from '@/components/pricing/CheckoutButton';
+import { RazorpayProvider } from '@/components/providers/RazorpayProvider';
+import { ToastProvider } from '@/components/ui/Toast';
+import { getPlanPrice } from '@/lib/config/razorpayPlans';
 
 interface Plan {
   id: string;
@@ -47,7 +51,7 @@ const individualPlans: Plan[] = [
     id: 'explorer',
     name: 'Explorer',
     label: 'PERFECT FOR GETTING STARTED',
-    price: 19,
+    price: 1678, // Actual Razorpay amount in INR (₹1,678)
     starmaps: 5,
     rollover: 12,
     savings: 'Start here before upgrading to higher tiers',
@@ -67,14 +71,14 @@ const individualPlans: Plan[] = [
     id: 'navigator',
     name: 'Navigator',
     label: 'FOR PROFESSIONALS & CREATORS',
-    price: 39,
+    price: 3443, // Actual Razorpay amount in INR (₹3,443)
     badge: 'MOST POPULAR',
-    starmaps: 20,
+    starmaps: 25,
     rollover: 12,
     savings: 'Save $1.85 per generation (49% cheaper)',
     features: [
       'Everything in Explorer',
-      '4x more starmaps per month',
+      '5x more starmaps per month',
       'Priority support (24h response)',
     ],
     isPopular: true,
@@ -83,7 +87,7 @@ const individualPlans: Plan[] = [
     id: 'voyager',
     name: 'Voyager',
     label: 'FOR POWER USERS & CONSULTANTS',
-    price: 79,
+    price: 6975, // Actual Razorpay amount in INR (₹6,975)
     starmaps: 50,
     rollover: 12,
     savings: 'Save $2.22 per generation (58% cheaper)',
@@ -100,7 +104,7 @@ const teamPlans: Plan[] = [
     id: 'crew',
     name: 'Crew',
     label: 'SMALL TEAMS, BIG IMPACT',
-    price: 24,
+    price: 1999, // Actual Razorpay amount in INR (₹1,999)
     starmaps: 10,
     rollover: 12,
     features: [
@@ -119,7 +123,7 @@ const teamPlans: Plan[] = [
     id: 'fleet',
     name: 'Fleet',
     label: 'SCALE YOUR OPERATIONS',
-    price: 64,
+    price: 5399, // Actual Razorpay amount in INR (₹5,399)
     badge: 'POPULAR CHOICE',
     starmaps: 30,
     rollover: 12,
@@ -134,7 +138,7 @@ const teamPlans: Plan[] = [
     id: 'armada',
     name: 'Armada',
     label: 'DEPARTMENT & ORGANIZATION SCALE',
-    price: 129,
+    price: 10899, // Actual Razorpay amount in INR (₹10,899)
     starmaps: 60,
     rollover: 12,
     features: [
@@ -197,7 +201,7 @@ const commonFeatures = [
   },
 ];
 
-function PricingCardComponent({ plan, isTeam }: { plan: Plan; isTeam?: boolean }) {
+function PricingCardComponent({ plan, isTeam, billingCycle }: { plan: Plan; isTeam?: boolean; billingCycle?: 'monthly' | 'yearly' }) {
   const { formatPrice } = useCurrency();
 
   return (
@@ -226,11 +230,11 @@ function PricingCardComponent({ plan, isTeam }: { plan: Plan; isTeam?: boolean }
         <p className="text-sm font-semibold text-[rgb(176,197,198)]">{plan.label}</p>
       </div>
 
-      {/* Price */}
+      {/* Price - displaying actual Razorpay dashboard amounts in INR */}
       <div className="mb-6">
         <div className="flex items-baseline gap-2">
           <span className="text-4xl font-bold text-[rgb(167,218,219)]">
-            {formatPrice(plan.price)}
+            ₹{plan.price.toLocaleString('en-IN')}
           </span>
           <span className="text-lg text-[rgb(176,197,198)]">/month</span>
         </div>
@@ -251,16 +255,33 @@ function PricingCardComponent({ plan, isTeam }: { plan: Plan; isTeam?: boolean }
       {plan.savings && <p className="mb-6 text-sm text-[rgb(167,218,219)]">{plan.savings}</p>}
 
       {/* CTA Button */}
-      <button
-        className={`mb-8 flex w-full items-center justify-center gap-2 rounded-md px-6 py-3 text-sm font-semibold transition-all duration-300 hover:opacity-90 ${
-          isTeam
-            ? 'border border-[rgb(79,70,229)] bg-transparent text-[rgb(79,70,229)] hover:bg-[rgba(79,70,229,0.1)]'
-            : 'bg-[rgb(79,70,229)] text-[rgb(224,224,224)]'
-        } `}
-      >
-        {isTeam ? 'Reach Out' : 'Upgrade'}
-        {!isTeam && <ArrowUpRight className="h-4 w-4" />}
-      </button>
+      {isTeam ? (
+        <button
+          className={`mb-8 flex w-full items-center justify-center gap-2 rounded-md px-6 py-3 text-sm font-semibold transition-all duration-300 hover:opacity-90 border border-[rgb(79,70,229)] bg-transparent text-[rgb(79,70,229)] hover:bg-[rgba(79,70,229,0.1)]`}
+          onClick={() => alert('Team button clicked!')}
+        >
+          Reach Out
+        </button>
+      ) : (
+        <>
+          <CheckoutButton
+            planId={plan.id}
+            tier={plan.name}
+            billingCycle={billingCycle || 'monthly'}
+            disabled={false}
+            variant="primary"
+            size="md"
+            className="mb-8 w-full"
+            buttonText="Upgrade Now"
+            onCheckoutSuccess={() => {
+              console.log(`Successfully upgraded to ${plan.name} plan`);
+            }}
+            onCheckoutError={(error) => {
+              console.error(`Failed to upgrade to ${plan.name} plan:`, error);
+            }}
+          />
+        </>
+      )}
 
       {/* Features */}
       <ul className="mt-auto space-y-4">
@@ -278,6 +299,7 @@ function PricingCardComponent({ plan, isTeam }: { plan: Plan; isTeam?: boolean }
 function PricingPageContent() {
   const [userTier, setUserTier] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>('monthly');
 
   useEffect(() => {
     async function fetchUserTier() {
@@ -497,7 +519,7 @@ function PricingPageContent() {
           ) : filteredIndividualPlans.length > 0 ? (
             <div className="grid gap-8 md:grid-cols-3">
               {filteredIndividualPlans.map((plan) => (
-                <PricingCardComponent key={plan.id} plan={plan} />
+                <PricingCardComponent key={plan.id} plan={plan} billingCycle={billingCycle} />
               ))}
             </div>
           ) : (
@@ -530,7 +552,7 @@ function PricingPageContent() {
           ) : filteredTeamPlans.length > 0 ? (
             <div className="grid gap-8 md:grid-cols-3">
               {filteredTeamPlans.map((plan) => (
-                <PricingCardComponent key={plan.id} plan={plan} isTeam />
+                <PricingCardComponent key={plan.id} plan={plan} isTeam billingCycle={billingCycle} />
               ))}
             </div>
           ) : (
@@ -587,7 +609,11 @@ function PricingPageContent() {
 export default function PricingPage() {
   return (
     <CurrencyProvider>
-      <PricingPageContent />
+      <ToastProvider>
+        <RazorpayProvider>
+          <PricingPageContent />
+        </RazorpayProvider>
+      </ToastProvider>
     </CurrencyProvider>
   );
 }

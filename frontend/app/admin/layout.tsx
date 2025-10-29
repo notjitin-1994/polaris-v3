@@ -1,5 +1,7 @@
 import { redirect } from 'next/navigation';
 import { checkAdminAccess } from '@/lib/auth/adminAuth';
+import { AuthProvider } from '@/contexts/AuthContext';
+import { QueryProvider } from '@/lib/stores/QueryProvider';
 
 export const metadata = {
   title: 'Admin Dashboard | SmartSlate Polaris',
@@ -17,7 +19,13 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     redirect('/');
   }
 
-  // GlobalLayout already provides the sidebar and layout structure
-  // Just return children to avoid duplicate sidebars
-  return <>{children}</>;
+  // Wrap admin pages with AuthProvider and QueryProvider
+  // This ensures useAuth hook works in admin pages
+  return (
+    <AuthProvider>
+      <QueryProvider>
+        {children}
+      </QueryProvider>
+    </AuthProvider>
+  );
 }

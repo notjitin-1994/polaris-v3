@@ -14,10 +14,18 @@ export function GoogleOAuthButton(): React.JSX.Element {
 
       console.log('Attempting Google OAuth sign-in');
 
+      // Preserve redirect parameter through OAuth flow
+      const urlParams = new URLSearchParams(window.location.search);
+      const redirectUrl = urlParams.get('redirect');
+      const callbackUrl = new URL(`${window.location.origin}/auth/callback`);
+      if (redirectUrl) {
+        callbackUrl.searchParams.set('redirect', redirectUrl);
+      }
+
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/auth/callback`,
+          redirectTo: callbackUrl.toString(),
         },
       });
 

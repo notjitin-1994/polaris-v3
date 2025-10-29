@@ -1,11 +1,10 @@
 import type { Metadata } from 'next';
+import Script from 'next/script';
 import { Quicksand, Lato } from 'next/font/google';
 import './globals.css';
-import { QueryProvider } from '@/lib/stores/QueryProvider';
 import { ThemeProvider } from '@/components/theme';
-import { AuthProvider } from '@/contexts/AuthContext';
-import { GlobalLayout } from '@/components/layout';
 import { GlobalErrorBoundary } from '@/components/error/GlobalErrorBoundary';
+import { RazorpayProvider } from '@/components/providers/RazorpayProvider';
 
 const quicksand = Quicksand({
   variable: '--font-quicksand',
@@ -72,13 +71,17 @@ export default function RootLayout({
         className={`${quicksand.variable} ${lato.variable} antialiased`}
         suppressHydrationWarning
       >
+        {/* Razorpay Checkout Script */}
+        <Script
+          src="https://checkout.razorpay.com/v1/checkout.js"
+          strategy="afterInteractive"
+        />
+
         <GlobalErrorBoundary>
           <ThemeProvider defaultTheme="dark">
-            <AuthProvider>
-              <QueryProvider>
-                <GlobalLayout>{children}</GlobalLayout>
-              </QueryProvider>
-            </AuthProvider>
+            <RazorpayProvider>
+              {children}
+            </RazorpayProvider>
           </ThemeProvider>
         </GlobalErrorBoundary>
       </body>

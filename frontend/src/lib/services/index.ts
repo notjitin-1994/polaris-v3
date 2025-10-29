@@ -15,4 +15,3 @@ export {
   type PerplexityResponse,
 } from './perplexityQuestionService';
 
-export { generateWithOllama, isOllamaAvailable } from './ollamaQuestionService';

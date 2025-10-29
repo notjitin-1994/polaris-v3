@@ -44,7 +44,7 @@ const USER_ROLES = [
 const SUBSCRIPTION_TIERS = [
   { value: 'free', label: 'Free', description: '2 generations, 2 saved blueprints' },
   { value: 'explorer', label: 'Explorer', description: '5 generations, 5 saved blueprints' },
-  { value: 'navigator', label: 'Navigator', description: '20 generations, 20 saved blueprints' },
+  { value: 'navigator', label: 'Navigator', description: '25 generations, 25 saved blueprints' },
   { value: 'voyager', label: 'Voyager', description: '50 generations, 50 saved blueprints' },
   {
     value: 'crew',

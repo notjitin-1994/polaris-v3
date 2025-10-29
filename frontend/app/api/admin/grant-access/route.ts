@@ -120,7 +120,7 @@ export async function POST(request: NextRequest) {
     const tierLimits = {
       free: { blueprint_creation_limit: 2, blueprint_saving_limit: 2 },
       explorer: { blueprint_creation_limit: 5, blueprint_saving_limit: 5 },
-      navigator: { blueprint_creation_limit: 20, blueprint_saving_limit: 20 },
+      navigator: { blueprint_creation_limit: 25, blueprint_saving_limit: 25 },
       voyager: { blueprint_creation_limit: 50, blueprint_saving_limit: 50 },
       crew: { blueprint_creation_limit: 10, blueprint_saving_limit: 10 },
       fleet: { blueprint_creation_limit: 30, blueprint_saving_limit: 30 },

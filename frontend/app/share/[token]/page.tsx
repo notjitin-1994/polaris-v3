@@ -7,7 +7,16 @@ import Image from 'next/image';
 import { Sparkles, Clock, AlertCircle, ExternalLink, BarChart3, TrendingUp } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { InteractiveBlueprintDashboard } from '@/src/components/features/blueprint/InteractiveBlueprintDashboard';
-import { parseAndValidateBlueprintJSON } from '@/lib/ollama/blueprintValidation';
+// import { parseAndValidateBlueprintJSON } from '@/lib/ollama/blueprintValidation'; // Removed Ollama
+
+// Simple replacement
+const parseAndValidateBlueprintJSON = (jsonString: string): any => {
+  try {
+    return JSON.parse(jsonString);
+  } catch {
+    return null;
+  }
+};
 import type { BlueprintJSON } from '@/components/blueprint/types';
 
 interface PageProps {

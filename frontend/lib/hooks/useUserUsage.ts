@@ -105,7 +105,7 @@ export function useUserUsage(): UseUserUsageReturn {
 
   useEffect(() => {
     fetchUsage();
-  }, [fetchUsage]);
+  }, [user?.id]); // Use user.id directly instead of fetchUsage function
 
   return {
     usage,

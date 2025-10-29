@@ -67,14 +67,13 @@ SmartSlate Polaris v3 is an enterprise-grade SaaS platform that revolutionizes l
 
 ### 🤖 AI-Powered Blueprint Generation
 
-#### Triple-Fallback Architecture
+#### Dual-Fallback Architecture
 ```
-Claude Sonnet 4 (Primary) → Claude Opus 4 (Secondary) → Ollama Qwen3:32b (Tertiary)
+Claude Sonnet 4.5 (Primary) → Claude Sonnet 4 (Secondary)
 ```
 
-- **Primary**: Claude Sonnet 4 - Cost-effective, high-quality generation
-- **Secondary**: Claude Opus 4 - Complex scenario handling
-- **Tertiary**: Ollama (Local) - Emergency fallback, no API costs
+- **Primary**: Claude Sonnet 4.5 - Cost-effective, high-quality generation
+- **Secondary**: Claude Sonnet 4 - Fallback for reliability and capacity management
 
 #### Comprehensive Blueprint Output
 - Executive Summary with ROI projections
@@ -154,9 +153,8 @@ Claude Sonnet 4 (Primary) → Claude Opus 4 (Secondary) → Ollama Qwen3:32b (Te
 
 | Provider | Model | Purpose | Max Tokens |
 |----------|-------|---------|------------|
-| **Anthropic** | Claude Sonnet 4 | Primary generation | 12,000 |
-| **Anthropic** | Claude Opus 4 | Fallback generation | 16,000 |
-| **Ollama** | Qwen3:32b | Emergency fallback | 12,000 |
+| **Anthropic** | Claude Sonnet 4.5 | Primary generation | 12,000 |
+| **Anthropic** | Claude Sonnet 4 | Fallback generation | 16,000 |
 
 **Integration Framework**:
 - Custom HTTP clients with retry logic
@@ -208,11 +206,12 @@ Claude Sonnet 4 (Primary) → Claude Opus 4 (Secondary) → Ollama Qwen3:32b (Te
 └─────────────────────────────────────────────────────────────┘
                               ↓
 ┌─────────────────────────────────────────────────────────────┐
-│                 AI Providers (Triple Fallback)               │
-│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐      │
-│  │Claude Sonnet │→ │ Claude Opus  │→ │   Ollama     │      │
-│  │   (Primary)  │  │  (Fallback)  │  │  (Emergency) │      │
-│  └──────────────┘  └──────────────┘  └──────────────┘      │
+│                 AI Providers (Dual Fallback)                 │
+│  ┌──────────────┐  ┌──────────────┐                         │
+│  │Claude Sonnet │→ │ Claude Sonnet │                         │
+│  │   4.5        │  │      4       │                         │
+│  │  (Primary)   │  │ (Fallback)   │                         │
+│  └──────────────┘  └──────────────┘                         │
 └─────────────────────────────────────────────────────────────┘
 ```
 
@@ -277,7 +276,6 @@ CREATE TABLE user_profiles (
 - **npm** >= 9.0.0
 - **PostgreSQL** (via Supabase account)
 - **Anthropic API Key** (for Claude AI)
-- **Ollama** (optional, for local AI fallback)
 
 ### Installation
 
@@ -312,9 +310,6 @@ SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
 # Primary: Claude for blueprint generation
 ANTHROPIC_API_KEY=sk-ant-your-key
 
-# Local fallback (optional)
-OLLAMA_BASE_URL=http://localhost:11434
-
 # ========================================
 # Application Configuration
 # ========================================
@@ -325,7 +320,6 @@ NODE_ENV=development
 **Get Your API Keys**:
 - **Supabase**: [Create project](https://app.supabase.com) → Settings → API
 - **Anthropic**: [Get API key](https://console.anthropic.com/settings/keys)
-- **Ollama**: [Install locally](https://ollama.ai/download)
 
 ### Database Setup
 
@@ -404,10 +398,6 @@ polaris-v3/
 │   │   │   ├── prompts.ts             # Prompt templates
 │   │   │   ├── validation.ts          # Response validation
 │   │   │   └── fallback.ts            # Fallback logic
-│   │   ├── ollama/                    # Ollama client
-│   │   │   ├── client.ts              # HTTP client
-│   │   │   ├── schema.ts              # Zod schemas
-│   │   │   └── schemaMapper.ts        # Schema transformation
 │   │   ├── auth/                      # Auth utilities
 │   │   ├── hooks/                     # Custom React hooks
 │   │   ├── logging/                   # Structured logging
@@ -420,7 +410,6 @@ polaris-v3/
 │   │   ├── api/                       # API tests
 │   │   ├── integration/               # Integration tests
 │   │   ├── claude/                    # Claude client tests
-│   │   ├── ollama/                    # Ollama client tests
 │   │   └── fixtures/                  # Test data
 │   ├── public/                        # Static assets
 │   └── styles/                        # Global styles
@@ -462,7 +451,7 @@ npm run format                # Prettier format
 npm run typecheck             # TypeScript check
 npm run test                  # Run tests
 npm run test:watch            # Watch mode
-npm run test:integration      # Integration tests (requires Ollama)
+npm run test:integration      # Integration tests
 ```
 
 ### Development Workflow
@@ -626,7 +615,7 @@ npm run test -- tests/api/logs.test.ts
 # Watch mode
 npm run test:watch
 
-# Integration tests (requires Ollama)
+# Integration tests
 npm run test:integration
 ```
 
@@ -637,7 +626,6 @@ frontend/tests/
 ├── api/                       # API endpoint tests
 ├── integration/               # Integration tests
 ├── claude/                    # Claude client tests
-├── ollama/                    # Ollama client tests
 ├── fixtures/                  # Test data
 └── README.md                  # Testing guide
 ```
@@ -689,7 +677,6 @@ Configure in Vercel dashboard:
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
 - `SUPABASE_SERVICE_ROLE_KEY`
 - `ANTHROPIC_API_KEY`
-- `OLLAMA_BASE_URL` (optional)
 
 ### Production Checklist
 

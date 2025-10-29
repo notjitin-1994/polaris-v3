@@ -1,663 +1,1221 @@
 {
-  "master": {
+  "razorpay-integration": {
     "tasks": [
       {
         "id": 1,
-        "title": "Set up Vercel AI SDK Provider Configuration",
-        "description": "Create unified provider configuration for Anthropic (Sonnet 4.5), Custom Perplexity (Sonar Deep Research), and Ollama wrapper to establish the foundation for AI SDK integration",
-        "details": "Create three provider files: 1) `frontend/lib/ai/providers/anthropicProvider.ts` - Configure Anthropic provider with Sonnet 4.5 model, environment validation, and type-safe model selection. 2) `frontend/lib/ai/providers/perplexityProvider.ts` - Create custom Perplexity provider using OpenAI-compatible adapter pointing to api.perplexity.ai with Sonar Deep Research model. 3) `frontend/lib/ai/providers/ollamaProvider.ts` - Wrap existing OllamaClient to maintain compatibility as emergency fallback. 4) `frontend/lib/ai/config.ts` - Central configuration with provider selection, model configs, retry/timeout settings, and feature flags. Use latest @ai-sdk/anthropic ^1.0.0 and ensure proper error handling for missing API keys.",
-        "testStrategy": "Unit tests for provider initialization, environment variable validation, model selection type safety, and error handling for missing credentials. Integration tests for basic connectivity to each provider.",
+        "title": "Razorpay Account Setup and Enviro"description": "Set up Razorpay business account, complete KYC verification, generate API keys, and configure environment variables",
+        "details": "Create Razorpay business account at https://razorpay.com/, complete KYC verification with PAN, GST, and bank details. Generate test mode API keys and enable Subscriptions feature. Configure webhook URL and save webhook secret. Install razorpay@^2.9.4 and @types/razorpay@^2.0.0. Set up environment variables: NEXT_PUBLIC_RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET, RAZORPAY_WEBHOOK_SECRET, NEXT_PUBLIC_APP_URL, and NEXT_PUBLIC_ENABLE_PAYMENTS=true.",
+        "testStrategy": "Verify Razorpay dashboard access, confirm API keys generated, test environment variables accessible server-side only, verify dependencies installed successfully",
         "priority": "high",
         "dependencies": [],
-        "status": "pending",
+        "status": "done",
         "subtasks": [
           {
             "id": 1,
-            "title": "Create Anthropic Provider Configuration",
-            "description": "Set up the Anthropic provider with Sonnet 4.5 model configuration, environment validation, and type-safe model selection",
+            "title": "Create Razorpay Business Account and Complete Registration",
+            "description": "Set up new Razorpay business account through official website and complete initial registration process",
             "dependencies": [],
-            "details": "Create `frontend/lib/ai/providers/anthropicProvider.ts` file implementing: 1) Import @ai-sdk/anthropic provider with proper TypeScript types. 2) Configure Sonnet 4.5 model with appropriate settings (temperature, max tokens, etc.). 3) Add environment variable validation for ANTHROPIC_API_KEY with clear error messages. 4) Implement type-safe model selection interface. 5) Add proper error handling for initialization failures and API key issues. 6) Export configured provider instance with documentation.",
-            "status": "pending",
-            "testStrategy": "Unit tests for provider initialization, environment variable validation, model configuration correctness, and error handling for missing/invalid API keys"
-          },
-          {
-            "id": 2,
-            "title": "Create Custom Perplexity Provider",
-            "description": "Build custom Perplexity provider using OpenAI-compatible adapter for Sonar Deep Research model integration",
-            "dependencies": [],
-            "details": "Create `frontend/lib/ai/providers/perplexityProvider.ts` implementing: 1) Use OpenAI-compatible adapter pattern pointing to api.perplexity.ai endpoint. 2) Configure Sonar Deep Research model with proper parameters. 3) Add PERPLEXITY_API_KEY environment validation with descriptive error messages. 4) Implement request/response transformation to match AI SDK patterns. 5) Add proper error handling for API connectivity and authentication issues. 6) Export provider with clear TypeScript interface definitions.",
-            "status": "pending",
-            "testStrategy": "Unit tests for adapter configuration, API endpoint setup, environment validation, request/response transformation accuracy, and connectivity error handling"
+            "details": "Navigate to https://razorpay.com/ and create a new business account. Complete the registration form with business details including company name, email, phone number, and business type. Verify email address and phone number through OTP verification. Set up account password and security settings.\n<info added on 2025-10-28T19:13:11.761Z>\nI'll analyze the codebase to understand the current project structure and then provide the appropriate update for the subtask.Based on my analysis of the codebase, I can see that there is an extensive Razorpay integration guide at `docs/RAZORPAY_INTEGRATION_GUIDE.md`, but no specific manual steps document exists at `docs/RAZORPAY_SETUP_MANUAL_STEPS.md`. The user request indicates that manual action is required for creating the Razorpay business account, as this cannot be automated and must be done by the developer.\n\nLooking at the current subtask context and the comprehensive integration guide, here is the update text that should be appended:\n\nMANUAL ACTION REQUIRED: This subtask requires the developer to manually create a Razorpay business account at https://razorpay.com/. The account setup must be completed by the developer as it involves business registration, email verification, and phone number verification. Refer to Section 3.1 of docs/RAZORPAY_INTEGRATION_GUIDE.md for detailed steps: 1) Visit https://razorpay.com/ and sign up as \"Business\", 2) Complete KYC verification with PAN, GST, and bank details, 3) Wait for approval (24-48 hours), 4) Generate test mode API keys from Dashboard → Settings → API Keys, 5) Enable Subscriptions feature from Dashboard → Products → Subscriptions. This is a prerequisite step that cannot be automated and must be completed before proceeding with API integration and environment configuration.\n</info added on 2025-10-28T19:13:11.761Z>",
+            "status": "done",
+            "testStrategy": "Verify successful account creation by logging into Razorpay dashboard and confirming account status is active""id": 2,
+            "title": "Complete KYC Verification with Required Documents",
+            "description": "Submit and complete Know Your Customer verification process with PAN, GST, and bank account details",
+            "dependencies": [
+              1
+            ],
+            "details": "Upload required KYC documents including PAN card, GST certificate, and bank account verification documents. Fill out business verification forms with accurate company information. Submit proof of address and business registration documents. Wait for Razorpay team approval and address any verification queries promptly.\n<info added on 2025-10-28T19:14:22.519Z>\nI'll analyze the codebase to understand the current project structure and provide a comprehensive update to the subtask details.Based on my analysis of the codebase and the user request, I can see that the user is asking to add information about manual KYC document submission requirements to the subtask details. The existing docs/RAZORPAY_INTEGRATION_GUIDE.md contains comprehensive information about the Razorpay integration process, but there is no specific docs/RAZORPAY_SETUP_MANUAL_STEPS.md file mentioned in the user request.\n\nThe user request indicates that this subtask cannot be automated because it involves uploading sensitive business documents (PAN card, GST certificate, bank account details) to Razorpay for KYC verification, and this process typically takes 24-48 hours for approval.\n\nMANUAL ACTION REQUIRED: This subtask cannot be automated as it involves uploading sensitive business documents (PAN card, GST certificate, bank account verification documents) to Razorpay's KYC system and awaiting human verification by Razorpay's compliance team. The process requires:\n\n1. Accessing Razorpay dashboard at https://razorpay.com/\n2. Navigating to Settings → Account & Settings → KYC Details\n3. Uploading high-resolution images of PAN card, GST certificate, bank statement/cancelled cheque, business registration documents, and proof of address\n4. Filling out business verification forms with accurate company information matching all documents\n5. Submitting application and waiting for Razorpay compliance team review\n6. Responding promptly to any verification queries within 24 hours\n7. Approval timeline: 24-48 business hours\n\nThis manual verification step blocks all subsequent Razorpay integration tasks (API key generation, subscriptions feature enablement, webhook configuration) and must be completed before any automated integration work can proceed. Detailed instructions would need to be documented separately in docs/RAZORPAY_SETUP_MANUAL_STEPS.md for the developer performing this task.\n</info added on 2025-10-28T19:14:22.519Z>",
+            "status": "done",
+            "testStrategy": "Confirm KYC status shows as 'Verified' in Razorpay dashboard and account is approved for live transactions"
           },
           {
             "id": 3,
-            "title": "Create Ollama Provider Wrapper",
-            "description": "Wrap existing OllamaClient to maintain compatibility with AI SDK patterns as emergency fallback provider",
-            "dependencies": [],
-            "details": "Create `frontend/lib/ai/providers/ollamaProvider.ts` implementing: 1) Import and wrap existing OllamaClient from current implementation. 2) Create adapter layer to match AI SDK provider interface patterns. 3) Maintain backward compatibility with existing Ollama configuration. 4) Add proper error handling and fallback behavior. 5) Implement health check functionality for local Ollama availability. 6) Export wrapped provider with consistent interface matching other providers.",
-            "status": "pending",
-            "testStrategy": "Unit tests for wrapper functionality, interface compatibility, backward compatibility validation, health check accuracy, and fallback behavior testing"
+            "title": "Generate API Keys and Enable Subscriptions Feature",
+            "description": "Create test mode API keys, enable Subscriptions feature, and configure webhook settings in Razorpay dashboard",
+            "dependencies": [
+              2
+            ],
+            "details": "Navigate to API Keys section in Razorpay dashboard and generate test mode key_id and key_secret. Enable Subscriptions feature in dashboard settings. Configure webhook URL pointing to the application endpoint. Generate and save webhook secret for signature verification. Document all keys and secrets securely.\n<info added on 2025-10-28T19:14:56.322Z>\nMANUAL ACTION REQUIRED: After KYC approval, the developer must log into the Razorpay dashboard, navigate to Settings > API Keys, generate test mode API keys (key_id and key_secret), enable the Subscriptions feature, and configure webhook settings. These credentials must then be added to frontend/.env.local following the template in frontend/.env.example. The required environment variables to add are: NEXT_PUBLIC_RAZORPAY_KEY_ID (for client-side use), RAZORPAY_KEY_SECRET (server-side only, never expose to client), RAZORPAY_WEBHOOK_SECRET (for webhook signature verification), and NEXT_PUBLIC_ENABLE_PAYMENTS=true to enable payment features. A detailed manual setup document should be created at docs/RAZORPAY_SETUP_MANUAL_STEPS.md with step-by-step screenshots and security guidelines for credential management.\n</info added on 2025-10-28T19:14:56.322Z>",
+            "status": "done",
+            "testStrategy": "Verify API keys are generated and accessible, confirm Subscriptions feature is enabled, test webhook URL configuration"
           },
           {
             "id": 4,
-            "title": "Create Central AI Configuration System",
-            "description": "Build unified configuration system for provider selection, model settings, retry logic, and feature flags",
+            "title": "Install Razorpay Dependencies and Type Definitions",
+            "description": "Install required NPM packages for Razorpay integration including SDK and TypeScript definitions",
+            "dependencies": [],
+            "details": "Run npm install razorpay@^2.9.4 @types/razorpay@^2.0.0 in the frontend directory. Verify package.json is updated with correct versions. Check that TypeScript definitions are properly recognized by the IDE. Update package-lock.json and ensure no dependency conflicts exist.",
+            "status": "done",
+            "testStrategy": "Run npm run typecheck to ensure no TypeScript errors, verify packages are listed in package.json with correct versions"
+          },
+          {
+            "id": 5,
+            "title": "Configure Environment Variables for Razorpay Integration",
+            "description": "Set up all required environment variables for Razorpay API keys, webhook secret, and application configuration",
             "dependencies": [
-              1,
-              2,
-              3
+              3,
+              4
             ],
-            "details": "Create `frontend/lib/ai/config.ts` implementing: 1) Central configuration object with provider selection logic (primary/fallback hierarchy). 2) Model configuration settings for each provider (temperature, max tokens, timeout values). 3) Retry and timeout configuration with exponential backoff settings. 4) Feature flags for gradual rollout and A/B testing capabilities. 5) Environment-based configuration switching (dev/staging/prod). 6) Type-safe configuration validation and error handling. 7) Export unified config interface for use across the application.",
-            "status": "pending",
-            "testStrategy": "Unit tests for configuration validation, provider selection logic, feature flag functionality, environment switching, and configuration merging behavior"
+            "details": "Add environment variables to frontend/.env.local: NEXT_PUBLIC_RAZORPAY_KEY_ID (test key), RAZORPAY_KEY_SECRET (server-side only), RAZORPAY_WEBHOOK_SECRET, NEXT_PUBLIC_APP_URL (for webhook callbacks), and NEXT_PUBLIC_ENABLE_PAYMENTS=true. Ensure server-side variables are not exposed to client. Update .env.example with placeholder values for documentation.",
+            "status": "done",
+            "testStrategy": "Verify environment variables are accessible in both server and client contexts as appropriate, confirm sensitive keys are server-side only"
           }
         ]
       },
       {
         "id": 2,
-        "title": "Migrate Zod Schemas for AI SDK Compatibility",
-        "description": "Convert existing validation schemas to work with AI SDK's experimental_output feature for structured generation",
-        "details": "Create two schema files: 1) `frontend/lib/ai/schemas/questionSchema.ts` - Define schemas for all 27+ question input types (radio_pills, checkbox_cards, scales, sliders, etc.), section structure with 5-7 questions, and complete response with exactly 10 sections totaling 50-70 questions. Include validation for IDs (q1_s1 format), required fields, and metadata. 2) `frontend/lib/ai/schemas/blueprintSchema.ts` - Define comprehensive blueprint schema with all 11 sections (metadata, executive_summary, learning_objectives, etc.), displayType validation for each section, and nested object structures matching current output format. Both schemas must be compatible with AI SDK's experimental_output parameter and provide proper TypeScript type inference.",
-        "testStrategy": "Unit tests validating schema compliance with existing data structures, edge cases for all question types, blueprint section validation, and AI SDK experimental_output compatibility. Test with real production data samples.",
-        "priority": "high",
+        "title": "TypeScript Type Definitions and Razorpay Client Setup",
+        "description": "Create TypeScript interfaces for Razorpay objects and initialize SDK client",
+        "details": "Create frontend/types/razorpay.d.ts with interfaces for RazorpayOrder, RazorpaySubscription, RazorpayPlan, RazorpayWebhookEvent, and global Window.Razorpay type. Create frontend/lib/razorpay/client.ts with SDK initialization using key_id and key_secret, export singleton instance with error handling for missing credentials. Create frontend/lib/config/razorpayPlans.ts with RAZORPAY_PLANS constant and getPlanId() function.",
+        "testStrategy": "Run npm run typecheck to ensure no TypeScript errors, import client in test file and call razorpay.plans.all() to verify connection",
+        "priority": "medium",
         "dependencies": [
           1
         ],
-        "status": "pending",
+        "status": "done",
         "subtasks": [
           {
             "id": 1,
-            "title": "Create Base Schema Types and Utilities",
-            "description": "Establish foundational types and utility functions for AI SDK schema compatibility",
+            "title": "Create TypeScript Type Definitions for Razorpay Objects",
+            "description": "Create comprehensive TypeScript interfaces for all Razorpay objects including orders, subscriptions, plans, webhook events, and global Window type declarations",
             "dependencies": [],
-            "details": "Create `frontend/lib/ai/schemas/types.ts` with core TypeScript interfaces for question types, blueprint sections, and AI SDK compatibility. Include utility functions for schema transformation, validation helpers, and type guards. Define base interfaces for QuestionType, SectionStructure, BlueprintSection, and AISDKOutput that will be used across both schema files.",
-            "status": "pending",
-            "testStrategy": "Unit tests for type validation, utility function correctness, and TypeScript compilation checks"
+            "details": "Create frontend/types/razorpay.d.ts file with TypeScript interfaces for RazorpayOrder (id, amount, currency, status, receipt, created_at), RazorpaySubscription (id, plan_id, customer_id, status, current_start, current_end, charge_at, start_at, end_at), RazorpayPlan (id, name, description, amount, currency, period, interval), RazorpayWebhookEvent (entity, account_id, event, contains, created_at, payload), and global Window.Razorpay interface with checkout options and handler functions",
+            "status": "done",
+            "testStrategy": "Run npm run typecheck to verify no TypeScript compilation errors and import types in a test file to ensure proper type inference"
           },
           {
             "id": 2,
-            "title": "Implement Question Schema with All 27+ Input Types",
-            "description": "Create comprehensive question schema file supporting all existing question input types and section structures",
+            "title": "Initialize Razorpay SDK Client with Singleton Pattern",
+            "description": "Create Razorpay client initialization with singleton pattern, proper error handling, and environment variable validation",
             "dependencies": [
               1
             ],
-            "details": "Build `frontend/lib/ai/schemas/questionSchema.ts` with Zod schemas for all 27+ question types (radio_pills, checkbox_cards, scales, sliders, currency, multi_select, etc.). Define section structure schema with 5-7 questions per section, complete response schema with exactly 10 sections totaling 50-70 questions. Include ID validation (q1_s1 format), required field validation, metadata schemas, and AI SDK experimental_output compatibility.",
-            "status": "pending",
-            "testStrategy": "Comprehensive unit tests for each question type validation, section structure compliance, ID format validation, and compatibility with existing dynamic question data"
+            "details": "Create frontend/lib/razorpay/client.ts with Razorpay SDK initialization using RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET from environment variables. Implement singleton pattern to ensure single instance across application. Add comprehensive error handling for missing credentials with descriptive error messages. Export typed client instance with proper TypeScript annotations and include validation for required environment variables during initialization",
+            "status": "done",
+            "testStrategy": "Create unit tests to verify singleton behavior, error handling for missing credentials, and integration test calling razorpay.plans.all() to confirm SDK connection works"
           },
           {
             "id": 3,
-            "title": "Implement Blueprint Schema with 11 Sections",
-            "description": "Create comprehensive blueprint schema supporting all blueprint sections and nested structures",
+            "title": "Create Razorpay Plan Configuration Module",
+            "description": "Set up centralized configuration for Razorpay subscription plans with mapping functions and plan ID retrieval utilities",
             "dependencies": [
               1
             ],
-            "details": "Build `frontend/lib/ai/schemas/blueprintSchema.ts` with complete Zod schema for all 11 blueprint sections (metadata, executive_summary, learning_objectives, curriculum_structure, resources, assessments, implementation_strategy, prerequisites, success_metrics, timeline, conclusion). Include displayType validation, nested object structures, and ensure compatibility with AI SDK experimental_output parameter and existing blueprint JSON format.",
-            "status": "pending",
-            "testStrategy": "Unit tests for each blueprint section validation, nested structure compliance, displayType validation, and compatibility with existing blueprint data formats"
+            "details": "Create frontend/lib/config/razorpayPlans.ts with RAZORPAY_PLANS constant mapping subscription tiers to Razorpay plan IDs. Include plan configurations for explorer, navigator, voyager, crew, fleet, armada, and enterprise tiers with corresponding plan_ids, amounts, and periods. Implement getPlanId() function that takes subscription tier as parameter and returns corresponding Razorpay plan ID with proper error handling for invalid tiers",
+            "status": "done",
+            "testStrategy": "Unit tests for getPlanId() function with valid and invalid tier inputs, verify RAZORPAY_PLANS constant structure matches expected format, test error handling for non-existent tiers"
           },
           {
             "id": 4,
-            "title": "Add AI SDK Experimental Output Integration",
-            "description": "Integrate schemas with AI SDK experimental_output feature and ensure proper TypeScript inference",
+            "title": "Validate Integration and Type Safety",
+            "description": "Comprehensive validation of TypeScript definitions, client initialization, and configuration integration with complete testing coverage",
             "dependencies": [
+              1,
               2,
               3
             ],
-            "details": "Update both schema files to work seamlessly with AI SDK's experimental_output parameter. Add proper TypeScript type inference helpers, schema composition utilities, and conversion functions between internal formats and AI SDK requirements. Create adapter functions to transform schemas for different AI providers (Perplexity, Ollama) while maintaining compatibility.",
-            "status": "pending",
-            "testStrategy": "Integration tests with AI SDK experimental_output, TypeScript inference validation, schema transformation testing, and provider compatibility verification"
-          },
-          {
-            "id": 5,
-            "title": "Implement Migration Validation and Backward Compatibility",
-            "description": "Ensure schemas maintain backward compatibility with existing data and provide migration validation",
-            "dependencies": [
-              2,
-              3,
-              4
-            ],
-            "details": "Create validation utilities to ensure new schemas work with existing production data. Build migration helpers in `frontend/lib/ai/schemas/migration.ts` for any format changes, compatibility checkers for old vs new data formats, and validation functions to ensure no data loss during migration. Add comprehensive error handling and fallback mechanisms for schema validation failures.",
-            "status": "pending",
-            "testStrategy": "Migration validation tests with real production data samples, backward compatibility verification, error handling testing, and performance impact assessment of new schemas"
+            "details": "Run comprehensive TypeScript type checking across all created modules to ensure no compilation errors. Create integration test file that imports all modules and validates client initialization works with configuration. Test error scenarios including missing environment variables, invalid plan IDs, and SDK connection failures. Verify proper TypeScript intellisense and type safety across the entire Razorpay integration setup",
+            "status": "done",
+            "testStrategy": "Execute npm run typecheck for zero TypeScript errors, create integration test importing client and calling API methods, verify error handling works correctly, test plan configuration retrieval with valid/invalid inputs"
           }
         ]
       },
       {
         "id": 3,
-        "title": "Build Question Generation Service with Streaming",
-        "description": "Rewrite dynamic question generation service using AI SDK streamObject() with Anthropic primary and Ollama fallback",
-        "details": "Create `frontend/lib/ai/services/questionGenerationService.ts` implementing: 1) Use AI SDK's streamObject() with Anthropic Sonnet 4.5 as primary provider. 2) Support both streaming and non-streaming modes with proper TypeScript interfaces. 3) Fallback to Ollama wrapper on Anthropic failure with structured logging. 4) Integrate with question schema for validation and structured outputs. 5) Extract and migrate prompt building logic from existing dynamicQuestionGenerationV2.ts and buildUserPromptV2(). 6) Implement telemetry tracking for token usage, duration, and provider selection. 7) Add comprehensive error handling with standardized error types. Replace custom fetch() calls and retry logic with AI SDK built-in capabilities.",
-        "testStrategy": "Integration tests for both streaming and non-streaming modes, fallback scenario testing with mocked Anthropic failures, schema validation testing, token tracking accuracy, and performance benchmarking against current implementation.",
+        "title": "Database Schema Migration - Subscriptions Table",
+        "description": "Create migration for subscriptions table with proper indexing and RLS policies",
+        "details": "Create supabase/migrations/0034_razorpay_subscriptions.sql with subscriptions table including: subscription_id (UUID PK), user_id (FK), razorpay_subscription_id, razorpay_plan_id, status, plan details, billing dates, payment tracking, metadata. Add indexes for user_id, razorpay_subscription_id, status, next_billing_date. Implement RLS policies allowing users to SELECT own records, service role for ALL operations. Add constraints for valid_status, valid_period, valid_amount, one_active_subscription_per_user. Include updated_at trigger and rollback section.",
+        "testStrategy": "Apply migration locally, verify table structure with SELECT * FROM pg_tables, test RLS policies with different user roles, verify constraints work correctly",
         "priority": "high",
         "dependencies": [
           2
         ],
-        "status": "pending",
+        "status": "done",
         "subtasks": [
           {
             "id": 1,
-            "title": "Set up AI SDK streamObject infrastructure and types",
-            "description": "Create the foundational infrastructure for streaming question generation with proper TypeScript interfaces and configuration",
+            "title": "Design subscriptions table schema and column definitions",
+            "description": "Design the core subscriptions table structure with all required columns, data types, and primary/foreign key relationships",
             "dependencies": [],
-            "details": "Create `frontend/lib/ai/services/questionGenerationService.ts` with TypeScript interfaces for streaming and non-streaming modes. Define service configuration types, streaming response handlers, and base service structure. Set up proper imports for AI SDK streamObject and establish the foundational architecture for the question generation service.",
-            "status": "pending",
-            "testStrategy": "Unit tests for interface definitions, service initialization, and configuration validation"
+            "details": "Create the subscriptions table schema with subscription_id (UUID PK), user_id (UUID FK to auth.users), razorpay_subscription_id (TEXT UNIQUE), razorpay_plan_id (TEXT), status (subscription_status enum), plan_name (TEXT), plan_amount (INTEGER), plan_currency (TEXT), plan_interval (TEXT), plan_interval_count (INTEGER), current_start (TIMESTAMPTZ), current_end (TIMESTAMPTZ), next_billing_date (TIMESTAMPTZ), trial_start (TIMESTAMPTZ), trial_end (TIMESTAMPTZ), cancelled_at (TIMESTAMPTZ), ended_at (TIMESTAMPTZ), metadata (JSONB), created_at (TIMESTAMPTZ DEFAULT NOW()), updated_at (TIMESTAMPTZ DEFAULT NOW())",
+            "status": "done",
+            "testStrategy": "Verify table creation with correct column types and constraints using PostgreSQL introspection queries"
           },
           {
             "id": 2,
-            "title": "Implement Anthropic Sonnet 4.5 primary provider integration",
-            "description": "Integrate AI SDK streamObject with Anthropic Sonnet 4.5 as the primary question generation provider",
+            "title": "Create table constraints and validation rules",
+            "description": "Implement CHECK constraints, UNIQUE constraints, and validation rules for data integrity",
             "dependencies": [
               1
             ],
-            "details": "Implement the primary provider logic using AI SDK's streamObject with Anthropic Sonnet 4.5. Configure proper model parameters, streaming handlers, and response processing. Ensure compatibility with the question schema validation and implement structured output generation using AI SDK's experimental_output feature.",
-            "status": "pending",
-            "testStrategy": "Integration tests for Anthropic provider connectivity, streaming response handling, and schema validation"
+            "details": "Add CHECK constraints: valid_status (status IN ('active', 'past_due', 'cancelled', 'unpaid', 'trialing')), valid_period (plan_interval IN ('day', 'week', 'month', 'year')), valid_amount (plan_amount > 0), valid_currency (plan_currency IN ('INR', 'USD')), valid_interval_count (plan_interval_count > 0). Add UNIQUE constraint on razorpay_subscription_id. Add UNIQUE constraint to ensure one_active_subscription_per_user with partial index WHERE status IN ('active', 'trialing', 'past_due')",
+            "status": "done",
+            "testStrategy": "Test constraints by attempting to insert invalid data and verifying rejection, test unique constraints prevent duplicates"
           },
           {
             "id": 3,
-            "title": "Build Ollama fallback wrapper with error handling",
-            "description": "Implement fallback logic to Ollama wrapper when Anthropic fails with comprehensive error handling and logging",
+            "title": "Create indexes for optimal query performance",
+            "description": "Add strategic indexes for common query patterns and foreign key relationships",
             "dependencies": [
               2
             ],
-            "details": "Create fallback mechanism that detects Anthropic failures and seamlessly switches to Ollama wrapper. Implement structured logging for provider selection, error tracking, and failure reasons. Ensure the fallback maintains the same interface and output format as the primary provider while handling different error scenarios gracefully.",
-            "status": "pending",
-            "testStrategy": "Fallback scenario testing with mocked Anthropic failures, error handling validation, and logging accuracy"
+            "details": "Create indexes: CREATE INDEX idx_subscriptions_user_id ON subscriptions(user_id); CREATE UNIQUE INDEX idx_subscriptions_razorpay_id ON subscriptions(razorpay_subscription_id); CREATE INDEX idx_subscriptions_status ON subscriptions(status); CREATE INDEX idx_subscriptions_next_billing ON subscriptions(next_billing_date) WHERE status IN ('active', 'trialing'); CREATE INDEX idx_subscriptions_user_status ON subscriptions(user_id, status); CREATE INDEX idx_subscriptions_created_at ON subscriptions(created_at)",
+            "status": "done",
+            "testStrategy": "Use EXPLAIN ANALYZE on common queries to verify index usage and performance improvements"
           },
           {
             "id": 4,
-            "title": "Extract and migrate prompt building logic",
-            "description": "Extract prompt building logic from existing dynamicQuestionGenerationV2.ts and buildUserPromptV2() functions",
+            "title": "Implement Row Level Security (RLS) policies",
+            "description": "Create RLS policies for secure user access control and service role permissions",
             "dependencies": [
               3
             ],
-            "details": "Migrate the prompt construction logic from the existing system including user context extraction, section formatting, and question type specifications. Ensure the migrated prompts work with AI SDK's structured generation while maintaining compatibility with the established question formats and user context patterns.",
-            "status": "pending",
-            "testStrategy": "Comparison testing between old and new prompt outputs, validation of question quality and format consistency"
+            "details": "Enable RLS on subscriptions table with ALTER TABLE subscriptions ENABLE ROW LEVEL SECURITY. Create policies: user_select_own_subscriptions (POLICY FOR SELECT TO authenticated USING (auth.uid() = user_id)), service_role_all_access (POLICY FOR ALL TO service_role USING (true)). Grant appropriate table permissions: GRANT SELECT ON subscriptions TO authenticated; GRANT ALL ON subscriptions TO service_role. Test policies ensure users can only see their own records while service role has full access",
+            "status": "done",
+            "testStrategy": "Test RLS policies by connecting with different user roles and verifying access restrictions work correctly"
           },
           {
             "id": 5,
-            "title": "Implement telemetry tracking and monitoring",
-            "description": "Add comprehensive telemetry for token usage, generation duration, provider selection, and performance metrics",
+            "title": "Add updated_at trigger and helper functions",
+            "description": "Create trigger for automatic updated_at timestamp updates and any helper functions needed",
             "dependencies": [
               4
             ],
-            "details": "Implement telemetry tracking system that monitors token consumption, request duration, provider selection decisions, success/failure rates, and cost metrics. Create structured logging for debugging and analytics, integrate with existing monitoring infrastructure, and provide metrics for performance analysis and optimization.",
-            "status": "pending",
-            "testStrategy": "Token tracking accuracy validation, performance metrics collection testing, and monitoring system integration"
+            "details": "Create updated_at trigger using the existing update_updated_at_column() function: CREATE TRIGGER update_subscriptions_updated_at BEFORE UPDATE ON subscriptions FOR EACH ROW EXECUTE FUNCTION update_updated_at_column(). Consider adding helper functions like get_active_subscription(user_uuid) that returns the user's active subscription if any, or subscription status checking functions that might be useful for the application logic",
+            "status": "done",
+            "testStrategy": "Test trigger by updating records and verifying updated_at changes, test helper functions return correct results"
           },
           {
             "id": 6,
-            "title": "Replace existing service calls and validate migration",
-            "description": "Replace the existing custom fetch-based question generation with the new AI SDK service and validate complete migration",
+            "title": "Create rollback section and migration testing",
+            "description": "Write comprehensive rollback SQL and test the complete migration locally",
             "dependencies": [
               5
             ],
-            "details": "Update all existing service calls to use the new questionGenerationService, remove custom fetch() implementations and retry logic, and validate that the new implementation maintains feature parity. Ensure proper error handling, response formatting, and integration with the existing UI components and data flow.",
-            "status": "pending",
-            "testStrategy": "End-to-end integration testing, performance benchmarking against current implementation, and feature parity validation"
+            "details": "Create rollback section with: DROP TRIGGER IF EXISTS update_subscriptions_updated_at ON subscriptions; DROP TABLE IF EXISTS subscriptions CASCADE; Remove any custom types or functions created. Test complete migration by applying it with npm run db:reset, verify table structure with \\d+ subscriptions, test all constraints and policies work as expected, then test rollback completely removes all changes. Document the migration file with comments explaining the schema design decisions",
+            "status": "done",
+            "testStrategy": "Apply migration locally, verify table structure and functionality, test rollback removes everything cleanly, ensure migration is idempotent"
           }
         ]
       },
       {
         "id": 4,
-        "title": "Build Blueprint Generation Service with Streaming",
-        "description": "Rewrite blueprint generation service using AI SDK streamObject() with Perplexity primary and Ollama fallback",
-        "details": "Create `frontend/lib/ai/services/blueprintGenerationService.ts` implementing: 1) Use AI SDK's streamObject() with Perplexity Sonar Deep Research as primary provider via custom OpenAI-compatible adapter. 2) Support streaming and non-streaming modes with proper context extraction from static/dynamic answers. 3) Fallback to existing Ollama wrapper on Perplexity failures. 4) Integrate with blueprint schema validation and structured outputs. 5) Migrate prompt building from existing blueprintGenerationService.ts and buildBlueprintPrompt(). 6) Handle V2.0 and legacy static answer formats for backward compatibility. 7) Implement comprehensive logging, telemetry, and error recovery. Replace triple-fallback logic (Sonnet→Opus→Ollama) with simplified Perplexity→Ollama approach.",
-        "testStrategy": "Integration tests covering both modes, fallback testing, schema validation, context extraction from different static answer formats, token usage tracking, and performance comparison with existing service.",
+        "title": "Database Schema Migration - Payments Table",
+        "description": "Create migration for payments table to track transaction history",
+        "details": "Create supabase/migrations/0035_razorpay_payments.sql with payments table including: payment_id (UUID PK), subscription_id (FK), user_id (FK), razorpay_payment_id, amount, currency, status, payment method details, billing period reference, error details, refund details, metadata. Add indexes for user_id, subscription_id, razorpay_payment_id, status, payment_date. Implement RLS policies for user access control. Add constraints for valid_status and valid_amount. Include updated_at trigger and rollback section.",
+        "testStrategy": "Apply migration locally, verify table structure, test foreign key relationships, verify RLS policies prevent unauthorized access",
         "priority": "high",
         "dependencies": [
-          2
+          3
         ],
-        "status": "pending",
+        "status": "done",
         "subtasks": [
           {
             "id": 1,
-            "title": "Create Perplexity OpenAI-compatible adapter with Sonar Deep Research",
-            "description": "Build custom Perplexity provider using OpenAI adapter to integrate Sonar Deep Research model",
+            "title": "Design payments table structure with core fields and data types",
+            "description": "Create the basic payments table structure with all required fields including payment_id, subscription_id, user_id, razorpay_payment_id, amount, currency, status, and metadata fields",
             "dependencies": [],
-            "details": "Create `frontend/lib/ai/providers/perplexityAdapter.ts` that wraps Perplexity API with OpenAI-compatible interface. Configure for Sonar Deep Research model, handle authentication, request/response mapping, and error handling. Ensure compatibility with AI SDK's streamObject() expectations.",
-            "status": "pending",
-            "testStrategy": "Unit tests for adapter initialization, API call mapping, error handling, and integration tests with actual Perplexity API calls"
+            "details": "Define CREATE TABLE payments statement with payment_id UUID PRIMARY KEY DEFAULT gen_random_uuid(), subscription_id UUID, user_id UUID, razorpay_payment_id TEXT UNIQUE, amount INTEGER NOT NULL, currency CHAR(3) DEFAULT 'INR', status TEXT NOT NULL, payment_method_type TEXT, payment_method_details JSONB, billing_period_start DATE, billing_period_end DATE, error_details JSONB, refund_details JSONB, metadata JSONB, payment_date TIMESTAMP WITH TIME ZONE DEFAULT NOW(), created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(), updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()",
+            "status": "done",
+            "testStrategy": "Verify table creation with \\d payments command, check all columns exist with correct data types and constraints"
           },
           {
             "id": 2,
-            "title": "Implement context extraction from static and dynamic answers",
-            "description": "Build context extraction system supporting both V2.0 and legacy static answer formats",
+            "title": "Implement foreign key relationships to subscriptions and user_profiles",
+            "description": "Add foreign key constraints linking payments table to subscriptions and user_profiles tables with proper referential integrity",
             "dependencies": [
               1
             ],
-            "details": "Create context extraction utilities in `frontend/lib/ai/utils/contextExtractor.ts` that parse static_answers and dynamic_answers JSONB fields, handle V2.0 structured format and legacy flat format, and build comprehensive context for blueprint generation prompts.",
-            "status": "pending",
-            "testStrategy": "Unit tests with sample data from both formats, edge case handling, and validation of extracted context completeness"
+            "details": "Add FOREIGN KEY (subscription_id) REFERENCES subscriptions(subscription_id) ON DELETE SET NULL, FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE CASCADE. Ensure proper indexing on foreign key columns for query performance. Include error handling for orphaned records during migration rollback",
+            "status": "done",
+            "testStrategy": "Test foreign key constraints by attempting to insert invalid subscription_id and user_id, verify constraints prevent invalid references"
           },
           {
             "id": 3,
-            "title": "Build streaming and non-streaming blueprint generation modes",
-            "description": "Implement dual-mode blueprint generation service with AI SDK streamObject integration",
+            "title": "Create comprehensive indexing strategy for query optimization",
+            "description": "Add strategic indexes for user_id, subscription_id, razorpay_payment_id, status, and payment_date to optimize common query patterns",
             "dependencies": [
               2
             ],
-            "details": "Create core service in `frontend/lib/ai/services/blueprintGenerationService.ts` with streamObject() for real-time streaming and generateObject() for batch processing. Include mode selection, progress tracking, and consistent output formatting for both approaches.",
-            "status": "pending",
-            "testStrategy": "Integration tests for both modes, output consistency validation, performance comparison, and streaming interrupt handling"
+            "details": "CREATE INDEX idx_payments_user_id ON payments(user_id), CREATE INDEX idx_payments_subscription_id ON payments(subscription_id), CREATE UNIQUE INDEX idx_payments_razorpay_id ON payments(razorpay_payment_id), CREATE INDEX idx_payments_status ON payments(status), CREATE INDEX idx_payments_date ON payments(payment_date), CREATE INDEX idx_payments_user_status ON payments(user_id, status) for common filtering queries",
+            "status": "done",
+            "testStrategy": "Use EXPLAIN ANALYZE to verify indexes are being used for common queries, check index sizes with pg_indexes view"
           },
           {
             "id": 4,
-            "title": "Implement Perplexity to Ollama fallback mechanism",
-            "description": "Build robust fallback system from Perplexity primary to Ollama secondary provider",
+            "title": "Implement Row Level Security policies for user access control",
+            "description": "Create RLS policies ensuring users can only access their own payment records while allowing service role full access for administrative operations",
             "dependencies": [
               3
             ],
-            "details": "Implement fallback logic in blueprintGenerationService.ts that detects Perplexity failures (API errors, rate limits, timeouts), gracefully switches to existing Ollama wrapper, maintains consistent schema validation, and logs fallback events for monitoring.",
-            "status": "pending",
-            "testStrategy": "Failure scenario testing with mocked Perplexity errors, fallback timing validation, output consistency between providers, and logging verification"
+            "details": "ALTER TABLE payments ENABLE ROW LEVEL SECURITY. CREATE POLICY payments_select_own ON payments FOR SELECT USING (user_id = auth.uid()). CREATE POLICY payments_service_role_all ON payments FOR ALL USING (auth.role() = 'service_role'). CREATE POLICY payments_authenticated_insert ON payments FOR INSERT WITH CHECK (user_id = auth.uid()). Test policies prevent unauthorized access between users",
+            "status": "done",
+            "testStrategy": "Test RLS policies by creating test users, verify each user can only see their own payments, confirm service role has full access"
           },
           {
             "id": 5,
-            "title": "Migrate prompt building and schema validation",
-            "description": "Extract and integrate existing prompt building logic with new blueprint schema validation",
+            "title": "Add table constraints, triggers, and rollback implementation",
+            "description": "Implement CHECK constraints for valid status and amount values, add updated_at trigger, and create complete rollback section for migration safety",
             "dependencies": [
               4
             ],
-            "details": "Migrate buildBlueprintPrompt() from existing blueprintGenerationService.ts, integrate with AI SDK schema validation using experimental_output, ensure backward compatibility with existing blueprint structure, and maintain all 11 blueprint sections.",
-            "status": "pending",
-            "testStrategy": "Schema validation testing with existing blueprint data, prompt quality comparison, section completeness verification, and migration accuracy tests"
-          },
-          {
-            "id": 6,
-            "title": "Add comprehensive logging, telemetry, and error recovery",
-            "description": "Implement structured logging, performance metrics, and error recovery for the blueprint generation service",
-            "dependencies": [
-              5
-            ],
-            "details": "Add structured logging throughout the service using existing patterns, implement telemetry for token usage, generation times, and success rates, build error recovery mechanisms for partial failures, and create health monitoring for both Perplexity and Ollama providers.",
-            "status": "pending",
-            "testStrategy": "Logging output validation, telemetry accuracy testing, error recovery scenario testing, and health check reliability verification"
+            "details": "ADD CONSTRAINT valid_status CHECK (status IN ('created', 'authorized', 'captured', 'refunded', 'failed', 'cancelled')), ADD CONSTRAINT valid_amount CHECK (amount > 0), ADD CONSTRAINT valid_currency CHECK (currency IN ('INR', 'USD')). CREATE OR REPLACE FUNCTION update_updated_at_column() and CREATE TRIGGER update_payments_updated_at. Include complete DOWN migration with DROP TABLE payments CASCADE, DROP FUNCTION IF EXISTS update_updated_at_column CASCADE",
+            "status": "done",
+            "testStrategy": "Test constraints by inserting invalid status and negative amounts, verify updated_at trigger updates timestamp on record changes, test rollback migration successfully removes all changes"
           }
         ]
       },
       {
         "id": 5,
-        "title": "Update API Routes for Streaming Support",
-        "description": "Migrate API routes to use new AI services with Server-Sent Events streaming capability",
-        "details": "Update two API routes: 1) `frontend/app/api/generate-dynamic-questions/route.ts` - Replace existing service calls with new questionGenerationService, add streaming parameter support, implement SSE response headers for streaming mode, maintain existing validation and error handling patterns. 2) `frontend/app/api/blueprints/generate/route.ts` - Replace existing service with new blueprintGenerationService, add streaming support, preserve usage limit checks and blueprint saving logic, maintain V2.0 static answer compatibility. Both routes must support feature flags, maintain exact same API contracts for backward compatibility, and include proper Zod request validation. Preserve existing maxDuration settings and authentication patterns.",
-        "testStrategy": "API integration tests for both streaming and non-streaming endpoints, backward compatibility testing, error handling validation, feature flag testing, and authentication/authorization verification.",
+        "title": "Database Schema Migration - Webhook Events and User Profiles Extension",
+        "description": "Create webhook_events table for idempotency and extend user_profiles with Razorpay fields",
+        "details": "Create supabase/migrations/0036_razorpay_webhook_events.sql with webhook_events table for idempotency: id, event_id, event_type, payload (JSONB), processed_at, created_at. Add unique constraint on (event_id, event_type). Create supabase/migrations/0037_extend_user_profiles_razorpay.sql to add razorpay_customer_id, active_subscription_id, subscription_status, payment_method_last4, payment_method_brand to user_profiles. Add indexes and constraints. Create helper function get_user_payment_history(user_id, limit, offset).",
+        "testStrategy": "Apply migrations, test unique constraint on webhook_events with duplicate inserts, verify user_profiles columns added, test helper function returns correct data",
         "priority": "medium",
         "dependencies": [
-          3,
           4
         ],
-        "status": "pending",
+        "status": "done",
         "subtasks": [
           {
             "id": 1,
-            "title": "Update generate-dynamic-questions API route for streaming support",
-            "description": "Migrate the dynamic questions generation API route to use the new questionGenerationService with Server-Sent Events streaming capability while maintaining backward compatibility",
+            "title": "Create webhook_events table migration",
+            "description": "Create migration file for webhook_events table with proper schema and constraints for idempotency handling",
             "dependencies": [],
-            "details": "Replace existing service calls in `frontend/app/api/generate-dynamic-questions/route.ts` with new questionGenerationService. Add streaming parameter support to request validation schema. Implement SSE response headers for streaming mode using proper Next.js streaming response patterns. Maintain existing Zod validation, error handling patterns, authentication checks, and maxDuration settings. Ensure exact API contract compatibility for non-streaming mode.",
-            "status": "pending",
-            "testStrategy": "API integration tests for both streaming and non-streaming modes, request validation testing, SSE header verification, backward compatibility testing with existing clients, and error handling validation"
+            "details": "Create supabase/migrations/0036_razorpay_webhook_events.sql with webhook_events table containing id (UUID PK), event_id (TEXT NOT NULL), event_type (TEXT NOT NULL), payload (JSONB NOT NULL), processed_at (TIMESTAMPTZ), created_at (TIMESTAMPTZ DEFAULT NOW()). Add unique constraint on (event_id, event_type) for idempotency. Include proper indexes and RLS policies.",
+            "status": "done",
+            "testStrategy": "Apply migration locally, test unique constraint by attempting duplicate inserts, verify table structure with \\d webhook_events"
           },
           {
             "id": 2,
-            "title": "Update blueprints generate API route for streaming support",
-            "description": "Migrate the blueprint generation API route to use the new blueprintGenerationService with streaming capability while preserving all existing functionality",
+            "title": "Extend user_profiles table with Razorpay fields",
+            "description": "Create migration to add Razorpay-related columns to existing user_profiles table",
             "dependencies": [
               1
             ],
-            "details": "Replace existing service calls in `frontend/app/api/blueprints/generate/route.ts` with new blueprintGenerationService. Add streaming support with proper SSE implementation. Preserve all usage limit checks, blueprint saving logic, and V2.0 static answer compatibility. Maintain authentication patterns, maxDuration settings, and existing error handling. Implement feature flag support for gradual rollout while ensuring exact API contract preservation.",
-            "status": "pending",
-            "testStrategy": "Integration tests for streaming and non-streaming endpoints, usage limit validation, blueprint saving verification, V2.0 compatibility testing, and authentication/authorization checks"
+            "details": "Create supabase/migrations/0037_extend_user_profiles_razorpay.sql to add columns: razorpay_customer_id (TEXT), active_subscription_id (UUID), subscription_status (TEXT), payment_method_last4 (TEXT), payment_method_brand (TEXT). Add indexes on razorpay_customer_id and active_subscription_id for performance. Include constraints for valid subscription_status values.",
+            "status": "done",
+            "testStrategy": "Verify columns added correctly, test indexes exist with \\di user_profiles*, verify constraints work with invalid status values"
           },
           {
             "id": 3,
-            "title": "Implement Server-Sent Events response handling",
-            "description": "Add proper Server-Sent Events response formatting and streaming infrastructure to both API routes for real-time progress updates",
+            "title": "Implement get_user_payment_history function",
+            "description": "Create PostgreSQL function to retrieve user payment history with pagination",
             "dependencies": [
-              1,
               2
             ],
-            "details": "Implement SSE response formatting in both API routes using Next.js streaming capabilities. Add proper event data formatting with progress indicators, section updates, and completion events. Implement connection management, proper cleanup on client disconnect, and error event propagation. Ensure CORS headers are properly set for SSE connections and implement heartbeat mechanisms to maintain connection stability.",
-            "status": "pending",
-            "testStrategy": "SSE connection testing, event data format validation, connection stability testing, client disconnect handling, and cross-origin request verification"
+            "details": "Add get_user_payment_history(user_id UUID, limit_count INT DEFAULT 10, offset_count INT DEFAULT 0) RETURNS TABLE function to migration 0037. Function should join payments and subscriptions tables, return payment details with subscription info, ordered by payment_date DESC. Include proper error handling and parameter validation.",
+            "status": "done",
+            "testStrategy": "Test function with valid user_id, test pagination parameters, verify correct data returned, test with non-existent user_id"
           },
           {
             "id": 4,
-            "title": "Add feature flag integration and backward compatibility validation",
-            "description": "Integrate feature flags for streaming functionality and validate complete backward compatibility with existing API consumers",
+            "title": "Add database constraints and validation",
+            "description": "Implement comprehensive constraints and validation rules for webhook events and user profiles",
             "dependencies": [
-              1,
-              2,
-              3
+              2
             ],
-            "details": "Add feature flag integration to both API routes to control streaming functionality rollout. Implement runtime switching between old and new service implementations based on feature flags. Create comprehensive backward compatibility validation ensuring existing API consumers continue to work without changes. Add monitoring and logging for feature flag usage and performance metrics comparison between old and new implementations.",
-            "status": "pending",
-            "testStrategy": "Feature flag toggle testing, backward compatibility validation with existing clients, performance comparison testing, monitoring data collection verification, and gradual rollout simulation"
+            "details": "Add check constraints for valid event_type values in webhook_events table, subscription_status enum constraint in user_profiles, foreign key constraints where applicable. Create validation for payment_method_last4 format (4 digits), ensure proper data integrity rules across both tables.",
+            "status": "done",
+            "testStrategy": "Test constraints with invalid data insertion, verify foreign key relationships work correctly, test enum constraints with invalid values"
+          },
+          {
+            "id": 5,
+            "title": "Test migration rollback and data integrity",
+            "description": "Verify migration rollback functionality and overall data integrity after schema changes",
+            "dependencies": [
+              3,
+              4
+            ],
+            "details": "Create rollback scripts for both migrations, test applying and rolling back migrations without data loss. Verify all indexes, constraints, and functions are properly created and removed. Test that existing user_profiles data remains intact after extension. Ensure webhook_events table integrates properly with existing schema.",
+            "status": "done",
+            "testStrategy": "Apply migrations, insert test data, rollback migrations, verify data integrity maintained, re-apply migrations and verify everything works correctly"
           }
         ]
       },
       {
         "id": 6,
-        "title": "Create Streaming UI Components",
-        "description": "Build React components for real-time generation progress feedback using Server-Sent Events",
-        "details": "Create `frontend/components/blueprint/GenerationProgress.tsx` implementing: 1) EventSource consumption from API streaming endpoints with proper connection management. 2) Real-time progress tracking showing current section being generated. 3) Visual progress bar with smooth animations using Framer Motion. 4) Status indicators for streaming, complete, and error states with appropriate icons. 5) Event logging for development debugging with collapsible details. 6) Proper cleanup and error handling for SSE connections. 7) Type-safe event handling for different stream event types (section, question, complete, error). Component should be reusable for both question and blueprint generation with configurable callbacks.",
-        "testStrategy": "Component testing with React Testing Library, SSE connection mocking, progress state transitions, error boundary testing, and manual testing with real streaming endpoints.",
-        "priority": "medium",
+        "title": "API Route - Create Subscription",
+        "description": "Implement API endpoint for creating Razorpay subscriptions with validation and error handling",
+        "details": "Create frontend/app/api/subscriptions/create-subscription/route.ts with POST handler. Implement Zod validation schema for request body (planId, tier). Add authentication check, duplicate subscription prevention, Razorpay customer creation/retrieval, subscription creation via SDK, database record insertion with status 'created'. Include comprehensive error handling for validation (400), authentication (401), duplicates (400), Razorpay API errors (500), database errors (500). Add structured logging and rate limiting (10 requests/minute/IP). Return subscription ID and short URL.",
+        "testStrategy": "Unit tests for valid requests, authentication failures, invalid planId, existing subscriptions, Razorpay API errors, database errors, rate limiting. Integration test creating actual subscription in Razorpay test mode",
+        "priority": "high",
         "dependencies": [
           5
         ],
-        "status": "pending",
+        "status": "done",
         "subtasks": [
           {
             "id": 1,
-            "title": "Create EventSource Hook with Connection Management",
-            "description": "Build a custom React hook to manage EventSource connections with proper lifecycle management, reconnection logic, and cleanup",
+            "title": "Create Zod validation schema for request body",
+            "description": "Implement comprehensive validation schema for subscription creation request",
             "dependencies": [],
-            "details": "Create `frontend/lib/hooks/useEventSource.ts` implementing: 1) Custom hook accepting URL and options for EventSource creation. 2) Connection state management (connecting, connected, disconnected, error). 3) Automatic reconnection with exponential backoff strategy. 4) Proper cleanup on unmount and dependency changes. 5) TypeScript interfaces for event data and connection states. 6) Error boundary integration for connection failures.",
-            "status": "pending",
-            "testStrategy": "Unit tests for hook lifecycle, connection state transitions, cleanup behavior, and reconnection logic with mocked EventSource"
+            "details": "Create Zod schema in frontend/app/api/subscriptions/create-subscription/route.ts to validate request body with planId (string, required, must match valid Razorpay plan IDs) and tier (enum matching subscription tiers: explorer, navigator, voyager, crew, fleet, armada). Include validation for required fields, data types, and business logic constraints. Schema should return structured error messages for invalid inputs.",
+            "status": "done",
+            "testStrategy": "Unit tests for valid planId/tier combinations, invalid planId, missing fields, wrong data types, invalid tier values"
           },
           {
             "id": 2,
-            "title": "Implement Progress Tracking State Management",
-            "description": "Create state management system for tracking generation progress with section-level granularity and status updates",
+            "title": "Implement authentication and authorization checks",
+            "description": "Add user authentication verification and session validation",
             "dependencies": [
               1
             ],
-            "details": "Create progress state management in `frontend/components/blueprint/GenerationProgress.tsx`: 1) State interface for current section, completed sections, total progress percentage. 2) Event handlers for different SSE event types (section, question, complete, error). 3) Progress calculation logic based on section completion. 4) Status tracking for streaming, complete, and error states. 5) TypeScript types for all event payloads and progress states.",
-            "status": "pending",
-            "testStrategy": "Unit tests for progress calculations, state transitions, and event handling with various SSE event scenarios"
+            "details": "Implement authentication check using Supabase server client to verify user session. Extract user ID from authenticated session, handle unauthenticated requests with 401 status. Add check to ensure user has necessary permissions to create subscriptions. Include proper error responses for authentication failures with structured error messages.",
+            "status": "done",
+            "testStrategy": "Tests for authenticated users, unauthenticated requests, invalid sessions, expired tokens"
           },
           {
             "id": 3,
-            "title": "Build Animated Progress Bar Component",
-            "description": "Create visual progress bar with smooth animations using Framer Motion for real-time progress feedback",
+            "title": "Add duplicate subscription prevention logic",
+            "description": "Check for existing active subscriptions before creating new ones",
             "dependencies": [
               2
             ],
-            "details": "Implement animated progress bar: 1) Framer Motion progress bar with smooth transitions between progress states. 2) Section-based progress indicators with visual milestones. 3) Color coding for different states (streaming=blue, complete=green, error=red). 4) Responsive design working on mobile and desktop. 5) Accessibility attributes for screen readers. 6) Performance optimization for smooth 60fps animations.",
-            "status": "pending",
-            "testStrategy": "Component tests for animation behavior, accessibility compliance, responsive design, and performance under rapid state changes"
+            "details": "Query subscriptions table to check if user already has an active subscription (status: 'active', 'created', 'authenticated'). Prevent duplicate subscriptions by returning 400 error with appropriate message if active subscription exists. Include database query optimization and proper error handling for database connection issues.",
+            "status": "done",
+            "testStrategy": "Tests for users with no subscriptions, users with active subscriptions, users with cancelled subscriptions, database query errors"
           },
           {
             "id": 4,
-            "title": "Create Status Indicators and Icon System",
-            "description": "Build status indicator components with appropriate icons for streaming, complete, and error states",
+            "title": "Integrate Razorpay customer and subscription creation",
+            "description": "Implement Razorpay SDK integration for customer and subscription management",
             "dependencies": [
-              2
+              3
             ],
-            "details": "Create status indicator system: 1) Icon components for each state using Lucide React icons (loader for streaming, check for complete, alert for error). 2) Status text with clear messaging for each state. 3) Loading spinner animation for streaming state. 4) Error message display with retry functionality. 5) Success confirmation with completion timestamp. 6) Consistent styling with existing design system.",
-            "status": "pending",
-            "testStrategy": "Component tests for icon rendering, state transitions, error message display, and user interaction handling"
+            "details": "Initialize Razorpay SDK with API keys from environment variables. Implement customer creation/retrieval logic using user email and metadata. Create Razorpay subscription using validated planId, customer ID, and additional options. Handle Razorpay API responses, extract subscription ID and payment details. Include retry logic for transient API failures and comprehensive error handling for Razorpay-specific errors.",
+            "status": "done",
+            "testStrategy": "Unit tests for successful customer creation, existing customer retrieval, subscription creation, Razorpay API errors, network failures, invalid API keys"
           },
           {
             "id": 5,
-            "title": "Add Development Logging and Error Handling",
-            "description": "Implement comprehensive logging system with collapsible debug details and robust error handling for SSE connections",
+            "title": "Implement database operations for subscription storage",
+            "description": "Store subscription data in Supabase with proper error handling",
             "dependencies": [
-              1
+              4
             ],
-            "details": "Create logging and error handling: 1) Event logging system capturing all SSE events with timestamps. 2) Collapsible debug panel showing connection status, events, and errors (development only). 3) Error boundary for SSE connection failures with user-friendly messages. 4) Connection retry logic with user feedback. 5) Cleanup handling for component unmount and route changes. 6) Performance monitoring for EventSource memory usage.",
-            "status": "pending",
-            "testStrategy": "Error boundary testing, memory leak detection, connection failure scenarios, and debug panel functionality in development mode"
+            "details": "Insert subscription record into subscriptions table with razorpay_subscription_id, user_id, plan details, status 'created', billing dates, and metadata. Use database transaction to ensure data consistency. Handle database constraint violations, foreign key errors, and connection issues. Include proper rollback logic if database insertion fails after Razorpay subscription creation.",
+            "status": "done",
+            "testStrategy": "Tests for successful insertion, database constraint violations, foreign key errors, transaction rollback scenarios, connection failures"
+          },
+          {
+            "id": 6,
+            "title": "Add comprehensive error handling and logging",
+            "description": "Implement structured error responses and logging throughout the API route",
+            "dependencies": [
+              5
+            ],
+            "details": "Add try-catch blocks around all operations with specific error handling for validation (400), authentication (401), duplicates (400), Razorpay API errors (500), and database errors (500). Implement structured logging using console.error with request context, user ID, and error details. Create consistent error response format with error codes, messages, and optional details. Include request ID for error tracking.",
+            "status": "done",
+            "testStrategy": "Tests for each error type with proper status codes, structured error responses, logging output verification"
+          },
+          {
+            "id": 7,
+            "title": "Implement rate limiting and response formatting",
+            "description": "Add rate limiting protection and format successful response with subscription details",
+            "dependencies": [
+              6
+            ],
+            "details": "Implement IP-based rate limiting (10 requests/minute) using in-memory store or Redis. Add rate limit headers in responses. Format successful response with subscription ID, short URL for payment, status, and next billing date. Include CORS headers if needed. Add request/response logging for monitoring and debugging purposes.",
+            "status": "done",
+            "testStrategy": "Tests for rate limiting enforcement, rate limit header presence, successful response format, CORS headers, request/response logging"
           }
         ]
       },
       {
         "id": 7,
-        "title": "Implement Feature Flags and Configuration",
-        "description": "Add feature flags for gradual rollout and A/B testing of new AI SDK implementation",
-        "details": "Extend `frontend/lib/ai/config.ts` with feature flag support: 1) Add environment variable controls for NEXT_PUBLIC_USE_VERCEL_AI_SDK, NEXT_PUBLIC_ENABLE_STREAMING, and NEXT_PUBLIC_ENABLE_OLLAMA_FALLBACK. 2) Update API routes to respect feature flags and route to old or new services accordingly. 3) Add runtime configuration switching without code changes. 4) Implement gradual rollout logic (percentage-based user cohorts). 5) Add monitoring hooks for feature flag usage analytics. 6) Create admin interface for real-time flag toggling. 7) Document flag usage and rollback procedures. Ensure seamless switching between old and new implementations without user disruption.",
-        "testStrategy": "Feature flag toggle testing, percentage rollout validation, admin interface functionality, rollback procedure testing, and monitoring data accuracy verification.",
-        "priority": "medium",
+        "title": "API Route - Verify Payment",
+        "description": "Implement payment verification endpoint with HMAC signature validation",
+        "details": "Create frontend/app/api/subscriptions/verify-payment/route.ts with POST handler. Implement Zod validation for razorpayPaymentId, razorpaySubscriptionId, razorpaySignature. Add HMAC SHA256 signature verification using RAZORPAY_KEY_SECRET with constant-time comparison to prevent timing attacks. Update subscription status to 'authenticated' on successful verification. Include rate limiting (5 requests/minute/user), structured logging for all verification attempts, and appropriate error responses (400 for invalid signature, 401 for unauthenticated).",
+        "testStrategy": "Unit tests for valid signature verification, invalid signatures, missing fields, unauthenticated users, rate limiting. Test constant-time comparison implementation. Integration test with actual Razorpay signatures",
+        "priority": "high",
         "dependencies": [
-          5
+          6
         ],
-        "status": "pending",
+        "status": "done",
         "subtasks": [
           {
             "id": 1,
-            "title": "Create feature flag configuration system with environment controls",
-            "description": "Implement the core feature flag system with environment variable controls for AI SDK migration flags",
+            "title": "Implement HMAC SHA256 signature generation and verification utilities",
+            "description": "Create cryptographic utilities for generating and verifying HMAC SHA256 signatures using Razorpay webhook secret",
             "dependencies": [],
-            "details": "Extend `frontend/lib/ai/config.ts` to add environment variable controls for NEXT_PUBLIC_USE_VERCEL_AI_SDK, NEXT_PUBLIC_ENABLE_STREAMING, and NEXT_PUBLIC_ENABLE_OLLAMA_FALLBACK. Create feature flag evaluation logic with runtime configuration switching capabilities. Implement configuration loader that reads environment variables and provides typed feature flag interface. Add validation for flag combinations and default fallback values.",
-            "status": "pending",
-            "testStrategy": "Unit tests for configuration loading, environment variable parsing, flag validation, and default value handling. Integration tests for runtime configuration switching."
+            "details": "Create frontend/lib/razorpay/crypto.ts with functions for HMAC SHA256 signature generation and verification. Implement generateSignature(payload, secret) and verifySignature(payload, signature, secret) functions using Node.js crypto module. Ensure proper handling of string encoding and hex conversion for signature comparison.",
+            "status": "done",
+            "testStrategy": "Unit tests for signature generation with known inputs, verification with valid/invalid signatures, and edge cases with empty/null inputs"
           },
           {
             "id": 2,
-            "title": "Implement percentage-based user cohort rollout system",
-            "description": "Build gradual rollout logic with percentage-based user assignment and cohort management",
+            "title": "Implement constant-time comparison function for signature verification",
+            "description": "Create secure constant-time comparison utility to prevent timing attacks during signature verification",
             "dependencies": [
               1
             ],
-            "details": "Create user cohort assignment system using deterministic hashing based on user ID to ensure consistent feature flag experience. Implement percentage-based rollout logic that can gradually increase feature adoption from 0% to 100%. Add cohort tracking and analytics hooks for monitoring feature flag usage. Include rollback capabilities and emergency override switches. Ensure thread-safe operations and consistent user experience across sessions.",
-            "status": "pending",
-            "testStrategy": "Unit tests for cohort assignment consistency, percentage distribution accuracy, and rollback functionality. Load testing for concurrent user assignment and feature flag evaluation performance."
+            "details": "Create frontend/lib/security/constantTimeCompare.ts with constantTimeCompare(a, b) function that compares two strings in constant time regardless of content. Use bitwise operations to ensure execution time doesn't leak information about signature differences. Include input validation and length checks.",
+            "status": "done",
+            "testStrategy": "Test comparison with identical strings, different strings, strings of different lengths, and measure execution time consistency"
           },
           {
             "id": 3,
-            "title": "Build admin interface for real-time feature flag management",
-            "description": "Create admin dashboard for monitoring and controlling feature flags with real-time updates",
+            "title": "Create Zod validation schema for payment verification request",
+            "description": "Define comprehensive validation schema for Razorpay payment verification API endpoint",
+            "dependencies": [],
+            "details": "Create frontend/lib/schemas/paymentVerification.ts with Zod schema validating razorpayPaymentId (string, starts with 'pay_'), razorpaySubscriptionId (string, starts with 'sub_'), and razorpaySignature (string, hex format). Include proper error messages and type exports for TypeScript integration.",
+            "status": "done",
+            "testStrategy": "Test schema validation with valid Razorpay IDs, invalid formats, missing fields, and extra fields"
+          },
+          {
+            "id": 4,
+            "title": "Implement rate limiting and security middleware",
+            "description": "Create rate limiting middleware for payment verification endpoint to prevent abuse",
+            "dependencies": [],
+            "details": "Create frontend/lib/middleware/rateLimiting.ts with createRateLimit() function using memory-based storage for 5 requests per minute per user. Implement IP and user-based limiting with proper error responses. Include security headers and request logging middleware for audit trails.",
+            "status": "done",
+            "testStrategy": "Test rate limiting with multiple requests, IP-based limiting, user-based limiting, and proper error responses when limits exceeded"
+          },
+          {
+            "id": 5,
+            "title": "Create payment verification API route with core logic",
+            "description": "Implement the main API route handler with signature verification and subscription status updates",
             "dependencies": [
               1,
-              2
+              2,
+              3,
+              4
             ],
-            "details": "Create admin interface at `frontend/app/(auth)/admin/feature-flags/` with real-time flag toggling capabilities. Implement dashboard showing current flag states, user cohort distributions, usage analytics, and rollout progress. Add role-based access control ensuring only developer tier users can access. Include audit logging for all flag changes, emergency rollback buttons, and monitoring dashboards. Update API routes to respect feature flags and route between old/new implementations seamlessly.",
-            "status": "pending",
-            "testStrategy": "UI testing for admin interface functionality, real-time update validation, role-based access verification, audit log accuracy, and emergency rollback procedure testing. End-to-end testing for seamless routing between implementations."
+            "details": "Create frontend/app/api/subscriptions/verify-payment/route.ts with POST handler. Integrate Zod validation, HMAC signature verification using constant-time comparison, and Supabase client for updating subscription status to 'authenticated'. Include proper error handling for invalid signatures (400), unauthenticated users (401), and server errors (500).",
+            "status": "done",
+            "testStrategy": "Integration tests with valid Razorpay signatures, invalid signatures, database updates, error scenarios, and complete payment verification flow"
+          },
+          {
+            "id": 6,
+            "title": "Add comprehensive logging and monitoring",
+            "description": "Implement structured logging for all payment verification attempts and outcomes",
+            "dependencies": [
+              5
+            ],
+            "details": "Create frontend/lib/logging/paymentVerification.ts with structured logging functions for verification attempts, successes, failures, and security events. Log razorpayPaymentId, userId, verification result, and error details without exposing sensitive data. Include metrics collection for monitoring payment verification success rates.",
+            "status": "done",
+            "testStrategy": "Verify logs are created for successful verification, failed verification, security violations, and that no sensitive data is logged"
           }
         ]
       },
       {
         "id": 8,
-        "title": "Write Comprehensive Test Suite",
-        "description": "Create extensive test coverage for new AI integration including unit, integration, and performance tests",
-        "details": "Implement comprehensive testing: 1) Unit tests for all providers, services, and utilities with 85%+ coverage. 2) Integration tests for end-to-end question and blueprint generation flows. 3) Performance benchmarks comparing old vs new implementation for speed and token usage. 4) Fallback scenario testing with mocked provider failures. 5) Schema validation testing with edge cases and malformed data. 6) Streaming functionality tests with SSE mocking. 7) Load testing for concurrent generation requests. 8) Create test fixtures with real production data samples. Use Vitest for all testing with proper mocking of external API calls. Include performance regression detection and automated benchmark reporting.",
-        "testStrategy": "Self-testing: Automated test suite execution, coverage reporting, performance baseline establishment, CI/CD integration, and test data management.",
-        "priority": "medium",
+        "title": "Webhook Handler Implementation",
+        "description": "Create comprehensive webhook handler for all Razorpay subscription and payment events",
+        "details": "Create frontend/app/api/webhooks/razorpay/route.ts with POST handler implementing signature verification using RAZORPAY_WEBHOOK_SECRET, idempotency checking via webhook_events table, and event routing. Implement handlers for: subscription.activated (upgrade user tier, apply carryover, set billing dates), subscription.charged (record payment, reset limits), subscription.completed/cancelled/halted (update status, downgrade if needed), payment.authorized/captured/failed (record payment details). Include structured logging, error handling, and event record insertion for audit trail.",
+        "testStrategy": "Unit tests for signature verification, idempotency, each event handler. Integration tests with Razorpay webhook simulator. Test duplicate event handling, invalid signatures, malformed payloads",
+        "priority": "high",
         "dependencies": [
-          6
+          7
         ],
-        "status": "pending",
+        "status": "done",
         "subtasks": [
           {
             "id": 1,
-            "title": "Set up testing infrastructure and configuration",
-            "description": "Configure Vitest testing framework with proper setup for AI SDK testing, mocking configuration, and coverage reporting",
+            "title": "Implement Razorpay Signature Verification",
+            "description": "Create signature verification function using RAZORPAY_WEBHOOK_SECRET to validate incoming webhook requests",
             "dependencies": [],
-            "details": "Create comprehensive test setup: 1) Configure Vitest with TypeScript and Next.js integration in frontend/vitest.config.ts. 2) Set up test environment with proper mocking for external APIs (Anthropic, Perplexity, Ollama). 3) Configure coverage reporting with 85%+ target thresholds. 4) Create shared test utilities and helpers in __tests__/utils/. 5) Set up test database configuration for integration tests. 6) Configure CI/CD integration for automated test execution.",
-            "status": "pending",
-            "testStrategy": "Self-validating through successful test suite execution and coverage report generation"
+            "details": "Create signature verification utility in frontend/lib/razorpay/webhookSecurity.ts using crypto.createHmac to verify webhook signatures. Implement validateWebhookSignature function that compares computed hash with x-razorpay-signature header. Include error handling for missing signatures and invalid secrets.",
+            "status": "done",
+            "testStrategy": "Unit tests for signature validation with valid/invalid signatures, missing headers, and malformed payloads"
           },
           {
             "id": 2,
-            "title": "Write unit tests for AI provider configurations",
-            "description": "Create comprehensive unit tests for all three AI providers (Anthropic, Perplexity, Ollama) with proper mocking",
+            "title": "Create Webhook Idempotency Handler",
+            "description": "Implement idempotency checking using webhook_events table to prevent duplicate event processing",
             "dependencies": [
               1
             ],
-            "details": "Implement unit tests for: 1) Test anthropicProvider.ts initialization, model selection, and error handling. 2) Test perplexityProvider.ts custom OpenAI adapter configuration and API calls. 3) Test ollamaProvider.ts wrapper functionality and existing client integration. 4) Mock external API calls using Vitest mocks. 5) Test environment variable validation and error scenarios. 6) Achieve 90%+ coverage for provider code.",
-            "status": "pending",
-            "testStrategy": "Unit test execution with coverage reporting, mock verification, and error scenario validation"
+            "details": "Create idempotency service in frontend/lib/razorpay/idempotency.ts that checks webhook_events table for existing event_id and event_type combinations. Include functions to record processed events and skip duplicates. Implement atomic operations to prevent race conditions.",
+            "status": "done",
+            "testStrategy": "Unit tests for duplicate event detection, race condition handling, and database transaction integrity"
           },
           {
             "id": 3,
-            "title": "Create integration tests for generation services",
-            "description": "Build end-to-end integration tests for both question generation and blueprint generation services with real AI SDK flow",
+            "title": "Build Event Routing System",
+            "description": "Create event routing mechanism to direct webhook events to appropriate handlers based on event type",
             "dependencies": [
-              1,
               2
             ],
-            "details": "Develop integration tests: 1) Test complete question generation flow from static answers to dynamic questions using AI SDK. 2) Test blueprint generation service with streaming and non-streaming modes. 3) Test fallback scenarios with mocked provider failures. 4) Validate schema compliance for all generated outputs. 5) Test context extraction from different static answer formats. 6) Include real production data samples as test fixtures.",
-            "status": "pending",
-            "testStrategy": "Integration test suite with real API mocking, schema validation, and end-to-end flow verification"
+            "details": "Create event router in frontend/lib/razorpay/eventRouter.ts that maps event types to handler functions. Support subscription.activated, subscription.charged, subscription.completed/cancelled/halted, and payment.authorized/captured/failed events. Include error handling for unknown event types.",
+            "status": "done",
+            "testStrategy": "Unit tests for correct handler routing, unknown event type handling, and error propagation"
           },
           {
             "id": 4,
-            "title": "Implement streaming functionality tests",
-            "description": "Create specialized tests for Server-Sent Events streaming with proper SSE mocking and real-time progress validation",
+            "title": "Implement Subscription Event Handlers",
+            "description": "Create handlers for subscription lifecycle events including activation, charging, and cancellation",
             "dependencies": [
-              1,
               3
             ],
-            "details": "Build streaming tests: 1) Mock SSE connections using custom EventSource mocks. 2) Test streaming progress updates and real-time UI feedback. 3) Test connection error handling and reconnection logic. 4) Validate streaming data format and progressive content delivery. 5) Test streaming cancellation and cleanup. 6) Create React Testing Library tests for streaming UI components.",
-            "status": "pending",
-            "testStrategy": "SSE mock validation, streaming component testing, and real-time progress verification"
+            "details": "Create subscription event handlers in frontend/lib/razorpay/subscriptionHandlers.ts for subscription.activated (upgrade user tier, apply carryover, set billing dates), subscription.charged (record payment, reset usage limits), and subscription.completed/cancelled/halted (update status, downgrade tier if needed). Include proper error handling and rollback mechanisms.",
+            "status": "done",
+            "testStrategy": "Unit tests for each subscription event handler, tier upgrade/downgrade logic, and carryover calculations"
           },
           {
             "id": 5,
-            "title": "Build performance benchmark suite",
-            "description": "Create comprehensive performance tests comparing old vs new implementation for speed, token usage, and resource consumption",
+            "title": "Implement Payment Event Handlers",
+            "description": "Create handlers for payment lifecycle events including authorization, capture, and failure",
             "dependencies": [
-              1,
               3
             ],
-            "details": "Implement performance benchmarks: 1) Create baseline measurements for existing Claude/Perplexity implementation. 2) Build comparative benchmarks for new AI SDK implementation measuring generation time, token usage, and memory consumption. 3) Implement load testing for concurrent generation requests. 4) Create automated performance regression detection with configurable thresholds. 5) Generate detailed performance reports with visualizations.",
-            "status": "pending",
-            "testStrategy": "Performance baseline establishment, comparative benchmarking, and automated regression detection"
+            "details": "Create payment event handlers in frontend/lib/razorpay/paymentHandlers.ts for payment.authorized, payment.captured, and payment.failed events. Record payment details in database, update payment status, and handle failed payment scenarios with appropriate user notifications and grace periods.",
+            "status": "done",
+            "testStrategy": "Unit tests for payment event processing, status updates, and failure handling workflows"
           },
           {
             "id": 6,
-            "title": "Create schema validation and edge case tests",
-            "description": "Build comprehensive tests for schema validation, malformed data handling, and edge case scenarios across all AI responses",
+            "title": "Create State Management and Database Operations",
+            "description": "Implement database operations for user profile updates and payment record management",
             "dependencies": [
-              1,
-              2
+              4,
+              5
             ],
-            "details": "Develop validation tests: 1) Test Zod schema validation for all AI response formats. 2) Create edge case scenarios with malformed, incomplete, or invalid AI responses. 3) Test error handling for schema validation failures. 4) Validate type safety and runtime validation alignment. 5) Test boundary conditions and extreme input scenarios. 6) Create comprehensive test fixtures covering all schema edge cases.",
-            "status": "pending",
-            "testStrategy": "Schema validation testing, edge case scenario validation, and error handling verification"
+            "details": "Create database service in frontend/lib/razorpay/dbOperations.ts with functions to update user profiles (subscription_tier, subscription_status, billing dates), record payments, and manage usage limits. Include proper transaction handling and error recovery mechanisms.",
+            "status": "done",
+            "testStrategy": "Integration tests for database transactions, rollback scenarios, and data consistency validation"
           },
           {
             "id": 7,
-            "title": "Set up automated test reporting and CI integration",
-            "description": "Configure automated test execution, coverage reporting, and CI/CD integration with performance regression detection",
+            "title": "Implement Structured Logging and Error Handling",
+            "description": "Add comprehensive logging and error handling throughout the webhook processing pipeline",
             "dependencies": [
-              1,
-              2,
-              3,
-              4,
-              5,
               6
             ],
-            "details": "Implement test automation: 1) Configure GitHub Actions workflow for automated test execution on PRs and main branch. 2) Set up coverage reporting with automatic PR comments and status checks. 3) Integrate performance benchmarks into CI pipeline with regression detection. 4) Create automated test result reporting with detailed failure analysis. 5) Configure test data management and fixture updates. 6) Set up monitoring for test suite performance and reliability.",
-            "status": "pending",
-            "testStrategy": "CI/CD pipeline validation, automated reporting verification, and test suite reliability monitoring"
+            "details": "Create logging service in frontend/lib/razorpay/webhookLogger.ts with structured logging for all webhook events, processing steps, and errors. Include context information like user_id, event_id, and processing timestamps. Implement error handling with proper HTTP status codes and user-friendly error messages.",
+            "status": "done",
+            "testStrategy": "Unit tests for log format consistency, error categorization, and proper status code responses"
+          },
+          {
+            "id": 8,
+            "title": "Create Main Webhook Route Handler",
+            "description": "Implement the main POST handler in frontend/app/api/webhooks/razorpay/route.ts that orchestrates the entire webhook processing flow",
+            "dependencies": [
+              7
+            ],
+            "details": "Create the main webhook route handler that integrates all components: signature verification, idempotency checking, event routing, and logging. Include proper request parsing, response formatting, and error handling. Ensure all webhook events are recorded in the audit trail and proper HTTP responses are returned.",
+            "status": "done",
+            "testStrategy": "Integration tests for complete webhook processing flow, error scenarios, and proper HTTP response codes"
           }
         ]
       },
       {
         "id": 9,
-        "title": "Create Migration Utilities and Monitoring",
-        "description": "Build utilities for smooth migration including data validation, performance monitoring, and error tracking",
-        "details": "Create migration and monitoring infrastructure: 1) `frontend/lib/ai/utils/migrationValidator.ts` - Validate output consistency between old and new implementations. 2) `frontend/lib/ai/utils/performanceMonitor.ts` - Track generation times, token usage, success rates, and cost metrics. 3) Enhanced logging with structured telemetry for debugging and analytics. 4) Data migration scripts for any schema changes or format updates. 5) Health check endpoints for provider availability monitoring. 6) Alert system for failure rate increases or performance degradation. 7) Usage analytics dashboard showing migration progress and system health. Include rollback triggers and automated fallback to old system on critical failures.",
-        "testStrategy": "Migration validation accuracy, monitoring data collection, alert system functionality, health check reliability, and rollback procedure automation testing.",
+        "title": "Frontend Razorpay Integration Components",
+        "description": "Create Razorpay provider component and checkout hook for frontend integration",
+        "details": "Add Razorpay checkout script to frontend/app/layout.tsx. Create frontend/components/providers/RazorpayProvider.tsx with 'use client' directive, dynamic script loading, and cleanup. Create frontend/lib/hooks/useRazorpayCheckout.ts with openCheckout method handling subscription options, success/failure callbacks, and modal management. Update frontend/types/razorpay.d.ts with Window.Razorpay global declaration. Ensure proper TypeScript typing and error handling for script load failures.",
+        "testStrategy": "Verify Razorpay script loads on page, test modal opening and closing, verify success/failure callbacks work correctly, test with ad blocker enabled",
         "priority": "medium",
         "dependencies": [
           8
         ],
-        "status": "pending",
+        "status": "done",
         "subtasks": [
           {
             "id": 1,
-            "title": "Create Migration Validation Utilities",
-            "description": "Build validation tools to ensure output consistency between old and new AI implementations during migration",
+            "title": "Add Razorpay checkout script to layout.tsx",
+            "description": "Integrate Razorpay checkout script into the main application layout for global availability",
             "dependencies": [],
-            "details": "Create `frontend/lib/ai/utils/migrationValidator.ts` with functions to compare outputs from legacy Claude/Ollama services against new AI SDK implementations. Include schema validation, content similarity scoring, performance delta tracking, and automated test case generation. Implement side-by-side comparison tools for manual validation and automated regression detection.",
-            "status": "pending",
-            "testStrategy": "Unit tests for validation logic, integration tests with real service outputs, comparison accuracy testing, and automated regression detection validation"
+            "details": "Add Razorpay checkout script to frontend/app/layout.tsx using Next.js Script component with proper loading strategy. Configure script to load asynchronously and handle loading states. Ensure script is available globally across all pages.",
+            "status": "done",
+            "testStrategy": "Verify script loads correctly on page load, check global Razorpay object availability"
           },
           {
             "id": 2,
-            "title": "Build Performance Monitoring Infrastructure",
-            "description": "Implement comprehensive performance tracking for AI generation times, token usage, success rates, and cost metrics",
+            "title": "Create RazorpayProvider component with dynamic script loading",
+            "description": "Build provider component to manage Razorpay script loading and cleanup with proper React patterns",
             "dependencies": [
               1
             ],
-            "details": "Create `frontend/lib/ai/utils/performanceMonitor.ts` with telemetry collection for generation times, token consumption, API response times, success/failure rates, and cost tracking across all providers. Include real-time metrics aggregation, historical data storage, and performance trend analysis. Integrate with existing logging infrastructure and provide dashboard-ready data exports.",
-            "status": "pending",
-            "testStrategy": "Metrics collection accuracy testing, performance overhead measurement, data aggregation validation, and integration testing with monitoring dashboards"
+            "details": "Create frontend/components/providers/RazorpayProvider.tsx with 'use client' directive. Implement dynamic script loading with useEffect, proper cleanup on unmount, loading state management, and error handling for script load failures. Provide context for child components.",
+            "status": "done",
+            "testStrategy": "Test script loading states, verify cleanup on component unmount, test error handling for failed script loads"
           },
           {
             "id": 3,
-            "title": "Implement Health Check and Alert Systems",
-            "description": "Create health monitoring endpoints and alert systems for provider availability and performance degradation detection",
+            "title": "Implement useRazorpayCheckout hook with checkout functionality",
+            "description": "Create custom hook for handling Razorpay checkout process with modal management and callbacks",
             "dependencies": [
               2
             ],
-            "details": "Build health check endpoints in `frontend/app/api/health/` for monitoring all AI providers, database connections, and critical services. Implement alert system for failure rate increases, performance degradation, and provider unavailability. Include automated notifications, escalation procedures, and integration with existing monitoring infrastructure. Add circuit breaker patterns for graceful degradation.",
-            "status": "pending",
-            "testStrategy": "Health check endpoint testing, alert system functionality validation, circuit breaker testing, and failure simulation scenarios"
+            "details": "Create frontend/lib/hooks/useRazorpayCheckout.ts with openCheckout method. Handle subscription options, success/failure callbacks, modal management, and integration with Razorpay SDK. Include proper error handling and loading states.",
+            "status": "done",
+            "testStrategy": "Test modal opening and closing, verify success/failure callback execution, test with different subscription options"
           },
           {
             "id": 4,
-            "title": "Create Data Migration Scripts and Rollback Systems",
-            "description": "Build migration scripts for schema changes and implement automated rollback triggers for critical failures",
+            "title": "Update TypeScript declarations for Razorpay global object",
+            "description": "Add proper TypeScript type definitions for Razorpay SDK integration",
+            "dependencies": [],
+            "details": "Update frontend/types/razorpay.d.ts with Window.Razorpay global declaration. Include proper type definitions for Razorpay constructor, options interface, and callback functions. Ensure type safety across the application.",
+            "status": "done",
+            "testStrategy": "Verify TypeScript compilation passes, check type inference works correctly in IDE"
+          },
+          {
+            "id": 5,
+            "title": "Implement comprehensive error handling and edge cases",
+            "description": "Add robust error handling for all failure scenarios and edge cases in Razorpay integration",
             "dependencies": [
-              1,
-              2,
-              3
+              3,
+              4
             ],
-            "details": "Create data migration scripts in `scripts/migration/` for any schema changes or format updates required by AI SDK integration. Implement rollback triggers that automatically fall back to the old system on critical failures. Include database migration utilities, configuration rollback procedures, and automated testing of rollback scenarios. Add migration progress tracking and safety checks.",
-            "status": "pending",
-            "testStrategy": "Migration script testing with production data samples, rollback procedure validation, automated failure detection testing, and end-to-end migration scenario testing"
+            "details": "Implement comprehensive error handling for script load failures, network issues, payment failures, and user cancellations. Add fallback UI states, proper error messages, and recovery mechanisms. Test with ad blockers and network failures.",
+            "status": "done",
+            "testStrategy": "Test error scenarios including script load failures, network issues, payment cancellations, and ad blocker interference"
           }
         ]
       },
       {
         "id": 10,
-        "title": "Deploy and Clean Up Legacy Code",
-        "description": "Execute production deployment with gradual rollout and remove deprecated code after validation",
-        "details": "Complete migration deployment: 1) Deploy with feature flags disabled initially for staging validation. 2) Execute gradual production rollout (10% → 50% → 100% users) with monitoring. 3) Validate production metrics match or exceed baseline performance. 4) Mark legacy services as deprecated with proper TypeScript annotations and warnings. 5) After 2-week grace period, remove old code: claude/ directory, dynamicQuestionGenerationV2.ts, perplexityQuestionService.ts, old blueprintGenerationService.ts. 6) Update documentation, CLAUDE.md, and API docs. 7) Clean up unused dependencies and imports. 8) Verify CI/CD pipeline passes without old code references. Ensure complete migration with zero production issues and successful legacy code removal.",
-        "testStrategy": "Production deployment verification, rollout metrics validation, deprecated code warning functionality, complete removal testing, documentation accuracy, and post-cleanup system stability confirmation.",
-        "priority": "low",
+        "title": "Checkout Button Component",
+        "description": "Create reusable checkout button component with loading states and error handling",
+        "details": "Create frontend/components/pricing/CheckoutButton.tsx with 'use client' directive. Props: planId, tier, disabled. Implement handleCheckout function calling create-subscription API, opening Razorpay modal, handling success (verify payment, redirect to dashboard), and handling failure (show toast). Include loading spinner, button disable during processing, and comprehensive error handling with user-friendly messages. Integrate with pricing page by replacing existing 'Upgrade Now' buttons, conditionally render based on NEXT_PUBLIC_ENABLE_PAYMENTS flag.",
+        "testStrategy": "Test button click triggers API call, modal opens successfully, loading states show correctly, success redirects to dashboard, failure shows error toast, button disabled during processing",
+        "priority": "medium",
         "dependencies": [
           9
+        ],
+        "status": "done",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Create CheckoutButton Component Structure",
+            "description": "Create the base CheckoutButton component file with TypeScript interface definitions and component skeleton",
+            "dependencies": [],
+            "details": "Create frontend/components/pricing/CheckoutButton.tsx with 'use client' directive. Define CheckoutButtonProps interface with planId (string), tier (string), and disabled (boolean) properties. Set up component structure with proper TypeScript typing and export default CheckoutButton component.",
+            "status": "done",
+            "testStrategy": "Verify component renders without errors, props are properly typed, and TypeScript compilation passes"
+          },
+          {
+            "id": 2,
+            "title": "Implement State Management and Loading States",
+            "description": "Add React state management for loading, error handling, and button disabled states during checkout process",
+            "dependencies": [
+              1
+            ],
+            "details": "Implement useState hooks for isLoading, error state, and processing state. Create loading spinner UI using existing design system components. Add conditional rendering for button text and spinner. Implement button disable logic during API calls and payment processing.",
+            "status": "done",
+            "testStrategy": "Test loading states show/hide correctly, button disables during processing, spinner appears when loading"
+          },
+          {
+            "id": 3,
+            "title": "Integrate Create Subscription API Call",
+            "description": "Implement handleCheckout function that calls the create-subscription API endpoint and handles response",
+            "dependencies": [
+              2
+            ],
+            "details": "Create handleCheckout async function that calls POST /api/subscriptions/create with planId and tier. Add proper error handling for API failures, network errors, and validation errors. Parse API response to extract Razorpay order details. Add try-catch blocks with user-friendly error messages.",
+            "status": "done",
+            "testStrategy": "Test API call triggers on button click, handles success/failure responses, shows appropriate error messages"
+          },
+          {
+            "id": 4,
+            "title": "Implement Razorpay Modal Integration",
+            "description": "Add Razorpay modal opening, payment processing, and success/failure callback handling",
+            "dependencies": [
+              3
+            ],
+            "details": "Import Razorpay SDK types and implement modal opening with order details from API response. Configure Razorpay options with theme, prefill user data, and callback handlers. Implement success handler to verify payment and redirect to dashboard. Implement failure handler to show error toast and reset component state.",
+            "status": "done",
+            "testStrategy": "Test Razorpay modal opens correctly, success redirects to dashboard, failure shows error toast"
+          },
+          {
+            "id": 5,
+            "title": "Error Handling and Pricing Page Integration",
+            "description": "Implement comprehensive error handling and integrate component into pricing page",
+            "dependencies": [
+              4
+            ],
+            "details": "Add comprehensive error handling for network failures, API errors, payment failures, and validation errors. Implement user-friendly error messages using toast notifications. Replace existing 'Upgrade Now' buttons in pricing page with CheckoutButton components. Add conditional rendering based on NEXT_PUBLIC_ENABLE_PAYMENTS environment flag.",
+            "status": "done",
+            "testStrategy": "Test all error scenarios show appropriate messages, pricing page integration works correctly, environment flag controls visibility"
+          }
+        ]
+      },
+      {
+        "id": 11,
+        "title": "API Route - Cancel Subscription",
+        "description": "Implement subscription cancellation endpoint with immediate and end-of-cycle options",
+        "details": "Create frontend/app/api/subscriptions/cancel/route.ts with POST handler. Implement Zod validation for cancelAtCycleEnd boolean parameter. Add authentication check, active subscription retrieval, Razorpay subscription cancellation via SDK. Support two modes: cancel at cycle end (user retains access until next_billing_cycle_date, no immediate downgrade) or immediate cancellation (instant downgrade to free tier, update user_profiles). Update subscriptions table status to 'cancelled', log cancellation events, and return appropriate response with cancellation date.",
+        "testStrategy": "Unit tests for both cancellation modes, authentication requirements, error handling. Integration tests cancelling actual subscriptions in Razorpay test mode, verifying user tier changes correctly",
+        "priority": "medium",
+        "dependencies": [
+          10
+        ],
+        "status": "done",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Create Zod validation schema for cancellation request",
+            "description": "Define and implement Zod validation schema for the cancellation API request payload",
+            "dependencies": [],
+            "details": "Create a Zod schema in frontend/lib/schemas/subscription.ts to validate the cancellation request payload. Include cancelAtCycleEnd boolean parameter validation, optional reason field, and ensure proper error messages for invalid inputs.",
+            "status": "done",
+            "testStrategy": "Unit tests for schema validation with valid and invalid payloads"
+          },
+          {
+            "id": 2,
+            "title": "Implement authentication and user verification",
+            "description": "Add authentication middleware and verify user has an active subscription to cancel",
+            "dependencies": [
+              1
+            ],
+            "details": "Create authentication check using Supabase server client, verify user session exists, retrieve user profile and check for active subscription. Return appropriate error responses for unauthenticated users or users without active subscriptions.",
+            "status": "done",
+            "testStrategy": "Unit tests for authentication scenarios including valid user, invalid user, and no active subscription"
+          },
+          {
+            "id": 3,
+            "title": "Integrate Razorpay SDK cancellation logic",
+            "description": "Implement Razorpay subscription cancellation using the Razorpay SDK",
+            "dependencies": [
+              2
+            ],
+            "details": "Use Razorpay SDK to cancel the subscription in Razorpay system. Handle both immediate cancellation and cancel_at_cycle_end options. Include proper error handling for Razorpay API failures and network issues.",
+            "status": "done",
+            "testStrategy": "Integration tests with Razorpay test mode to verify subscription cancellation works correctly"
+          },
+          {
+            "id": 4,
+            "title": "Handle immediate vs end-of-cycle cancellation modes",
+            "description": "Implement business logic for both immediate and end-of-cycle cancellation scenarios",
+            "dependencies": [
+              3
+            ],
+            "details": "For immediate cancellation: downgrade user to free tier in user_profiles table, update subscription status immediately. For end-of-cycle: mark subscription as cancelled but maintain current tier until next_billing_cycle_date, schedule tier downgrade.",
+            "status": "done",
+            "testStrategy": "Unit tests for both cancellation modes verifying correct user tier handling and timing"
+          },
+          {
+            "id": 5,
+            "title": "Update database records and log cancellation events",
+            "description": "Update subscriptions table status and create cancellation event logs",
+            "dependencies": [
+              4
+            ],
+            "details": "Update subscriptions table with status 'cancelled' and cancellation_date. Log cancellation event with timestamp, reason, and mode (immediate/end-of-cycle). Use database transactions to ensure data consistency.",
+            "status": "done",
+            "testStrategy": "Unit tests for database updates and transaction rollback scenarios"
+          },
+          {
+            "id": 6,
+            "title": "Create API route handler with comprehensive testing",
+            "description": "Implement the complete POST handler in route.ts with full error handling and response formatting",
+            "dependencies": [
+              5
+            ],
+            "details": "Create frontend/app/api/subscriptions/cancel/route.ts with POST handler that integrates all previous subtasks. Include comprehensive error handling, structured response format with cancellation date, and proper HTTP status codes.",
+            "status": "done",
+            "testStrategy": "Integration tests covering complete cancellation flow, error scenarios, and API response validation"
+          }
+        ]
+      },
+      {
+        "id": 12,
+        "title": "Subscription Management Page Components",
+        "description": "Create subscription info, payment history, and cancellation components for user dashboard",
+        "details": "Create frontend/components/subscription/SubscriptionInfo.tsx displaying current tier, status, next billing date, payment amount, payment method. Create frontend/components/subscription/PaymentHistory.tsx with pagination (10 per page) showing payment date, amount, status, method, invoice links using get_user_payment_history RPC function. Create frontend/components/subscription/CancelSubscriptionButton.tsx with confirmation dialog preventing accidental cancellation. Create frontend/app/(auth)/subscription/page.tsx combining all components with authentication check and proper layout.",
+        "testStrategy": "Test subscription info displays correctly, payment history pagination works, cancel button requires confirmation, authentication redirects work, all components handle loading and error states",
+        "priority": "medium",
+        "dependencies": [
+          11
+        ],
+        "status": "done",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Create SubscriptionInfo Component",
+            "description": "Build subscription information display component showing user's current subscription details",
+            "dependencies": [],
+            "details": "Create frontend/components/subscription/SubscriptionInfo.tsx component that displays current subscription tier, status, next billing date, payment amount, and payment method. Implement loading states, error handling, and responsive design using Tailwind CSS. Use TypeScript interfaces for subscription data. Fetch data from user profile and subscription tables.",
+            "status": "done",
+            "testStrategy": "Test component renders correctly with mock data, handles loading states, displays error messages appropriately, and shows proper formatting for dates and amounts"
+          },
+          {
+            "id": 2,
+            "title": "Create PaymentHistory Component with Pagination",
+            "description": "Build paginated payment history component displaying transaction records",
+            "dependencies": [],
+            "details": "Create frontend/components/subscription/PaymentHistory.tsx with pagination showing 10 payments per page. Display payment date, amount, status, method, and invoice download links. Use get_user_payment_history RPC function for data fetching. Implement pagination controls, loading states, and empty states. Include proper TypeScript types for payment data.",
+            "status": "done",
+            "testStrategy": "Test pagination works correctly, payment data displays properly, invoice links function, loading states work, and empty state shows when no payments exist"
+          },
+          {
+            "id": 3,
+            "title": "Create CancelSubscriptionButton Component",
+            "description": "Build subscription cancellation component with confirmation dialog",
+            "dependencies": [],
+            "details": "Create frontend/components/subscription/CancelSubscriptionButton.tsx with confirmation dialog to prevent accidental cancellation. Implement modal dialog with two options: cancel immediately or cancel at cycle end. Include proper warning messages, loading states during cancellation, and success/error feedback. Use React Hook Form for confirmation input validation.",
+            "status": "done",
+            "testStrategy": "Test confirmation dialog appears, prevents accidental clicks, handles both cancellation modes, shows proper loading states, and displays success/error messages"
+          },
+          {
+            "id": 4,
+            "title": "Create Subscription Management Page Layout",
+            "description": "Build main subscription page combining all components with proper layout",
+            "dependencies": [
+              1,
+              2,
+              3
+            ],
+            "details": "Create frontend/app/(auth)/subscription/page.tsx combining SubscriptionInfo, PaymentHistory, and CancelSubscriptionButton components. Implement responsive grid layout using Tailwind CSS. Add page title, breadcrumbs, and proper spacing. Include loading states for the entire page and error boundaries.",
+            "status": "done",
+            "testStrategy": "Test page layout renders correctly on all screen sizes, components are properly arranged, breadcrumbs work, and error boundaries catch component errors"
+          },
+          {
+            "id": 5,
+            "title": "Implement Authentication Handling",
+            "description": "Add authentication checks and redirect logic for subscription page",
+            "dependencies": [
+              4
+            ],
+            "details": "Implement authentication middleware in subscription page to ensure only logged-in users can access. Add redirect logic to login page for unauthenticated users. Implement server-side user profile fetching using Supabase server client. Add proper TypeScript types for user session and profile data.",
+            "status": "done",
+            "testStrategy": "Test unauthenticated users get redirected to login, authenticated users can access page, server-side data fetching works correctly, and session handling is secure"
+          },
+          {
+            "id": 6,
+            "title": "Implement State Management and Data Fetching",
+            "description": "Add state management for subscription data and real-time updates",
+            "dependencies": [
+              4,
+              5
+            ],
+            "details": "Integrate TanStack Query for subscription data fetching and caching. Set up real-time subscriptions using Supabase for subscription status changes. Implement optimistic updates for subscription actions. Add proper error handling and retry logic. Create custom hooks for subscription data management.",
+            "status": "done",
+            "testStrategy": "Test data fetching works correctly, real-time updates reflect subscription changes, optimistic updates provide good UX, and error handling gracefully manages failures"
+          }
+        ]
+      },
+      {
+        "id": 13,
+        "title": "Razorpay Live Plans Creation and Configuration",
+        "description": "Create live Razorpay plans and update configuration for production deployment",
+        "details": "Create 6 live plans in Razorpay dashboard: Explorer (₹1,599), Navigator (₹3,299), Voyager (₹6,699), Crew (₹1,999), Fleet (₹5,399), Armada (₹10,899). Document plan IDs and update frontend/lib/config/razorpayPlans.ts with live plan IDs. Create frontend/scripts/createRazorpayPlans.ts script for automated plan creation. Configure live webhook URL in Razorpay dashboard, update environment variables for production with live API keys and webhook secret. Verify plan creation and configuration in Razorpay dashboard.",
+        "testStrategy": "Verify all 6 plans created with correct pricing, plan IDs documented and updated in config, webhook URL configured correctly, environment variables set for production",
+        "priority": "high",
+        "dependencies": [
+          12
+        ],
+        "status": "done",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Create Live Razorpay Plans in Dashboard",
+            "description": "Manually create all 6 live subscription plans in Razorpay dashboard with correct pricing and billing cycles",
+            "dependencies": [],
+            "details": "Access Razorpay live dashboard and create 6 subscription plans: Explorer (₹1,599/month), Navigator (₹3,299/month), Voyager (₹6,699/month), Crew (₹1,999/month), Fleet (₹5,399/month), Armada (₹10,899/month). Configure billing cycle as monthly, set appropriate plan names and descriptions. Document all generated plan IDs for configuration update.",
+            "status": "done",
+            "testStrategy": "Verify all 6 plans appear in Razorpay dashboard with correct pricing, billing cycles, and plan names match requirements"
+          },
+          {
+            "id": 2,
+            "title": "Update Razorpay Configuration with Live Plan IDs",
+            "description": "Update frontend configuration files with live plan IDs from Razorpay dashboard",
+            "dependencies": [
+              1
+            ],
+            "details": "Update frontend/lib/config/razorpayPlans.ts file replacing test plan IDs with live plan IDs obtained from step 1. Ensure all 6 plans (Explorer, Navigator, Voyager, Crew, Fleet, Armada) have correct live plan IDs mapped to their respective tiers. Update any environment variables or configuration that reference plan IDs.",
+            "status": "done",
+            "testStrategy": "Verify configuration file contains all 6 live plan IDs, run typecheck to ensure no errors, test getPlanId function returns correct live IDs"
+          },
+          {
+            "id": 3,
+            "title": "Develop Automated Razorpay Plan Creation Script",
+            "description": "Create TypeScript script to automate Razorpay plan creation for future deployments",
+            "dependencies": [
+              1
+            ],
+            "details": "Create frontend/scripts/createRazorpayPlans.ts script using Razorpay SDK to programmatically create all 6 subscription plans. Include error handling, plan validation, and option to update configuration file automatically. Add script to package.json as 'create-plans' command. Include documentation on how to use script for different environments.",
+            "status": "done",
+            "testStrategy": "Run script in test mode, verify it creates plans correctly, test error handling with invalid credentials, ensure it doesn't duplicate existing plans"
+          },
+          {
+            "id": 4,
+            "title": "Configure Production Environment and Webhooks",
+            "description": "Set up live webhook URL, update environment variables, and configure production Razorpay settings",
+            "dependencies": [
+              1,
+              2
+            ],
+            "details": "Configure live webhook URL in Razorpay dashboard pointing to production domain. Update production environment variables: NEXT_PUBLIC_RAZORPAY_KEY_ID (live key), RAZORPAY_KEY_SECRET (live secret), RAZORPAY_WEBHOOK_SECRET (live webhook secret). Verify webhook endpoint is accessible and responds correctly. Test webhook delivery with sample events.",
+            "status": "done",
+            "testStrategy": "Verify webhook URL configured in dashboard, test webhook endpoint responds with 200, verify environment variables set correctly in production, test sample webhook delivery"
+          }
+        ]
+      },
+      {
+        "id": 14,
+        "title": "Comprehensive Testing Suite Implementation",
+        "description": "Implement unit tests, integration tests, and E2E tests for complete payment flow coverage",
+        "details": "Create comprehensive test suites: Unit tests for all API routes with >90% coverage using Jest/Vitest, mocking Razorpay SDK and Supabase client. Integration tests for complete subscription flows using test database. E2E tests with Playwright testing pricing page → checkout → payment → dashboard flow using Razorpay test mode. Include tests for error scenarios, edge cases, webhook processing, idempotency, signature verification, rate limiting, and security measures. Create test fixtures and helper functions for consistent test data.",
+        "testStrategy": "Run all test suites, verify >90% code coverage, ensure all happy paths and error cases covered, validate webhook event processing, confirm security measures work correctly",
+        "priority": "high",
+        "dependencies": [
+          13
+        ],
+        "status": "done",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Unit Test Suite Setup and Configuration",
+            "description": "Set up comprehensive unit testing framework with Jest/Vitest configuration for API routes testing",
+            "dependencies": [],
+            "details": "Configure Jest/Vitest testing framework in frontend directory. Set up test configuration files (jest.config.js or vitest.config.ts), configure TypeScript support, set up test environment variables, and create initial test structure for API routes. Configure coverage reporting with >90% target and exclude patterns for non-testable code.",
+            "status": "done",
+            "testStrategy": "Verify test runner executes successfully, configuration loads correctly, and coverage reporting works"
+          },
+          {
+            "id": 2,
+            "title": "Mocking Setup for External Dependencies",
+            "description": "Create comprehensive mocks for Razorpay SDK and Supabase client to enable isolated unit testing",
+            "dependencies": [
+              1
+            ],
+            "details": "Create mock implementations for Razorpay SDK methods (subscriptions.create, customers.create, plans.fetch), mock Supabase client with database operations (insert, select, update, delete), and authentication methods. Set up mock factories for consistent test data generation and response simulation including error scenarios.",
+            "status": "done",
+            "testStrategy": "Verify mocks return expected data structures and can simulate both success and error conditions"
+          },
+          {
+            "id": 3,
+            "title": "API Routes Unit Tests Implementation",
+            "description": "Implement unit tests for all payment-related API routes with comprehensive coverage",
+            "dependencies": [
+              2
+            ],
+            "details": "Create unit tests for create-subscription, webhook processing, usage tracking, and billing routes. Test request validation, authentication checks, business logic, error handling, and response formats. Include tests for edge cases like invalid planId, expired tokens, malformed requests, and rate limiting scenarios.",
+            "status": "done",
+            "testStrategy": "Achieve >90% code coverage, test all happy paths and error scenarios, verify proper HTTP status codes"
+          },
+          {
+            "id": 4,
+            "title": "Integration Testing Framework Setup",
+            "description": "Set up integration testing environment with test database and Razorpay test mode configuration",
+            "dependencies": [
+              3
+            ],
+            "details": "Configure test database environment using Supabase test instance or local PostgreSQL. Set up test data seeding and cleanup scripts. Configure Razorpay test mode with test API keys and webhook endpoints. Create integration test helpers for database operations and API request simulation.",
+            "status": "done",
+            "testStrategy": "Verify test database connectivity, data seeding/cleanup works, and Razorpay test mode integration functions"
+          },
+          {
+            "id": 5,
+            "title": "End-to-End Testing with Playwright",
+            "description": "Implement E2E tests covering complete user journey from pricing page to successful payment",
+            "dependencies": [
+              4
+            ],
+            "details": "Set up Playwright testing framework and create E2E test scenarios: navigate to pricing page, select plan, proceed through checkout flow, complete payment using Razorpay test cards, verify dashboard updates with new subscription. Include error scenario tests for payment failures and timeout handling.",
+            "status": "done",
+            "testStrategy": "All E2E scenarios pass, user flows work end-to-end, error handling scenarios covered"
+          },
+          {
+            "id": 6,
+            "title": "Test Fixtures and Helper Functions",
+            "description": "Create comprehensive test fixtures and utility functions for consistent test data generation",
+            "dependencies": [
+              1
+            ],
+            "details": "Develop test fixtures for user profiles, subscription plans, payment records, and webhook payloads. Create helper functions for database seeding, API request builders, mock data generation, and test assertion utilities. Include factories for different subscription tiers and payment scenarios.",
+            "status": "done",
+            "testStrategy": "Fixtures generate consistent data, helpers reduce test boilerplate, and utilities work across all test types"
+          },
+          {
+            "id": 7,
+            "title": "Security and Webhook Testing",
+            "description": "Implement security-focused tests for webhook signature verification and authentication flows",
+            "dependencies": [
+              6
+            ],
+            "details": "Create tests for webhook signature verification using HMAC-SHA256, test idempotency handling for duplicate webhook events, verify rate limiting protection, test authentication bypass attempts, and validate RLS policy enforcement. Include tests for malicious payload handling and injection attempts.",
+            "status": "done",
+            "testStrategy": "Security tests pass, webhook verification works correctly, rate limiting enforced, no security vulnerabilities found"
+          },
+          {
+            "id": 8,
+            "title": "Coverage Analysis and Performance Testing",
+            "description": "Implement code coverage analysis and performance benchmarking for the testing suite",
+            "dependencies": [
+              7
+            ],
+            "details": "Set up coverage reporting with Istanbul/c8, configure coverage thresholds (>90% for critical paths), implement performance testing for API endpoints with response time monitoring. Create performance benchmarks for webhook processing, subscription creation, and database operations. Generate coverage and performance reports.",
+            "status": "done",
+            "testStrategy": "Coverage targets met (>90%), performance benchmarks within acceptable limits (<500ms API responses), comprehensive reporting generated"
+          }
+        ]
+      },
+      {
+        "id": 15,
+        "title": "Security Audit and Performance Optimization",
+        "description": "Conduct security review and performance testing to meet production requirements",
+        "details": "Perform security audit: verify API keys not exposed in client bundle, webhook signature verification uses constant-time comparison, RLS policies prevent unauthorized access, rate limiting active on all routes, HTTPS enforced. Conduct performance testing: API response times <500ms (P95), database queries <100ms (P95), webhook processing <1s (P95), load testing with 100 concurrent users on pricing page and 50 concurrent subscriptions. Optimize slow queries, implement caching where appropriate, ensure no memory leaks under sustained load.",
+        "testStrategy": "Security audit checklist completion, performance benchmarks met, load testing results within targets, no critical vulnerabilities found, optimization improvements documented",
+        "priority": "high",
+        "dependencies": [
+          14
         ],
         "status": "pending",
         "subtasks": [
           {
             "id": 1,
-            "title": "Deploy with Feature Flags and Execute Gradual Rollout",
-            "description": "Deploy the migrated system to production with feature flags disabled initially, then execute gradual rollout (10% → 50% → 100% users) with comprehensive monitoring",
+            "title": "Security Audit Checklist Implementation",
+            "description": "Conduct comprehensive security review covering API keys, authentication, authorization, and security best practices",
             "dependencies": [],
-            "details": "1) Deploy to staging with feature flags disabled for initial validation. 2) Configure monitoring dashboards for performance metrics, error rates, and user experience indicators. 3) Execute gradual production rollout starting with 10% of users, monitoring key metrics at each stage. 4) Validate that production metrics match or exceed baseline performance before proceeding to next rollout percentage. 5) Complete rollout to 100% of users once all validation checkpoints pass successfully.",
-            "status": "pending",
-            "testStrategy": "Production deployment verification with staging validation, rollout metrics monitoring at each percentage threshold, performance baseline comparison testing, and user experience impact assessment."
+            "details": "Verify API keys not exposed in client bundle by checking build output and source maps. Audit webhook signature verification uses constant-time comparison to prevent timing attacks. Review all RLS policies to prevent unauthorized data access. Confirm rate limiting is active on all API routes with appropriate limits. Ensure HTTPS is enforced across all endpoints. Check for sensitive data exposure in logs, error messages, and client-side code. Validate input sanitization and XSS prevention measures.",
+            "status": "done",
+            "testStrategy": "Security checklist completion with documented findings, automated security scanning tools, manual code review of critical security components"
           },
           {
             "id": 2,
-            "title": "Mark Legacy Services as Deprecated with Proper Annotations",
-            "description": "Add deprecation warnings and TypeScript annotations to legacy code components before removal to ensure proper transition period",
+            "title": "Performance Benchmarking Setup",
+            "description": "Establish performance baseline metrics and monitoring infrastructure for key system components",
             "dependencies": [
               1
             ],
-            "details": "1) Add @deprecated JSDoc annotations to legacy services in claude/ directory, dynamicQuestionGenerationV2.ts, perplexityQuestionService.ts, and old blueprintGenerationService.ts. 2) Implement runtime deprecation warnings for legacy service usage. 3) Update TypeScript interfaces to mark deprecated methods and properties. 4) Add console warnings when legacy code paths are executed. 5) Document migration paths and alternatives for each deprecated component. 6) Set up 2-week grace period monitoring to track deprecated code usage.",
+            "details": "Set up performance monitoring for API response times with P95 target <500ms. Configure database query monitoring with P95 target <100ms. Implement webhook processing time tracking with P95 target <1s. Create monitoring dashboards for real-time performance visibility. Establish baseline metrics for current system performance. Set up automated performance regression detection.",
             "status": "pending",
-            "testStrategy": "Deprecated code warning functionality testing, TypeScript compilation validation with deprecation annotations, runtime warning verification, and usage tracking confirmation."
+            "testStrategy": "Performance monitoring infrastructure operational, baseline metrics established, automated alerts configured for performance degradation"
           },
           {
             "id": 3,
-            "title": "Remove Legacy Code and Update Documentation",
-            "description": "After validation period, completely remove deprecated legacy code, clean up dependencies, and update all documentation and configuration files",
+            "title": "Load Testing Implementation",
+            "description": "Execute comprehensive load testing scenarios to validate system performance under concurrent user loads",
             "dependencies": [
               2
             ],
-            "details": "1) Remove legacy code directories and files: claude/ directory, dynamicQuestionGenerationV2.ts, perplexityQuestionService.ts, old blueprintGenerationService.ts. 2) Clean up unused dependencies from package.json and package-lock.json. 3) Remove unused imports across the codebase. 4) Update CLAUDE.md to reflect new architecture and remove legacy references. 5) Update API documentation to remove deprecated endpoints. 6) Verify CI/CD pipeline passes without old code references. 7) Run comprehensive test suite to ensure no broken imports or references.",
+            "details": "Implement load testing with 100 concurrent users on pricing page to test static content delivery and API endpoints. Execute load testing with 50 concurrent subscription operations including payment processing and webhook handling. Test database connection pooling and query performance under load. Validate system stability during sustained high traffic. Monitor resource utilization (CPU, memory, database connections) during load tests.",
             "status": "pending",
-            "testStrategy": "Complete removal testing with CI/CD pipeline validation, documentation accuracy verification, unused dependency cleanup confirmation, and post-cleanup system stability testing with full test suite execution."
+            "testStrategy": "Load testing scenarios pass with all performance targets met, system remains stable under load, no critical failures or timeouts observed"
+          },
+          {
+            "id": 4,
+            "title": "Performance Optimization Implementation",
+            "description": "Identify and implement optimizations for slow queries, caching strategies, and system bottlenecks",
+            "dependencies": [
+              3
+            ],
+            "details": "Analyze slow database queries and implement optimizations through indexing, query restructuring, or caching. Implement caching strategies for frequently accessed data using Redis or Next.js caching. Optimize API response payloads by reducing unnecessary data transfer. Implement connection pooling optimizations for database access. Address any memory leaks identified during testing. Optimize frontend bundle sizes and implement code splitting where beneficial.",
+            "status": "pending",
+            "testStrategy": "Performance improvements documented with before/after metrics, optimized queries meet performance targets, no memory leaks detected under sustained load"
+          },
+          {
+            "id": 5,
+            "title": "Monitoring and Alerting Setup",
+            "description": "Configure comprehensive monitoring and alerting system for production readiness",
+            "dependencies": [
+              4
+            ],
+            "details": "Set up application performance monitoring (APM) with error tracking and performance insights. Configure alerts for API response time degradation, database performance issues, and webhook processing failures. Implement uptime monitoring for critical endpoints. Set up logging aggregation for security events, payment transactions, and system errors. Configure notification channels for different severity levels. Create monitoring dashboards for operations team.",
+            "status": "pending",
+            "testStrategy": "Monitoring system operational with all key metrics tracked, alerts trigger correctly for test scenarios, dashboards display accurate real-time data"
+          },
+          {
+            "id": 6,
+            "title": "Security and Performance Documentation",
+            "description": "Document security audit findings, performance benchmarks, and operational procedures for production maintenance",
+            "dependencies": [
+              5
+            ],
+            "details": "Document all security audit findings with remediation status and recommendations. Create performance benchmark documentation with baseline metrics and optimization results. Document monitoring and alerting procedures for operations team. Create incident response runbooks for common security and performance issues. Document optimization techniques implemented and their impact. Provide recommendations for ongoing security and performance maintenance.",
+            "status": "pending",
+            "testStrategy": "Complete documentation available covering security audit results, performance benchmarks, monitoring procedures, and operational guidelines"
+          }
+        ]
+      },
+      {
+        "id": 16,
+        "title": "Production Deployment and Go-Live",
+        "description": "Deploy to production, apply database migrations, and monitor initial transactions",
+        "details": "Switch to live Razorpay keys in Vercel production environment, apply database migrations (0034-0037) to production with proper backup. Deploy to Vercel production via GitHub merge to main branch. Conduct smoke testing: complete real ₹1 transaction, verify webhook processing, confirm user tier upgrade, validate all production flows. Set up monitoring alerts for webhook failures, API errors, and payment issues. Monitor Vercel logs and Razorpay dashboard for first 24 hours. Document rollback procedures and emergency contacts.",
+        "testStrategy": "Production deployment successful, smoke tests pass, monitoring active with no errors in first 10 transactions, rollback procedures tested and documented",
+        "priority": "high",
+        "dependencies": [
+          15
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Configure Production Environment Variables",
+            "description": "Switch from test to live Razorpay API keys in Vercel production environment and configure all necessary production variables",
+            "dependencies": [],
+            "details": "Update Vercel production environment variables: replace NEXT_PUBLIC_RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET with live keys from Razorpay dashboard. Verify RAZORPAY_WEBHOOK_SECRET matches production webhook endpoint. Ensure NEXT_PUBLIC_APP_URL points to production domain. Set NEXT_PUBLIC_ENABLE_PAYMENTS=true. Document all changes and verify no test keys remain in production.",
+            "status": "done",
+            "testStrategy": "Verify environment variables are accessible in production build, confirm live keys are active in Razorpay dashboard"
+          },
+          {
+            "id": 2,
+            "title": "Deploy Database Migrations to Production",
+            "description": "Apply database migrations (0034-0037) to production Supabase with proper backup procedures",
+            "dependencies": [
+              1
+            ],
+            "details": "Create full database backup before migration. Apply migrations in sequence: 0034 (subscriptions table), 0035 (payments table), 0036 (webhook_events table), 0037 (user_profiles extension). Verify each migration applies successfully. Test foreign key relationships and RLS policies in production. Document migration completion and verify data integrity.",
+            "status": "done",
+            "testStrategy": "Confirm all tables created with correct schema, test RLS policies prevent unauthorized access, verify foreign key constraints work"
+          },
+          {
+            "id": 3,
+            "title": "Deploy Application to Vercel Production",
+            "description": "Merge changes to main branch and deploy to Vercel production environment via GitHub integration",
+            "dependencies": [
+              2
+            ],
+            "details": "Create pull request with all Razorpay integration changes. Perform final code review and merge to main branch. Monitor Vercel deployment process and verify successful build completion. Check deployment logs for any errors or warnings. Verify production URL is accessible and application loads correctly with new payment features.",
+            "status": "done",
+            "testStrategy": "Confirm deployment successful with green status, verify production site loads without errors, check Vercel function logs for any issues"
+          },
+          {
+            "id": 4,
+            "title": "Execute Production Smoke Testing",
+            "description": "Conduct comprehensive smoke testing including real ₹1 transaction and webhook verification",
+            "dependencies": [
+              3
+            ],
+            "details": "Complete end-to-end payment flow test: register new account, select Navigator plan, initiate ₹1 test payment using real payment method. Verify Razorpay webhook processing updates user tier correctly. Test subscription creation and payment confirmation. Verify blueprint creation limits updated according to new tier. Test all critical user flows work with new payment system.",
+            "status": "done",
+            "testStrategy": "Successfully complete ₹1 transaction, verify user tier upgraded from explorer to navigator, confirm webhook processed and payment recorded in database"
+          },
+          {
+            "id": 5,
+            "title": "Configure Production Monitoring and Alerts",
+            "description": "Set up comprehensive monitoring for webhook failures, API errors, and payment processing issues",
+            "dependencies": [
+              4
+            ],
+            "details": "Configure Vercel monitoring for payment API routes with error rate and response time alerts. Set up Razorpay webhook monitoring and failure notifications. Create alert rules for failed payments, webhook processing errors, and subscription status changes. Configure email/Slack notifications for critical payment system issues. Set up dashboard for real-time payment system health monitoring.",
+            "status": "done",
+            "testStrategy": "Trigger test webhook failure and verify alert notification received, confirm API error monitoring detects simulated payment failures"
+          },
+          {
+            "id": 6,
+            "title": "Document Rollback Procedures and Emergency Contacts",
+            "description": "Create comprehensive rollback documentation and establish emergency response procedures",
+            "dependencies": [
+              5
+            ],
+            "details": "Document step-by-step rollback procedures for reverting environment variables, database migrations, and application deployment. Create emergency contact list including Razorpay support, Vercel support, and internal team contacts. Document manual webhook processing procedures for system failures. Create incident response playbook for payment system outages. Store all documentation in accessible location with team access.",
+            "status": "pending",
+            "testStrategy": "Test rollback procedures in staging environment, verify emergency contacts are reachable, confirm documentation is complete and accessible"
+          },
+          {
+            "id": 7,
+            "title": "Conduct 24-Hour Post-Launch Monitoring",
+            "description": "Monitor Vercel logs, Razorpay dashboard, and system metrics for first 24 hours after go-live",
+            "dependencies": [
+              6
+            ],
+            "details": "Continuously monitor Vercel function logs for payment-related errors during first 24 hours. Track Razorpay dashboard for payment success rates, failed transactions, and webhook delivery status. Monitor user registration and subscription conversion rates. Track database performance and query response times. Document any issues encountered and resolution steps taken. Prepare post-launch summary report.",
+            "status": "pending",
+            "testStrategy": "Zero critical errors in payment processing during monitoring period, webhook success rate >99%, all user payments processed correctly"
           }
         ]
       }
     ],
     "metadata": {
-      "created": "2025-10-25T08:46:39.782Z",
-      "updated": "2025-10-25T08:46:39.783Z",
-      "description": "Tasks for master context"
+      "created": "2025-10-28T18:36:42.638Z",
+      "updated": "2025-10-29T19:08:51.443Z",
+      "description": "Tasks for razorpay-integration context"
     }
   }
 }

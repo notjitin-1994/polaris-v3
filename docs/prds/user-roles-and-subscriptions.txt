@@ -54,8 +54,8 @@ Ensures users only access features and resources appropriate for their subscript
   - No API access
 
 - **Navigator Role** ($39/month):
-  - Max 20 starmap generations/month
-  - Max 10 saved starmaps (with 12-month rollover to 120)
+  - Max 25 starmap generations/month
+  - Max 25 saved starmaps (with 12-month rollover to 300)
   - PDF & Word export
   - 5x faster AI processing
   - Priority support (24h response)
@@ -65,8 +65,8 @@ Ensures users only access features and resources appropriate for their subscript
   - No API access
 
 - **Voyager Role** ($79/month):
-  - Max 40 starmap generations/month
-  - Max 40 saved starmaps (with 12-month rollover to 480)
+  - Max 50 starmap generations/month
+  - Max 50 saved starmaps (with 12-month rollover to 600)
   - PDF & Word export with advanced options
   - Priority processing queue
   - Advanced research suite
@@ -641,8 +641,8 @@ export const ROLE_LIMITS: Record<UserRole, TierLimits> = {
     features: ['export_pdf'],
   },
   navigator: {
-    max_generations_monthly: 15,
-    max_saved_starmaps: 30, // Rolls over to 180 max over 12 months
+    max_generations_monthly: 25,
+    max_saved_starmaps: 25, // Rolls over to 300 max over 12 months
     processing_priority: 'high',
     export_formats: ['pdf', 'word'],
     api_access: false,
@@ -2126,9 +2126,9 @@ describe('Role Type System', () => {
     expect(ROLE_LIMITS.developer.features).toContain('admin_dashboard');
   });
   
-  test('Voyager has 40 generations and 20 saved starmaps', () => {
-    expect(ROLE_LIMITS.voyager.max_generations_monthly).toBe(40);
-    expect(ROLE_LIMITS.voyager.max_saved_starmaps).toBe(20);
+  test('Voyager has 50 generations and 50 saved starmaps', () => {
+    expect(ROLE_LIMITS.voyager.max_generations_monthly).toBe(50);
+    expect(ROLE_LIMITS.voyager.max_saved_starmaps).toBe(50);
   });
   
   test('All tiers have valid processing priorities', () => {

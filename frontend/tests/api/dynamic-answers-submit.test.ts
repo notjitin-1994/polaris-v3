@@ -20,16 +20,26 @@ vi.mock('@supabase/ssr', () => ({
       getUser: vi.fn(),
     },
     from: vi.fn(() => ({
-      select: vi.fn(() => ({
-        eq: vi.fn(() => ({
-          eq: vi.fn(() => ({
-            single: vi.fn(),
-          })),
-        })),
+      select: vi.fn(() => Promise.resolve({
+        data: null,
+        error: null,
       })),
-      update: vi.fn(() => ({
-        eq: vi.fn(() => ({
-          eq: vi.fn(),
+      update: vi.fn(() => Promise.resolve({
+        data: null,
+        error: null,
+      })),
+      insert: vi.fn(() => Promise.resolve({
+        data: null,
+        error: null,
+      })),
+      eq: vi.fn(() => ({
+        eq: vi.fn(() => Promise.resolve({
+          data: null,
+          error: null,
+        })),
+        single: vi.fn(() => Promise.resolve({
+          data: null,
+          error: null,
         })),
       })),
     })),
@@ -76,6 +86,7 @@ describe('POST /api/dynamic-answers/submit', () => {
 
     expect(response.status).toBe(401);
     const data = await response.json();
+    console.log('Test response data:', data);
     expect(data.error).toBe('Unauthorized');
   });
 

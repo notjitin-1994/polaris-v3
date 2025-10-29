@@ -1,8 +1,17 @@
-'use client';
-
-import React from 'react';
 import { AuthProvider } from '@/contexts/AuthContext';
+import { QueryProvider } from '@/lib/stores/QueryProvider';
+import { GlobalLayout } from '@/components/layout';
 
-export default function AuthLayout({ children }: { children: React.ReactNode }): React.JSX.Element {
-  return <AuthProvider>{children}</AuthProvider>;
+export default function AuthLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  return (
+    <AuthProvider>
+      <QueryProvider>
+        <GlobalLayout>{children}</GlobalLayout>
+      </QueryProvider>
+    </AuthProvider>
+  );
 }

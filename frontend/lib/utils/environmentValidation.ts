@@ -24,7 +24,7 @@ export class EnvironmentValidationError extends Error {
 }
 
 /**
- * Environment variable schema for Vercel AI SDK
+ * Environment variable schema for Claude AI SDK
  * Defines required and optional environment variables with validation rules
  */
 const envSchema = z.object({
@@ -33,16 +33,6 @@ const envSchema = z.object({
     .string()
     .min(1, 'ANTHROPIC_API_KEY is required')
     .refine((val) => val.startsWith('sk-ant-'), 'ANTHROPIC_API_KEY must start with "sk-ant-"'),
-
-  // Required: Ollama Base URL for local fallback
-  OLLAMA_BASE_URL: z
-    .string()
-    .min(1, 'OLLAMA_BASE_URL is required')
-    .url('OLLAMA_BASE_URL must be a valid URL')
-    .refine(
-      (val) => val.startsWith('http://') || val.startsWith('https://'),
-      'OLLAMA_BASE_URL must start with http:// or https://'
-    ),
 
   // Optional: Enable AI SDK (default: false)
   NEXT_PUBLIC_USE_AI_SDK: z
@@ -98,7 +88,6 @@ export type ValidatedEnv = z.infer<typeof envSchema>;
 export function validateEnvironment(): ValidatedEnv {
   const env = {
     ANTHROPIC_API_KEY: process.env.ANTHROPIC_API_KEY,
-    OLLAMA_BASE_URL: process.env.OLLAMA_BASE_URL,
     NEXT_PUBLIC_USE_AI_SDK: process.env.NEXT_PUBLIC_USE_AI_SDK,
     AI_SDK_LOG_LEVEL: process.env.AI_SDK_LOG_LEVEL,
     AI_SDK_TIMEOUT_MS: process.env.AI_SDK_TIMEOUT_MS,
@@ -113,7 +102,6 @@ export function validateEnvironment(): ValidatedEnv {
     if (isServer) {
       console.log('✓ Environment validation successful');
       console.log('  - ANTHROPIC_API_KEY: configured');
-      console.log(`  - OLLAMA_BASE_URL: ${validatedEnv.OLLAMA_BASE_URL}`);
       console.log(`  - AI SDK enabled: ${validatedEnv.NEXT_PUBLIC_USE_AI_SDK}`);
       console.log(`  - Log level: ${validatedEnv.AI_SDK_LOG_LEVEL}`);
       console.log(`  - Timeout: ${validatedEnv.AI_SDK_TIMEOUT_MS}ms`);

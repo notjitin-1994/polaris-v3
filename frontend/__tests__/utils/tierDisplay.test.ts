@@ -154,8 +154,8 @@ describe('tierDisplay utilities', () => {
       expect(info.displayName).toBe('Crew Member');
       expect(info.shortName).toBe('Crew');
       expect(info.isPaid).toBe(true);
-      expect(info.maxGenerations).toBe(60);
-      expect(info.maxSaved).toBe(60);
+      expect(info.maxGenerations).toBe(10);
+      expect(info.maxSaved).toBe(10);
     });
 
     it('returns default info for null/undefined', () => {
@@ -379,8 +379,8 @@ describe('tierDisplay utilities', () => {
     it('returns correct generation limits for each tier', () => {
       expect(getTierMaxGenerations('free')).toBe(2);
       expect(getTierMaxGenerations('explorer')).toBe(5);
-      expect(getTierMaxGenerations('navigator')).toBe(20);
-      expect(getTierMaxGenerations('voyager')).toBe(50);
+      expect(getTierMaxGenerations('navigator')).toBe(25);
+      expect(getTierMaxGenerations('voyager')).toBe(40);
       expect(getTierMaxGenerations('crew')).toBe(10);
       expect(getTierMaxGenerations('fleet')).toBe(30);
       expect(getTierMaxGenerations('armada')).toBe(60);
@@ -396,8 +396,8 @@ describe('tierDisplay utilities', () => {
     });
 
     it('is case-insensitive', () => {
-      expect(getTierMaxGenerations('NAVIGATOR')).toBe(20);
-      expect(getTierMaxGenerations('Navigator')).toBe(20);
+      expect(getTierMaxGenerations('NAVIGATOR')).toBe(25);
+      expect(getTierMaxGenerations('Navigator')).toBe(25);
     });
   });
 
@@ -405,8 +405,8 @@ describe('tierDisplay utilities', () => {
     it('returns correct save limits for each tier', () => {
       expect(getTierMaxSaved('free')).toBe(2);
       expect(getTierMaxSaved('explorer')).toBe(5);
-      expect(getTierMaxSaved('navigator')).toBe(20);
-      expect(getTierMaxSaved('voyager')).toBe(50);
+      expect(getTierMaxSaved('navigator')).toBe(25);
+      expect(getTierMaxSaved('voyager')).toBe(40);
       expect(getTierMaxSaved('crew')).toBe(10);
       expect(getTierMaxSaved('fleet')).toBe(30);
       expect(getTierMaxSaved('armada')).toBe(60);
@@ -422,8 +422,8 @@ describe('tierDisplay utilities', () => {
     });
 
     it('is case-insensitive', () => {
-      expect(getTierMaxSaved('NAVIGATOR')).toBe(20);
-      expect(getTierMaxSaved('Navigator')).toBe(20);
+      expect(getTierMaxSaved('NAVIGATOR')).toBe(25);
+      expect(getTierMaxSaved('Navigator')).toBe(25);
     });
   });
 
@@ -470,8 +470,8 @@ describe('tierDisplay utilities', () => {
       expect(freeLimits.isUnlimited).toBe(false);
 
       const navigatorLimits = getUserEffectiveLimits('navigator', 'user');
-      expect(navigatorLimits.maxGenerations).toBe(20);
-      expect(navigatorLimits.maxSaved).toBe(20);
+      expect(navigatorLimits.maxGenerations).toBe(25);
+      expect(navigatorLimits.maxSaved).toBe(25);
       expect(navigatorLimits.isUnlimited).toBe(false);
     });
 
@@ -496,11 +496,11 @@ describe('tierDisplay utilities', () => {
       const expectedLimits = [
         { generations: 2, saved: 2 }, // free
         { generations: 5, saved: 5 }, // explorer
-        { generations: 20, saved: 20 }, // navigator
-        { generations: 50, saved: 50 }, // voyager
-        { generations: 60, saved: 60 }, // crew
-        { generations: 80, saved: 80 }, // fleet
-        { generations: 100, saved: 100 }, // armada
+        { generations: 25, saved: 25 }, // navigator
+        { generations: 40, saved: 40 }, // voyager
+        { generations: 10, saved: 10 }, // crew
+        { generations: 30, saved: 30 }, // fleet
+        { generations: 60, saved: 60 }, // armada
       ];
 
       tiers.forEach((tier, index) => {

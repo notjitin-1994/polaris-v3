@@ -42,7 +42,6 @@ describe('Environment Validation', () => {
 
     // Clear all environment variables
     delete process.env.ANTHROPIC_API_KEY;
-    delete process.env.OLLAMA_BASE_URL;
     delete process.env.NEXT_PUBLIC_USE_AI_SDK;
     delete process.env.AI_SDK_LOG_LEVEL;
     delete process.env.AI_SDK_TIMEOUT_MS;
@@ -68,31 +67,19 @@ describe('Environment Validation', () => {
     describe('Success Scenarios', () => {
       it('should validate successfully with all required variables', () => {
         process.env.ANTHROPIC_API_KEY = 'sk-ant-api03-test-key';
-        process.env.OLLAMA_BASE_URL = 'http://localhost:11434';
 
         const result = validateEnvironment();
 
         expect(result).toBeDefined();
         expect(result.ANTHROPIC_API_KEY).toBe('sk-ant-api03-test-key');
-        expect(result.OLLAMA_BASE_URL).toBe('http://localhost:11434');
         expect(result.NEXT_PUBLIC_USE_AI_SDK).toBe(false); // default
         expect(result.AI_SDK_LOG_LEVEL).toBe('info'); // default
         expect(result.AI_SDK_TIMEOUT_MS).toBe(60000); // default
         expect(result.AI_SDK_MAX_RETRIES).toBe(3); // default
       });
 
-      it('should validate with HTTPS Ollama URL', () => {
-        process.env.ANTHROPIC_API_KEY = 'sk-ant-api03-test-key';
-        process.env.OLLAMA_BASE_URL = 'https://my-server:11434';
-
-        const result = validateEnvironment();
-
-        expect(result.OLLAMA_BASE_URL).toBe('https://my-server:11434');
-      });
-
       it('should parse NEXT_PUBLIC_USE_AI_SDK as boolean', () => {
         process.env.ANTHROPIC_API_KEY = 'sk-ant-api03-test-key';
-        process.env.OLLAMA_BASE_URL = 'http://localhost:11434';
         process.env.NEXT_PUBLIC_USE_AI_SDK = 'true';
 
         const result = validateEnvironment();
@@ -102,7 +89,6 @@ describe('Environment Validation', () => {
 
       it('should validate with custom log level', () => {
         process.env.ANTHROPIC_API_KEY = 'sk-ant-api03-test-key';
-        process.env.OLLAMA_BASE_URL = 'http://localhost:11434';
         process.env.AI_SDK_LOG_LEVEL = 'debug';
 
         const result = validateEnvironment();
@@ -112,7 +98,6 @@ describe('Environment Validation', () => {
 
       it('should parse timeout as number', () => {
         process.env.ANTHROPIC_API_KEY = 'sk-ant-api03-test-key';
-        process.env.OLLAMA_BASE_URL = 'http://localhost:11434';
         process.env.AI_SDK_TIMEOUT_MS = '30000';
 
         const result = validateEnvironment();
@@ -122,7 +107,6 @@ describe('Environment Validation', () => {
 
       it('should parse max retries as number', () => {
         process.env.ANTHROPIC_API_KEY = 'sk-ant-api03-test-key';
-        process.env.OLLAMA_BASE_URL = 'http://localhost:11434';
         process.env.AI_SDK_MAX_RETRIES = '5';
 
         const result = validateEnvironment();
@@ -132,7 +116,6 @@ describe('Environment Validation', () => {
 
       it('should log successful validation server-side', () => {
         process.env.ANTHROPIC_API_KEY = 'sk-ant-api03-test-key';
-        process.env.OLLAMA_BASE_URL = 'http://localhost:11434';
 
         // In test environment, window is undefined, so isServer is true
         validateEnvironment();
@@ -144,8 +127,6 @@ describe('Environment Validation', () => {
 
     describe('Missing Variable Scenarios', () => {
       it('should throw EnvironmentValidationError when ANTHROPIC_API_KEY is missing', () => {
-        process.env.OLLAMA_BASE_URL = 'http://localhost:11434';
-
         expect(() => validateEnvironment()).toThrow(EnvironmentValidationError);
 
         try {
@@ -154,21 +135,6 @@ describe('Environment Validation', () => {
           if (error instanceof EnvironmentValidationError) {
             expect(error.missingVars).toContain('ANTHROPIC_API_KEY');
             expect(error.message).toContain('ANTHROPIC_API_KEY');
-          }
-        }
-      });
-
-      it('should throw EnvironmentValidationError when OLLAMA_BASE_URL is missing', () => {
-        process.env.ANTHROPIC_API_KEY = 'sk-ant-api03-test-key';
-
-        expect(() => validateEnvironment()).toThrow(EnvironmentValidationError);
-
-        try {
-          validateEnvironment();
-        } catch (error) {
-          if (error instanceof EnvironmentValidationError) {
-            expect(error.missingVars).toContain('OLLAMA_BASE_URL');
-            expect(error.message).toContain('OLLAMA_BASE_URL');
           }
         }
       });
@@ -181,9 +147,7 @@ describe('Environment Validation', () => {
         } catch (error) {
           if (error instanceof EnvironmentValidationError) {
             expect(error.missingVars).toContain('ANTHROPIC_API_KEY');
-            expect(error.missingVars).toContain('OLLAMA_BASE_URL');
             expect(error.message).toContain('ANTHROPIC_API_KEY');
-            expect(error.message).toContain('OLLAMA_BASE_URL');
             expect(error.message).toContain('.env.example');
           }
         }
@@ -193,7 +157,6 @@ describe('Environment Validation', () => {
     describe('Invalid Variable Scenarios', () => {
       it('should throw EnvironmentValidationError for invalid Anthropic API key format', () => {
         process.env.ANTHROPIC_API_KEY = 'invalid-key-format';
-        process.env.OLLAMA_BASE_URL = 'http://localhost:11434';
 
         expect(() => validateEnvironment()).toThrow(EnvironmentValidationError);
 
@@ -207,31 +170,8 @@ describe('Environment Validation', () => {
         }
       });
 
-      it('should throw EnvironmentValidationError for invalid URL format', () => {
-        process.env.ANTHROPIC_API_KEY = 'sk-ant-api03-test-key';
-        process.env.OLLAMA_BASE_URL = 'not-a-url';
-
-        expect(() => validateEnvironment()).toThrow(EnvironmentValidationError);
-
-        try {
-          validateEnvironment();
-        } catch (error) {
-          if (error instanceof EnvironmentValidationError) {
-            expect(error.invalidVars).toContain('OLLAMA_BASE_URL');
-          }
-        }
-      });
-
-      it('should throw EnvironmentValidationError for URL without http/https', () => {
-        process.env.ANTHROPIC_API_KEY = 'sk-ant-api03-test-key';
-        process.env.OLLAMA_BASE_URL = 'ftp://localhost:11434';
-
-        expect(() => validateEnvironment()).toThrow(EnvironmentValidationError);
-      });
-
       it('should throw EnvironmentValidationError for invalid log level', () => {
         process.env.ANTHROPIC_API_KEY = 'sk-ant-api03-test-key';
-        process.env.OLLAMA_BASE_URL = 'http://localhost:11434';
         process.env.AI_SDK_LOG_LEVEL = 'invalid-level';
 
         expect(() => validateEnvironment()).toThrow(EnvironmentValidationError);
@@ -239,7 +179,6 @@ describe('Environment Validation', () => {
 
       it('should throw EnvironmentValidationError for timeout exceeding max', () => {
         process.env.ANTHROPIC_API_KEY = 'sk-ant-api03-test-key';
-        process.env.OLLAMA_BASE_URL = 'http://localhost:11434';
         process.env.AI_SDK_TIMEOUT_MS = '1000000'; // exceeds 600000 max
 
         expect(() => validateEnvironment()).toThrow(EnvironmentValidationError);
@@ -247,7 +186,6 @@ describe('Environment Validation', () => {
 
       it('should throw EnvironmentValidationError for negative timeout', () => {
         process.env.ANTHROPIC_API_KEY = 'sk-ant-api03-test-key';
-        process.env.OLLAMA_BASE_URL = 'http://localhost:11434';
         process.env.AI_SDK_TIMEOUT_MS = '-1000';
 
         expect(() => validateEnvironment()).toThrow(EnvironmentValidationError);
@@ -255,7 +193,6 @@ describe('Environment Validation', () => {
 
       it('should throw EnvironmentValidationError for max retries exceeding limit', () => {
         process.env.ANTHROPIC_API_KEY = 'sk-ant-api03-test-key';
-        process.env.OLLAMA_BASE_URL = 'http://localhost:11434';
         process.env.AI_SDK_MAX_RETRIES = '15'; // exceeds 10 max
 
         expect(() => validateEnvironment()).toThrow(EnvironmentValidationError);
@@ -266,7 +203,6 @@ describe('Environment Validation', () => {
   describe('validateEnvironmentOrExit', () => {
     it('should return validated environment on success', () => {
       process.env.ANTHROPIC_API_KEY = 'sk-ant-api03-test-key';
-      process.env.OLLAMA_BASE_URL = 'http://localhost:11434';
 
       const result = validateEnvironmentOrExit();
 
@@ -276,15 +212,10 @@ describe('Environment Validation', () => {
     });
 
     it('should call process.exit(1) on validation failure', () => {
-      process.env.ANTHROPIC_API_KEY = 'sk-ant-api03-test-key';
-      // Missing OLLAMA_BASE_URL
-
       expect(() => validateEnvironmentOrExit()).toThrow('process.exit(1)');
     });
 
     it('should log error message before exiting', () => {
-      process.env.ANTHROPIC_API_KEY = 'sk-ant-api03-test-key';
-
       try {
         validateEnvironmentOrExit();
       } catch (_error) {
@@ -292,7 +223,7 @@ describe('Environment Validation', () => {
         expect(consoleErrorSpy).toHaveBeenCalled();
         const errorMessage = consoleErrorSpy.mock.calls[0][0];
         expect(errorMessage).toContain('Environment validation failed');
-        expect(errorMessage).toContain('OLLAMA_BASE_URL');
+        expect(errorMessage).toContain('ANTHROPIC_API_KEY');
       }
     });
   });
@@ -300,7 +231,6 @@ describe('Environment Validation', () => {
   describe('getValidatedEnv', () => {
     it('should return validated environment on success', () => {
       process.env.ANTHROPIC_API_KEY = 'sk-ant-api03-test-key';
-      process.env.OLLAMA_BASE_URL = 'http://localhost:11434';
 
       const result = getValidatedEnv();
 
@@ -310,8 +240,7 @@ describe('Environment Validation', () => {
     });
 
     it('should return null on validation failure', () => {
-      process.env.ANTHROPIC_API_KEY = 'sk-ant-api03-test-key';
-      // Missing OLLAMA_BASE_URL
+      // Missing ANTHROPIC_API_KEY
 
       const result = getValidatedEnv();
 

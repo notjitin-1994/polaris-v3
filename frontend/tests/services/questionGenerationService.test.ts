@@ -44,12 +44,8 @@ describe('Question Generation Service', () => {
       // Should succeed with either source
       expect(result).toBeDefined();
       expect(result.metadata).toBeDefined();
-      expect(result.metadata.source).toMatch(/perplexity|ollama/);
-
-      // If it used fallback (expected in test env), verify that
-      if (result.metadata.source === 'ollama') {
-        expect(result.metadata.fallbackUsed).toBeDefined();
-      }
+      expect(result.metadata.source).toBe('claude');
+      expect(result.metadata.fallbackUsed).toBe(false);
     });
 
     it('should fallback to Ollama when Perplexity fails', async () => {
@@ -90,10 +86,9 @@ describe('Question Generation Service', () => {
     it('should validate configuration', () => {
       const config = validateGenerationConfig();
 
-      expect(config).toHaveProperty('perplexity');
-      expect(config).toHaveProperty('ollama');
-      expect(config.perplexity).toHaveProperty('valid');
-      expect(config.perplexity).toHaveProperty('errors');
+      expect(config).toHaveProperty('claude');
+      expect(config.claude).toHaveProperty('valid');
+      expect(config.claude).toHaveProperty('errors');
     });
   });
 });

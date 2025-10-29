@@ -37,7 +37,7 @@ describe('ClaudeClient', () => {
       type: 'message',
       role: 'assistant',
       content: [{ type: 'text', text: 'Hello! How can I help?' }],
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-5',
       stop_reason: 'end_turn',
       stop_sequence: null,
       usage: { input_tokens: 10, output_tokens: 20 },
@@ -82,8 +82,8 @@ describe('ClaudeClient', () => {
       const fetchCall = (global.fetch as ReturnType<typeof vi.fn>).mock.calls[0];
       const body = JSON.parse(fetchCall[1].body);
 
-      expect(body.model).toBe('claude-sonnet-4-20250514');
-      expect(body.max_tokens).toBe(12000);
+      expect(body.model).toBe('claude-sonnet-4-5');
+      expect(body.max_tokens).toBe(16000);
       expect(body.temperature).toBe(0.2);
       expect(body.system).toBe(mockRequest.system);
       expect(body.messages).toEqual(mockRequest.messages);

@@ -181,7 +181,7 @@ export function useUserProfile(): UseUserProfileReturn {
 
   useEffect(() => {
     fetchProfile();
-  }, [fetchProfile]);
+  }, [user?.id]); // Use user.id directly instead of fetchProfile function
 
   return {
     profile,

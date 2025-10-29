@@ -234,9 +234,9 @@ export function getTierInfo(tier: string | null | undefined) {
       shortName: 'Navigator',
       color: 'from-emerald-500 to-teal-500',
       isPaid: true,
-      description: '20 blueprint generations and saves per month',
-      maxGenerations: 20,
-      maxSaved: 20,
+      description: '25 blueprint generations and saves per month',
+      maxGenerations: 25,
+      maxSaved: 25,
     },
     voyager: {
       displayName: 'Voyager',
@@ -325,7 +325,7 @@ export function getRoleInfo(role: string | null | undefined) {
  * @example
  * getTierMaxGenerations('free') // returns 2
  * getTierMaxGenerations('explorer') // returns 5
- * getTierMaxGenerations('navigator') // returns 20
+ * getTierMaxGenerations('navigator') // returns 25
  */
 export function getTierMaxGenerations(tier: string | null | undefined): number {
   const normalizedTier = (tier || 'free').toLowerCase();
@@ -336,7 +336,7 @@ export function getTierMaxGenerations(tier: string | null | undefined): number {
     case 'explorer':
       return 5;
     case 'navigator':
-      return 20;
+      return 25;
     case 'voyager':
       return 40;
     case 'crew':
@@ -359,7 +359,7 @@ export function getTierMaxGenerations(tier: string | null | undefined): number {
  * @example
  * getTierMaxSaved('free') // returns 2
  * getTierMaxSaved('explorer') // returns 5
- * getTierMaxSaved('navigator') // returns 20
+ * getTierMaxSaved('navigator') // returns 25
  */
 export function getTierMaxSaved(tier: string | null | undefined): number {
   const normalizedTier = (tier || 'free').toLowerCase();
@@ -370,7 +370,7 @@ export function getTierMaxSaved(tier: string | null | undefined): number {
     case 'explorer':
       return 5;
     case 'navigator':
-      return 20;
+      return 25;
     case 'voyager':
       return 40;
     case 'crew':

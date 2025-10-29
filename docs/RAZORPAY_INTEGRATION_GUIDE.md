@@ -43,15 +43,15 @@ This document provides a comprehensive guide for integrating Razorpay payment ga
 
 **7 Subscription Tiers** (source: `frontend/lib/utils/tierDisplay.ts`)
 
-| Tier | Monthly Limit | Use Case | Status |
-|------|---------------|----------|---------|
-| **Free** | 2 blueprints/month (lifetime) | Trial users | ✅ Implemented |
-| **Explorer** | 5 blueprints/month | Individual users | ✅ Implemented |
-| **Navigator** | 20 blueprints/month | Power users | ✅ Implemented |
-| **Voyager** | 40 blueprints/month | Heavy users | ✅ Implemented |
-| **Crew** | 10 blueprints/seat/month | Small teams | ✅ Implemented |
-| **Fleet** | 30 blueprints/seat/month | Medium teams | ✅ Implemented |
-| **Armada** | 60 blueprints/seat/month | Large teams | ✅ Implemented |
+| Tier | Monthly Limit | Use Case | Rollover | Status |
+|------|---------------|----------|----------|---------|
+| **Free** | 2 blueprints/month (lifetime) | Trial users | 12 months | ✅ Implemented |
+| **Explorer** | 5 blueprints/month | Individual users | 12 months | ✅ Implemented |
+| **Navigator** | 25 blueprints/month | Professionals & creators | 12 months | ✅ Implemented |
+| **Voyager** | 50 blueprints/month | Power users & consultants | 12 months | ✅ Implemented |
+| **Crew** | 10 blueprints/seat/month | Small teams | 12 months | ✅ Implemented |
+| **Fleet** | 30 blueprints/seat/month | Medium teams | 12 months | ✅ Implemented |
+| **Armada** | 60 blueprints/seat/month | Large teams & departments | 12 months | ✅ Implemented |
 
 **Note**: Enterprise tier was removed in October 2025 migration.
 
@@ -2199,7 +2199,7 @@ const plans = [
     amount: 3900, // ₹39
     period: 'monthly',
     interval: 1,
-    description: '20 blueprint generations per month',
+    description: '25 blueprint generations per month',
   },
   {
     tier: 'voyager',
@@ -2207,12 +2207,12 @@ const plans = [
     amount: 7900, // ₹79
     period: 'monthly',
     interval: 1,
-    description: '40 blueprint generations per month',
+    description: '50 blueprint generations per month',
   },
   {
     tier: 'crew',
     name: 'Crew - Monthly (per seat)',
-    amount: 2500, // ₹25
+    amount: 2400, // ₹24
     period: 'monthly',
     interval: 1,
     description: '10 blueprint generations per seat per month',
@@ -2220,7 +2220,7 @@ const plans = [
   {
     tier: 'fleet',
     name: 'Fleet - Monthly (per seat)',
-    amount: 4900, // ₹49
+    amount: 6400, // ₹64
     period: 'monthly',
     interval: 1,
     description: '30 blueprint generations per seat per month',
@@ -2228,7 +2228,7 @@ const plans = [
   {
     tier: 'armada',
     name: 'Armada - Monthly (per seat)',
-    amount: 9900, // ₹99
+    amount: 12900, // ₹129
     period: 'monthly',
     interval: 1,
     description: '60 blueprint generations per seat per month',
@@ -2251,9 +2251,10 @@ async function createPlans() {
         },
       });
 
-      console.log(`✅ ${plan.name}`);
+      console.log(`✅ ${plan.tier.toUpperCase()}: ${plan.name}`);
       console.log(`   Plan ID: ${razorpayPlan.id}`);
-      console.log(`   Amount: ₹${plan.amount / 100}\n`);
+      console.log(`   Amount: ₹${plan.amount / 100}`);
+      console.log(`   Limit: ${plan.description}\n`);
     } catch (error: any) {
       console.error(`❌ Failed to create ${plan.name}:`, error.message);
     }
