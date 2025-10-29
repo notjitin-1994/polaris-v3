@@ -1,61 +1,60 @@
-import { NextResponse } from 'next/server';
-import { OllamaClient } from '@/lib/ollama/client';
-import { generationInputSchema, type GenerationInput } from '@/lib/ollama/schema';
-import { MemoryCache, createCacheKey } from '@/lib/cache/memoryCache';
-import { SimpleQueue } from '@/lib/queue/simpleQueue';
-import { ValidationError, TimeoutError, ServiceUnavailableError } from '@/lib/ollama/errors';
+/**
+ * Generate Questions API - Redirect to New Implementation
+ *
+ * This route has been migrated to use the new dynamic question generation system.
+ * The new endpoint is at /api/generate-dynamic-questions
+ */
 
-const cache = new MemoryCache<unknown>(15 * 60 * 1000);
-const queue = new SimpleQueue(3);
-const client = new OllamaClient();
-const inFlight = new Map<string, Promise<unknown>>();
+import { NextRequest, NextResponse } from 'next/server';
 
-export const runtime = 'nodejs';
-export const dynamic = 'force-dynamic';
-
-export async function POST(request: Request): Promise<Response> {
-  let body: unknown;
+/**
+ * Redirect all requests to the new dynamic question generation endpoint
+ */
+export async function POST(request: NextRequest): Promise<NextResponse> {
   try {
-    body = await request.json();
-  } catch {
-    return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 });
-  }
+    // Get the request body
+    const body = await request.json();
 
-  const parsed = generationInputSchema.safeParse(body);
-  if (!parsed.success) {
+    // Forward the request to the new endpoint
+    const newUrl = new URL('/api/generate-dynamic-questions', request.url);
+
+    const response = await fetch(newUrl.toString(), {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(body),
+    });
+
+    if (!response.ok) {
+      return NextResponse.json(
+        { error: 'Question generation failed', details: response.statusText },
+        { status: response.status }
+      );
+    }
+
+    const data = await response.json();
+    return NextResponse.json(data);
+
+  } catch (error) {
+    console.error('[Generate Questions] Error:', error);
     return NextResponse.json(
-      { error: 'Invalid request', details: parsed.error.flatten() },
-      { status: 400 }
+      { error: 'Internal server error', details: error instanceof Error ? error.message : 'Unknown error' },
+      { status: 500 }
     );
   }
-
-  const input: GenerationInput = parsed.data;
-  const cacheKey = createCacheKey(input);
-  const cached = cache.get(cacheKey);
-  if (cached) {
-    return NextResponse.json(cached);
-  }
-
-  try {
-    let promise = inFlight.get(cacheKey);
-    if (!promise) {
-      promise = queue.add(() => client.generateQuestions(input));
-      inFlight.set(cacheKey, promise);
-    }
-    const result = await promise;
-    inFlight.delete(cacheKey);
-    cache.set(cacheKey, result);
-    return NextResponse.json(result);
-  } catch (error: unknown) {
-    if (error instanceof ValidationError) {
-      return NextResponse.json({ error: error.message }, { status: 422 });
-    }
-    if (error instanceof TimeoutError) {
-      return NextResponse.json({ error: 'Generation timed out' }, { status: 504 });
-    }
-    if (error instanceof ServiceUnavailableError) {
-      return NextResponse.json({ error: 'Service unavailable' }, { status: 503 });
-    }
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
-  }
 }
+
+/**
+ * Get method - return information about the migration
+ */
+export async function GET(): Promise<NextResponse> {
+  return NextResponse.json({
+    message: 'This endpoint has been migrated to the new dynamic question generation system',
+    newEndpoint: '/api/generate-dynamic-questions',
+    status: 'migrated'
+  });
+}
+
+// Allow long-running question generation
+export const maxDuration = 800;

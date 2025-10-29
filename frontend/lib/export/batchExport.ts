@@ -1,5 +1,5 @@
 import JSZip from 'jszip';
-import { Blueprint } from '@/lib/ollama/schema';
+import type { BlueprintData } from '@/lib/stores/types';
 import { DashboardData } from '@/types/dashboard';
 import {
   ExportFormat,
@@ -15,7 +15,7 @@ export class BatchExportService {
    * Export multiple blueprints in batch
    */
   async exportMultipleBlueprints(
-    blueprints: Blueprint[],
+    blueprints: BlueprintData[],
     options: BatchExportOptions,
     dashboardDataMap?: Map<string, DashboardData>
   ): Promise<ExportResult> {
@@ -170,7 +170,7 @@ export class BatchExportService {
    * Export dashboard data for multiple blueprints
    */
   async exportDashboardData(
-    blueprints: Blueprint[],
+    blueprints: BlueprintData[],
     dashboardDataMap: Map<string, DashboardData>,
     options: Partial<BatchExportOptions> = {}
   ): Promise<ExportResult> {

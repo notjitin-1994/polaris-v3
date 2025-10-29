@@ -1,4 +1,10 @@
-import { AnyBlueprint, isFullBlueprint } from '@/lib/ollama/schema';
+// import { AnyBlueprint, isFullBlueprint } from '@/lib/ollama/schema'; // Removed Ollama
+
+// Simple replacements
+type AnyBlueprint = any;
+const isFullBlueprint = (data: any): boolean => {
+  return data && typeof data === 'object' && 'blueprint_json' in data;
+};
 import { DashboardData } from '@/types/dashboard';
 import {
   ExportData,
@@ -167,7 +173,7 @@ export class ExportService {
   private async exportToPDF(data: ExportData, options: ExportOptions): Promise<ExportResult> {
     try {
       const { BlueprintPDFGenerator } = await import('./pdfGenerator');
-      const { AnyBlueprint } = await import('../ollama/schema');
+      // const { AnyBlueprint } = await import('../ollama/schema'); // Removed Ollama
       const { ChartCaptureService } = await import('./chartCapture');
 
       const pdfGenerator = new BlueprintPDFGenerator();

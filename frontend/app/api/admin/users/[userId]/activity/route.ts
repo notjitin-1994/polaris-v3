@@ -12,12 +12,12 @@ import { getSupabaseAdminClient } from '@/lib/supabase/admin';
  * - Profile updates
  * - Tier changes
  */
-export async function GET(request: NextRequest, { params }: { params: { userId: string } }) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ userId: string }> }) {
   try {
     // Verify admin access
     await requireAdmin();
 
-    const { userId } = params;
+    const { userId } = await params;
 
     if (!userId) {
       return NextResponse.json({ error: 'User ID is required' }, { status: 400 });
@@ -142,12 +142,12 @@ export async function GET(request: NextRequest, { params }: { params: { userId: 
  * - description: Activity description
  * - metadata: Additional metadata (optional)
  */
-export async function POST(request: NextRequest, { params }: { params: { userId: string } }) {
+export async function POST(request: NextRequest, { params }: { params: Promise<{ userId: string }> }) {
   try {
     // Verify admin access
     await requireAdmin();
 
-    const { userId } = params;
+    const { userId } = await params;
     const body = await request.json();
 
     const { type, title, description, metadata } = body;

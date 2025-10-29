@@ -6,12 +6,12 @@ import { getSupabaseAdminClient } from '@/lib/supabase/admin';
  * Admin API: Get user details
  * GET /api/admin/users/[userId]
  */
-export async function GET(request: NextRequest, { params }: { params: { userId: string } }) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ userId: string }> }) {
   try {
     // Verify admin access
     await requireAdmin();
 
-    const { userId } = params;
+    const { userId } = await params;
 
     if (!userId) {
       return NextResponse.json({ error: 'User ID is required' }, { status: 400 });
@@ -79,12 +79,12 @@ export async function GET(request: NextRequest, { params }: { params: { userId: 
  * - blueprint_creation_limit: New limit
  * - blueprint_saving_limit: New limit
  */
-export async function PATCH(request: NextRequest, { params }: { params: { userId: string } }) {
+export async function PATCH(request: NextRequest, { params }: { params: Promise<{ userId: string }> }) {
   try {
     // Verify admin access
     await requireAdmin();
 
-    const { userId } = params;
+    const { userId } = await params;
     const body = await request.json();
 
     if (!userId) {
@@ -154,12 +154,12 @@ export async function PATCH(request: NextRequest, { params }: { params: { userId
  * Query Parameters:
  * - hard: 'true' for hard delete, otherwise soft delete (default: soft)
  */
-export async function DELETE(request: NextRequest, { params }: { params: { userId: string } }) {
+export async function DELETE(request: NextRequest, { params }: { params: Promise<{ userId: string }> }) {
   try {
     // Verify admin access
     await requireAdmin();
 
-    const { userId } = params;
+    const { userId } = await params;
     const searchParams = request.nextUrl.searchParams;
     const hardDelete = searchParams.get('hard') === 'true';
 
