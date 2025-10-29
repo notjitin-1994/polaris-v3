@@ -8,11 +8,11 @@ export class StateDebugger {
     timestamp: Date;
     store: string;
     action: string;
-    state: any;
+    state: unknown;
   }> = [];
 
   // Log state changes
-  static logStateChange(store: string, action: string, state: any): void {
+  static logStateChange(store: string, action: string, state: unknown): void {
     if (!this.isDevelopment) return;
 
     const logEntry = {
@@ -118,7 +118,7 @@ export class StateDebugger {
   static startPerformanceMonitoring(): void {
     if (!this.isDevelopment) return;
 
-    let frameCount = 0;
+    let _frameCount = 0;
     let lastTime = performance.now();
 
     const measurePerformance = () => {

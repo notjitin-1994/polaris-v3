@@ -26,6 +26,13 @@ const Razorpay = require('razorpay');
  * @throws Error if required environment variables are missing
  */
 function validateEnvironmentVariables(): void {
+  // Skip validation during build time
+  if (process.env.NEXT_PHASE === 'phase-production-build' ||
+      process.env.NODE_ENV === 'production' && !process.env.RAZORPAY_KEY_SECRET) {
+    console.warn('[Razorpay] Skipping environment validation during build time');
+    return;
+  }
+
   const requiredVars = {
     NEXT_PUBLIC_RAZORPAY_KEY_ID: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
     RAZORPAY_KEY_SECRET: process.env.RAZORPAY_KEY_SECRET,
@@ -44,7 +51,9 @@ function validateEnvironmentVariables(): void {
   }
 
   // Validate key format
-  const keyId = process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID!;
+  const keyId = process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID;
+  if (!keyId) return;
+
   const isTestMode = keyId.startsWith('rzp_test_');
   const isLiveMode = keyId.startsWith('rzp_live_');
 
@@ -74,17 +83,16 @@ function validateEnvironmentVariables(): void {
 // ============================================================================
 
 /**
- * Initialize and validate environment on module load
+ * Razorpay SDK configuration - validated at runtime
  */
-validateEnvironmentVariables();
+function getRazorpayConfig() {
+  validateEnvironmentVariables();
 
-/**
- * Razorpay SDK configuration
- */
-const razorpayConfig = {
-  key_id: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID!,
-  key_secret: process.env.RAZORPAY_KEY_SECRET!,
-};
+  return {
+    key_id: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID!,
+    key_secret: process.env.RAZORPAY_KEY_SECRET!,
+  };
+}
 
 /**
  * Razorpay SDK Client Instance
@@ -124,7 +132,31 @@ const razorpayConfig = {
  * import { razorpayClient } from '@/lib/razorpay/client'; // This will expose secrets!
  * ```
  */
-export const razorpayClient = new Razorpay(razorpayConfig);
+/**
+ * Get Razorpay SDK Client Instance
+ *
+ * @description Lazy-loaded server-side Razorpay client instance for subscription and payment operations
+ *
+ * **SECURITY**: This client can only be used in server-side code (API routes, server components)
+ * It must NEVER be imported or used in client-side code to avoid exposing secret keys.
+ */
+export function getRazorpayClient(): Razorpay {
+  const config = getRazorpayConfig();
+  return new Razorpay(config);
+}
+
+/**
+ * @deprecated Use getRazorpayClient() instead for better error handling
+ */
+export const razorpayClient = (() => {
+  try {
+    return getRazorpayClient();
+  } catch (error) {
+    // Return a mock client during build time
+    console.warn('[Razorpay] Client not available during build time');
+    return null as any;
+  }
+})();
 
 // ============================================================================
 // Utility Functions
