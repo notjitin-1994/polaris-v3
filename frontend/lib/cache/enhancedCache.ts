@@ -7,6 +7,7 @@
 
 import { LRUCache } from 'lru-cache';
 import Redis from 'ioredis';
+import { isBuildTime } from './buildSafeCache';
 
 interface CacheOptions {
   maxSize?: number;
@@ -65,6 +66,13 @@ class EnhancedCache<T = any> {
       ...options,
     };
 
+    // Disable Redis and metrics during build time
+    if (isBuildTime()) {
+      this.options.enableRedis = false;
+      this.options.enableMetrics = false;
+      console.log('Enhanced cache: Using build-safe mode (memory only)');
+    }
+
     this.metrics = {
       hits: 0,
       misses: 0,
@@ -84,13 +92,15 @@ class EnhancedCache<T = any> {
       updateAgeOnGet: true,
       allowStale: false,
       dispose: (value, key) => {
-        this.metrics.evictions++;
-        this.updateMemorySize(-1);
+        if (this.options.enableMetrics) {
+          this.metrics.evictions++;
+          this.updateMemorySize(-1);
+        }
       },
     });
 
-    // Initialize Redis client if enabled
-    if (this.options.enableRedis) {
+    // Initialize Redis client if enabled and not in build time
+    if (this.options.enableRedis && !isBuildTime()) {
       this.initializeRedis();
     }
   }
@@ -100,6 +110,15 @@ class EnhancedCache<T = any> {
    */
   private initializeRedis(): void {
     try {
+      // Skip Redis initialization during build time
+      if (
+        process.env.NEXT_PHASE === 'phase-production-build' ||
+        (process.env.NODE_ENV === 'production' && !process.env.REDIS_URL)
+      ) {
+        console.warn('Enhanced cache: Skipping Redis initialization during build time');
+        return;
+      }
+
       const redisUrl = process.env.REDIS_URL || process.env.UPSTASH_REDIS_REST_URL;
 
       if (redisUrl) {
@@ -146,9 +165,11 @@ class EnhancedCache<T = any> {
       if (memoryEntry) {
         // Check if entry is still valid
         if (now - memoryEntry.timestamp < memoryEntry.ttl) {
-          memoryEntry.hits++;
-          this.metrics.hits++;
-          this.updateHitRate();
+          if (this.options.enableMetrics) {
+            memoryEntry.hits++;
+            this.metrics.hits++;
+            this.updateHitRate();
+          }
           return memoryEntry.value;
         } else {
           // Entry expired, remove from memory
@@ -173,14 +194,18 @@ class EnhancedCache<T = any> {
             };
 
             this.memoryCache.set(fullKey, cacheEntry);
-            this.updateMemorySize(1);
-            this.metrics.redisHits++;
-            this.metrics.hits++;
-            this.updateHitRate();
+            if (this.options.enableMetrics) {
+              this.updateMemorySize(1);
+              this.metrics.redisHits++;
+              this.metrics.hits++;
+              this.updateHitRate();
+            }
 
             return parsedValue;
           } else {
-            this.metrics.redisMisses++;
+            if (this.options.enableMetrics) {
+              this.metrics.redisMisses++;
+            }
           }
         } catch (redisError) {
           console.warn('Enhanced cache: Redis get failed', redisError);
@@ -189,13 +214,17 @@ class EnhancedCache<T = any> {
       }
 
       // Cache miss
-      this.metrics.misses++;
-      this.updateHitRate();
+      if (this.options.enableMetrics) {
+        this.metrics.misses++;
+        this.updateHitRate();
+      }
       return null;
     } catch (error) {
       console.error('Enhanced cache: Get operation failed', error);
-      this.metrics.misses++;
-      this.updateHitRate();
+      if (this.options.enableMetrics) {
+        this.metrics.misses++;
+        this.updateHitRate();
+      }
       return null;
     }
   }
@@ -221,7 +250,9 @@ class EnhancedCache<T = any> {
       this.memoryCache.set(fullKey, cacheEntry);
 
       if (!wasInMemory) {
-        this.updateMemorySize(1);
+        if (this.options.enableMetrics) {
+          this.updateMemorySize(1);
+        }
       }
 
       // Set in Redis if available
@@ -236,7 +267,9 @@ class EnhancedCache<T = any> {
         }
       }
 
-      this.metrics.sets++;
+      if (this.options.enableMetrics) {
+        this.metrics.sets++;
+      }
       return true;
     } catch (error) {
       console.error('Enhanced cache: Set operation failed', error);
@@ -257,7 +290,9 @@ class EnhancedCache<T = any> {
       this.memoryCache.delete(fullKey);
 
       if (wasInMemory) {
-        this.updateMemorySize(-1);
+        if (this.options.enableMetrics) {
+          this.updateMemorySize(-1);
+        }
       }
 
       // Delete from Redis if available
@@ -269,7 +304,9 @@ class EnhancedCache<T = any> {
         }
       }
 
-      this.metrics.deletes++;
+      if (this.options.enableMetrics) {
+        this.metrics.deletes++;
+      }
       return true;
     } catch (error) {
       console.error('Enhanced cache: Delete operation failed', error);

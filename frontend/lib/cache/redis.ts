@@ -33,6 +33,15 @@ let isInitializing = false;
  * Supports multiple Redis providers (Vercel KV, Upstash, Redis.com, etc.)
  */
 function getRedisConfig(): RedisConfig | null {
+  // Skip Redis during build time
+  if (
+    process.env.NEXT_PHASE === 'phase-production-build' ||
+    process.env.NEXT_PHASE === 'phase-development-build'
+  ) {
+    console.warn('[Redis] Skipping Redis configuration during build time');
+    return null;
+  }
+
   // Try different environment variable naming conventions
   const redisUrl =
     process.env.REDIS_URL ||

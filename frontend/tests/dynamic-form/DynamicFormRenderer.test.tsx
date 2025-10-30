@@ -98,8 +98,7 @@ describe('DynamicFormRenderer', () => {
       />
     );
 
-    expect(screen.getByText('Progress')).toBeInTheDocument();
-    expect(screen.getByText('0%')).toBeInTheDocument();
+    expect(screen.getByText('Step 1 of 2')).toBeInTheDocument();
   });
 
   it('renders first section by default', () => {
