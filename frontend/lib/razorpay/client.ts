@@ -18,8 +18,16 @@
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const Razorpay = require('razorpay');
 
-// Import error sanitization
-import { sanitizeError } from '../security/errorSanitization';
+// Inline error sanitization to avoid import issues
+function sanitizeError(error: unknown): string {
+  if (error instanceof Error) {
+    return error.message || 'An unexpected error occurred';
+  }
+  if (typeof error === 'string') {
+    return error;
+  }
+  return 'An unexpected error occurred';
+}
 
 // ============================================================================
 // Environment Variable Validation
