@@ -221,6 +221,29 @@ export async function POST(request: Request): Promise<Response> {
     const user = sessionResult.session.user;
     const userId = user.id;
 
+    // Validate user data
+    if (!userId) {
+      console.error('[Razorpay] Invalid user session', {
+        requestId,
+        user: user,
+        hasId: !!userId,
+      });
+
+      return createErrorResponse(
+        'INVALID_SESSION',
+        'Invalid user session. Please sign in again.',
+        401,
+        requestId
+      );
+    }
+
+    console.log('[Razorpay] User session validated', {
+      requestId,
+      userId,
+      email: user.email,
+      hasMetadata: !!user.user_metadata,
+    });
+
     // Initialize Supabase client
     const supabase = await getSupabaseServerClient();
 
@@ -231,7 +254,7 @@ export async function POST(request: Request): Promise<Response> {
       .eq('user_id', userId)
       .single();
 
-    console.log('[Razorpay] Profile fetch result', {
+    console.log('[Razorpay] Initial profile fetch result', {
       requestId,
       userId,
       userProfile,
@@ -312,20 +335,89 @@ export async function POST(request: Request): Promise<Response> {
 
       userProfile = newUserProfile;
     } else if (profileError) {
-      // Other profile error
-      console.error('[Razorpay] Failed to fetch user profile', {
+      // Try a different approach - maybe the issue is with the .single() method
+      console.log('[Razorpay] Trying alternative profile fetch method', {
+        requestId,
+        userId,
+        originalError: profileError,
+      });
+
+      const { data: userProfileList, error: listError } = await supabase
+        .from('user_profiles')
+        .select('subscription_tier, full_name, email')
+        .eq('user_id', userId)
+        .limit(1);
+
+      console.log('[Razorpay] Alternative profile fetch result', {
+        requestId,
+        userId,
+        userProfileList,
+        listError,
+        profileListLength: userProfileList?.length,
+      });
+
+      if (!listError && userProfileList && userProfileList.length > 0) {
+        // We found the profile using the list method
+        userProfile = userProfileList[0];
+        console.log('[Razorpay] Profile found using alternative method', {
+          requestId,
+          userId,
+          profile: userProfile,
+        });
+      } else if (listError) {
+        // Both methods failed, this is likely a database or permission issue
+        console.error('[Razorpay] Both profile fetch methods failed', {
+          requestId,
+          userId,
+          singleError: profileError,
+          listError: listError,
+        });
+      }
+
+      // If we still don't have a profile after trying alternative method, continue with error handling
+      if (!userProfile) {
+        // Other profile error - provide more detailed error info
+        console.error('[Razorpay] Failed to fetch user profile', {
         requestId,
         userId,
         error: profileError,
+        errorCode: profileError.code,
+        errorDetails: profileError.details,
+        errorHint: profileError.hint,
+        errorMessage: profileError.message,
       });
+
+      // Try to handle common error cases
+      let errorMessage = 'Failed to retrieve user profile';
+      let statusCode = 500;
+
+      if (profileError.code === 'PGRST116') {
+        // This should have been caught above, but handle it just in case
+        errorMessage = 'User profile not found';
+        statusCode = 404;
+      } else if (profileError.code === 'PGRST301') {
+        // Permission denied
+        errorMessage = 'Access denied to user profile';
+        statusCode = 403;
+      } else if (profileError.code === 'PGRST000') {
+        // Database error
+        errorMessage = 'Database connection error';
+        statusCode = 503;
+      }
 
       return createErrorResponse(
         'PROFILE_ERROR',
-        'Failed to retrieve user profile',
-        500,
+        errorMessage,
+        statusCode,
         requestId,
-        { originalError: profileError.message }
+        {
+          originalError: profileError.message,
+          errorCode: profileError.code,
+          errorDetails: profileError.details,
+          userId: userId
+        }
       );
+      }
     }
 
     // Get plan configuration
