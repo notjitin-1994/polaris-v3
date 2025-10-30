@@ -19,7 +19,7 @@
 const Razorpay = require('razorpay');
 
 // Import error sanitization
-import { sanitizeError } from '@/lib/security/errorSanitization';
+import { sanitizeError } from '../security/errorSanitization';
 
 // ============================================================================
 // Environment Variable Validation

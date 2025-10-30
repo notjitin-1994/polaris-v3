@@ -13,7 +13,7 @@ import { createClient } from '@/lib/supabase/server';
 import { requireAuth, requireRole } from '@/lib/auth/middleware';
 import { createRateLimitMiddleware } from '@/lib/middleware/rateLimiting';
 import { logEvent } from '@/lib/monitoring/subscriptionMonitoring';
-import { sanitizeError, createErrorResponse } from '@/lib/security/errorSanitization';
+import { sanitizeError, createErrorResponse } from '../../../../lib/security/errorSanitization';
 import {
   handleManualProcessing,
   handleSchedulerStatus,
