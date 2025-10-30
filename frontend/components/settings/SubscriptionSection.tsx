@@ -24,7 +24,7 @@ import { getTierDisplayName, getTierDisplayNameShort, getTierInfo } from '@/lib/
 const subscriptionTiers = {
   explorer: {
     name: 'Explorer',
-    price: 19,
+    price: 1599,
     period: 'month',
     features: [
       '5 starmap generations per month',
@@ -37,11 +37,11 @@ const subscriptionTiers = {
   },
   navigator: {
     name: 'Navigator',
-    price: 39,
+    price: 3499,
     period: 'month',
     features: [
-      '20 starmap generations per month',
-      '20 saved starmaps (roll over 12 months)',
+      '25 starmap generations per month',
+      '25 saved starmaps (roll over 12 months)',
       'Advanced export formats',
       'Priority email support',
       'Template library access',
@@ -51,11 +51,11 @@ const subscriptionTiers = {
   },
   voyager: {
     name: 'Voyager',
-    price: 79,
+    price: 6999,
     period: 'month',
     features: [
-      '40 starmap generations per month',
-      '40 saved starmaps (480/year with rollover)',
+      '50 starmap generations per month',
+      '50 saved starmaps (600/year with rollover)',
       'All export formats',
       'Priority chat support',
       'Custom template creation',

@@ -196,6 +196,10 @@ export const clientErrorTracker = new ClientErrorTracker();
 if (typeof window !== 'undefined') {
   // Use setTimeout to ensure we're in a proper browser context
   setTimeout(() => {
-    clientErrorTracker.init();
-  }, 0);
+    try {
+      clientErrorTracker.init();
+    } catch (error) {
+      console.warn('[Error Tracker] Failed to initialize:', error);
+    }
+  }, 100); // Increased delay to allow all modules to load
 }

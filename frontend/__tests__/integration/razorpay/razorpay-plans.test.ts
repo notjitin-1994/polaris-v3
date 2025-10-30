@@ -101,17 +101,29 @@ describe('Razorpay Plans Configuration', () => {
     });
 
     it('should have reasonable pricing values (in paise)', () => {
-      // Explorer: ₹1,678/month = 167800 paise (actual Razorpay dashboard amounts)
-      expect(PLAN_PRICING.explorer.monthly).toBe(167800);
-      expect(PLAN_PRICING.explorer.yearly).toBe(1678000);
+      // Explorer: ₹1,599/month = 159900 paise (corrected pricing)
+      expect(PLAN_PRICING.explorer.monthly).toBe(159900);
+      expect(PLAN_PRICING.explorer.yearly).toBe(1599000);
 
-      // Navigator: ₹3,443/month = 344300 paise (actual Razorpay dashboard amounts)
-      expect(PLAN_PRICING.navigator.monthly).toBe(344300);
-      expect(PLAN_PRICING.navigator.yearly).toBe(3443000);
+      // Navigator: ₹3,499/month = 349900 paise (corrected pricing)
+      expect(PLAN_PRICING.navigator.monthly).toBe(349900);
+      expect(PLAN_PRICING.navigator.yearly).toBe(3499000);
 
-      // Voyager: ₹6,975/month = 697500 paise (actual Razorpay dashboard amounts)
-      expect(PLAN_PRICING.voyager.monthly).toBe(697500);
-      expect(PLAN_PRICING.voyager.yearly).toBe(6975000);
+      // Voyager: ₹6,999/month = 699900 paise (corrected pricing)
+      expect(PLAN_PRICING.voyager.monthly).toBe(699900);
+      expect(PLAN_PRICING.voyager.yearly).toBe(6999000);
+
+      // Crew: ₹1,999/month = 199900 paise (actual pricing from pricing page)
+      expect(PLAN_PRICING.crew.monthly).toBe(199900);
+      expect(PLAN_PRICING.crew.yearly).toBe(1999000);
+
+      // Fleet: ₹5,399/month = 539900 paise (actual pricing from pricing page)
+      expect(PLAN_PRICING.fleet.monthly).toBe(539900);
+      expect(PLAN_PRICING.fleet.yearly).toBe(5399000);
+
+      // Armada: ₹10,899/month = 1089900 paise (actual pricing from pricing page)
+      expect(PLAN_PRICING.armada.monthly).toBe(1089900);
+      expect(PLAN_PRICING.armada.yearly).toBe(10899000);
     });
 
     it('should apply yearly discount (16% annual discount)', () => {
@@ -195,8 +207,18 @@ describe('Razorpay Plans Configuration', () => {
 
     it('should return plan ID for valid tier and billing cycle', () => {
       // Plans are now configured with new active Razorpay plan IDs
-      expect(getPlanId('navigator', 'monthly')).toBe('plan_RZQZT107EESvZ0');
-      expect(getPlanId('navigator', 'yearly')).toBe('plan_RZQZTZpmw9zdph');
+      expect(getPlanId('navigator', 'monthly')).toBe('plan_RZZx05RyiE9bz5');
+      expect(getPlanId('navigator', 'yearly')).toBe('plan_RZZx0gnrvTUTVP');
+      expect(getPlanId('explorer', 'monthly')).toBe('plan_RZZwywnfGJHTuw');
+      expect(getPlanId('explorer', 'yearly')).toBe('plan_RZZwzXQ1PJ4ZOn');
+      expect(getPlanId('voyager', 'monthly')).toBe('plan_RZZx1BzIJRZjk7');
+      expect(getPlanId('voyager', 'yearly')).toBe('plan_RZZx1oIMLCNQ2N');
+      expect(getPlanId('crew', 'monthly')).toBe('plan_RZGfBEA99LRzFq');
+      expect(getPlanId('crew', 'yearly')).toBe('plan_RZGfBkdSfXnmbj');
+      expect(getPlanId('fleet', 'monthly')).toBe('plan_RZGfCI7A2I714z');
+      expect(getPlanId('fleet', 'yearly')).toBe('plan_RZGfCtTYD4rC1y');
+      expect(getPlanId('armada', 'monthly')).toBe('plan_RZGfDTm2erB6km');
+      expect(getPlanId('armada', 'yearly')).toBe('plan_RZGfE89sNsuNMo');
     });
 
     it('should handle invalid tier gracefully', () => {
@@ -250,12 +272,18 @@ describe('Razorpay Plans Configuration', () => {
     });
 
     it('should return correct pricing for paid tiers', () => {
-      expect(getPlanPrice('explorer', 'monthly')).toBe(167800);
-      expect(getPlanPrice('explorer', 'yearly')).toBe(1678000);
-      expect(getPlanPrice('navigator', 'monthly')).toBe(344300);
-      expect(getPlanPrice('navigator', 'yearly')).toBe(3443000);
-      expect(getPlanPrice('voyager', 'monthly')).toBe(697500);
-      expect(getPlanPrice('voyager', 'yearly')).toBe(6975000);
+      expect(getPlanPrice('explorer', 'monthly')).toBe(159900);
+      expect(getPlanPrice('explorer', 'yearly')).toBe(1599000);
+      expect(getPlanPrice('navigator', 'monthly')).toBe(349900);
+      expect(getPlanPrice('navigator', 'yearly')).toBe(3499000);
+      expect(getPlanPrice('voyager', 'monthly')).toBe(699900);
+      expect(getPlanPrice('voyager', 'yearly')).toBe(6999000);
+      expect(getPlanPrice('crew', 'monthly')).toBe(199900);
+      expect(getPlanPrice('crew', 'yearly')).toBe(1999000);
+      expect(getPlanPrice('fleet', 'monthly')).toBe(539900);
+      expect(getPlanPrice('fleet', 'yearly')).toBe(5399000);
+      expect(getPlanPrice('armada', 'monthly')).toBe(1089900);
+      expect(getPlanPrice('armada', 'yearly')).toBe(10899000);
     });
 
     it('should return 0 for invalid tier', () => {
@@ -426,10 +454,10 @@ describe('Razorpay Plans Configuration', () => {
       const formatted = formatPrice(price);
 
       // Verify consistency
-      expect(planId).toBe('plan_RZQZT107EESvZ0'); // Configured with new active plan ID
-      expect(price).toBe(344300);
-      expect(rupees).toBe(3443);
-      expect(formatted).toBe('₹3,443');
+      expect(planId).toBe('plan_RZZx05RyiE9bz5'); // Configured with new active plan ID
+      expect(price).toBe(349900);
+      expect(rupees).toBe(3499);
+      expect(formatted).toBe('₹3,499');
       expect(limit).toBe(25);
       expect(isTeam).toBe(false);
     });
@@ -455,7 +483,7 @@ describe('Razorpay Plans Configuration', () => {
       const isIndividualTeam = isTeamTier(individualTier);
 
       expect(isIndividualTeam).toBe(false);
-      expect(individualPrice).toBe(167800); // ₹1,678 total
+      expect(individualPrice).toBe(159900); // ₹1,599 total
       expect(individualLimit).toBe(5); // total blueprints
     });
   });

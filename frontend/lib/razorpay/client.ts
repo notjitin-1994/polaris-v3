@@ -15,7 +15,11 @@
  */
 
 // Import Razorpay using CommonJS require to avoid TypeScript import issues
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const Razorpay = require('razorpay');
+
+// Import error sanitization
+import { sanitizeError } from '@/lib/security/errorSanitization';
 
 // ============================================================================
 // Environment Variable Validation
@@ -27,8 +31,10 @@ const Razorpay = require('razorpay');
  */
 function validateEnvironmentVariables(): void {
   // Skip validation during build time
-  if (process.env.NEXT_PHASE === 'phase-production-build' ||
-      process.env.NODE_ENV === 'production' && !process.env.RAZORPAY_KEY_SECRET) {
+  if (
+    process.env.NEXT_PHASE === 'phase-production-build' ||
+    (process.env.NODE_ENV === 'production' && !process.env.RAZORPAY_KEY_SECRET)
+  ) {
     console.warn('[Razorpay] Skipping environment validation during build time');
     return;
   }
@@ -50,31 +56,54 @@ function validateEnvironmentVariables(): void {
     );
   }
 
-  // Validate key format
+  // Validate key format with strict prefix checking
   const keyId = process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID;
   if (!keyId) return;
 
-  const isTestMode = keyId.startsWith('rzp_test_');
-  const isLiveMode = keyId.startsWith('rzp_live_');
+  const isTestKey = keyId.startsWith('rzp_test_');
+  const isLiveKey = keyId.startsWith('rzp_live_');
 
-  if (!isTestMode && !isLiveMode) {
+  if (!isTestKey && !isLiveKey) {
     throw new Error(
       `[Razorpay Client] Invalid NEXT_PUBLIC_RAZORPAY_KEY_ID format.\n` +
         'Expected format: rzp_test_XXXXX (test mode) or rzp_live_XXXXX (live mode)'
     );
   }
 
-  // Warn if using test mode in production
-  if (process.env.NODE_ENV === 'production' && isTestMode) {
+  // Environment-specific validation
+  const isProduction = process.env.NODE_ENV === 'production';
+  if (isProduction && isTestKey) {
     console.warn(
       '⚠️  [Razorpay Client] WARNING: Using test mode keys in production environment!\n' +
         'Switch to live mode keys (rzp_live_) for production.'
     );
   }
 
+  if (!isProduction && isLiveKey) {
+    console.warn(
+      '⚠️  [Razorpay Client] WARNING: Using live mode keys in non-production environment!\n' +
+        'Ensure this is intentional for testing/staging.'
+    );
+  }
+
+  // Validate key length (Razorpay keys are typically 14-16 characters after prefix)
+  const keyWithoutPrefix = keyId.split('_').slice(2).join('_');
+  if (keyWithoutPrefix.length < 12 || keyWithoutPrefix.length > 20) {
+    throw new Error(
+      `[Razorpay Client] Invalid NEXT_PUBLIC_RAZORPAY_KEY_ID length. Key appears to be malformed.`
+    );
+  }
+
+  // Validate key format (alphanumeric)
+  if (!/^[a-zA-Z0-9]+$/.test(keyWithoutPrefix)) {
+    throw new Error(
+      `[Razorpay Client] Invalid NEXT_PUBLIC_RAZORPAY_KEY_ID format. Key must contain only alphanumeric characters.`
+    );
+  }
+
   // Log mode in development
   if (process.env.NODE_ENV === 'development') {
-    console.log(`[Razorpay Client] Initialized in ${isTestMode ? 'TEST' : 'LIVE'} mode`);
+    console.log(`[Razorpay Client] Initialized in ${isTestKey ? 'TEST' : 'LIVE'} mode`);
   }
 }
 
@@ -235,7 +264,13 @@ export async function createSubscription(params: {
     return await razorpayClient.subscriptions.create(params);
   } catch (error: any) {
     console.error('[Razorpay] Subscription creation failed:', error);
-    throw new Error(`Failed to create subscription: ${error.message}`);
+    const sanitized = sanitizeError(error, {
+      customMessages: {
+        BAD_REQUEST_ERROR: 'Invalid subscription details provided.',
+        INVALID_REQUEST: 'Invalid subscription details provided.',
+      },
+    });
+    throw new Error(sanitized.message);
   }
 }
 
@@ -250,7 +285,13 @@ export async function fetchSubscription(subscriptionId: string) {
     return await razorpayClient.subscriptions.fetch(subscriptionId);
   } catch (error: any) {
     console.error('[Razorpay] Subscription fetch failed:', error);
-    throw new Error(`Failed to fetch subscription: ${error.message}`);
+    const sanitized = sanitizeError(error, {
+      customMessages: {
+        INVALID_SUBSCRIPTION_ID: 'Invalid subscription ID provided.',
+        SUBSCRIPTION_NOT_FOUND: 'Subscription not found.',
+      },
+    });
+    throw new Error(sanitized.message);
   }
 }
 
@@ -266,7 +307,14 @@ export async function cancelSubscription(subscriptionId: string, cancelAtCycleEn
     return await razorpayClient.subscriptions.cancel(subscriptionId, cancelAtCycleEnd);
   } catch (error: any) {
     console.error('[Razorpay] Subscription cancellation failed:', error);
-    throw new Error(`Failed to cancel subscription: ${error.message}`);
+    const sanitized = sanitizeError(error, {
+      customMessages: {
+        INVALID_SUBSCRIPTION_ID: 'Invalid subscription ID provided.',
+        SUBSCRIPTION_NOT_FOUND: 'Subscription not found.',
+        CANCELLATION_NOT_ALLOWED: 'This subscription cannot be cancelled.',
+      },
+    });
+    throw new Error(sanitized.message);
   }
 }
 

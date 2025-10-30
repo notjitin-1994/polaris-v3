@@ -24,18 +24,18 @@ const Razorpay = require('razorpay');
 
 // Current plan IDs from configuration
 const CURRENT_PLAN_IDS = [
-  'plan_RZGmbMjd9u0qtI', // Explorer Monthly
-  'plan_RZGmc1LbRLGH5a', // Explorer Yearly
-  'plan_RZGf8oI6VAEW3h', // Navigator Monthly
-  'plan_RZGf9MME1Bs4Vd', // Navigator Yearly
-  'plan_RZGfA1SbZQnZyM', // Voyager Monthly
-  'plan_RZGfAdVwwRTQah', // Voyager Yearly
-  'plan_RZGfBEA99LRzFq', // Crew Monthly
-  'plan_RZGfBkdSfXnmbj', // Crew Yearly
-  'plan_RZGfCI7A2I714z', // Fleet Monthly
-  'plan_RZGfCtTYD4rC1y', // Fleet Yearly
-  'plan_RZGfDTm2erB6km', // Armada Monthly
-  'plan_RZGfE89sNsuNMo', // Armada Yearly
+  'plan_RZZwywnfGJHTuw', // Explorer Monthly (Updated)
+  'plan_RZZwzXQ1PJ4ZOn', // Explorer Yearly (Updated)
+  'plan_RZZx05RyiE9bz5', // Navigator Monthly (Updated)
+  'plan_RZZx0gnrvTUTVP', // Navigator Yearly (Updated)
+  'plan_RZZx1BzIJRZjk7', // Voyager Monthly (Updated)
+  'plan_RZZx1oIMLCNQ2N', // Voyager Yearly (Updated)
+  'plan_RZGfBEA99LRzFq', // Crew Monthly (Keep existing for now)
+  'plan_RZGfBkdSfXnmbj', // Crew Yearly (Keep existing for now)
+  'plan_RZGfCI7A2I714z', // Fleet Monthly (Keep existing for now)
+  'plan_RZGfCtTYD4rC1y', // Fleet Yearly (Keep existing for now)
+  'plan_RZGfDTm2erB6km', // Armada Monthly (Keep existing for now)
+  'plan_RZGfE89sNsuNMo', // Armada Yearly (Keep existing for now)
 ];
 
 /**

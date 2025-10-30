@@ -121,8 +121,8 @@ describe('Payment Flow Integration Tests', () => {
     });
 
     (getPlanPrice as any).mockImplementation((tier: string) => {
-      const prices = { navigator: 39000, voyager: 79000, crew: 24000 };
-      return prices[tier as keyof typeof prices] || 39000;
+      const prices = { navigator: 349900, voyager: 699900, crew: 199900 };
+      return prices[tier as keyof typeof prices] || 159900;
     });
 
     // Setup mock subscription
@@ -148,7 +148,7 @@ describe('Payment Flow Integration Tests', () => {
       metadata: {
         billing_cycle: 'monthly',
         seats: '1',
-        plan_price_per_seat: '39000',
+        plan_price_per_seat: '159900',
       },
     };
   });
@@ -726,7 +726,7 @@ describe('Payment Flow Integration Tests', () => {
         metadata: {
           billing_cycle: consistentBillingCycle,
           seats: '1',
-          plan_price_per_seat: '39000',
+          plan_price_per_seat: '159900',
           user_metadata: { source: 'consistency_test' },
         },
       };

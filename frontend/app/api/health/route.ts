@@ -1,14 +1,190 @@
 /**
- * Health Check API
- * Simple endpoint to check if the server is reachable
+ * Health Check API Route
+ *
+ * @description Health check endpoint for monitoring system status
+ * Used by load balancers, monitoring systems, and DevOps tools
+ *
+ * @version 1.0.0
+ * @date 2025-10-30
+ *
+ * @endpoint GET /api/health
+ * @access public
  */
 
 import { NextResponse } from 'next/server';
+import { performHealthCheck, quickHealthCheck } from '@/lib/monitoring/healthChecks';
+import { RATE_LIMIT_CONFIGS, rateLimitMiddleware } from '@/lib/middleware/rateLimiting';
 
-export async function HEAD() {
-  return new NextResponse(null, { status: 200 });
+// Set runtime configuration
+export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
+
+/**
+ * Rate limiting for health check (very generous but protects against abuse)
+ */
+const healthCheckRateLimit = rateLimitMiddleware({
+  windowMs: 60 * 1000, // 1 minute
+  maxRequests: 1000, // 1000 requests per minute
+  keyGenerator: (request: Request) => {
+    const ip =
+      request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'unknown';
+    return `health-check:${ip}`;
+  },
+  message: 'Health check rate limit exceeded. Please try again later.',
+});
+
+/**
+ * GET handler for health check
+ */
+export async function GET(request: Request): Promise<NextResponse> {
+  const startTime = Date.now();
+
+  try {
+    // Apply rate limiting (very generous for health checks)
+    const rateLimitResult = await healthCheckRateLimit(request);
+    if (!rateLimitResult.allowed) {
+      return NextResponse.json(
+        {
+          status: 'unhealthy',
+          error: 'Rate limit exceeded',
+          timestamp: new Date().toISOString(),
+        },
+        {
+          status: 429,
+          headers: {
+            'Retry-After': '60',
+            'X-Content-Type-Options': 'nosniff',
+            'X-Frame-Options': 'DENY',
+            'X-XSS-Protection': '1; mode=block',
+          },
+        }
+      );
+    }
+
+    // Check if this is a quick health check
+    const url = new URL(request.url);
+    const isQuickCheck = url.searchParams.get('quick') === 'true';
+
+    let healthCheck;
+    if (isQuickCheck) {
+      healthCheck = await quickHealthCheck();
+    } else {
+      healthCheck = await performHealthCheck();
+    }
+
+    const processingTime = Date.now() - startTime;
+
+    // Determine HTTP status code based on health status
+    let statusCode = 200;
+    if (healthCheck.status === 'unhealthy') {
+      statusCode = 503; // Service Unavailable
+    } else if (healthCheck.status === 'degraded') {
+      statusCode = 200; // OK but with warnings
+    }
+
+    // Prepare response headers
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+      'Cache-Control': 'no-cache, no-store, must-revalidate',
+      Pragma: 'no-cache',
+      Expires: '0',
+      'X-Content-Type-Options': 'nosniff',
+      'X-Frame-Options': 'DENY',
+      'X-XSS-Protection': '1; mode=block',
+      'X-Response-Time': processingTime.toString(),
+      'X-Health-Status': healthCheck.status,
+      'X-Health-Score': healthCheck.overallScore.toString(),
+    };
+
+    // Return appropriate response based on request type
+    if (isQuickCheck) {
+      return NextResponse.json(healthCheck, {
+        status: statusCode,
+        headers,
+      });
+    }
+
+    // Full health check response
+    return NextResponse.json(
+      {
+        status: healthCheck.status,
+        score: healthCheck.overallScore,
+        timestamp: healthCheck.timestamp.toISOString(),
+        processingTime: `${processingTime}ms`,
+        checks: healthCheck.checks.map((check) => ({
+          name: check.name,
+          status: check.status,
+          message: check.message,
+          responseTime: check.responseTime ? `${check.responseTime}ms` : null,
+          details: check.details,
+          lastChecked: check.timestamp.toISOString(),
+        })),
+        environment: {
+          nodeEnv: process.env.NODE_ENV,
+          isTestMode: process.env.NODE_ENV === 'development',
+          version: process.env.npm_package_version || 'unknown',
+          uptime: process.uptime() ? `${Math.floor(process.uptime() / 3600)}h` : 'unknown',
+        },
+      },
+      {
+        status: statusCode,
+        headers,
+      }
+    );
+  } catch (error) {
+    console.error('[Health Check] Health check failed:', error);
+
+    // Return unhealthy status on error
+    return NextResponse.json(
+      {
+        status: 'unhealthy',
+        error: 'Health check system failure',
+        timestamp: new Date().toISOString(),
+        processingTime: `${Date.now() - startTime}ms`,
+      },
+      {
+        status: 503,
+        headers: {
+          'Content-Type': 'application/json',
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'X-Content-Type-Options': 'nosniff',
+          'X-Frame-Options': 'DENY',
+          'X-XSS-Protection': '1; mode=block',
+        },
+      }
+    );
+  }
 }
 
-export async function GET() {
-  return NextResponse.json({ status: 'ok', timestamp: new Date().toISOString() });
+/**
+ * HEAD handler for health check (lightweight)
+ */
+export async function HEAD(request: Request): Promise<NextResponse> {
+  try {
+    // Quick health check for HEAD requests
+    const healthCheck = await quickHealthCheck();
+
+    const headers: Record<string, string> = {
+      'X-Health-Status': healthCheck.status,
+      'X-Health-Score': healthCheck.status === 'healthy' ? '100' : '0',
+      'X-Content-Type-Options': 'nosniff',
+      'X-Frame-Options': 'DENY',
+      'X-XSS-Protection': '1; mode=block',
+    };
+
+    return new NextResponse(null, {
+      status: healthCheck.status === 'healthy' ? 200 : 503,
+      headers,
+    });
+  } catch (error) {
+    return new NextResponse(null, {
+      status: 503,
+      headers: {
+        'X-Health-Status': 'unhealthy',
+        'X-Content-Type-Options': 'nosniff',
+        'X-Frame-Options': 'DENY',
+        'X-XSS-Protection': '1; mode=block',
+      },
+    });
+  }
 }

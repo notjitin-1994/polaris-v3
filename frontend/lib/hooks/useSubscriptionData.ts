@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { createBrowserClient } from '@/lib/supabase/client';
+import { getSupabaseBrowserClient } from '@/lib/supabase/client-fixed';
 import type { SubscriptionInfo, UserProfile, Payment } from '@/types/subscription';
 
 interface UseSubscriptionDataOptions {
@@ -33,7 +33,7 @@ export function useSubscriptionData(
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const supabase = createBrowserClient();
+  const supabase = getSupabaseBrowserClient();
 
   const fetchSubscriptionData = useCallback(async () => {
     try {
@@ -224,7 +224,7 @@ export function usePaymentHistory(initialPage = 1, perPage = 10) {
   const [totalPages, setTotalPages] = useState(0);
   const [total, setTotal] = useState(0);
 
-  const supabase = createBrowserClient();
+  const supabase = getSupabaseBrowserClient();
 
   const fetchPaymentHistory = useCallback(
     async (page: number = currentPage) => {

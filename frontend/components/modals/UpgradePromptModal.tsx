@@ -12,6 +12,12 @@ import {
 import { Button } from '@/components/ui/button';
 import { Rocket, Zap, Sparkles, ArrowRight, Star, Crown } from 'lucide-react';
 import { getTierInfo, type SubscriptionTier } from '@/lib/utils/tierDisplay';
+import {
+  getPlanPrice,
+  formatPrice,
+  type SubscriptionTier as RzSubscriptionTier,
+  type BillingCycle,
+} from '@/lib/config/razorpayPlans';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
 
@@ -40,7 +46,6 @@ const tierData: Record<
   {
     generations: number;
     saved: number;
-    price: number;
     features: string[];
     icon: any;
     popular?: boolean;
@@ -49,19 +54,17 @@ const tierData: Record<
   explorer: {
     generations: 5,
     saved: 5,
-    price: 0,
     icon: Sparkles,
     features: ['5 blueprints/month', '5 saved starmaps', 'Basic export formats', 'Email support'],
   },
   navigator: {
-    generations: 20,
-    saved: 20,
-    price: 39,
+    generations: 25,
+    saved: 25,
     icon: Rocket,
     popular: true,
     features: [
-      '20 blueprints/month',
-      '20 saved starmaps',
+      '25 blueprints/month',
+      '25 saved starmaps',
       'Advanced export formats',
       'Priority support',
       '12-month rollover',
@@ -70,7 +73,6 @@ const tierData: Record<
   voyager: {
     generations: 50,
     saved: 50,
-    price: 79,
     icon: Star,
     features: [
       '50 blueprints/month',
@@ -84,7 +86,6 @@ const tierData: Record<
   crew: {
     generations: 10,
     saved: 10,
-    price: 99,
     icon: Crown,
     features: [
       '10 blueprints/month',
@@ -281,7 +282,9 @@ export function UpgradePromptModal({
                           {tierInfo.displayName}
                         </h3>
                         <div className="mb-4 flex items-baseline gap-1">
-                          <span className="text-foreground text-3xl font-bold">${tier.price}</span>
+                          <span className="text-foreground text-3xl font-bold">
+                            {formatPrice(getPlanPrice(tierKey as RzSubscriptionTier, 'monthly'))}
+                          </span>
                           <span className="text-text-secondary">/month</span>
                         </div>
 

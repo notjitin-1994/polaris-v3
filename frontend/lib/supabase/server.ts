@@ -56,3 +56,6 @@ export async function getServerSession() {
   if (error) return { session: null, error } as const;
   return { session, error: null as null } as const;
 }
+
+// Alias for backward compatibility
+export const createClient = getSupabaseServerClient;

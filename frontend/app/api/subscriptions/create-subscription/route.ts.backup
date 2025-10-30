@@ -23,7 +23,7 @@ import { getSupabaseServerClient, getServerSession } from '@/lib/supabase/server
 import type { Database } from '@/types/supabase';
 import { getPlanId, getPlanPrice } from '@/lib/config/razorpayPlans';
 import { razorpayClient, isTestMode } from '@/lib/razorpay/client';
-import { RATE_LIMIT_CONFIGS, rateLimitMiddleware } from '@/lib/middleware/rateLimiting';
+import { createRateLimiter } from '@/lib/rate-limiting/redisRateLimit';
 import { addApiSecurityHeaders } from '@/lib/security/securityHeaders';
 
 // Set runtime configuration
@@ -31,9 +31,13 @@ export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
 /**
- * Enhanced rate limiting for subscription creation
+ * Production-ready rate limiting using Redis or fallback to in-memory
  */
-const subscriptionRateLimit = rateLimitMiddleware(RATE_LIMIT_CONFIGS.SUBSCRIPTION_CREATION);
+const rateLimiter = createRateLimiter({
+  windowMs: 60 * 1000, // 1 minute in milliseconds
+  maxRequests: 10, // 10 requests per minute per IP
+  keyPrefix: 'subscription_api',
+});
 
 /**
  * Generate unique request ID for tracking
@@ -85,21 +89,25 @@ export async function POST(request: Request): Promise<Response> {
   const startTime = Date.now();
 
   try {
-    // Apply enhanced rate limiting
-    const rateLimitResult = await subscriptionRateLimit(request);
-    if (!rateLimitResult.allowed) {
-      console.warn(`[Razorpay] Rate limit exceeded for subscription creation`, {
-        requestId,
-        error: rateLimitResult.error,
-      });
+    // Extract client IP for rate limiting
+    const ip =
+      request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'unknown';
 
-      if (rateLimitResult.response) {
-        return addApiSecurityHeaders(rateLimitResult.response);
-      }
+    // Rate limiting check using Redis-based rate limiter
+    const rateLimitResult = await rateLimiter.checkLimit(ip);
+    if (!rateLimitResult.success) {
+      console.warn(`[Razorpay] Rate limit exceeded for IP: ${ip}`, {
+        requestId,
+        ip,
+        limit: rateLimitResult.limit,
+        remaining: rateLimitResult.remaining,
+        resetTime: rateLimitResult.resetTime,
+        retryAfter: rateLimitResult.retryAfter,
+      });
 
       const response = createErrorResponse(
         'RATE_LIMIT_EXCEEDED',
-        'Too many subscription creation attempts. Please try again later.',
+        'Too many requests. Please try again later.',
         429,
         requestId,
         {
@@ -325,7 +333,7 @@ export async function POST(request: Request): Promise<Response> {
       planAmount,
       rupeesAmount: planAmount / 100,
       seats,
-      finalAmount: seats ? planPrice * seats : planPrice,
+      finalAmount: seats ? planPrice * seats : planPrice
     });
 
     // Check for existing active subscriptions (duplicate prevention)
@@ -564,13 +572,13 @@ export async function POST(request: Request): Promise<Response> {
           planId,
           planAmount: planDetails.item.amount,
           planCurrency: planDetails.item.currency,
-          planName: planDetails.item.name,
+          planName: planDetails.item.name
         });
       } catch (planError: any) {
         console.error('[Razorpay] Failed to fetch plan details:', {
           requestId,
           planId,
-          error: planError.message,
+          error: planError.message
         });
         // Continue without plan details - use our calculated values
         planDetails = null;
@@ -587,12 +595,10 @@ export async function POST(request: Request): Promise<Response> {
         currentEnd: razorpaySubscription.current_end,
         planId: razorpaySubscription.plan_id,
         planAmountFromRazorpay: planDetails?.item?.amount,
-        planAmountFromRazorpayRupees: planDetails?.item?.amount
-          ? planDetails.item.amount / 100
-          : 'N/A',
+        planAmountFromRazorpayRupees: planDetails?.item?.amount ? planDetails.item.amount / 100 : 'N/A',
         planCurrency: planDetails?.item?.currency,
         ourPlanAmount: planAmount,
-        ourPlanAmountRupees: planAmount / 100,
+        ourPlanAmountRupees: planAmount / 100
       });
 
       // Store subscription in database
@@ -605,65 +611,45 @@ export async function POST(request: Request): Promise<Response> {
 
       // Store subscription in database
       const { data: subscriptionRecord, error: subscriptionError } = await supabase
-        .from('subscriptions')
-        .insert([
-          {
-            user_id: userId,
-            razorpay_subscription_id: razorpaySubscription.id,
-            razorpay_plan_id: planId,
-            razorpay_customer_id: razorpayCustomer.id,
-            status: razorpaySubscription.status,
-            plan_name:
-              planDetails?.item?.name ||
-              razorpaySubscription.plan?.name ||
-              `${tier} (${billingCycle})`,
-            plan_amount:
-              planDetails?.item?.amount || razorpaySubscription.plan?.amount || planAmount,
-            plan_currency:
-              planDetails?.item?.currency || razorpaySubscription.plan?.currency || 'INR',
-            plan_period: billingCycle,
-            plan_interval: billingCycle === 'monthly' ? 1 : 12, // 1 month or 12 months
-            subscription_tier: tier,
-            start_date: razorpaySubscription.current_start
-              ? new Date(razorpaySubscription.current_start * 1000).toISOString()
-              : null,
-            end_date: razorpaySubscription.current_end
-              ? new Date(razorpaySubscription.current_end * 1000).toISOString()
-              : null,
-            current_start: razorpaySubscription.current_start
-              ? new Date(razorpaySubscription.current_start * 1000).toISOString()
-              : null,
-            current_end: razorpaySubscription.current_end
-              ? new Date(razorpaySubscription.current_end * 1000).toISOString()
-              : null,
-            next_billing_date: razorpaySubscription.current_end
-              ? new Date(razorpaySubscription.current_end * 1000).toISOString()
-              : null,
-            charge_at: razorpaySubscription.charge_at
-              ? new Date(razorpaySubscription.charge_at * 1000).toISOString()
-              : null,
-            total_count: razorpaySubscription.total_count || (billingCycle === 'monthly' ? 12 : 1),
-            paid_count: razorpaySubscription.paid_count || 0,
-            remaining_count:
-              razorpaySubscription.remaining_count || (billingCycle === 'monthly' ? 12 : 1),
-            short_url: razorpaySubscription.short_url,
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString(),
-            metadata: JSON.stringify({
-              request_id: requestId,
-              billing_cycle: billingCycle,
-              created_source: 'polaris_v3_api',
-              plan_configuration: {
-                plan_id: planId,
-                plan_amount: planAmount,
-                plan_tier: tier,
-                plan_billing_cycle: billingCycle,
-              },
-              ...(metadata && { subscription_metadata: metadata }),
-              ...(seats && { seats: seats }), // Store seats in metadata since column doesn't exist
-            }),
-          },
-        ])
+        .from('user_subscriptions')
+        .insert([{
+          user_id: userId,
+          razorpay_subscription_id: razorpaySubscription.id,
+          razorpay_plan_id: planId,
+          razorpay_customer_id: razorpayCustomer.id,
+          status: razorpaySubscription.status,
+          plan_name: planDetails?.item?.name || razorpaySubscription.plan?.name || `${tier} (${billingCycle})`,
+          plan_amount: planDetails?.item?.amount || razorpaySubscription.plan?.amount || planAmount,
+          plan_currency: planDetails?.item?.currency || razorpaySubscription.plan?.currency || 'INR',
+          plan_period: billingCycle,
+          plan_interval: billingCycle === 'monthly' ? 1 : 12, // 1 month or 12 months
+          subscription_tier: tier,
+          start_date: razorpaySubscription.current_start
+            ? new Date(razorpaySubscription.current_start * 1000).toISOString()
+            : null,
+          end_date: razorpaySubscription.current_end
+            ? new Date(razorpaySubscription.current_end * 1000).toISOString()
+            : null,
+          next_billing_at: razorpaySubscription.charge_at
+            ? new Date(razorpaySubscription.charge_at * 1000).toISOString()
+            : null,
+          short_url: razorpaySubscription.short_url,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+          seats: seats || 1,
+          metadata: JSON.stringify({
+            request_id: requestId,
+            billing_cycle: billingCycle,
+            created_source: 'polaris_v3_api',
+            plan_configuration: {
+              plan_id: planId,
+              plan_amount: planAmount,
+              plan_tier: tier,
+              plan_billing_cycle: billingCycle,
+            },
+            ...(metadata && { subscription_metadata: metadata }),
+          }),
+        }])
         .select();
 
       if (subscriptionError) {
@@ -702,7 +688,7 @@ export async function POST(request: Request): Promise<Response> {
 
       console.log('[Razorpay] Subscription stored successfully in database', {
         requestId,
-        databaseSubscriptionId: subscriptionRecord?.[0]?.subscription_id,
+        databaseSubscriptionId: subscriptionRecord?.[0]?.id,
         razorpaySubscriptionId: razorpaySubscription.id,
         userId,
         status: razorpaySubscription.status,
@@ -715,9 +701,9 @@ export async function POST(request: Request): Promise<Response> {
           customerId: razorpayCustomer.id,
           shortUrl: razorpaySubscription.short_url,
           status: razorpaySubscription.status,
-          planName: planDetails?.item?.name || `${tier} (${billingCycle})`,
-          planAmount: planDetails?.item?.amount || planAmount,
-          planCurrency: planDetails?.item?.currency || 'INR',
+          planName: planDetails?.item?.name || razorpaySubscription.plan?.name || `${tier} (${billingCycle})`,
+          planAmount: planDetails?.item?.amount || razorpaySubscription.plan?.amount || planAmount,
+          planCurrency: planDetails?.item?.currency || razorpaySubscription.plan?.currency || 'INR',
           billingCycle,
           nextBillingDate: razorpaySubscription.current_end
             ? new Date(razorpaySubscription.current_end * 1000).toISOString()
@@ -726,6 +712,7 @@ export async function POST(request: Request): Promise<Response> {
             ? new Date(razorpaySubscription.current_start * 1000).toISOString()
             : null,
           tier,
+          seats,
           customerName: razorpayCustomer.name,
           customerEmail: razorpayCustomer.email,
         },
@@ -739,18 +726,19 @@ export async function POST(request: Request): Promise<Response> {
         planAmountSource: planDetails?.item?.amount
           ? 'from Razorpay plan (fetched separately)'
           : razorpaySubscription.plan?.amount
-            ? 'from Razorpay subscription'
-            : 'from our calculation',
+          ? 'from Razorpay subscription'
+          : 'from our calculation',
         sourcePlanId: razorpaySubscription.plan_id,
         ourOriginalPlanId: planId,
         fetchedPlanDetails: {
           amount: planDetails?.item?.amount,
           currency: planDetails?.item?.currency,
-          name: planDetails?.item?.name,
-        },
+          name: planDetails?.item?.name
+        }
       });
 
       return createSuccessResponse(responseData, requestId);
+
     } catch (razorpayError: any) {
       console.error('[Razorpay] Subscription creation failed', {
         requestId,
@@ -790,8 +778,7 @@ export async function POST(request: Request): Promise<Response> {
         razorpay_plan_id: planId,
         razorpay_customer_id: razorpayCustomer.id,
         status: razorpaySubscription.status,
-        plan_name:
-          planDetails?.item?.name || razorpaySubscription.plan?.name || `${tier} (${billingCycle})`,
+        plan_name: planDetails?.item?.name || razorpaySubscription.plan?.name || `${tier} (${billingCycle})`,
         plan_amount: planDetails?.item?.amount || razorpaySubscription.plan?.amount || planAmount,
         plan_currency: planDetails?.item?.currency || razorpaySubscription.plan?.currency || 'INR',
         plan_period: billingCycle,
@@ -893,10 +880,7 @@ export async function POST(request: Request): Promise<Response> {
           customerId: razorpayCustomer.id,
           shortUrl: razorpaySubscription.short_url,
           status: razorpaySubscription.status,
-          planName:
-            planDetails?.item?.name ||
-            razorpaySubscription.plan?.name ||
-            `${tier} (${billingCycle})`,
+          planName: planDetails?.item?.name || razorpaySubscription.plan?.name || `${tier} (${billingCycle})`,
           planAmount: planDetails?.item?.amount || razorpaySubscription.plan?.amount || planAmount,
           planCurrency: planDetails?.item?.currency || razorpaySubscription.plan?.currency || 'INR',
           billingCycle,
@@ -921,18 +905,19 @@ export async function POST(request: Request): Promise<Response> {
         planAmountSource: planDetails?.item?.amount
           ? 'from Razorpay plan (fetched separately)'
           : razorpaySubscription.plan?.amount
-            ? 'from Razorpay subscription'
-            : 'from our calculation',
+          ? 'from Razorpay subscription'
+          : 'from our calculation',
         sourcePlanId: razorpaySubscription.plan_id,
         ourOriginalPlanId: planId,
         fetchedPlanDetails: {
           amount: planDetails?.item?.amount,
           currency: planDetails?.item?.currency,
-          name: planDetails?.item?.name,
-        },
+          name: planDetails?.item?.name
+        }
       });
 
       return createSuccessResponse(responseData, requestId);
+
     } catch (databaseError: any) {
       console.error('[Razorpay] Unexpected database error', {
         requestId,

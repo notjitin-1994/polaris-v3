@@ -51,7 +51,7 @@ const individualPlans: Plan[] = [
     id: 'explorer',
     name: 'Explorer',
     label: 'PERFECT FOR GETTING STARTED',
-    price: 1678, // Actual Razorpay amount in INR (₹1,678)
+    price: 1599, // Actual Razorpay amount in INR (₹1,599)
     starmaps: 5,
     rollover: 12,
     savings: 'Start here before upgrading to higher tiers',
@@ -71,7 +71,7 @@ const individualPlans: Plan[] = [
     id: 'navigator',
     name: 'Navigator',
     label: 'FOR PROFESSIONALS & CREATORS',
-    price: 3443, // Actual Razorpay amount in INR (₹3,443)
+    price: 3499, // Actual Razorpay amount in INR (₹3,499)
     badge: 'MOST POPULAR',
     starmaps: 25,
     rollover: 12,
@@ -87,7 +87,7 @@ const individualPlans: Plan[] = [
     id: 'voyager',
     name: 'Voyager',
     label: 'FOR POWER USERS & CONSULTANTS',
-    price: 6975, // Actual Razorpay amount in INR (₹6,975)
+    price: 6999, // Actual Razorpay amount in INR (₹6,999)
     starmaps: 50,
     rollover: 12,
     savings: 'Save $2.22 per generation (58% cheaper)',
@@ -264,12 +264,15 @@ function PricingCardComponent({
 
       {/* CTA Button */}
       {isTeam ? (
-        <button
+        <a
+          href="https://www.smartslate.io/contact"
+          target="_blank"
+          rel="noopener noreferrer"
           className={`mb-8 flex w-full items-center justify-center gap-2 rounded-md border border-[rgb(79,70,229)] bg-transparent px-6 py-3 text-sm font-semibold text-[rgb(79,70,229)] transition-all duration-300 hover:bg-[rgba(79,70,229,0.1)] hover:opacity-90`}
-          onClick={() => alert('Team button clicked!')}
         >
           Reach Out
-        </button>
+          <ArrowUpRight className="h-4 w-4" />
+        </a>
       ) : (
         <>
           <CheckoutButton

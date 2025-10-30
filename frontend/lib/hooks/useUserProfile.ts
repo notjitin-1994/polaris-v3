@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import { getSupabaseBrowserClient } from '@/lib/supabase/client';
+import { getSupabaseBrowserClient } from '@/lib/supabase/client-fixed';
 import type { Database } from '@/types/supabase';
 
 type UserProfile = Database['public']['Tables']['user_profiles']['Row'];

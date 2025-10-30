@@ -7,6 +7,11 @@
 
 import { clientErrorTracker } from '@/lib/logging/clientErrorTracker';
 
+// Defensive check to ensure the module is properly loaded
+if (!clientErrorTracker || typeof clientErrorTracker.captureInfo !== 'function') {
+  console.warn('[Offline Queue] clientErrorTracker not properly initialized');
+}
+
 interface QueuedRequest {
   id: string;
   url: string;
@@ -28,19 +33,25 @@ class OfflineQueueManager {
   private listeners: Set<(isOnline: boolean) => void> = new Set();
 
   constructor() {
-    if (typeof window !== 'undefined') {
-      // Initialize online status
-      this.isOnline = navigator.onLine;
+    try {
+      if (typeof window !== 'undefined') {
+        // Initialize online status
+        this.isOnline = navigator.onLine;
 
-      // Load persisted queue from localStorage
-      this.loadQueue();
+        // Load persisted queue from localStorage
+        this.loadQueue();
 
-      // Set up event listeners
-      window.addEventListener('online', this.handleOnline);
-      window.addEventListener('offline', this.handleOffline);
+        // Set up event listeners
+        window.addEventListener('online', this.handleOnline);
+        window.addEventListener('offline', this.handleOffline);
 
-      // Check connectivity periodically (fallback for unreliable events)
-      setInterval(() => this.checkConnectivity(), 30000); // Every 30 seconds
+        // Check connectivity periodically (fallback for unreliable events)
+        setInterval(() => this.checkConnectivity(), 30000); // Every 30 seconds
+      }
+    } catch (error) {
+      console.warn('[Offline Queue] Constructor error:', error);
+      // Ensure basic functionality even if setup fails
+      this.isOnline = true;
     }
   }
 
@@ -80,9 +91,11 @@ class OfflineQueueManager {
     this.notifyListeners();
     this.processQueue();
 
-    clientErrorTracker.captureInfo('Connection restored', {
-      queuedRequests: this.queue.length,
-    });
+    if (clientErrorTracker && typeof clientErrorTracker.captureInfo === 'function') {
+      clientErrorTracker.captureInfo('Connection restored', {
+        queuedRequests: this.queue.length,
+      });
+    }
   }
 
   /**
@@ -93,9 +106,11 @@ class OfflineQueueManager {
     this.isOnline = false;
     this.notifyListeners();
 
-    clientErrorTracker.captureWarning('Connection lost', {
-      queuedRequests: this.queue.length,
-    });
+    if (clientErrorTracker && typeof clientErrorTracker.captureWarning === 'function') {
+      clientErrorTracker.captureWarning('Connection lost', {
+        queuedRequests: this.queue.length,
+      });
+    }
   };
 
   /**
@@ -174,11 +189,13 @@ class OfflineQueueManager {
     this.persistQueue();
 
     console.log('[Offline Queue] Request queued:', queueId);
-    clientErrorTracker.captureInfo('Request queued for offline retry', {
-      queueId,
-      url,
-      method: queuedRequest.method,
-    });
+    if (clientErrorTracker && typeof clientErrorTracker.captureInfo === 'function') {
+      clientErrorTracker.captureInfo('Request queued for offline retry', {
+        queueId,
+        url,
+        method: queuedRequest.method,
+      });
+    }
 
     return { queued: true, queueId };
   }
@@ -208,10 +225,12 @@ class OfflineQueueManager {
           console.log('[Offline Queue] Request succeeded:', request.id);
           processedIds.push(request.id);
 
-          clientErrorTracker.captureInfo('Queued request succeeded', {
-            queueId: request.id,
-            url: request.url,
-          });
+          if (clientErrorTracker && typeof clientErrorTracker.captureInfo === 'function') {
+            clientErrorTracker.captureInfo('Queued request succeeded', {
+              queueId: request.id,
+              url: request.url,
+            });
+          }
         } else {
           // Non-2xx response, retry if under limit
           request.retries++;
@@ -219,14 +238,16 @@ class OfflineQueueManager {
             console.error('[Offline Queue] Request failed after max retries:', request.id);
             processedIds.push(request.id);
 
-            clientErrorTracker.captureError(
-              new Error(`Failed to sync queued request after ${MAX_RETRIES} retries`),
-              {
-                queueId: request.id,
-                url: request.url,
-                statusCode: response.status,
-              }
-            );
+            if (clientErrorTracker && typeof clientErrorTracker.captureError === 'function') {
+              clientErrorTracker.captureError(
+                new Error(`Failed to sync queued request after ${MAX_RETRIES} retries`),
+                {
+                  queueId: request.id,
+                  url: request.url,
+                  statusCode: response.status,
+                }
+              );
+            }
           } else {
             console.log(
               `[Offline Queue] Request failed, will retry (${request.retries}/${MAX_RETRIES}):`,
@@ -241,10 +262,12 @@ class OfflineQueueManager {
           console.error('[Offline Queue] Request error after max retries:', request.id, error);
           processedIds.push(request.id);
 
-          clientErrorTracker.captureError(error as Error, {
-            queueId: request.id,
-            url: request.url,
-          });
+          if (clientErrorTracker && typeof clientErrorTracker.captureError === 'function') {
+            clientErrorTracker.captureError(error as Error, {
+              queueId: request.id,
+              url: request.url,
+            });
+          }
         } else {
           console.log(
             `[Offline Queue] Request error, will retry (${request.retries}/${MAX_RETRIES}):`,
@@ -328,5 +351,14 @@ class OfflineQueueManager {
   }
 }
 
-// Singleton instance
-export const offlineQueue = new OfflineQueueManager();
+// Singleton instance with lazy initialization
+let offlineQueueInstance: OfflineQueueManager | null = null;
+
+export const offlineQueue = new Proxy({} as OfflineQueueManager, {
+  get(target, prop) {
+    if (!offlineQueueInstance) {
+      offlineQueueInstance = new OfflineQueueManager();
+    }
+    return offlineQueueInstance[prop as keyof OfflineQueueManager];
+  },
+});

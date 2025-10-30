@@ -23,10 +23,17 @@ import {
 import { getSupabaseServerClient, getServerSession } from '@/lib/supabase/server';
 import type { Database } from '@/types/supabase';
 import { razorpayClient, cancelSubscription } from '@/lib/razorpay/client';
+import { RATE_LIMIT_CONFIGS, rateLimitMiddleware } from '@/lib/middleware/rateLimiting';
+import { executeSubscriptionCancellation } from '@/lib/transactions/subscriptionTransactions';
 
 // Set runtime configuration
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
+
+/**
+ * Enhanced rate limiting for subscription cancellation (sensitive operation)
+ */
+const cancellationRateLimit = rateLimitMiddleware(RATE_LIMIT_CONFIGS.SUBSCRIPTION_CANCELLATION);
 
 /**
  * Generate unique request ID for tracking
@@ -73,6 +80,27 @@ export async function POST(request: Request): Promise<Response> {
   const startTime = Date.now();
 
   try {
+    // Apply enhanced rate limiting for cancellation (sensitive operation)
+    const rateLimitResult = await cancellationRateLimit(request);
+    if (!rateLimitResult.allowed) {
+      console.warn(`[Subscription Cancel] Rate limit exceeded`, {
+        requestId,
+        error: rateLimitResult.error,
+      });
+
+      if (rateLimitResult.response) {
+        return rateLimitResult.response;
+      }
+
+      return createErrorResponse(
+        'RATE_LIMIT_EXCEEDED',
+        'Too many cancellation attempts. Please contact support.',
+        429,
+        requestId,
+        rateLimitResult.error
+      );
+    }
+
     // Parse request body
     let requestBody: unknown;
     try {
@@ -274,42 +302,55 @@ export async function POST(request: Request): Promise<Response> {
       cancelAtCycleEnd,
     });
 
-    let razorpayCancelledSubscription;
-    try {
-      // Use the cancelSubscription function from the Razorpay client
-      razorpayCancelledSubscription = await cancelSubscription(
-        activeSubscription.razorpay_subscription_id,
-        cancelAtCycleEnd
-      );
+    // Execute subscription cancellation using transaction system
+    const transactionResult = await executeSubscriptionCancellation(
+      {
+        subscriptionId: activeSubscription.razorpay_subscription_id,
+        userId,
+        tier: activeSubscription.subscription_tier,
+        billingCycle: activeSubscription.billing_cycle,
+        cancelAtEnd: cancelAtCycleEnd,
+        reason: validatedRequest.reason || 'User requested cancellation',
+      },
+      {
+        timeout: 30000, // 30 seconds
+        enableRollback: true,
+        maxRetries: 2,
+      }
+    );
 
-      console.log('[Subscription Cancel] Razorpay subscription cancelled successfully', {
+    if (!transactionResult.success) {
+      console.error('[Subscription Cancel] Transaction failed', {
         requestId,
-        razorpaySubscriptionId: activeSubscription.razorpay_subscription_id,
-        razorpayStatus: razorpayCancelledSubscription.status,
-        cancelledAtCycleEnd: cancelAtCycleEnd,
-        razorpayEndAt: razorpayCancelledSubscription.end_at,
-      });
-    } catch (razorpayError: any) {
-      console.error('[Subscription Cancel] Razorpay subscription cancellation failed', {
-        requestId,
-        razorpaySubscriptionId: activeSubscription.razorpay_subscription_id,
-        error: razorpayError,
-        errorCode: razorpayError.error?.code,
-        errorMessage: razorpayError.error?.description,
+        error: transactionResult.error?.message,
+        completedSteps: transactionResult.completedSteps,
+        failedStep: transactionResult.failedStep,
       });
 
       return createErrorResponse(
-        'RAZORPAY_CANCELLATION_ERROR',
-        'Failed to cancel subscription in Razorpay',
+        'CANCELLATION_TRANSACTION_ERROR',
+        'Failed to cancel subscription. Some operations may have completed.',
         500,
         requestId,
         {
-          originalError: razorpayError.error?.description || razorpayError.message,
-          errorCode: razorpayError.error?.code,
-          razorpaySubscriptionId: activeSubscription.razorpay_subscription_id,
+          originalError: transactionResult.error?.message,
+          completedSteps: transactionResult.completedSteps,
+          failedStep: transactionResult.failedStep,
+          partialSuccess: transactionResult.completedSteps.length > 0,
         }
       );
     }
+
+    const razorpayCancelledSubscription = transactionResult.results['cancel-razorpay-subscription'];
+
+    console.log('[Subscription Cancel] Transaction completed successfully', {
+      requestId,
+      razorpaySubscriptionId: activeSubscription.razorpay_subscription_id,
+      razorpayStatus: razorpayCancelledSubscription?.status,
+      cancelledAtCycleEnd: cancelAtCycleEnd,
+      razorpayEndAt: razorpayCancelledSubscription?.end_at,
+      completedSteps: transactionResult.completedSteps,
+    });
 
     // Handle immediate vs end-of-cycle cancellation modes
     console.log('[Subscription Cancel] Processing cancellation mode', {

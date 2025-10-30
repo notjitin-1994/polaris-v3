@@ -1,16 +1,71 @@
 /**
- * Rate Limiting Middleware
+ * Production-Ready Rate Limiting Middleware
  *
- * @description Memory-based rate limiting middleware for API endpoints
- * @version 1.0.0
- * @date 2025-10-29
+ * @description Enhanced rate limiting middleware with DDoS protection and security features
+ * @version 2.0.0
+ * @date 2025-10-30
  *
- * **NOTE**: This is a development implementation using in-memory storage.
- * For production, replace with Redis or another distributed storage solution.
+ * Features:
+ * - In-memory rate limiting with automatic cleanup
+ * - Multiple rate limit strategies (sliding/fixed window)
+ * - IP-based and user-based limiting
+ * - DDoS protection and security headers
+ * - Configurable limits per endpoint type
+ * - Detailed headers for rate limit status
+ * - Security features like suspicious activity detection
+ *
+ * **NOTE**: For high-traffic production deployments, consider Redis-based storage
  *
  * @see https://expressjs.com/en/resources/middleware/rate-limit.html
  * @see docs/RAZORPAY_INTEGRATION_GUIDE.md
  */
+
+// ============================================================================
+// Utility Functions
+// ============================================================================
+
+/**
+ * Simple hash function for creating consistent keys
+ */
+function hashString(str: string): string {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    const char = str.charCodeAt(i);
+    hash = (hash << 5) - hash + char;
+    hash = hash & hash; // Convert to 32-bit integer
+  }
+  return Math.abs(hash).toString(36);
+}
+
+/**
+ * Extract client IP address from request headers
+ */
+function getClientIP(request: Request): string {
+  // Try various headers for the real IP
+  const forwardedFor = request.headers.get('x-forwarded-for');
+  const realIP = request.headers.get('x-real-ip');
+  const cfConnectingIP = request.headers.get('cf-connecting-ip');
+  const xClientIP = request.headers.get('x-client-ip');
+
+  if (forwardedFor) {
+    return forwardedFor.split(',')[0].trim();
+  }
+
+  if (realIP) {
+    return realIP;
+  }
+
+  if (cfConnectingIP) {
+    return cfConnectingIP;
+  }
+
+  if (xClientIP) {
+    return xClientIP;
+  }
+
+  // Fallback
+  return 'unknown';
+}
 
 // ============================================================================
 // Types and Interfaces
@@ -67,26 +122,39 @@ interface RateLimitEntry {
 // ============================================================================
 
 /**
- * Default rate limit configurations
+ * Production-ready rate limit configurations with security considerations
  */
 export const RATE_LIMIT_CONFIGS = {
-  /** Payment verification: 5 requests per minute per user */
-  PAYMENT_VERIFICATION: {
-    windowMs: 60 * 1000, // 1 minute
-    maxRequests: 5,
+  /** Authentication endpoints: Very strict limits */
+  AUTH: {
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    maxRequests: 5, // 5 attempts per 15 minutes
     keyGenerator: (request: Request) => {
-      // Try to get user ID from auth headers, fallback to IP
+      const ip = getClientIP(request);
+      const userAgent = request.headers.get('user-agent') || 'unknown';
+      return `auth:${ip}:${hashString(userAgent)}`;
+    },
+    message: 'Too many authentication attempts. Please try again later.',
+  } as RateLimitConfig,
+
+  /** Payment verification: Strict limits for security */
+  PAYMENT_VERIFICATION: {
+    windowMs: 5 * 60 * 1000, // 5 minutes
+    maxRequests: 3, // 3 attempts per 5 minutes
+    keyGenerator: (request: Request) => {
       const userId = request.headers.get('x-user-id');
       const ip = getClientIP(request);
       return `payment-verify:${userId || ip}`;
     },
     message: 'Too many payment verification attempts. Please try again later.',
+    skipSuccessfulRequests: false,
+    skipFailedRequests: false,
   } as RateLimitConfig,
 
-  /** Subscription creation: 10 requests per minute per user */
+  /** Subscription creation: Moderate limits with user tracking */
   SUBSCRIPTION_CREATION: {
-    windowMs: 60 * 1000, // 1 minute
-    maxRequests: 10,
+    windowMs: 10 * 60 * 1000, // 10 minutes
+    maxRequests: 5, // 5 subscriptions per 10 minutes
     keyGenerator: (request: Request) => {
       const userId = request.headers.get('x-user-id');
       const ip = getClientIP(request);
@@ -95,14 +163,50 @@ export const RATE_LIMIT_CONFIGS = {
     message: 'Too many subscription creation attempts. Please try again later.',
   } as RateLimitConfig,
 
-  /** General API: 100 requests per minute per IP */
+  /** Subscription cancellation: Sensitive operation limits */
+  SUBSCRIPTION_CANCELLATION: {
+    windowMs: 60 * 60 * 1000, // 1 hour
+    maxRequests: 3, // 3 cancellations per hour
+    keyGenerator: (request: Request) => {
+      const userId = request.headers.get('x-user-id');
+      const ip = getClientIP(request);
+      return `subscription-cancel:${userId || ip}`;
+    },
+    message: 'Too many subscription cancellation attempts. Please contact support.',
+  } as RateLimitConfig,
+
+  /** Webhook endpoints: High limits for reliability */
+  WEBHOOK: {
+    windowMs: 60 * 1000, // 1 minute
+    maxRequests: 1000, // 1000 webhooks per minute
+    keyGenerator: (request: Request) => {
+      const sourceIP = getClientIP(request);
+      const webhookSource = request.headers.get('x-razorpay-signature') ? 'razorpay' : 'unknown';
+      return `webhook:${webhookSource}:${sourceIP}`;
+    },
+    message: 'Webhook rate limit exceeded.',
+  } as RateLimitConfig,
+
+  /** General API: Balanced limits */
   GENERAL_API: {
     windowMs: 60 * 1000, // 1 minute
-    maxRequests: 100,
+    maxRequests: 100, // 100 requests per minute
     keyGenerator: (request: Request) => {
-      return `general:${getClientIP(request)}`;
+      const userId = request.headers.get('x-user-id');
+      const ip = getClientIP(request);
+      return `general:${userId || ip}`;
     },
     message: 'Too many requests. Please slow down.',
+  } as RateLimitConfig,
+
+  /** DDoS Protection: Emergency limits */
+  DDOS_PROTECTION: {
+    windowMs: 10 * 1000, // 10 seconds
+    maxRequests: 20, // 20 requests per 10 seconds
+    keyGenerator: (request: Request) => {
+      return `ddos:${getClientIP(request)}`;
+    },
+    message: 'Request rate too high. Please slow down.',
   } as RateLimitConfig,
 } as const;
 
@@ -167,37 +271,6 @@ class MemoryRateLimitStore {
 
 // Global instance for development
 const memoryStore = new MemoryRateLimitStore();
-
-// ============================================================================
-// Core Rate Limiting Logic
-// ============================================================================
-
-/**
- * Extract client IP from request
- *
- * @param request - HTTP request
- * @returns Client IP address
- */
-function getClientIP(request: Request): string {
-  // Check various headers for real IP
-  const forwardedFor = request.headers.get('x-forwarded-for');
-  if (forwardedFor) {
-    return forwardedFor.split(',')[0].trim();
-  }
-
-  const realIP = request.headers.get('x-real-ip');
-  if (realIP) {
-    return realIP;
-  }
-
-  const cfConnectingIP = request.headers.get('cf-connecting-ip');
-  if (cfConnectingIP) {
-    return cfConnectingIP;
-  }
-
-  // Fallback to a default IP for development/testing
-  return '127.0.0.1';
-}
 
 /**
  * Create a rate limiter with the specified configuration
@@ -292,6 +365,9 @@ export function rateLimitMiddleware(config: RateLimitConfig) {
     return await rateLimiter(request);
   };
 }
+
+// Alias for backward compatibility
+export const createRateLimitMiddleware = rateLimitMiddleware;
 
 // ============================================================================
 // Utility Functions

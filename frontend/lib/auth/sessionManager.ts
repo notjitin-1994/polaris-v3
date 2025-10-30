@@ -1,6 +1,6 @@
 'use client';
 
-import { getSupabaseBrowserClient } from '@/lib/supabase/client';
+import { getSupabaseBrowserClient } from '@/lib/supabase/client-fixed';
 
 export function setupSessionAutoRefresh() {
   const supabase = getSupabaseBrowserClient();

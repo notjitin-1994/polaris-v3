@@ -32,6 +32,10 @@ import { useRazorpayCheckout } from '@/lib/hooks/useRazorpayCheckout';
 import { classifyRazorpayError, getUserFriendlyMessage } from '@/lib/razorpay/errorHandling';
 import { useToast } from '@/components/ui/Toast';
 import { getPlanPrice } from '@/lib/config/razorpayPlans';
+import {
+  usePaymentVerification,
+  type PaymentVerificationResult,
+} from '@/lib/payment/subscriptionVerification';
 
 // ============================================================================
 // TypeScript Interfaces
@@ -74,6 +78,8 @@ interface CheckoutButtonState {
   isLoading: boolean;
   error: string | null;
   isProcessing: boolean;
+  isVerifyingPayment: boolean;
+  paymentVerificationResult: PaymentVerificationResult | null;
 }
 
 // ============================================================================
@@ -108,10 +114,15 @@ export function CheckoutButton({
     isLoading: false,
     error: null,
     isProcessing: false,
+    isVerifyingPayment: false,
+    paymentVerificationResult: null,
   });
 
   // Razorpay checkout hooks
   const { openCheckout, isLoading: isRazorpayLoading } = useRazorpayCheckout();
+
+  // Payment verification hook
+  const { pollForPaymentCompletion } = usePaymentVerification();
 
   // Toast notifications
   const { showError, showSuccess } = useToast();
@@ -128,6 +139,7 @@ export function CheckoutButton({
   const getButtonText = (): string => {
     if (buttonText) return buttonText;
 
+    if (state.isVerifyingPayment) return 'Verifying Payment...';
     if (state.isProcessing) return 'Processing...';
     if (state.isLoading) return 'Loading...';
 
@@ -195,11 +207,40 @@ export function CheckoutButton({
 
       const subscriptionData = await response.json();
 
+      // DEBUG: Log what we received from API
+      console.log('[CheckoutButton DEBUG] API Response:', {
+        success: subscriptionData.success,
+        planAmount: subscriptionData.data?.planAmount,
+        planAmountRupees: subscriptionData.data?.planAmount
+          ? subscriptionData.data.planAmount / 100
+          : 'N/A',
+        subscriptionId: subscriptionData.data?.subscriptionId,
+        planName: subscriptionData.data?.planName,
+        tier: planId,
+        billingCycle: billingCycle,
+      });
+
       if (!subscriptionData.success) {
         throw new Error(subscriptionData.error?.message || 'Failed to create subscription');
       }
 
       setState((prev) => ({ ...prev, isLoading: false, isProcessing: true }));
+
+      // Calculate price for checkout
+      const checkoutPrice = subscriptionData.data.planAmount
+        ? subscriptionData.data.planAmount / 100
+        : getPlanPrice(planId as any, billingCycle) / 100;
+
+      // DEBUG: Log what we're passing to Razorpay
+      console.log('[CheckoutButton DEBUG] Passing to Razorpay checkout:', {
+        subscriptionId: subscriptionData.data.razorpaySubscriptionId,
+        planAmountFromAPI: subscriptionData.data.planAmount,
+        checkoutPrice: checkoutPrice,
+        checkoutCurrency: subscriptionData.data.planCurrency || 'INR',
+        fallbackPrice: getPlanPrice(planId as any, billingCycle) / 100,
+        tier: tier,
+        billingCycle: billingCycle,
+      });
 
       // Open Razorpay checkout modal
       await openCheckout({
@@ -207,9 +248,7 @@ export function CheckoutButton({
         plan: {
           name: tier,
           description: `SmartSlate Polaris ${tier} subscription - ${billingCycle === 'yearly' ? 'Annual' : 'Monthly'} billing`,
-          price: subscriptionData.data.planAmount
-            ? subscriptionData.data.planAmount / 100
-            : getPlanPrice(planId as any, billingCycle) / 100, // Convert paise to INR
+          price: checkoutPrice,
           currency: subscriptionData.data.planCurrency || 'INR',
           billingCycle: billingCycle === 'yearly' ? 'annual' : 'monthly',
           tier: tier,
@@ -218,27 +257,127 @@ export function CheckoutButton({
           name: subscriptionData.data.customerName || undefined,
           email: subscriptionData.data.customerEmail || undefined,
         },
-        onSuccess: (response) => {
-          console.log('[CheckoutButton] Payment successful:', response);
-          // Handle successful payment
+        onSuccess: async (response) => {
+          console.log(
+            '[CheckoutButton] Razorpay checkout completed, starting payment verification:',
+            response
+          );
+
+          // Start payment verification immediately
           setState((prev) => ({
             ...prev,
             isProcessing: false,
+            isVerifyingPayment: true,
             error: null,
           }));
 
-          showSuccess(
-            'Payment successful!',
-            'Your subscription has been activated. Redirecting to dashboard...'
-          );
+          showSuccess('Payment submitted!', 'Verifying your payment... Please wait.');
 
-          // Notify parent component of success
-          onCheckoutSuccess?.(response);
+          try {
+            // Get the subscription ID from the response
+            const subscriptionId =
+              response.razorpay_subscription_id || subscriptionData.data.razorpaySubscriptionId;
 
-          // Redirect to dashboard after a short delay
-          setTimeout(() => {
-            router.push('/dashboard');
-          }, 2000);
+            if (!subscriptionId) {
+              throw new Error('No subscription ID found in payment response');
+            }
+
+            console.log(
+              '[CheckoutButton] Starting payment verification polling for:',
+              subscriptionId
+            );
+
+            // Poll for payment completion
+            const verificationResult = await pollForPaymentCompletion({
+              subscriptionId,
+              maxAttempts: 30, // Poll for up to 5 minutes
+              interval: 10000, // Check every 10 seconds
+              timeout: 300000, // 5 minute total timeout
+              onProgress: (attempt, result) => {
+                console.log(`[CheckoutButton] Verification attempt ${attempt}:`, result);
+
+                // Update progress message
+                if (attempt % 3 === 0) {
+                  // Show progress every 3 attempts (30 seconds)
+                  showSuccess(
+                    'Payment verification in progress...',
+                    `Checking payment status... (attempt ${attempt}/30)`
+                  );
+                }
+              },
+            });
+
+            console.log('[CheckoutButton] Payment verification result:', verificationResult);
+
+            // Update state with verification result
+            setState((prev) => ({
+              ...prev,
+              isVerifyingPayment: false,
+              paymentVerificationResult: verificationResult,
+            }));
+
+            // Handle verification result
+            if (verificationResult.status === 'completed') {
+              showSuccess(
+                'Payment verified successfully!',
+                `Your ${tier} subscription is now active! Redirecting to dashboard...`
+              );
+
+              // Notify parent component of successful payment
+              onCheckoutSuccess?.({
+                ...response,
+                verificationResult,
+              });
+
+              // Redirect to dashboard after successful verification
+              setTimeout(() => {
+                router.push('/dashboard');
+              }, 2000);
+            } else if (
+              verificationResult.status === 'failed' ||
+              verificationResult.status === 'cancelled'
+            ) {
+              // Payment failed or was cancelled
+              setState((prev) => ({
+                ...prev,
+                error: verificationResult.message,
+              }));
+
+              showError('Payment verification failed', verificationResult.message);
+
+              // Notify parent component of failure
+              onCheckoutError?.(new Error(verificationResult.message));
+            } else {
+              // Still pending (shouldn't happen with polling timeout)
+              setState((prev) => ({
+                ...prev,
+                error: 'Payment verification timed out. Please contact support.',
+              }));
+
+              showError(
+                'Verification timeout',
+                'Payment verification timed out. Please contact support for assistance.'
+              );
+
+              onCheckoutError?.(new Error('Payment verification timed out'));
+            }
+          } catch (verificationError: any) {
+            console.error('[CheckoutButton] Payment verification failed:', verificationError);
+
+            setState((prev) => ({
+              ...prev,
+              isVerifyingPayment: false,
+              error: verificationError.message || 'Payment verification failed',
+            }));
+
+            showError(
+              'Payment verification failed',
+              verificationError.message ||
+                'Unable to verify payment status. Please contact support.'
+            );
+
+            onCheckoutError?.(verificationError);
+          }
         },
         onFailure: (error) => {
           console.log('[CheckoutButton] Payment failed:', error);
@@ -266,6 +405,7 @@ export function CheckoutButton({
         ...prev,
         isLoading: false,
         isProcessing: false,
+        isVerifyingPayment: false,
       }));
 
       // Handle different error types
@@ -326,7 +466,7 @@ export function CheckoutButton({
     };
 
     const stateClasses =
-      state.isLoading || state.isProcessing
+      state.isLoading || state.isProcessing || state.isVerifyingPayment
         ? 'cursor-wait opacity-90'
         : 'hover:scale-[1.02] active:scale-[0.98]';
 
@@ -339,13 +479,15 @@ export function CheckoutButton({
    * Generate button content with spinner
    */
   const renderButtonContent = (): React.ReactNode => {
-    const showLoader = showSpinner && (state.isLoading || state.isProcessing || isRazorpayLoading);
+    const showLoader =
+      showSpinner &&
+      (state.isLoading || state.isProcessing || state.isVerifyingPayment || isRazorpayLoading);
 
     return (
       <>
         {showLoader && <Loader2 className="h-4 w-4 animate-spin" />}
 
-        {!showLoader && !state.isLoading && !state.isProcessing && (
+        {!showLoader && !state.isLoading && !state.isProcessing && !state.isVerifyingPayment && (
           <ArrowUpRight className="h-4 w-4" />
         )}
 
@@ -385,16 +527,31 @@ export function CheckoutButton({
             disabled ||
             state.isLoading ||
             state.isProcessing ||
+            state.isVerifyingPayment ||
             isRazorpayLoading ||
             !paymentsEnabled
           }
           className={getButtonClasses()}
           whileHover={{
-            scale: state.isLoading || state.isProcessing || disabled || !paymentsEnabled ? 1 : 1.02,
+            scale:
+              state.isLoading ||
+              state.isProcessing ||
+              state.isVerifyingPayment ||
+              disabled ||
+              !paymentsEnabled
+                ? 1
+                : 1.02,
             transition: { duration: 0.2 },
           }}
           whileTap={{
-            scale: state.isLoading || state.isProcessing || disabled || !paymentsEnabled ? 1 : 0.98,
+            scale:
+              state.isLoading ||
+              state.isProcessing ||
+              state.isVerifyingPayment ||
+              disabled ||
+              !paymentsEnabled
+                ? 1
+                : 0.98,
             transition: { duration: 0.1 },
           }}
           aria-label={`Upgrade to ${tier} plan (${billingCycle})`}

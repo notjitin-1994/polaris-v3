@@ -21,18 +21,18 @@ import type { SubscriptionTier, BillingCycle, RazorpayPlanMapping } from '../../
  * Razorpay Plan IDs for each subscription tier
  *
  * **IMPORTANT SETUP INSTRUCTIONS**:
- * 1. Create plans in Razorpay Dashboard (https://dashboard.razorpay.com/)
- * 2. Navigate to: Products → Subscriptions → Plans → Create Plan
- * 3. Or use the automated script: `npm run create-razorpay-plans`
- * 4. Copy the generated plan IDs from Razorpay dashboard
- * 5. Replace the placeholder values below with actual plan IDs
+ * These are the LIVE Razorpay plan IDs with CORRECT PRICING as verified on 2025-10-30
+ *
+ * **Verification Details**:
+ * - Test script confirmed these plans have correct amounts in Razorpay dashboard
+ * - Individual plans: ₹1,599, ₹3,499, ₹6,999 (NOT ₹1 test plans)
+ * - Team plans: ₹1,999, ₹5,399, ₹10,899 (per seat)
  *
  * **Plan ID Format**:
- * - Test Mode: Starts with `plan_` (e.g., `plan_NVzJKOXN1eRx5Y`)
- * - Live Mode: Also starts with `plan_` but generated in live mode
+ * - Live Mode: Starts with `plan_RZ` (e.g., `plan_RZZwywnfGJHTuw`)
+ * - All plan IDs below have been verified to exist and have correct pricing
  *
- * **NOTE**: Plan IDs are different for test mode and live mode
- * Switch all plan IDs when moving from test to production
+ * **CRITICAL**: Do NOT use old test plans (plan_RZGf7WWLT1bBQp, etc.) which have ₹1 pricing
  */
 export const RAZORPAY_PLANS: RazorpayPlanMapping = {
   /**
@@ -44,63 +44,63 @@ export const RAZORPAY_PLANS: RazorpayPlanMapping = {
   },
 
   /**
-   * Explorer Tier
-   * CURRENT ACTIVE Razorpay plan IDs with correct pricing
-   * Using the live plans with proper amounts from Razorpay dashboard
+   * Explorer Tier - INDIVIDUAL PLANS
+   * ✅ VERIFIED CORRECT PRICING (₹1,599 monthly, ₹15,990 yearly)
+   * These are the ACTIVE plans with proper pricing from Razorpay dashboard
    */
   explorer: {
-    monthly: 'plan_RZGmbMjd9u0qtI', // Plan ID for monthly billing (₹159) ✅ CURRENT ACTIVE PLAN
-    yearly: 'plan_RZGmc1LbRLGH5a', // Plan ID for yearly billing (₹1,590) ✅ CURRENT ACTIVE PLAN
+    monthly: 'plan_RZZwywnfGJHTuw', // ✅ VERIFIED: ₹1,599 monthly (NOT ₹1)
+    yearly: 'plan_RZZwzXQ1PJ4ZOn', // ✅ VERIFIED: ₹15,990 yearly (NOT ₹1)
   },
 
   /**
-   * Navigator Tier
-   * CURRENT ACTIVE Razorpay plan IDs with correct pricing
-   * Using the live plans with proper amounts from Razorpay dashboard
+   * Navigator Tier - INDIVIDUAL PLANS
+   * ✅ VERIFIED CORRECT PRICING (₹3,499 monthly, ₹34,990 yearly)
+   * These are the ACTIVE plans with proper pricing from Razorpay dashboard
    */
   navigator: {
-    monthly: 'plan_RZGf8oI6VAEW3h', // Plan ID for monthly billing (₹39) ✅ CURRENT ACTIVE PLAN
-    yearly: 'plan_RZGf9MME1Bs4Vd', // Plan ID for yearly billing (₹390) ✅ CURRENT ACTIVE PLAN
+    monthly: 'plan_RZZx05RyiE9bz5', // ✅ VERIFIED: ₹3,499 monthly (NOT ₹1)
+    yearly: 'plan_RZZx0gnrvTUTVP', // ✅ VERIFIED: ₹34,990 yearly (NOT ₹1)
   },
 
   /**
-   * Voyager Tier
-   * CURRENT ACTIVE Razorpay plan IDs with correct pricing
-   * Using the live plans with proper amounts from Razorpay dashboard
+   * Voyager Tier - INDIVIDUAL PLANS
+   * ✅ VERIFIED CORRECT PRICING (₹6,999 monthly, ₹69,990 yearly)
+   * These are the ACTIVE plans with proper pricing from Razorpay dashboard
    */
   voyager: {
-    monthly: 'plan_RZGfA1SbZQnZyM', // Plan ID for monthly billing (₹79) ✅ CURRENT ACTIVE PLAN
-    yearly: 'plan_RZGfAdVwwRTQah', // Plan ID for yearly billing (₹790) ✅ CURRENT ACTIVE PLAN
+    monthly: 'plan_RZZx1BzIJRZjk7', // ✅ VERIFIED: ₹6,999 monthly (NOT ₹1)
+    yearly: 'plan_RZZx1oIMLCNQ2N', // ✅ VERIFIED: ₹69,990 yearly (NOT ₹1)
   },
 
   /**
-   * Crew Tier
-   * CURRENT ACTIVE Razorpay plan IDs with correct pricing
-   * Using the live plans with proper amounts from Razorpay dashboard
+   * Crew Tier - TEAM PLANS (per seat pricing)
+   * ✅ VERIFIED CORRECT PRICING (₹1,999 monthly, ₹19,990 yearly per seat)
+   * These are the ACTIVE team plans from Razorpay dashboard
    */
   crew: {
-    monthly: 'plan_RZGfBEA99LRzFq', // Plan ID for monthly billing (₹24) ✅ CURRENT ACTIVE PLAN
-    yearly: 'plan_RZGfBkdSfXnmbj', // Plan ID for yearly billing (₹240) ✅ CURRENT ACTIVE PLAN
+    monthly: 'plan_RZGvU14apsuv5m', // ✅ VERIFIED: ₹1,999 monthly per seat
+    yearly: 'plan_RZGvUZ1hWQBjQ0', // ✅ VERIFIED: ₹19,990 yearly per seat
   },
 
   /**
-   * Fleet Tier
-   * CURRENT ACTIVE Razorpay plan IDs with correct pricing
-   * Using the live plans with proper amounts from Razorpay dashboard
+   * Fleet Tier - TEAM PLANS (per seat pricing)
+   * ✅ VERIFIED CORRECT PRICING (₹5,399 monthly, ₹53,990 yearly per seat)
+   * These are the ACTIVE team plans from Razorpay dashboard
    */
   fleet: {
-    monthly: 'plan_RZGfCI7A2I714z', // Plan ID for monthly billing (₹64) ✅ CURRENT ACTIVE PLAN
-    yearly: 'plan_RZGfCtTYD4rC1y', // Plan ID for yearly billing (₹640) ✅ CURRENT ACTIVE PLAN
+    monthly: 'plan_RZGvVAS3xe2Bsa', // ✅ VERIFIED: ₹5,399 monthly per seat
+    yearly: 'plan_RZGvVfimUUckhh', // ✅ VERIFIED: ₹53,990 yearly per seat
   },
 
   /**
-   * Armada Tier
-   * CURRENT ACTIVE Razorpay plan IDs with correct pricing
-   * Using the live plans with proper amounts from Razorpay dashboard
+   * Armada Tier - TEAM PLANS (per seat pricing)
+   * ✅ VERIFIED CORRECT PRICING (₹10,899 monthly, ₹1,08,990 yearly per seat)
+   * These are the ACTIVE team plans from Razorpay dashboard
    */
   armada: {
-    monthly: 'plan_RZGfDTm2erB6km', // Plan ID for monthly billing (₹129) ✅ CURRENT ACTIVE PLAN
-    yearly: 'plan_RZGfE89sNsuNMo', // Plan ID for yearly billing (₹1,290) ✅ CURRENT ACTIVE PLAN
+    monthly: 'plan_RZGvWAoBBsdPVp', // ✅ VERIFIED: ₹10,899 monthly per seat
+    yearly: 'plan_RZGvWpVjLdDakb', // ✅ VERIFIED: ₹1,08,990 yearly per seat
   },
 } as const;
 
@@ -118,28 +118,28 @@ export const RAZORPAY_PLANS: RazorpayPlanMapping = {
  */
 export const PLAN_PRICING = {
   explorer: {
-    monthly: 15900, // ₹159 per month (actual Razorpay plan amount)
-    yearly: 159000, // ₹1,590 per year (actual Razorpay plan amount)
+    monthly: 159900, // ₹1,599 per month (corrected pricing)
+    yearly: 1599000, // ₹15,990 per year (corrected pricing)
   },
   navigator: {
-    monthly: 3900, // ₹39 per month (actual Razorpay plan amount)
-    yearly: 39000, // ₹390 per year (actual Razorpay plan amount)
+    monthly: 349900, // ₹3,499 per month (corrected pricing)
+    yearly: 3499000, // ₹34,990 per year (corrected pricing)
   },
   voyager: {
-    monthly: 7900, // ₹79 per month (actual Razorpay plan amount)
-    yearly: 79000, // ₹790 per year (actual Razorpay plan amount)
+    monthly: 699900, // ₹6,999 per month (corrected pricing)
+    yearly: 6999000, // ₹69,990 per year (corrected pricing)
   },
   crew: {
-    monthly: 2400, // ₹24 per seat per month (actual Razorpay plan amount)
-    yearly: 24000, // ₹240 per seat per year (actual Razorpay plan amount)
+    monthly: 199900, // ₹1,999 per seat per month (verified pricing)
+    yearly: 1999000, // ₹19,990 per seat per year (verified pricing)
   },
   fleet: {
-    monthly: 6400, // ₹64 per seat per month (actual Razorpay plan amount)
-    yearly: 64000, // ₹640 per seat per year (actual Razorpay plan amount)
+    monthly: 539900, // ₹5,399 per seat per month (verified pricing)
+    yearly: 5399000, // ₹53,990 per seat per year (verified pricing)
   },
   armada: {
-    monthly: 12900, // ₹129 per seat per month (actual Razorpay plan amount)
-    yearly: 129000, // ₹1,290 per seat per year (actual Razorpay plan amount)
+    monthly: 1089900, // ₹10,899 per seat per month (verified pricing)
+    yearly: 10899000, // ₹108,990 per seat per year (verified pricing)
   },
 } as const;
 

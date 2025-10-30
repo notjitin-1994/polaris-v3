@@ -708,7 +708,7 @@ describe('POST /api/subscriptions/create-subscription', () => {
         short_url: 'https://rzp.io/i/test-subscription',
         plan: {
           name: 'Crew Plan (Monthly)',
-          amount: 24000, // Price per seat
+          amount: 199900, // Price per seat
           currency: 'INR',
         },
       };
@@ -723,7 +723,7 @@ describe('POST /api/subscriptions/create-subscription', () => {
       });
 
       (getPlanId as any).mockReturnValue('plan_crew_monthly');
-      (getPlanPrice as any).mockReturnValue(24000); // ₹240 per seat
+      (getPlanPrice as any).mockReturnValue(199900); // ₹1,999 per seat
 
       (razorpayClient.customers.all as any).mockResolvedValue({ items: [] });
       (razorpayClient.customers.create as any).mockResolvedValue({ id: 'cust_test123' });

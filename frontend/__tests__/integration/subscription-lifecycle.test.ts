@@ -119,8 +119,8 @@ describe('Subscription Lifecycle Integration Tests', () => {
     });
 
     (getPlanPrice as any).mockImplementation((tier: string) => {
-      const prices = { navigator: 39000, voyager: 79000, crew: 24000 };
-      return prices[tier as keyof typeof prices] || 39000;
+      const prices = { navigator: 349900, voyager: 699900, crew: 199900 };
+      return prices[tier as keyof typeof prices] || 159900;
     });
 
     (validateCreateSubscriptionRequest as any).mockReturnValue({
@@ -366,7 +366,7 @@ describe('Subscription Lifecycle Integration Tests', () => {
         status: 'created',
         plan: {
           name: 'Crew Plan (Monthly)',
-          amount: 120000, // 24000 * 5 seats
+          amount: 999500, // 199900 * 5 seats
           currency: 'INR',
         },
       });

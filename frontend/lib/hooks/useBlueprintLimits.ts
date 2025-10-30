@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import { getSupabaseBrowserClient } from '@/lib/supabase/client';
+import { getSupabaseBrowserClient } from '@/lib/supabase/client-fixed';
 import {
   BlueprintUsageService,
   type ComprehensiveUserLimits,
@@ -223,27 +223,33 @@ export function getRecommendedUpgradeTier(currentTier: string): {
     string,
     { tier: string; name: string; creationLimit: number; savingLimit: number; price: number }
   > = {
-    free: { tier: 'explorer', name: 'Explorer', creationLimit: 5, savingLimit: 5, price: 19 },
+    free: { tier: 'explorer', name: 'Explorer', creationLimit: 5, savingLimit: 5, price: 1599 },
     explorer: {
       tier: 'navigator',
       name: 'Navigator',
-      creationLimit: 20,
-      savingLimit: 20,
-      price: 39,
+      creationLimit: 25,
+      savingLimit: 25,
+      price: 3499,
     },
-    navigator: { tier: 'voyager', name: 'Voyager', creationLimit: 50, savingLimit: 50, price: 79 },
-    voyager: { tier: 'crew', name: 'Crew', creationLimit: 10, savingLimit: 10, price: 25 },
-    crew: { tier: 'fleet', name: 'Fleet', creationLimit: 30, savingLimit: 30, price: 64 },
-    fleet: { tier: 'armada', name: 'Armada', creationLimit: 60, savingLimit: 60, price: 129 },
+    navigator: {
+      tier: 'voyager',
+      name: 'Voyager',
+      creationLimit: 50,
+      savingLimit: 50,
+      price: 6999,
+    },
+    voyager: { tier: 'crew', name: 'Crew', creationLimit: 10, savingLimit: 10, price: 1999 },
+    crew: { tier: 'fleet', name: 'Fleet', creationLimit: 30, savingLimit: 30, price: 5399 },
+    fleet: { tier: 'armada', name: 'Armada', creationLimit: 60, savingLimit: 60, price: 10899 },
   };
 
   return (
     upgradePath[currentTier] || {
       tier: 'navigator',
       name: 'Navigator',
-      creationLimit: 20,
-      savingLimit: 20,
-      price: 39,
+      creationLimit: 25,
+      savingLimit: 25,
+      price: 1599,
     }
   );
 }
