@@ -23,24 +23,24 @@ function sanitizeError(error: unknown): SanitizedError {
   if (error instanceof Error) {
     return {
       code: 'INTERNAL_ERROR',
-      message: error.message || 'An unexpected error occurred'
+      message: error.message || 'An unexpected error occurred',
     };
   }
   if (typeof error === 'string') {
     return {
       code: 'INTERNAL_ERROR',
-      message: error
+      message: error,
     };
   }
   return {
     code: 'INTERNAL_ERROR',
-    message: 'An unexpected error occurred'
+    message: 'An unexpected error occurred',
   };
 }
 
 function createErrorResponse(error: unknown): { error: SanitizedError } {
   return {
-    error: sanitizeError(error)
+    error: sanitizeError(error),
   };
 }
 import {
@@ -62,7 +62,7 @@ import {
 const adminRateLimit = createRateLimitMiddleware({
   windowMs: 60 * 1000, // 1 minute
   maxRequests: 10, // 10 requests per minute
-  keyGenerator: (request: NextRequest) => {
+  keyGenerator: (request: Request) => {
     const url = new URL(request.url);
     return `admin-grace-period:${url.pathname}:${request.headers.get('x-forwarded-for') || 'unknown'}`;
   },
@@ -133,12 +133,9 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     // Validate admin permissions
     const authResult = await validateAdminPermissions(request);
     if (!authResult.success) {
-      return NextResponse.json(
-        createErrorResponse(authResult.error || 'Unauthorized', {
-          includeStackInDevelopment: false,
-        }),
-        { status: 401 }
-      );
+      return NextResponse.json(createErrorResponse(authResult.error || 'Unauthorized'), {
+        status: 401,
+      });
     }
 
     // Apply rate limiting
@@ -151,12 +148,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
         'warning'
       );
 
-      return NextResponse.json(
-        createErrorResponse('Rate limit exceeded', {
-          includeStackInDevelopment: false,
-        }),
-        { status: 429 }
-      );
+      return NextResponse.json(createErrorResponse('Rate limit exceeded'), { status: 429 });
     }
 
     const url = new URL(request.url);
@@ -212,12 +204,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
 
     await logAdminAction('unknown', 'get_error', { error: (error as Error).message }, 'error');
 
-    return NextResponse.json(
-      createErrorResponse(error, {
-        includeStackInDevelopment: false,
-      }),
-      { status: 500 }
-    );
+    return NextResponse.json(createErrorResponse(error), { status: 500 });
   }
 }
 
@@ -232,12 +219,9 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     // Validate admin permissions
     const authResult = await validateAdminPermissions(request);
     if (!authResult.success) {
-      return NextResponse.json(
-        createErrorResponse(authResult.error || 'Unauthorized', {
-          includeStackInDevelopment: false,
-        }),
-        { status: 401 }
-      );
+      return NextResponse.json(createErrorResponse(authResult.error || 'Unauthorized'), {
+        status: 401,
+      });
     }
 
     // Apply rate limiting
@@ -250,12 +234,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
         'warning'
       );
 
-      return NextResponse.json(
-        createErrorResponse('Rate limit exceeded', {
-          includeStackInDevelopment: false,
-        }),
-        { status: 429 }
-      );
+      return NextResponse.json(createErrorResponse('Rate limit exceeded'), { status: 429 });
     }
 
     const body = await request.json();
@@ -380,12 +359,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 
     await logAdminAction('unknown', 'post_error', { error: (error as Error).message }, 'error');
 
-    return NextResponse.json(
-      createErrorResponse(error, {
-        includeStackInDevelopment: false,
-      }),
-      { status: 500 }
-    );
+    return NextResponse.json(createErrorResponse(error), { status: 500 });
   }
 }
 
@@ -400,23 +374,15 @@ export async function PUT(request: NextRequest): Promise<NextResponse> {
     // Validate admin permissions
     const authResult = await validateAdminPermissions(request);
     if (!authResult.success) {
-      return NextResponse.json(
-        createErrorResponse(authResult.error || 'Unauthorized', {
-          includeStackInDevelopment: false,
-        }),
-        { status: 401 }
-      );
+      return NextResponse.json(createErrorResponse(authResult.error || 'Unauthorized'), {
+        status: 401,
+      });
     }
 
     // Apply rate limiting
     const rateLimitResult = await adminRateLimit(request);
     if (!rateLimitResult.allowed) {
-      return NextResponse.json(
-        createErrorResponse('Rate limit exceeded', {
-          includeStackInDevelopment: false,
-        }),
-        { status: 429 }
-      );
+      return NextResponse.json(createErrorResponse('Rate limit exceeded'), { status: 429 });
     }
 
     const body = await request.json();
@@ -449,11 +415,6 @@ export async function PUT(request: NextRequest): Promise<NextResponse> {
 
     await logAdminAction('unknown', 'put_error', { error: (error as Error).message }, 'error');
 
-    return NextResponse.json(
-      createErrorResponse(error, {
-        includeStackInDevelopment: false,
-      }),
-      { status: 500 }
-    );
+    return NextResponse.json(createErrorResponse(error), { status: 500 });
   }
 }

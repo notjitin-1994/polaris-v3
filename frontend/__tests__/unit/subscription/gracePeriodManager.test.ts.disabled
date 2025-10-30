@@ -250,28 +250,29 @@ describe('Grace Period Manager', () => {
   describe('Grace Period Actions', () => {
     it('should start grace period for payment failure', async () => {
       const mockSupabase = {
-        from: () => ({
-          select: () => ({
-            eq: () => ({
-              single: () =>
-                Promise.resolve({
-                  data: {
-                    subscription_tier: 'explorer',
-                    subscription_ends_at: '2025-01-20T00:00:00Z',
-                  },
-                  error: null,
-                }),
+        from: vi.fn()
+          .mockReturnValueOnce({
+            select: () => ({
+              eq: () => ({
+                single: () =>
+                  Promise.resolve({
+                    data: {
+                      subscription_tier: 'explorer',
+                      subscription_ends_at: '2025-01-20T00:00:00Z',
+                    },
+                    error: null,
+                  }),
+              }),
             }),
+          })
+          .mockReturnValueOnce({
+            update: () => ({
+              eq: () => Promise.resolve({ error: null }),
+            }),
+          })
+          .mockReturnValueOnce({
+            insert: () => Promise.resolve({ error: null }),
           }),
-        }),
-        from: () => ({
-          update: () => ({
-            eq: () => Promise.resolve({ error: null }),
-          }),
-        }),
-        from: () => ({
-          insert: () => Promise.resolve({ error: null }),
-        }),
       };
 
       vi.doMock('@/lib/supabase/server', () => ({
@@ -289,27 +290,28 @@ describe('Grace Period Manager', () => {
       vi.setSystemTime(now);
 
       const mockSupabase = {
-        from: () => ({
-          select: () => ({
-            eq: () => ({
-              single: () =>
-                Promise.resolve({
-                  data: {
-                    subscription_tier: 'explorer',
-                    grace_period_end: '2025-01-22T10:00:00Z', // 7 days from now
-                    grace_period_warnings_sent: [], // No warnings sent yet
-                    email: 'user@example.com',
-                  },
-                  error: null,
-                }),
+        from: vi.fn()
+          .mockReturnValueOnce({
+            select: () => ({
+              eq: () => ({
+                single: () =>
+                  Promise.resolve({
+                    data: {
+                      subscription_tier: 'explorer',
+                      grace_period_end: '2025-01-22T10:00:00Z', // 7 days from now
+                      grace_period_warnings_sent: [], // No warnings sent yet
+                      email: 'user@example.com',
+                    },
+                    error: null,
+                  }),
+              }),
+            }),
+          })
+          .mockReturnValueOnce({
+            update: () => ({
+              eq: () => Promise.resolve({ error: null }),
             }),
           }),
-        }),
-        from: () => ({
-          update: () => ({
-            eq: () => Promise.resolve({ error: null }),
-          }),
-        }),
       };
 
       vi.doMock('@/lib/supabase/server', () => ({
@@ -323,28 +325,29 @@ describe('Grace Period Manager', () => {
 
     it('should end grace period and apply end action', async () => {
       const mockSupabase = {
-        from: () => ({
-          select: () => ({
-            eq: () => ({
-              single: () =>
-                Promise.resolve({
-                  data: {
-                    subscription_tier: 'explorer',
-                    grace_period_reason: 'payment_failed',
-                  },
-                  error: null,
-                }),
+        from: vi.fn()
+          .mockReturnValueOnce({
+            select: () => ({
+              eq: () => ({
+                single: () =>
+                  Promise.resolve({
+                    data: {
+                      subscription_tier: 'explorer',
+                      grace_period_reason: 'payment_failed',
+                    },
+                    error: null,
+                  }),
+              }),
             }),
+          })
+          .mockReturnValueOnce({
+            update: () => ({
+              eq: () => Promise.resolve({ error: null }),
+            }),
+          })
+          .mockReturnValueOnce({
+            insert: () => Promise.resolve({ error: null }),
           }),
-        }),
-        from: () => ({
-          update: () => ({
-            eq: () => Promise.resolve({ error: null }),
-          }),
-        }),
-        from: () => ({
-          insert: () => Promise.resolve({ error: null }),
-        }),
       };
 
       vi.doMock('@/lib/supabase/server', () => ({
@@ -366,28 +369,29 @@ describe('Grace Period Manager', () => {
 
       for (const testCase of testCases) {
         const mockSupabase = {
-          from: () => ({
-            select: () => ({
-              eq: () => ({
-                single: () =>
-                  Promise.resolve({
-                    data: {
-                      subscription_tier: testCase.tier,
-                      grace_period_reason: 'payment_failed',
-                    },
-                    error: null,
-                  }),
+          from: vi.fn()
+            .mockReturnValueOnce({
+              select: () => ({
+                eq: () => ({
+                  single: () =>
+                    Promise.resolve({
+                      data: {
+                        subscription_tier: testCase.tier,
+                        grace_period_reason: 'payment_failed',
+                      },
+                      error: null,
+                    }),
+                }),
               }),
+            })
+            .mockReturnValueOnce({
+              update: () => ({
+                eq: () => Promise.resolve({ error: null }),
+              }),
+            })
+            .mockReturnValueOnce({
+              insert: () => Promise.resolve({ error: null }),
             }),
-          }),
-          from: () => ({
-            update: () => ({
-              eq: () => Promise.resolve({ error: null }),
-            }),
-          }),
-          from: () => ({
-            insert: () => Promise.resolve({ error: null }),
-          }),
         };
 
         vi.doMock('@/lib/supabase/server', () => ({
@@ -430,7 +434,7 @@ describe('Grace Period Manager', () => {
       ];
 
       const mockSupabase = {
-        from: () => ({
+        from: vi.fn().mockReturnValue({
           select: () => ({
             not: () => ({
               eq: () =>
@@ -458,7 +462,7 @@ describe('Grace Period Manager', () => {
 
     it('should handle errors during processing gracefully', async () => {
       const mockSupabase = {
-        from: () => ({
+        from: vi.fn().mockReturnValue({
           select: () => ({
             not: () => ({
               eq: () =>
@@ -496,7 +500,7 @@ describe('Grace Period Manager', () => {
   describe('Edge Cases', () => {
     it('should handle missing user profile gracefully', async () => {
       const mockSupabase = {
-        from: () => ({
+        from: vi.fn().mockReturnValue({
           select: () => ({
             eq: () => ({
               single: () =>
@@ -523,7 +527,7 @@ describe('Grace Period Manager', () => {
 
     it('should handle database errors gracefully', async () => {
       const mockSupabase = {
-        from: () => ({
+        from: vi.fn().mockReturnValue({
           select: () => ({
             eq: () => ({
               single: () =>
@@ -550,7 +554,7 @@ describe('Grace Period Manager', () => {
 
       vi.doMock('@/lib/supabase/server', () => ({
         createClient: () => ({
-          from: () => ({
+          from: vi.fn().mockReturnValue({
             select: () => ({
               eq: () => ({
                 single: () =>
@@ -580,7 +584,7 @@ describe('Grace Period Manager', () => {
     it('should handle corrupted grace period data', async () => {
       vi.doMock('@/lib/supabase/server', () => ({
         createClient: () => ({
-          from: () => ({
+          from: vi.fn().mockReturnValue({
             select: () => ({
               eq: () => ({
                 single: () =>
@@ -629,22 +633,23 @@ describe('Grace Period Manager', () => {
 
     it('should handle malicious input in grace period actions', async () => {
       const mockSupabase = {
-        from: () => ({
-          select: () => ({
-            eq: () => ({
-              single: () =>
-                Promise.resolve({
-                  data: { subscription_tier: 'explorer' },
-                  error: null,
-                }),
+        from: vi.fn()
+          .mockReturnValueOnce({
+            select: () => ({
+              eq: () => ({
+                single: () =>
+                  Promise.resolve({
+                    data: { subscription_tier: 'explorer' },
+                    error: null,
+                  }),
+              }),
+            }),
+          })
+          .mockReturnValueOnce({
+            update: () => ({
+              eq: () => Promise.resolve({ error: null }),
             }),
           }),
-        }),
-        from: () => ({
-          update: () => ({
-            eq: () => Promise.resolve({ error: null }),
-          }),
-        }),
       };
 
       vi.doMock('@/lib/supabase/server', () => ({
@@ -664,7 +669,7 @@ describe('Grace Period Manager', () => {
 
     it('should not expose sensitive information in error messages', async () => {
       const mockSupabase = {
-        from: () => ({
+        from: vi.fn().mockReturnValue({
           select: () => ({
             eq: () => ({
               single: () =>

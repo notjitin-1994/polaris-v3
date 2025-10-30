@@ -7,7 +7,7 @@ export { useWizardStore } from './wizardStore';
 
 // Re-export types
 export type { AuthStatus } from './authStore';
-export type { BlueprintData } from '../lib/stores/types';
+export type { BlueprintData } from './blueprintStore';
 export type {
   NotificationType,
   Notification,

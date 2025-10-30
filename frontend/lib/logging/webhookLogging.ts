@@ -434,7 +434,7 @@ export class WebhookLoggingService {
       return;
     }
 
-    const logEntry: WebhookLogEntry = {
+    let logEntry: WebhookLogEntry = {
       timestamp: new Date().toISOString(),
       source: {
         service: 'razorpay-webhook-handler',

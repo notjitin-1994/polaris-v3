@@ -12,27 +12,20 @@ export const useZustandQueryIntegration = () => {
 
   // Sync blueprint store with React Query cache
   useEffect(() => {
-    const unsubscribe = (useBlueprintStore as any).subscribe((state: any) => {
-      // When blueprint store changes, update React Query cache
-      if (state.currentBlueprint) {
-        queryClient.setQueryData(['blueprints', state.currentBlueprint.id], state.currentBlueprint);
-      }
-    });
-
-    return unsubscribe;
-  }, [queryClient]);
+    const currentBlueprint = blueprintStore.currentBlueprint;
+    // When blueprint store changes, update React Query cache
+    if (currentBlueprint) {
+      queryClient.setQueryData(['blueprints', currentBlueprint.id], currentBlueprint);
+    }
+  }, [blueprintStore.currentBlueprint, queryClient]);
 
   // Sync auth changes with query invalidation
   useEffect(() => {
-    const unsubscribe = (useAuthStore as any).subscribe((state: any) => {
-      // When user logs out, clear all queries
-      if (!state.user && !state.session) {
-        queryClient.clear();
-      }
-    });
-
-    return unsubscribe;
-  }, [queryClient]);
+    // When user logs out, clear all queries
+    if (!authStore.user && !authStore.session) {
+      queryClient.clear();
+    }
+  }, [authStore.user, authStore.session, queryClient]);
 
   // Return integration utilities
   return {
@@ -73,7 +66,7 @@ export const useOptimisticBlueprintUpdate = () => {
     rollbackData?: BlueprintData
   ) => {
     // Store current state for potential rollback
-    const currentBlueprint = blueprintSelectors.currentBlueprint(blueprintStore.getState());
+    const currentBlueprint = blueprintStore.currentBlueprint;
 
     // Update Zustand store optimistically
     blueprintStore.updateBlueprint(updates);
@@ -118,8 +111,7 @@ export const useBackgroundSync = () => {
     const interval = setInterval(
       () => {
         // Only sync if user is authenticated
-        const authState = useAuthStore.getState();
-        if (authState.user && authState.session) {
+        if (authStore.user && authStore.session) {
           syncAll();
         }
       },
@@ -127,7 +119,7 @@ export const useBackgroundSync = () => {
     ); // Every 5 minutes
 
     return () => clearInterval(interval);
-  }, []);
+  }, [authStore.user, authStore.session]);
 
   return {
     syncAll,
