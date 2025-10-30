@@ -227,9 +227,18 @@ export async function POST(request: Request): Promise<Response> {
     // Get user profile for additional context
     let { data: userProfile, error: profileError } = await supabase
       .from('user_profiles')
-      .select('subscription_tier, full_name')
+      .select('subscription_tier, full_name, email')
       .eq('user_id', userId)
       .single();
+
+    console.log('[Razorpay] Profile fetch result', {
+      requestId,
+      userId,
+      userProfile,
+      profileError,
+      hasProfile: !!userProfile,
+      profileErrorCode: profileError?.code,
+    });
 
     // Create user profile if it doesn't exist
     if (profileError && profileError.code === 'PGRST116') {
@@ -237,21 +246,39 @@ export async function POST(request: Request): Promise<Response> {
       console.log('[Razorpay] Creating user profile for new user', {
         requestId,
         userId,
+        email: user.email,
+        userMetadata: user.user_metadata,
+      });
+
+      // Safely extract user data
+      const fullName = user.user_metadata?.full_name ||
+                      user.user_metadata?.name ||
+                      user.email?.split('@')[0] ||
+                      'User';
+
+      const profileData = {
+        user_id: userId,
+        subscription_tier: 'explorer', // Default free tier
+        user_role: 'explorer',
+        full_name: fullName,
+        email: user.email,
+        blueprint_creation_count: 0,
+        blueprint_saving_count: 0,
+        blueprint_creation_limit: 2, // Free tier limits
+        blueprint_saving_limit: 2,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      };
+
+      console.log('[Razorpay] Profile data to insert', {
+        requestId,
+        profileData,
       });
 
       const { data: newUserProfile, error: createError } = await supabase
         .from('user_profiles')
-        .insert({
-          user_id: userId,
-          subscription_tier: 'explorer', // Default free tier
-          user_role: 'explorer',
-          full_name: user.user_metadata?.full_name || user.email?.split('@')[0] || 'User',
-          blueprint_creation_count: 0,
-          blueprint_saving_count: 0,
-          blueprint_creation_limit: 2, // Free tier limits
-          blueprint_saving_limit: 2,
-        })
-        .select('subscription_tier, full_name')
+        .insert(profileData)
+        .select('subscription_tier, full_name, email')
         .single();
 
       if (createError) {
@@ -259,6 +286,9 @@ export async function POST(request: Request): Promise<Response> {
           requestId,
           userId,
           error: createError,
+          errorCode: createError.code,
+          errorDetails: createError.details,
+          errorHint: createError.hint,
         });
 
         return createErrorResponse(
@@ -266,7 +296,11 @@ export async function POST(request: Request): Promise<Response> {
           'Failed to create user profile',
           500,
           requestId,
-          { originalError: createError.message }
+          {
+            originalError: createError.message,
+            errorCode: createError.code,
+            userId: userId
+          }
         );
       }
 
