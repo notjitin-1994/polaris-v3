@@ -12,6 +12,7 @@ import { alertingSystem } from '@/lib/monitoring/alertingSystem';
 import { performanceMonitor } from '@/lib/performance/performanceMonitor';
 import { addApiSecurityHeaders } from '@/lib/security/securityHeaders';
 import { createRateLimiter } from '@/lib/rate-limiting/redisRateLimit';
+import { checkRedisHealth } from '@/lib/cache/redis';
 
 // Rate limiting for monitoring endpoint
 const monitoringRateLimiter = createRateLimiter({
@@ -245,10 +246,23 @@ export async function POST(request: Request): Promise<Response> {
  * Gather comprehensive monitoring data
  */
 async function gatherMonitoringData(include: string[], timeRange: string): Promise<any> {
+  const startTime = Date.now();
+
+  // Get Redis health status
+  const redisHealth = await checkRedisHealth();
+
   const data: any = {
     timestamp: new Date().toISOString(),
     timeRange,
     uptime: Date.now() - process.uptime() * 1000,
+  };
+
+  // Redis status
+  data.redis = {
+    connected: redisHealth.connected,
+    latency: redisHealth.latency,
+    error: redisHealth.error,
+    status: redisHealth.connected ? 'healthy' : 'unhealthy',
   };
 
   // System information

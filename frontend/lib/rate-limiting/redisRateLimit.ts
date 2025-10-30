@@ -6,9 +6,9 @@
  */
 
 import Redis from 'ioredis';
+import { getRedisClient } from '@/lib/cache/redis';
 
-// Redis client configuration
-let redisClient: Redis | null = null;
+// Redis client configuration (using shared client)
 
 interface RateLimitConfig {
   windowMs: number;
@@ -27,56 +27,32 @@ interface RateLimitResult {
 }
 
 /**
- * Initialize Redis client with connection pooling and error handling
+ * Get Redis client for rate limiting
  */
-export function initializeRedisClient(): Redis {
-  if (redisClient) {
-    return redisClient;
+export async function getRedisRateLimitClient(): Promise<Redis | null> {
+  try {
+    return await getRedisClient();
+  } catch (error) {
+    console.warn('[Redis Rate Limit] Failed to get Redis client:', error);
+    return null;
   }
-
-  const redisUrl = process.env.REDIS_URL || process.env.UPSTASH_REDIS_REST_URL;
-
-  if (!redisUrl) {
-    console.warn('Redis URL not found, falling back to in-memory rate limiting');
-    throw new Error('Redis configuration required for production rate limiting');
-  }
-
-  redisClient = new Redis(redisUrl, {
-    retryDelayOnFailover: 100,
-    maxRetriesPerRequest: 3,
-    lazyConnect: true,
-    commandTimeout: 5000,
-    connectTimeout: 10000,
-  });
-
-  // Connection event handlers
-  redisClient.on('connect', () => {
-    console.log('Redis rate limiter connected');
-  });
-
-  redisClient.on('error', (error) => {
-    console.error('Redis rate limiter error:', error);
-    // Fallback to in-memory if Redis fails
-    redisClient = null;
-  });
-
-  redisClient.on('close', () => {
-    console.warn('Redis rate limiter connection closed');
-  });
-
-  return redisClient;
 }
 
 /**
  * Rate limiting middleware using Redis sliding window algorithm
  */
 export class RedisRateLimiter {
-  private redis: Redis;
   private config: RateLimitConfig;
 
   constructor(config: RateLimitConfig) {
     this.config = config;
-    this.redis = initializeRedisClient();
+  }
+
+  /**
+   * Get Redis client instance
+   */
+  private async getClient(): Promise<Redis | null> {
+    return await getRedisRateLimitClient();
   }
 
   /**
@@ -84,13 +60,25 @@ export class RedisRateLimiter {
    * Uses sliding window algorithm for accurate rate limiting
    */
   async checkLimit(identifier: string): Promise<RateLimitResult> {
+    const redis = await this.getClient();
+    if (!redis) {
+      // Fallback to in-memory rate limiting
+      console.warn('[Redis Rate Limit] Redis not available, using fallback');
+      return {
+        success: true,
+        limit: this.config.maxRequests,
+        remaining: this.config.maxRequests,
+        resetTime: new Date(Date.now() + this.config.windowMs),
+      };
+    }
+
     const key = `${this.config.keyPrefix}:${identifier}`;
     const now = Date.now();
     const windowStart = now - this.config.windowMs;
 
     try {
       // Use Redis pipeline for atomic operations
-      const pipeline = this.redis.pipeline();
+      const pipeline = redis.pipeline();
 
       // Remove expired entries
       pipeline.zremrangebyscore(key, 0, windowStart);
@@ -138,9 +126,15 @@ export class RedisRateLimiter {
    * Reset rate limit for a specific identifier
    */
   async resetLimit(identifier: string): Promise<void> {
+    const redis = await this.getClient();
+    if (!redis) {
+      console.warn('[Redis Rate Limit] Redis not available, cannot reset limit');
+      return;
+    }
+
     const key = `${this.config.keyPrefix}:${identifier}`;
     try {
-      await this.redis.del(key);
+      await redis.del(key);
     } catch (error) {
       console.error('Failed to reset rate limit:', error);
     }
@@ -150,13 +144,23 @@ export class RedisRateLimiter {
    * Get current rate limit status without consuming a request
    */
   async getStatus(identifier: string): Promise<Omit<RateLimitResult, 'success'>> {
+    const redis = await this.getClient();
+    if (!redis) {
+      console.warn('[Redis Rate Limit] Redis not available, returning fallback status');
+      return {
+        limit: this.config.maxRequests,
+        remaining: this.config.maxRequests,
+        resetTime: new Date(Date.now() + this.config.windowMs),
+      };
+    }
+
     const key = `${this.config.keyPrefix}:${identifier}`;
     const now = Date.now();
     const windowStart = now - this.config.windowMs;
 
     try {
-      await this.redis.zremrangebyscore(key, 0, windowStart);
-      const currentCount = await this.redis.zcard(key);
+      await redis.zremrangebyscore(key, 0, windowStart);
+      const currentCount = await redis.zcard(key);
 
       return {
         limit: this.config.maxRequests,
@@ -177,8 +181,13 @@ export class RedisRateLimiter {
    * Close Redis connection
    */
   async disconnect(): Promise<void> {
-    if (this.redis) {
-      await this.redis.quit();
+    const redis = await this.getClient();
+    if (redis) {
+      try {
+        await redis.quit();
+      } catch (error) {
+        console.error('[Redis Rate Limit] Error closing Redis connection:', error);
+      }
     }
   }
 }

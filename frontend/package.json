@@ -46,7 +46,8 @@
     "monitor:24hour": "cd .. && ./scripts/24hour-monitoring.sh",
     "monitor:24hour:6h": "cd .. && ./scripts/24hour-monitoring.sh 6",
     "monitor:24hour:1h": "cd .. && ./scripts/24hour-monitoring.sh 1",
-    "prepare": "husky"
+    "prepare": "husky",
+    "test:redis": "tsx scripts/test-redis.ts"
   },
   "dependencies": {
     "@ai-sdk/anthropic": "1.0.0",
