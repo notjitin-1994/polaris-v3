@@ -493,7 +493,7 @@ const teamPricing = [
     limits: [],
     featured: false,
     cta: 'Reach Out',
-    ctaLink: '/contact',
+    ctaLink: 'https://www.smartslate.io/contact',
   },
   {
     tier: 'Fleet',
@@ -519,7 +519,7 @@ const teamPricing = [
     featured: true,
     popular: true,
     cta: 'Reach Out',
-    ctaLink: '/contact',
+    ctaLink: 'https://www.smartslate.io/contact',
   },
   {
     tier: 'Armada',
@@ -545,7 +545,7 @@ const teamPricing = [
     limits: [],
     featured: false,
     cta: 'Reach Out',
-    ctaLink: '/contact',
+    ctaLink: 'https://www.smartslate.io/contact',
   },
 ];
 

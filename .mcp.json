@@ -3,6 +3,15 @@
     "vercel": {
       "type": "http",
       "url": "https://mcp.vercel.com"
+    },
+    "razorpay": {
+      "command": "razorpay-mcp-stdio",
+      "args": [
+        "--key-id",
+        "rzp_live_RZ1LKPIgiJbMuy",
+        "--key-secret",
+        "jbXD0c08wHQz4L0WXSwf3RG5"
+      ]
     }
   }
 }
