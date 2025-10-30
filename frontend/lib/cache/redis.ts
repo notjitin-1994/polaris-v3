@@ -36,6 +36,10 @@ function getRedisConfig(): RedisConfig | null {
   const redisToken = process.env.REDIS_TOKEN;
 
   if (!redisUrl) {
+    // Silently fall back to memory cache in development
+    if (process.env.NODE_ENV === 'development') {
+      return null;
+    }
     console.warn('[Redis] No REDIS_URL found in environment variables');
     return null;
   }
