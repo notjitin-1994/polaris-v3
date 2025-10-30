@@ -107,18 +107,37 @@ async function testConfiguration() {
   console.log('\n🔧 Configuration Check');
   console.log('==================');
 
-  const redisUrl = process.env.REDIS_URL;
-  const redisToken = process.env.REDIS_TOKEN;
+  // Check multiple possible environment variable names
+  const redisUrl =
+    process.env.REDIS_URL ||
+    process.env.UPSTASH_REDIS_REST_URL ||
+    process.env.KV_REST_API_URL ||
+    process.env.REDIS_ENDPOINT_URL;
 
-  console.log(`REDIS_URL: ${redisUrl ? '✅ Set' : '❌ Not set'}`);
-  console.log(`REDIS_TOKEN: ${redisToken ? '✅ Set' : '❌ Not set'}`);
+  const redisToken =
+    process.env.REDIS_TOKEN ||
+    process.env.UPSTASH_REDIS_REST_TOKEN ||
+    process.env.KV_REST_API_TOKEN ||
+    process.env.REDIS_PASSWORD;
+
+  // Determine provider
+  let provider = 'Unknown';
+  if (process.env.UPSTASH_REDIS_REST_URL) provider = 'Upstash Redis';
+  else if (process.env.KV_REST_API_URL) provider = 'Vercel KV';
+  else if (process.env.REDIS_URL?.includes('vercel-storage')) provider = 'Vercel KV';
+  else if (process.env.REDIS_URL?.includes('upstash')) provider = 'Upstash Redis';
+  else if (process.env.REDIS_URL) provider = 'Custom Redis';
+
+  console.log(`Redis Provider: ${provider}`);
+  console.log(`Redis URL: ${redisUrl ? '✅ Set' : '❌ Not set'}`);
+  console.log(`Redis Token: ${redisToken ? '✅ Set' : '❌ Not set'}`);
 
   if (!redisUrl) {
     console.log('\n💡 To set up Redis:');
-    console.log('   1. Vercel KV: Add REDIS_URL and REDIS_TOKEN to environment variables');
-    console.log('   2. Upstash: Add REDIS_URL and REDIS_TOKEN to environment variables');
-    console.log('   3. Self-hosted: Add REDIS_URL to environment variables');
-    console.log('   4. Redis Cloud: Add REDIS_URL to environment variables');
+    console.log('   1. Vercel Marketplace → Upstash Redis (Recommended)');
+    console.log('   2. Direct Upstash: https://console.upstash.com/');
+    console.log('   3. Vercel Marketplace → Redis.com');
+    console.log('   4. Self-hosted: Add REDIS_URL to environment variables');
   }
 }
 

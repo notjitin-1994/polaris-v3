@@ -30,17 +30,31 @@ let isInitializing = false;
 
 /**
  * Get Redis configuration from environment variables
+ * Supports multiple Redis providers (Vercel KV, Upstash, Redis.com, etc.)
  */
 function getRedisConfig(): RedisConfig | null {
-  const redisUrl = process.env.REDIS_URL;
-  const redisToken = process.env.REDIS_TOKEN;
+  // Try different environment variable naming conventions
+  const redisUrl =
+    process.env.REDIS_URL ||
+    process.env.UPSTASH_REDIS_REST_URL ||
+    process.env.KV_REST_API_URL ||
+    process.env.REDIS_ENDPOINT_URL;
+
+  const redisToken =
+    process.env.REDIS_TOKEN ||
+    process.env.UPSTASH_REDIS_REST_TOKEN ||
+    process.env.KV_REST_API_TOKEN ||
+    process.env.REDIS_PASSWORD;
 
   if (!redisUrl) {
     // Silently fall back to memory cache in development
     if (process.env.NODE_ENV === 'development') {
       return null;
     }
-    console.warn('[Redis] No REDIS_URL found in environment variables');
+    console.warn('[Redis] No Redis URL found in environment variables');
+    console.warn(
+      '[Redis] Tried: REDIS_URL, UPSTASH_REDIS_REST_URL, KV_REST_API_URL, REDIS_ENDPOINT_URL'
+    );
     return null;
   }
 

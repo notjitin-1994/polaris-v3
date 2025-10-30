@@ -14,23 +14,51 @@ polaris-v3/                 # Project root (where Vercel KV should be configured
 
 ## 🚀 Vercel KV Setup Steps
 
-### Step 1: Create Vercel KV Database
+### Step 1: Create Redis Database via Vercel Marketplace
+
+**Option 1: Upstash Redis (Recommended - Easiest)**
 
 1. **Go to Vercel Dashboard:** https://vercel.com/dashboard
 2. **Select your project:** `polaris-v3` (not frontend)
 3. **Navigate to Storage tab**
-4. **Click "Create Database" → "KV"**
-5. **Choose region** (US East or US West recommended)
-6. **Click "Create"**
+4. **Click "Browse Marketplace"**
+5. **Search for "Upstash"** or find it under "Database Providers"
+6. **Click "Install" → "Add to Project"**
+7. **Follow the Upstash setup flow:**
+   - Choose a region (closest to your users)
+   - Create database
+   - Vercel will automatically add environment variables
+
+**Option 2: Direct Upstash Setup (Alternative)**
+
+1. **Go to [Upstash Console](https://console.upstash.com/)**
+2. **Sign up/login** (you can use GitHub)
+3. **Click "Create Database"**
+4. **Choose region** and give it a name
+5. **Click "Create"**
+6. **Get connection details** from "Details" or "Connect" tab:
+   - REST URL: `https://your-db-name.upstash.io`
+   - REST Token: `your_upstash_token_here`
+
+**Option 3: Redis.com via Marketplace**
+
+1. **Go to Vercel Marketplace** → **"Redis"**
+2. **Install and follow setup flow**
+3. **Get connection credentials**
 
 ### Step 2: Get Your Credentials
 
-1. **Click on your new KV database**
-2. **Go to ".env.local" tab**
+**If you used Vercel Marketplace (Option 1):**
+- Vercel automatically adds environment variables to your project
+- Variables will be: `UPSTASH_REDIS_REST_URL` and `UPSTASH_REDIS_REST_TOKEN`
+
+**If you used Direct Upstash (Option 2):**
+1. **Click on your database in Upstash Console**
+2. **Go to "Details" or "Connect" tab**
 3. **Copy these two values:**
    ```
-   KV_REST_API_URL=https://your-kv-id.kv.vercel-storage.com
-   KV_REST_API_TOKEN=abcdef123456...
+   REST URL: https://your-db-name.upstash.io
+   REST Token: your_upstash_token_here
    ```
 
 ### Step 3: Update Environment Variables
@@ -52,11 +80,23 @@ REDIS_URL="redis://localhost:6379/0"
 # REDIS_TOKEN="your_kv_rest_api_token_here"          # TODO: Update with Vercel KV token
 ```
 
-**With your actual credentials:**
+**If you used Vercel Marketplace (Upstash):**
+Vercel automatically adds these variables, but you can also add them manually:
+```bash
+# Vercel Marketplace automatically adds these:
+UPSTASH_REDIS_REST_URL="https://your-db.upstash.io"
+UPSTASH_REDIS_REST_TOKEN="your_upstash_token_here"
+
+# Our app also supports these standard names:
+REDIS_URL="https://your-db.upstash.io"
+REDIS_TOKEN="your_upstash_token_here"
+```
+
+**If you used Direct Upstash:**
 ```bash
 # REDIS_URL="redis://localhost:6379/0"  # Comment this out for production
-REDIS_URL="https://your-kv-id.kv.vercel-storage.com"
-REDIS_TOKEN="your_actual_kv_rest_api_token_here"
+REDIS_URL="https://your-db-name.upstash.io"
+REDIS_TOKEN="your_actual_upstash_token_here"
 ```
 
 ### Step 4: Add to Vercel Production Environment
@@ -64,10 +104,18 @@ REDIS_TOKEN="your_actual_kv_rest_api_token_here"
 1. **Go to Vercel Dashboard** → Your project `polaris-v3`
 2. **Click "Settings" → "Environment Variables"**
 3. **Add these variables:**
+
+   **If using Upstash:**
+   - **Name:** `UPSTASH_REDIS_REST_URL`
+   - **Value:** `https://your-db.upstash.io`
+   - **Name:** `UPSTASH_REDIS_REST_TOKEN`
+   - **Value:** `your_upstash_token_here`
+
+   **OR use standard names (our app supports both):**
    - **Name:** `REDIS_URL`
-   - **Value:** `https://your-kv-id.kv.vercel-storage.com`
+   - **Value:** `https://your-db.upstash.io`
    - **Name:** `REDIS_TOKEN`
-   - **Value:** `your_actual_kv_rest_api_token_here`
+   - **Value:** `your_upstash_token_here`
 4. **Select environments:** Production, Preview, Development
 5. **Click "Save"**
 6. **Redeploy your application**
