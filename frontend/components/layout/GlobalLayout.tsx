@@ -30,13 +30,6 @@ export const GlobalLayout = memo(function GlobalLayout({
   const { user, signOut } = useAuth();
   const pathname = usePathname();
 
-  // Don't show global layout for auth pages and public share pages
-  const isAuthPage = pathname?.startsWith('/login') || pathname?.startsWith('/signup');
-  const isPublicSharePage = pathname?.startsWith('/share/');
-  if (isAuthPage || isPublicSharePage) {
-    return <>{children}</>;
-  }
-
   // Set header titles based on current route
   let currentHeaderTitle = headerTitle;
   let currentHeaderSubtitle = headerSubtitle;
@@ -100,7 +93,7 @@ export const GlobalLayout = memo(function GlobalLayout({
           <Sidebar user={user} onSignOut={signOut} />
 
           {/* Main Content Area */}
-          <main className="flex min-h-0 min-w-0 flex-1 flex-col">
+          <main className="ml-16 flex min-h-0 min-w-0 flex-1 flex-col md:ml-72 lg:ml-80">
             {/* Only show Header on pages that don't have their own */}
             {shouldShowHeader && (
               <Header

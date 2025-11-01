@@ -5,7 +5,6 @@ import ProtectedRoute from '@/components/auth/ProtectedRoute';
 import { Footer } from '@/components/layout/Footer';
 import { UsageStatsCard } from '@/components/dashboard/UsageStatsCard';
 import { QuickActionsCardWithLimits } from '@/components/dashboard/QuickActionsCardWithLimits';
-import { RecentBlueprintsCard } from '@/components/dashboard/RecentBlueprintsCard';
 import { useUserProfile } from '@/lib/hooks/useUserProfile';
 import { useUserUsage } from '@/lib/hooks/useUserUsage';
 import { useAuth } from '@/contexts/AuthContext';
@@ -68,7 +67,7 @@ function DashboardContent() {
       <div className="flex-1">
         {/* Hero Section */}
         <section className="relative overflow-hidden">
-          <div className="relative mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 lg:py-12">
+          <div className="relative mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
             <div className="max-w-6xl text-left">
               {/* Welcome Message */}
               <motion.div
@@ -117,7 +116,7 @@ function DashboardContent() {
         </section>
 
         {/* Dashboard Content */}
-        <div className="page-enter animate-fade-in-up animate-delay-75 relative z-10 mx-auto max-w-7xl px-4 py-4 pb-24 sm:px-6 sm:py-6 sm:pb-32 lg:px-8">
+        <div className="page-enter animate-fade-in-up animate-delay-75 relative z-10 mx-auto max-w-7xl px-4 py-4 pb-4 sm:px-6 sm:py-6 lg:px-8">
           {/* Top Row - Stats and Actions (Equal Width) */}
           <div className="mb-6 grid grid-cols-1 gap-6 lg:grid-cols-2">
             {/* Usage Stats */}
@@ -145,15 +144,6 @@ function DashboardContent() {
               <QuickActionsCardWithLimits />
             </motion.div>
           </div>
-
-          {/* Bottom Row - Recent Starmaps (Full Width) */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.9, duration: 0.5 }}
-          >
-            <RecentBlueprintsCard />
-          </motion.div>
         </div>
       </div>
     </div>

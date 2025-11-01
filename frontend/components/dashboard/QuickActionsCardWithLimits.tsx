@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Plus, FileText, Settings, Rocket, Compass } from 'lucide-react';
+import { Plus, FileText, Sparkles, Rocket, BookOpen } from 'lucide-react';
 import { GlassCard } from '@/components/ui/GlassCard';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -23,13 +23,13 @@ const quickActions = [
     requiresLimitCheck: true, // Check blueprint creation limit before navigating
   },
   {
-    icon: Compass,
-    title: 'Browse Templates',
-    description: 'Explore ready-made blueprints',
-    href: '/templates',
-    color: 'from-primary to-primary',
-    bgColor: 'bg-primary/10',
-    borderColor: 'border-primary/20',
+    icon: Sparkles,
+    title: 'Solara Learning Engine',
+    description: 'Discover AI-powered learning insights',
+    href: '/solara',
+    color: 'from-yellow-400 to-yellow-600',
+    bgColor: 'bg-yellow-400/10',
+    borderColor: 'border-yellow-400/20',
   },
   {
     icon: FileText,
@@ -41,10 +41,10 @@ const quickActions = [
     borderColor: 'border-primary/20',
   },
   {
-    icon: Settings,
-    title: 'Settings',
-    description: 'Manage your account',
-    href: '/settings',
+    icon: BookOpen,
+    title: 'Learn More',
+    description: 'Explore features and guides',
+    href: '/docs',
     color: 'from-primary to-primary',
     bgColor: 'bg-primary/10',
     borderColor: 'border-primary/20',
@@ -146,7 +146,7 @@ export function QuickActionsCardWithLimits() {
             const content = (
               <div
                 className={cn(
-                  'group rounded-xl border p-4 transition-all duration-200',
+                  'group h-full rounded-xl border p-4 transition-all duration-200',
                   action.borderColor,
                   action.bgColor,
                   isDisabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer hover:scale-105'
@@ -196,11 +196,16 @@ export function QuickActionsCardWithLimits() {
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: index * 0.1 }}
+                className="h-full"
               >
                 {action.requiresLimitCheck ? (
-                  <div onClick={() => handleActionClick(action)}>{content}</div>
+                  <div onClick={() => handleActionClick(action)} className="h-full">
+                    {content}
+                  </div>
                 ) : (
-                  <Link href={action.href}>{content}</Link>
+                  <Link href={action.href} className="block h-full">
+                    {content}
+                  </Link>
                 )}
               </motion.div>
             );

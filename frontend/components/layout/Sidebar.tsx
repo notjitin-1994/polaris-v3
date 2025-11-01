@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import type { User } from '@supabase/supabase-js';
+import { Crown } from 'lucide-react';
 import { Brand } from '@/components/layout/Brand';
 import { UserAvatar } from '@/components/layout/UserAvatar';
 import {
@@ -99,25 +100,54 @@ export function Sidebar({ user, onSignOut }: SidebarProps) {
           },
         ]
       : []),
-    { title: 'Explore', icon: IconEye, path: '/explore', badge: 'Coming Soon', disabled: true },
-    { title: 'Learning', icon: IconSun, path: '/learning', badge: 'Coming Soon', disabled: true },
+    {
+      title: 'Solara Learning Engine',
+      icon: IconSun,
+      path: 'https://solara.smartslate.io',
+      isExternal: true,
+    },
+    {
+      title: 'Learn More',
+      icon: IconEye,
+      path: 'https://www.smartslate.io',
+      isExternal: true,
+    },
   ];
 
   const productLinks = [
     {
       name: 'Constellation',
-      path: '/constellation',
+      path: 'https://solara.smartslate.io/constellation',
       badge: 'Coming Soon',
       badgeType: 'soon' as const,
+      isExternal: true,
     },
-    { name: 'Nova', path: '/nova', badge: 'Coming Soon', badgeType: 'soon' as const },
-    { name: 'Orbit', path: '/orbit', badge: 'Coming Soon', badgeType: 'soon' as const },
-    { name: 'Spectrum', path: '/spectrum', badge: 'Coming Soon', badgeType: 'soon' as const },
+    {
+      name: 'Nova',
+      path: 'https://solara.smartslate.io/nova',
+      badge: 'Coming Soon',
+      badgeType: 'soon' as const,
+      isExternal: true,
+    },
+    {
+      name: 'Orbit',
+      path: 'https://solara.smartslate.io/orbit',
+      badge: 'Coming Soon',
+      badgeType: 'soon' as const,
+      isExternal: true,
+    },
+    {
+      name: 'Spectrum',
+      path: 'https://solara.smartslate.io/spectrum',
+      badge: 'Coming Soon',
+      badgeType: 'soon' as const,
+      isExternal: true,
+    },
   ];
 
   return (
     <aside
-      className={`hidden h-full min-h-0 flex-col md:flex ${sidebarCollapsed ? 'md:w-16 lg:w-16' : 'md:w-72 lg:w-80'} bg-surface shadow-sm backdrop-blur-xl transition-all duration-300 ease-out`}
+      className={`fixed top-0 left-0 hidden h-screen flex-col md:flex ${sidebarCollapsed ? 'md:w-16 lg:w-16' : 'md:w-72 lg:w-80'} bg-surface z-[9999] shadow-sm backdrop-blur-xl transition-all duration-300 ease-out`}
       aria-label="Main navigation"
       role="navigation"
     >
@@ -162,22 +192,10 @@ export function Sidebar({ user, onSignOut }: SidebarProps) {
                 Quick Access
               </h2>
               {collapsedQuickItems.map(
-                ({ title, icon: Icon, path, badge, badgeType, disabled }) => {
+                ({ title, icon: Icon, path, badge, badgeType, disabled, isExternal }) => {
                   const isActive = pathname === path;
-                  return (
-                    <button
-                      key={title}
-                      type="button"
-                      onClick={() => !disabled && router.push(path)}
-                      disabled={disabled}
-                      className={`group focus-visible:ring-secondary/50 flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200 focus-visible:ring-2 focus-visible:ring-offset-2 ${
-                        isActive
-                          ? 'bg-primary/10 text-primary shadow-sm'
-                          : disabled
-                            ? 'text-text-disabled cursor-not-allowed'
-                            : 'text-text-secondary hover:text-foreground hover:bg-foreground/5 active:scale-[0.98]'
-                      } `}
-                    >
+                  const content = (
+                    <>
                       <Icon className="h-5 w-5 shrink-0" />
                       <span className="flex-1 truncate text-left">{title}</span>
                       {badge && (
@@ -194,6 +212,36 @@ export function Sidebar({ user, onSignOut }: SidebarProps) {
                       {isActive && !disabled && (
                         <div className="bg-primary absolute top-1/2 right-0 h-8 w-1 -translate-y-1/2 rounded-l-full" />
                       )}
+                    </>
+                  );
+
+                  const className = `group focus-visible:ring-secondary/50 flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200 focus-visible:ring-2 focus-visible:ring-offset-2 ${
+                    isActive
+                      ? 'bg-primary/10 text-primary shadow-sm'
+                      : disabled
+                        ? 'text-text-disabled cursor-not-allowed'
+                        : 'text-text-secondary hover:text-foreground hover:bg-foreground/5 active:scale-[0.98]'
+                  }`;
+
+                  return isExternal ? (
+                    <a
+                      key={title}
+                      href={path}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={className}
+                    >
+                      {content}
+                    </a>
+                  ) : (
+                    <button
+                      key={title}
+                      type="button"
+                      onClick={() => !disabled && router.push(path)}
+                      disabled={disabled}
+                      className={className}
+                    >
+                      {content}
                     </button>
                   );
                 }
@@ -205,32 +253,47 @@ export function Sidebar({ user, onSignOut }: SidebarProps) {
               <h2 className="text-primary mb-2 px-3 text-[5px] font-bold tracking-wider uppercase">
                 Explore Suite
               </h2>
-              {productLinks.map(({ name, path, badge, badgeType }) => {
+              {productLinks.map(({ name, path, badge, badgeType, isExternal }) => {
                 const isActive = pathname === path;
-                return (
-                  <button
-                    key={name}
-                    type="button"
-                    onClick={() => router.push(path)}
-                    disabled={badgeType === 'soon'}
-                    className={`group flex w-full items-center justify-between gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200 ${
-                      isActive
-                        ? 'bg-primary/10 text-primary shadow-sm'
-                        : badgeType === 'soon'
-                          ? 'text-text-disabled cursor-not-allowed'
-                          : 'text-text-secondary hover:text-foreground hover:bg-foreground/5 focus-visible:ring-secondary/50 focus-visible:ring-2 focus-visible:ring-offset-2 active:scale-[0.98]'
-                    } `}
-                  >
+                const content = (
+                  <>
                     <span className="flex-1 truncate text-left">{name}</span>
                     <span
                       className={`inline-flex shrink-0 items-center rounded-full border px-2.5 py-0.5 text-[10px] font-semibold tracking-wide uppercase transition-all duration-200 ${
                         badgeType === 'soon'
                           ? 'border-primary/40 bg-primary/10 text-primary shadow-primary/20 shadow'
                           : 'text-text-disabled border-neutral-300 bg-neutral-100 dark:border-neutral-700 dark:bg-neutral-800'
-                      } `}
+                      }`}
                     >
                       {badge}
                     </span>
+                  </>
+                );
+
+                const className = `group flex w-full items-center justify-between gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200 cursor-pointer ${
+                  isActive
+                    ? 'bg-primary/10 text-primary shadow-sm'
+                    : 'text-text-secondary hover:text-foreground hover:bg-foreground/5 focus-visible:ring-secondary/50 focus-visible:ring-2 focus-visible:ring-offset-2 active:scale-[0.98]'
+                }`;
+
+                return isExternal ? (
+                  <a
+                    key={name}
+                    href={path}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={className}
+                  >
+                    {content}
+                  </a>
+                ) : (
+                  <button
+                    key={name}
+                    type="button"
+                    onClick={() => router.push(path)}
+                    className={className}
+                  >
+                    {content}
                   </button>
                 );
               })}
@@ -249,17 +312,9 @@ export function Sidebar({ user, onSignOut }: SidebarProps) {
               onClick={() => router.push('/pricing')}
               title="Subscribe to Polaris"
               aria-label="Subscribe to Polaris"
-              className="group hover:shadow-secondary/25 focus-visible:ring-secondary/50 bg-secondary hover:bg-secondary/90 relative flex h-8 w-8 items-center justify-center rounded-lg transition-all duration-200 focus-visible:ring-2 focus-visible:ring-offset-2 active:scale-95"
+              className="group relative flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg text-indigo-400 transition-all duration-200 hover:bg-indigo-500/10 hover:text-indigo-300 focus-visible:ring-2 focus-visible:ring-indigo-500/50 focus-visible:ring-offset-2 active:scale-95"
             >
-              <svg
-                className="text-secondary-foreground h-4 w-4"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                strokeWidth={2.5}
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
-              </svg>
+              <Crown className="h-4 w-4" />
             </button>
 
             {/* Logout Button - Collapsed */}
@@ -280,26 +335,10 @@ export function Sidebar({ user, onSignOut }: SidebarProps) {
             <button
               type="button"
               onClick={() => router.push('/pricing')}
-              className="group hover:shadow-secondary/20 focus-visible:ring-secondary/50 bg-secondary hover:bg-secondary/90 relative w-full overflow-hidden rounded-lg transition-all duration-200 hover:shadow-md focus-visible:ring-2 focus-visible:ring-offset-2 active:scale-[0.98]"
+              className="group flex w-full cursor-pointer items-center justify-between gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-indigo-400 transition-all duration-200 hover:bg-indigo-500/10 hover:text-indigo-300 focus-visible:ring-2 focus-visible:ring-indigo-500/50 focus-visible:ring-offset-2 active:scale-[0.98]"
             >
-              <div className="flex items-center justify-center gap-2 px-4 py-2.5">
-                <svg
-                  className="text-secondary-foreground h-4 w-4"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  strokeWidth={2.5}
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M13 10V3L4 14h7v7l9-11h-7z"
-                  />
-                </svg>
-                <span className="text-secondary-foreground text-sm font-semibold">
-                  Subscribe to Polaris
-                </span>
-              </div>
+              <span className="flex-1 text-left font-semibold">Subscribe to Polaris</span>
+              <Crown className="h-5 w-5 shrink-0 transition-transform duration-200 group-hover:scale-110" />
             </button>
 
             {/* Divider below subscribe removed per request; keep profile divider intact above */}
