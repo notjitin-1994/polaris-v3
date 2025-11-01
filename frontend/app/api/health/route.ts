@@ -65,14 +65,33 @@ export async function GET(request: Request): Promise<NextResponse> {
     const url = new URL(request.url);
     const isQuickCheck = url.searchParams.get('quick') === 'true';
 
-    let healthCheck;
+    const processingTime = Date.now() - startTime;
+
     if (isQuickCheck) {
-      healthCheck = await quickHealthCheck();
-    } else {
-      healthCheck = await performHealthCheck();
+      // Quick check returns simple status
+      const quickCheck = await quickHealthCheck();
+
+      const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+        'Cache-Control': 'no-cache, no-store, must-revalidate',
+        Pragma: 'no-cache',
+        Expires: '0',
+        'X-Content-Type-Options': 'nosniff',
+        'X-Frame-Options': 'DENY',
+        'X-XSS-Protection': '1; mode=block',
+        'X-Response-Time': processingTime.toString(),
+        'X-Health-Status': quickCheck.status,
+        'X-Health-Score': quickCheck.status === 'healthy' ? '100' : '0',
+      };
+
+      return NextResponse.json(quickCheck, {
+        status: quickCheck.status === 'healthy' ? 200 : 503,
+        headers,
+      });
     }
 
-    const processingTime = Date.now() - startTime;
+    // Full health check
+    const healthCheck = await performHealthCheck();
 
     // Determine HTTP status code based on health status
     let statusCode = 200;
@@ -95,14 +114,6 @@ export async function GET(request: Request): Promise<NextResponse> {
       'X-Health-Status': healthCheck.status,
       'X-Health-Score': healthCheck.overallScore.toString(),
     };
-
-    // Return appropriate response based on request type
-    if (isQuickCheck) {
-      return NextResponse.json(healthCheck, {
-        status: statusCode,
-        headers,
-      });
-    }
 
     // Full health check response
     return NextResponse.json(
