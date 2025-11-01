@@ -12,7 +12,6 @@ import { DynamicFormRenderer } from '@/components/dynamic-form';
 import { DynamicQuestionsLoader } from '@/components/wizard/dynamic-questions';
 import { createBrowserBlueprintService } from '@/lib/db/blueprints.client';
 import { BlueprintRow } from '@/lib/db/blueprints';
-import { StandardHeader } from '@/components/layout/StandardHeader';
 import { createServiceLogger } from '@/lib/logging';
 import { useBlueprintLimits } from '@/lib/hooks/useBlueprintLimits';
 import { UpgradePromptModal } from '@/components/modals/UpgradePromptModal';
@@ -112,16 +111,6 @@ function DynamicWizardContent({ id }: { id: string }): React.JSX.Element {
     return (
       <div className="min-h-screen bg-[#020C1B]">
         {/* Header */}
-        <StandardHeader
-          title="Celestial Cartography"
-          backHref="/"
-          backLabel="Back to Dashboard"
-          backButtonStyle="icon-only"
-          showDarkModeToggle={false}
-          showUserAvatar={false}
-          size="compact"
-          user={user}
-        />
 
         <main className="w-full px-4 py-12 sm:px-6 md:py-16 lg:px-8 lg:py-20">
           <div className="mx-auto max-w-6xl">
@@ -254,15 +243,6 @@ function DynamicWizardContent({ id }: { id: string }): React.JSX.Element {
   return (
     <div className="min-h-screen bg-[#020C1B]">
       {/* Header */}
-      <StandardHeader
-        title="Celestial Cartography"
-        backHref="/"
-        backLabel="Back to Dashboard"
-        backButtonStyle="icon-only"
-        showDarkModeToggle={false}
-        showUserAvatar={false}
-        user={user}
-      />
 
       {/* Hero Section */}
       <section className="relative overflow-hidden">

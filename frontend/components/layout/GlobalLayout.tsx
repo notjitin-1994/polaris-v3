@@ -4,8 +4,6 @@ import { memo, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { Sidebar } from './Sidebar';
-import { Header } from './Header';
-import { Footer } from './Footer';
 import { Brand } from './Brand';
 import { NavSection, type NavItem } from './NavSection';
 import { UserAvatar } from './UserAvatar';
@@ -30,41 +28,6 @@ export const GlobalLayout = memo(function GlobalLayout({
   const { user, signOut } = useAuth();
   const pathname = usePathname();
 
-  // Set header titles based on current route
-  let currentHeaderTitle = headerTitle;
-  let currentHeaderSubtitle = headerSubtitle;
-
-  if (!currentHeaderTitle) {
-    switch (pathname) {
-      case '/':
-        currentHeaderTitle = 'Learning Blueprint Dashboard';
-        currentHeaderSubtitle = 'Create and manage your learning blueprints';
-        break;
-      case '/dashboard':
-        currentHeaderTitle = 'Dashboard';
-        currentHeaderSubtitle = 'Welcome to your learning dashboard';
-        break;
-      case '/static-wizard':
-        currentHeaderTitle = 'Learning Blueprint Creator';
-        currentHeaderSubtitle =
-          "Let's start by understanding your learning objectives and requirements. This will help us generate personalized questions for your blueprint.";
-        break;
-      case '/pricing':
-        currentHeaderTitle = 'Polaris Pricing Plans';
-        currentHeaderSubtitle =
-          'Choose the perfect plan for your journey • 14-day free trial • No credit card required';
-        break;
-      case pathname?.startsWith('/dynamic-wizard') ? pathname : '':
-        currentHeaderTitle = 'Dynamic Questionnaire';
-        currentHeaderSubtitle =
-          'Answer these personalized questions to complete your learning blueprint';
-        break;
-      default:
-        currentHeaderTitle = 'SmartSlate';
-        currentHeaderSubtitle = 'Your learning companion';
-    }
-  }
-
   const learningItems: NavItem[] = ['Explore Learning', 'My Learning', 'Dynamic Learning'];
 
   const architectureItems: NavItem[] = ['Explore Partnership', 'My Architecture'];
@@ -76,43 +39,23 @@ export const GlobalLayout = memo(function GlobalLayout({
     console.log(`Navigate to: ${label}`);
   }
 
-  // Pages that handle their own headers and layout
-  const pagesWithOwnHeaders = ['/', '/static-wizard', '/generating', '/blueprint'];
-
-  const shouldShowHeader = !pagesWithOwnHeaders.some((path) => pathname?.startsWith(path));
-  const shouldShowFooter = !pagesWithOwnHeaders.some((path) => pathname?.startsWith(path));
 
   return (
     <BlueprintSidebarProvider>
       {/* Offline Status Indicator */}
       <OfflineIndicator />
 
-      <div className={`bg-background text-foreground flex h-screen w-full flex-col ${className}`}>
-        {/* Desktop Sidebar and Main Content */}
-        <div className="flex min-h-0 flex-1">
-          <Sidebar user={user} onSignOut={signOut} />
+      <div className={`bg-background text-foreground flex min-h-screen w-full flex-col ${className}`}>
+        {/* Desktop Sidebar */}
+        <Sidebar user={user} onSignOut={signOut} />
 
-          {/* Main Content Area */}
-          <main className="ml-16 flex min-h-0 min-w-0 flex-1 flex-col md:ml-72 lg:ml-80">
-            {/* Only show Header on pages that don't have their own */}
-            {shouldShowHeader && (
-              <Header
-                title={currentHeaderTitle}
-                subtitle={currentHeaderSubtitle}
-                showMobileMenu={mobileMenuOpen}
-                onMobileMenuToggle={() => setMobileMenuOpen(true)}
-                sticky={pathname !== '/dashboard'}
-                variant={pathname === '/dashboard' ? 'solid' : 'floating'}
-              />
-            )}
-
-            {/* Page Content */}
-            <div className="min-h-0 flex-1 overflow-y-auto">{children}</div>
+        {/* Main Content Area with sidebar offset */}
+        <div className="ml-16 flex min-h-screen flex-col md:ml-72 lg:ml-80">
+          {/* Page Content */}
+          <main className="flex-1">
+            {children}
           </main>
         </div>
-
-        {/* Footer - Only show on pages that don't handle their own layout */}
-        {shouldShowFooter && <Footer />}
       </div>
 
       {/* Mobile Menu Overlay */}

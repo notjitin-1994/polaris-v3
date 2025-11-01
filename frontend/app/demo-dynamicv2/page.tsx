@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { StandardHeader } from '@/components/layout/StandardHeader';
 import { DynamicQuestionnaireProgress } from '@/components/demo-dynamicv2/DynamicQuestionnaireProgress';
 import { DynamicQuestionRenderer } from '@/components/demo-dynamicv2/DynamicQuestionRenderer';
 import { QuestionnaireButton } from '@/components/demo-v2-questionnaire/QuestionnaireButton';
@@ -151,16 +150,6 @@ export default function DemoDynamicV2Page(): React.JSX.Element {
 
   return (
     <div className="min-h-screen bg-[#020C1B]">
-      <StandardHeader
-        title="Dynamic Questionnaire Demo (v2.0)"
-        backHref="/"
-        backLabel="Back to Dashboard"
-        backButtonStyle="icon-only"
-        showDarkModeToggle={false}
-        showUserAvatar={false}
-        size="compact"
-        user={undefined}
-      />
 
       {/* Hero Section */}
       <section className="relative overflow-hidden">

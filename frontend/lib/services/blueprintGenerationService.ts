@@ -19,6 +19,21 @@ import {
   cacheBlueprint,
 } from '@/lib/cache/blueprintCache';
 import { performanceMonitor } from '@/lib/performance/performanceMonitor';
+import {
+  validateStaticAnswers,
+  validateDynamicAnswers,
+  validateBlueprintResponse,
+  sanitizeForLLM
+} from '@/lib/validation/dataIntegrity';
+import {
+  WorkflowTracer,
+  logDataFlow,
+  logLLMRequest,
+  logLLMResponse,
+  logValidation,
+  logTransformation,
+  logError as logDetailedError
+} from '@/lib/logging/blueprintLogger';
 
 const logger = createServiceLogger('blueprint-generation');
 
@@ -67,8 +82,86 @@ export class BlueprintGenerationService {
       { type: 'api' }
     );
 
+    // Initialize workflow tracer
+    const tracer = new WorkflowTracer({
+      blueprintId: context.blueprintId,
+      userId: context.userId,
+      organization: context.organization,
+    });
+
+    tracer.addStep('start', { industry: context.industry, role: context.role });
+
+    // Log initial data
+    logDataFlow('input', {
+      staticAnswersSize: JSON.stringify(context.staticAnswers).length,
+      dynamicAnswersSize: JSON.stringify(context.dynamicAnswers).length,
+      objectivesCount: context.learningObjectives?.length || 0,
+    }, { blueprintId: context.blueprintId });
+
+    // Validate input data before proceeding
+    tracer.addStep('validate-static');
+    const staticValidation = validateStaticAnswers(context.staticAnswers);
+    logValidation('static-answers', staticValidation.isValid, staticValidation.errors, staticValidation.warnings, {
+      blueprintId: context.blueprintId,
+    });
+    if (!staticValidation.isValid) {
+      logger.error('blueprint.generation.invalid_static_answers', 'Static answers validation failed', {
+        blueprintId: context.blueprintId,
+        errors: staticValidation.errors,
+      });
+
+      return {
+        success: false,
+        blueprint: null,
+        metadata: {
+          model: 'claude-sonnet-4-5',
+          duration: 0,
+          timestamp: new Date().toISOString(),
+          fallbackUsed: false,
+          attempts: 0,
+        },
+        error: `Invalid static answers: ${staticValidation.errors.join('; ')}`,
+      };
+    }
+
+    tracer.addStep('validate-dynamic');
+    const dynamicValidation = validateDynamicAnswers(context.dynamicAnswers);
+    logValidation('dynamic-answers', dynamicValidation.isValid, dynamicValidation.errors, dynamicValidation.warnings, {
+      blueprintId: context.blueprintId,
+    });
+    if (!dynamicValidation.isValid) {
+      logger.error('blueprint.generation.invalid_dynamic_answers', 'Dynamic answers validation failed', {
+        blueprintId: context.blueprintId,
+        errors: dynamicValidation.errors,
+      });
+
+      return {
+        success: false,
+        blueprint: null,
+        metadata: {
+          model: 'claude-sonnet-4-5',
+          duration: 0,
+          timestamp: new Date().toISOString(),
+          fallbackUsed: false,
+          attempts: 0,
+        },
+        error: `Invalid dynamic answers: ${dynamicValidation.errors.join('; ')}`,
+      };
+    }
+
+    // Sanitize data if needed
+    tracer.addStep('sanitize-data');
+    const beforeSize = JSON.stringify(context).length;
+    const sanitizedContext = {
+      ...context,
+      staticAnswers: sanitizeForLLM(context.staticAnswers || {}),
+      dynamicAnswers: sanitizeForLLM(context.dynamicAnswers || {}),
+    };
+    const afterSize = JSON.stringify(sanitizedContext).length;
+    logTransformation('sanitize', beforeSize, afterSize, { blueprintId: context.blueprintId });
+
     // Check cache first for exact matches
-    const staticAnswers = context.staticAnswers || {};
+    const staticAnswers = sanitizedContext.staticAnswers || {};
     const cachedBlueprint = await getCachedBlueprint(staticAnswers);
 
     if (cachedBlueprint) {
@@ -134,7 +227,7 @@ export class BlueprintGenerationService {
 
     // Build prompts once, reuse for all models
     const systemPrompt = BLUEPRINT_SYSTEM_PROMPT;
-    const userPrompt = buildBlueprintPrompt(context);
+    const userPrompt = buildBlueprintPrompt(sanitizedContext);
 
     // Check if Claude API key is available
     const hasClaudeKey = this.config.apiKey && this.config.apiKey.trim().length > 0;
@@ -147,7 +240,7 @@ export class BlueprintGenerationService {
           this.config.primaryModel,
           systemPrompt,
           userPrompt,
-          12000 // max_tokens for Sonnet 4.5
+          18000 // Increased max_tokens for Sonnet 4.5 to prevent truncation
         );
 
         const duration = Date.now() - startTime;
@@ -234,7 +327,7 @@ export class BlueprintGenerationService {
             this.config.fallbackModel,
             systemPrompt,
             userPrompt,
-            16000 // max_tokens for Sonnet 4
+            20000 // Increased max_tokens for Sonnet 4 to prevent truncation
           );
 
           const duration = Date.now() - startTime;
@@ -346,6 +439,30 @@ export class BlueprintGenerationService {
 
     const text = ClaudeClient.extractText(response);
     const validated = validateAndNormalizeBlueprint(text);
+
+    // Additional validation for blueprint completeness
+    const blueprintValidation = validateBlueprintResponse(validated);
+    if (!blueprintValidation.isValid) {
+      logger.error('blueprint.generation.incomplete_response', 'Generated blueprint failed validation', {
+        blueprintId: context.blueprintId,
+        model,
+        errors: blueprintValidation.errors,
+        warnings: blueprintValidation.warnings,
+      });
+
+      // If critical sections are missing, throw error to trigger retry
+      if (blueprintValidation.errors.some(e => e.includes('Missing required sections'))) {
+        throw new Error(`Incomplete blueprint generated: ${blueprintValidation.errors.join('; ')}`);
+      }
+    }
+
+    // Log warnings if any
+    if (blueprintValidation.warnings.length > 0) {
+      logger.warn('blueprint.generation.validation_warnings', 'Blueprint has validation warnings', {
+        blueprintId: context.blueprintId,
+        warnings: blueprintValidation.warnings,
+      });
+    }
 
     return {
       data: validated,

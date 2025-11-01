@@ -4,7 +4,6 @@ import { Suspense } from 'react';
 import { motion } from 'framer-motion';
 import { Users, Shield } from 'lucide-react';
 import { UserManagementTable } from '@/components/admin/users/UserManagementTable';
-import { StandardHeader } from '@/components/layout/StandardHeader';
 import { useAuth } from '@/contexts/AuthContext';
 
 export default function UsersPage() {
@@ -13,16 +12,6 @@ export default function UsersPage() {
   return (
     <div className="relative min-h-screen w-full bg-[#020C1B] text-[rgb(224,224,224)]">
       {/* Header */}
-      <StandardHeader
-        title="User Management"
-        subtitle="Manage users, roles, and subscription tiers"
-        showDecorativeLine={false}
-        sticky={false}
-        showDarkModeToggle={false}
-        showUserAvatar={false}
-        size="compact"
-        user={user}
-      />
 
       {/* Main Content */}
       <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">

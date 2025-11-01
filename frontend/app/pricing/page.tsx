@@ -25,7 +25,6 @@ import {
 import { CurrencyProvider } from '@/contexts/CurrencyContext';
 import CurrencyToggle from '@/components/pricing/pricing/CurrencyToggle';
 import { useCurrency } from '@/contexts/CurrencyContext';
-import { Footer } from '@/components/layout/Footer';
 import { getSupabaseBrowserClient } from '@/lib/supabase/client';
 import { getAvailableUpgradePlans } from '@/lib/utils/tierDisplay';
 import { CheckoutButton } from '@/components/pricing/CheckoutButton';
@@ -617,7 +616,6 @@ function PricingPageContent() {
       </div>
 
       {/* Footer */}
-      <Footer />
     </div>
   );
 }

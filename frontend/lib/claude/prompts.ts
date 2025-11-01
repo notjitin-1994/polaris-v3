@@ -31,13 +31,21 @@ OUTPUT REQUIREMENTS:
 CRITICAL: Your response must be PURE JSON. Do NOT wrap your response in markdown code blocks (no \`\`\`json or \`\`\`).
 Do NOT include ANY text before or after the JSON. Start directly with { and end with }.
 
+**TRUNCATION PREVENTION**: You have 18,000-20,000 output tokens available. Critical requirements:
+- MUST complete ALL sections - incomplete responses will be rejected
+- Keep descriptions concise (50-100 chars max)
+- Use SHORT, actionable bullet points
+- Prioritize data completeness over verbose explanations
+- If approaching token limit, drastically reduce verbosity but NEVER skip sections
+
 1. Valid JSON only - no markdown code blocks, no explanatory text, no formatting
 2. Include "displayType" metadata for EVERY section (except metadata)
-3. Use rich, descriptive content that demonstrates expertise
+3. Use rich but CONCISE, descriptive content that demonstrates expertise
 4. Provide specific, contextual recommendations (no generic advice)
 5. Include comprehensive detail - ALL information will be displayed in animated infographics
 6. Structure data for visual presentation (use arrays, percentages, measurable metrics)
 7. Include quantitative data wherever possible for visualization
+8. **ABSOLUTE REQUIREMENT**: Generate a COMPLETE blueprint - incomplete responses will be rejected
 
 CRITICAL: Every section will be displayed as an INFOGRAPHIC with animations. Provide data in formats that are:
 - Visually representable (numbers, percentages, distributions, timelines)
@@ -104,21 +112,23 @@ export function buildBlueprintPrompt(context: BlueprintContext): string {
 
   const isTest = isTestInput(context);
 
-  const prompt = `Generate a comprehensive learning blueprint based on the following inputs:
+  // Compact the questionnaire data to reduce input tokens
+  const compactStaticAnswers = JSON.stringify(context.staticAnswers);
+  const compactDynamicAnswers = JSON.stringify(context.dynamicAnswers);
 
-ORGANIZATION CONTEXT:
-- Organization: ${context.organization}
-- Industry: ${context.industry}
-- Role: ${context.role}
+  const prompt = `Generate comprehensive learning blueprint:
 
-STATIC QUESTIONNAIRE ANSWERS:
-${JSON.stringify(context.staticAnswers, null, 2)}
+CONTEXT:
+Organization: ${context.organization} | Industry: ${context.industry} | Role: ${context.role}
 
-DYNAMIC QUESTIONNAIRE ANSWERS:
-${JSON.stringify(context.dynamicAnswers, null, 2)}
+STATIC ANSWERS (Phase 1):
+${compactStaticAnswers}
 
-PRIMARY LEARNING OBJECTIVES:
-${context.learningObjectives.map((obj, i) => `${i + 1}. ${obj}`).join('\n')}
+DYNAMIC ANSWERS (Phase 2):
+${compactDynamicAnswers}
+
+OBJECTIVES:
+${context.learningObjectives.slice(0, 5).join('; ')}
 
 ${
   isTest
@@ -370,8 +380,15 @@ CRITICAL REQUIREMENTS:
 5. Ensure all dates are ISO format strings
 6. All monetary amounts should be numbers
 7. Percentages should be numbers (0-100)
-8. Be comprehensive but avoid unnecessary verbosity
-9. REMINDER: Your entire response must be valid JSON only. No markdown formatting.${isTest ? '\n10. REMEMBER: This is TEST MODE - generate realistic, impressive sample data that showcases best practices and full system capabilities' : ''}`;
+8. Be comprehensive but ensure ALL content is COMPLETE - do NOT exceed token limits
+9. **ABSOLUTE REQUIREMENT**: You must generate a COMPLETE response. If approaching token limits:
+   - Reduce description lengths to 80-120 characters
+   - Use concise but informative language
+   - Prioritize completeness over verbosity
+   - NEVER truncate mid-section or mid-array
+10. Quality Priority: Complete blueprint > Verbose descriptions
+11. REMINDER: Your entire response must be valid, COMPLETE JSON only. No markdown formatting.
+12. An incomplete/truncated response will be REJECTED and you will be called again.${isTest ? '\n13. REMEMBER: This is TEST MODE - generate realistic, impressive sample data that showcases best practices and full system capabilities' : ''}`;
 
   // Replace date placeholders with actual dates
   return prompt

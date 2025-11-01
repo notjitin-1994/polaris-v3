@@ -304,16 +304,41 @@ export function createAnswerSchema(question: Question): z.ZodSchema {
       schema = z.array(z.string());
       if (question.options) {
         const validValues = question.options.map((opt) => opt.value);
-        schema = z.array(z.enum(validValues as [string, ...string[]]));
+        // Use a more flexible validation that accepts strings that look like valid options
+        // This helps when options have been regenerated but user data is still valid
+        schema = z.array(z.string().refine(
+          (val) => {
+            // Accept exact matches
+            if (validValues.includes(val)) return true;
+
+            // Accept values that look like valid option formats (preserving old data)
+            // This prevents data loss when options are regenerated
+            if (/^[a-z0-9_-]+$/i.test(val)) return true;
+
+            return false;
+          },
+          (val) => ({
+            message: `"${val}" is not a valid option for this question`
+          })
+        ));
       }
       break;
 
     case 'scale':
     case 'enhanced_scale':
+      schema = z.number().int();
       if (question.scaleConfig) {
-        schema = z.number().int().min(question.scaleConfig.min).max(question.scaleConfig.max);
-      } else {
-        schema = z.number().int();
+        schema = schema.min(question.scaleConfig.min).max(question.scaleConfig.max);
+      }
+      // Also check validation rules for min/max
+      if (question.validation) {
+        question.validation.forEach((rule) => {
+          if (rule.rule === 'min' && typeof rule.value === 'number') {
+            schema = (schema as z.ZodNumber).min(rule.value, rule.message);
+          } else if (rule.rule === 'max' && typeof rule.value === 'number') {
+            schema = (schema as z.ZodNumber).max(rule.value, rule.message);
+          }
+        });
       }
       break;
 
@@ -403,6 +428,11 @@ export function createAnswerSchema(question: Question): z.ZodSchema {
   // Make optional if not required
   if (!required) {
     schema = schema.optional();
+  } else {
+    // For required arrays, ensure they're not empty
+    if (schema instanceof z.ZodArray) {
+      schema = (schema as z.ZodArray<any>).min(1, 'Please select at least one option');
+    }
   }
 
   return schema;
@@ -465,6 +495,18 @@ function normalizeAnswerValue(
     return { matched: fuzzyMatch.value, confidence: 'fuzzy' };
   }
 
+  // Strategy 4b: Try converting underscore to hyphen and vice versa
+  const underscoreToHyphen = val.replace(/_/g, '-').toLowerCase();
+  const hyphenToUnderscore = val.replace(/-/g, '_').toLowerCase();
+
+  const alternateMatch = options.find((opt) => {
+    const optValueLower = opt.value.toLowerCase();
+    return optValueLower === underscoreToHyphen || optValueLower === hyphenToUnderscore;
+  });
+  if (alternateMatch) {
+    return { matched: alternateMatch.value, confidence: 'fuzzy' };
+  }
+
   // Strategy 5: Partial substring match (very forgiving - only for single values)
   if (context.type === 'single' && val.length > 3) {
     const substringMatch = options.find((opt) => {
@@ -515,6 +557,12 @@ function normalizeAnswerValue(
         );
       });
       if (noOption) return { matched: noOption.value, confidence: 'fuzzy' };
+    }
+
+    // If no specific patterns matched, try to find which option is the "negative" one
+    // by looking for the option that comes second (typically "no" or "disabled")
+    if (isNoLike && !noOption && options.length === 2) {
+      return { matched: options[1].value, confidence: 'fuzzy' };
     }
   }
 
@@ -590,6 +638,21 @@ function sanitizeAnswer(answer: unknown, question: Question): unknown {
                 : null,
           }
         );
+
+        // CRITICAL FIX: If all values look like valid option format but couldn't be matched,
+        // it's likely the options changed after the user submitted. Keep the original values
+        // to preserve user data rather than discarding it.
+        if (normalized.length === 0 && unmatched.every(v => /^[a-z0-9_-]+$/.test(v))) {
+          console.warn(
+            `[sanitizeAnswer] All values appear valid but don't match current options. Preserving original values for question ${question.id}`,
+            {
+              questionId: question.id,
+              preservedValues: unmatched,
+              reason: 'Options likely changed after submission'
+            }
+          );
+          return stringArray; // Return original values to preserve user data
+        }
       } else if (matched.some((m) => m.confidence !== 'exact')) {
         console.info(
           `[sanitizeAnswer] Successfully normalized ${matched.length} values with fuzzy matching`,

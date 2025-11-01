@@ -10,7 +10,7 @@ export default function LandingPage() {
     <div className="min-h-screen bg-[rgb(2,12,27)] text-[rgb(224,224,224)]">
       {/* Hero Section */}
       <section className="relative overflow-hidden">
-        <div className="mx-auto max-w-7xl px-4 py-24 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
           <div className="text-center">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -119,7 +119,7 @@ export default function LandingPage() {
       </section>
 
       {/* Features Section */}
-      <section className="px-4 py-20">
+      <section className="px-4 py-12">
         <div className="mx-auto max-w-7xl">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -173,7 +173,7 @@ export default function LandingPage() {
       </section>
 
       {/* CTA Section */}
-      <section className="px-4 py-20">
+      <section className="px-4 py-12">
         <div className="mx-auto max-w-4xl text-center">
           <motion.h2
             initial={{ opacity: 0, y: 20 }}

@@ -96,11 +96,13 @@ Available Data Points:
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 OUTPUT SPECIFICATIONS:
-✓ Generate exactly 10 sections with 5-7 questions each (50-70 total questions)
+✓ Generate EXACTLY 10 sections - NO MORE, NO LESS (this is a hard requirement)
+✓ Each section should have 5-6 questions (50-60 total questions target)
 ✓ Every question MUST be hyper-personalized using the 3-section context data
-✓ Use unique IDs in format: s{section}_q{number} (e.g., s1_q1, s10_q7)
+✓ Use unique IDs in format: s{section}_q{number} (e.g., s1_q1, s10_q6)
 ✓ Include validation rules for every question
 ✓ Provide helpful helpText that references the user's specific context
+✓ CRITICAL: All 10 sections must be present: s1 through s10 with IDs matching exactly
 
 🚨 CRITICAL JSON FORMATTING REQUIREMENTS (READ CAREFULLY):
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -118,6 +120,12 @@ OUTPUT SPECIFICATIONS:
 7. All property names MUST be in double quotes "propertyName"
 8. Multi-line strings MUST use \\n for line breaks, NOT actual newlines
 9. If your response is cut off, ensure the JSON is still valid up to that point
+10. CRITICAL SIZE LIMITS to prevent truncation:
+    - Question labels: Maximum 150 characters (be concise and clear)
+    - Help text: Maximum 100 characters (brief context only)
+    - Option labels: Maximum 80 characters
+    - Placeholders: Maximum 60 characters
+    - Keep ALL text fields brief and focused
 
 VALIDATION CHECKLIST BEFORE RESPONDING:
 ☐ No markdown code fences (```)
@@ -127,6 +135,7 @@ VALIDATION CHECKLIST BEFORE RESPONDING:
 ☐ No trailing commas
 ☐ All brackets properly closed
 ☐ No actual newlines inside string values
+☐ All text fields under character limits
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 🎨 MODERN INPUT TYPE SELECTION (CRITICAL - AVOID select/multiselect)
@@ -557,8 +566,8 @@ QUESTIONS FOCUS:
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 Before returning your JSON, verify:
-☑ Exactly 10 sections generated (not 5, not 12 - exactly 10 as per PRD)
-☑ Each section has 5-7 questions (total 50-70 questions)
+☑ EXACTLY 10 sections generated - count them: s1, s2, s3, s4, s5, s6, s7, s8, s9, s10 (not 8, not 9 - EXACTLY 10)
+☑ Each section has 5-6 questions (total 50-60 questions)
 ☑ Section names match PRD specification exactly
 ☑ Every question label references at least 2 context variables from the 3 static sections
 ☑ Every helpText provides personalized guidance using user's specific data
@@ -590,6 +599,39 @@ Your questions should demonstrate:
 ✦ Performance consulting (HPT, Behavior Engineering Model, IMPACT model)
 ✦ Technology fluency (LMS/LXP trends, AI/ML in L&D, xAPI, Learning Record Stores)
 ✦ Compliance mastery (Industry-specific regulations, data privacy laws, accessibility standards)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+⚠️ CRITICAL JSON OUTPUT INSTRUCTIONS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+EXTREMELY IMPORTANT - Your response MUST be complete, valid JSON:
+
+1. ✅ ALWAYS complete ALL 10 sections with ALL questions before ending your response
+2. ✅ NEVER truncate or stop mid-section - if you approach token limits, reduce question complexity but finish all sections
+3. ✅ Ensure every JSON object and array is properly closed with matching braces/brackets
+4. ✅ Return ONLY raw JSON - NO markdown code fences, NO explanatory text before or after
+5. ✅ Start directly with { and end with } - nothing else
+6. ✅ All strings must be properly escaped (especially quotes and newlines in helpText)
+7. ✅ NO trailing commas before closing braces or brackets
+8. ✅ **CRITICAL OUTPUT STRATEGY**:
+   - Keep question labels concise (max 120 characters)
+   - Keep helpText brief but personalized (max 150 characters)
+   - Keep option descriptions short (max 80 characters)
+   - Limit to 5 questions per section (not 7) to ensure completion
+   - PRIORITIZE finishing all 10 sections over detailed individual questions
+9. ✅ The JSON parser will reject incomplete responses - incomplete JSON = total failure
+10. ✅ Quality hierarchy: Complete valid JSON > Detailed questions > Verbose descriptions
+
+REMEMBER: An incomplete JSON response with 8 perfect sections is WORTHLESS.
+10 complete sections with concise questions is INFINITELY better than 8 detailed but incomplete sections.
+
+**ABSOLUTE REQUIREMENT**: You MUST generate ALL 10 sections. NO EXCEPTIONS.
+- If approaching token limits, reduce question labels to 80 chars and helpText to 60 chars
+- Use 5 questions per section (not 7) to ensure you complete all 10 sections
+- Sections 8-10 should be extra concise but MUST be included
+- An incomplete response with 8 sections will be REJECTED and you will be called again
+- Quality priority: Complete 10 sections > Verbose individual questions
+
 ✦ Business acumen (ROI calculation, cost-benefit analysis, stakeholder management)
 ✦ Project management (Agile/Scrum for L&D, risk management, resource planning)
 

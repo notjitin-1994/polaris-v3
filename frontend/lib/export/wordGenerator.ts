@@ -33,6 +33,64 @@ function isFullBlueprint(blueprint: any): blueprint is BlueprintData {
 }
 
 /**
+ * Generate a plain markdown Word document (no styling, just raw markdown)
+ * Standalone function for simple markdown to Word conversion
+ */
+export async function generatePlainMarkdownWordDocument(
+  markdownContent: string,
+  title: string
+): Promise<ExportResult> {
+  try {
+    // Parse the markdown into Word paragraphs
+    const generator = new WordGenerator();
+    const sections = generator.parseMarkdown(markdownContent);
+
+    // Create a simple document with no branding or styling
+    const doc = new Document({
+      creator: 'SmartSlate',
+      title: title,
+      sections: [
+        {
+          properties: {
+            page: {
+              margin: {
+                top: convertInchesToTwip(1),
+                bottom: convertInchesToTwip(1),
+                left: convertInchesToTwip(1),
+                right: convertInchesToTwip(1),
+              },
+            },
+          },
+          children: sections,
+        },
+      ],
+    });
+
+    // Generate blob
+    const blob = await Packer.toBlob(doc);
+
+    return {
+      success: true,
+      data: blob,
+      metadata: {
+        title,
+        description: 'Plain markdown export',
+        createdAt: new Date().toISOString(),
+        exportedAt: new Date().toISOString(),
+        version: '1.0',
+      },
+      fileSize: blob.size,
+    };
+  } catch (error) {
+    console.error('Plain markdown Word generation failed:', error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Plain markdown Word generation failed',
+    };
+  }
+}
+
+/**
  * Word Document Generator with Premium Brand Design & Industry-Standard Layout
  * Features: Professional typography, sophisticated color scheme, structured layout,
  * brand-compliant styling, and executive-level presentation quality
@@ -2461,7 +2519,7 @@ export class WordGenerator {
    * Parse simple markdown to Word paragraphs
    * Supports: headings, bold, italic, lists
    */
-  private parseMarkdown(markdown: string): Paragraph[] {
+  public parseMarkdown(markdown: string): Paragraph[] {
     const paragraphs: Paragraph[] = [];
     const lines = markdown.split('\n');
 

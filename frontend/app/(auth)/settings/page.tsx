@@ -4,7 +4,6 @@ import { motion } from 'framer-motion';
 import { Settings as SettingsIcon, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import ProtectedRoute from '@/components/auth/ProtectedRoute';
-import { Footer } from '@/components/layout/Footer';
 import { ProfileSection } from '@/components/settings/ProfileSection';
 import { SubscriptionSection } from '@/components/settings/SubscriptionSection';
 import { UsageDetailPanel } from '@/components/settings/UsageDetailPanel';
@@ -116,7 +115,6 @@ export default function SettingsPage() {
   return (
     <ProtectedRoute>
       <SettingsContent />
-      <Footer />
     </ProtectedRoute>
   );
 }

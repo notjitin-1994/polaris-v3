@@ -1,7 +1,9 @@
 import type { Metadata } from 'next';
 import Script from 'next/script';
 import { Quicksand, Lato } from 'next/font/google';
-import { Footer } from '@/components/layout/Footer';
+import { GlobalLayout } from '@/components/layout';
+import { AuthProvider } from '@/contexts/AuthContext';
+import { QueryProvider } from '@/lib/stores/QueryProvider';
 
 const quicksand = Quicksand({
   variable: '--font-quicksand',
@@ -61,8 +63,13 @@ export default function LandingLayout({
         className={`${quicksand.variable} ${lato.variable} antialiased`}
         suppressHydrationWarning
       >
-        {children}
-        <Footer />
+        <AuthProvider>
+          <QueryProvider>
+            <GlobalLayout>
+              {children}
+            </GlobalLayout>
+          </QueryProvider>
+        </AuthProvider>
       </body>
     </html>
   );

@@ -24,7 +24,7 @@ export async function POST(request: NextRequest): Promise<Response> {
     // Get the blueprint with static answers
     const { data: blueprint, error: blueprintError } = await supabase
       .from('blueprint_generator')
-      .select('id, static_answers, dynamic_questions, user_id, status')
+      .select('id, static_answers, dynamic_questions, dynamic_questions_metadata, user_id, status')
       .eq('id', blueprintId)
       .single();
 
@@ -116,6 +116,27 @@ export async function POST(request: NextRequest): Promise<Response> {
     // Use V2.0 generation service with enhanced prompts
     console.log('[GenerateDynamicQuestions] Using V2.0 schema with enhanced prompts');
 
+    // Track retry attempts in metadata
+    const retryAttempt = (blueprint.dynamic_questions_metadata?.retryAttempt as number) || 0;
+    const maxRetries = 3;
+
+    if (retryAttempt >= maxRetries) {
+      console.error('[GenerateDynamicQuestions] Max retry attempts reached:', {
+        blueprintId,
+        attempts: retryAttempt,
+      });
+      return NextResponse.json(
+        {
+          error: `Maximum retry attempts (${maxRetries}) reached. Please contact support if the issue persists.`,
+          details: 'The system has attempted to generate questions multiple times without success.',
+          canRetry: false,
+        },
+        { status: 429 } // Too Many Requests
+      );
+    }
+
+    console.log('[GenerateDynamicQuestions] Attempt:', retryAttempt + 1, 'of', maxRetries);
+
     try {
       const result = await generateDynamicQuestionsV2(blueprintId, sa);
 
@@ -139,6 +160,12 @@ export async function POST(request: NextRequest): Promise<Response> {
           dynamic_questions: normalizedSections,
           dynamic_questions_raw: resultTyped.sections,
           status: 'draft',
+          dynamic_questions_metadata: {
+            retryAttempt: 0, // Reset on success
+            lastGeneratedAt: new Date().toISOString(),
+            sectionsGenerated: normalizedSections.length,
+            truncationRepaired: (resultTyped.metadata as any)?.truncationRepaired || false,
+          },
         })
         .eq('id', blueprintId)
         .select()
@@ -157,12 +184,32 @@ export async function POST(request: NextRequest): Promise<Response> {
       });
     } catch (error) {
       console.error('Error generating dynamic questions with V2.0 service:', error);
-      // Reset status so the user can retry generation
-      await supabase.from('blueprint_generator').update({ status: 'draft' }).eq('id', blueprintId);
+
+      // Increment retry counter and reset status so the user can retry generation
+      const { error: resetError } = await supabase
+        .from('blueprint_generator')
+        .update({
+          status: 'draft',
+          dynamic_questions: null, // Clear incomplete questions
+          dynamic_questions_raw: null, // Clear raw incomplete data
+          dynamic_questions_metadata: {
+            retryAttempt: retryAttempt + 1,
+            lastAttemptAt: new Date().toISOString(),
+            lastError: error instanceof Error ? error.message : String(error),
+          },
+        })
+        .eq('id', blueprintId);
+
+      if (resetError) {
+        console.error('Error resetting blueprint status:', resetError);
+      }
+
       return NextResponse.json(
         {
           error: 'Failed to generate dynamic questions. Please try again.',
           details: error instanceof Error ? error.message : String(error),
+          canRetry: retryAttempt + 1 < maxRetries,
+          attemptsRemaining: maxRetries - (retryAttempt + 1),
         },
         { status: 502 }
       );

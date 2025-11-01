@@ -2,13 +2,11 @@
 
 import { motion } from 'framer-motion';
 import ProtectedRoute from '@/components/auth/ProtectedRoute';
-import { Footer } from '@/components/layout/Footer';
 import { EnhancedUsageStatsCard } from '@/components/dashboard/EnhancedUsageStatsCard';
 import { QuickActionsCardWithLimits } from '@/components/dashboard/QuickActionsCardWithLimits';
 import { RecentBlueprintsCard } from '@/components/dashboard/RecentBlueprintsCard';
 import { useUserProfile } from '@/lib/hooks/useUserProfile';
 import { useAuth } from '@/contexts/AuthContext';
-import { StandardHeader } from '@/components/layout/StandardHeader';
 
 function DashboardContent() {
   const { user } = useAuth();
@@ -48,15 +46,6 @@ function DashboardContent() {
   return (
     <div className="relative flex min-h-screen w-full flex-col bg-[#020C1B] text-[rgb(224,224,224)]">
       {/* Header */}
-      <StandardHeader
-        title="Dashboard"
-        showDecorativeLine={false}
-        sticky={false}
-        showDarkModeToggle={false}
-        showUserAvatar={false}
-        size="compact"
-        user={user}
-      />
 
       {/* Main Content Area */}
       <div className="flex-1">
@@ -147,7 +136,6 @@ export default function DashboardPage() {
   return (
     <ProtectedRoute>
       <DashboardContent />
-      <Footer />
     </ProtectedRoute>
   );
 }

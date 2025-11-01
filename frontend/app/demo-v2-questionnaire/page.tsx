@@ -6,7 +6,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
-import { StandardHeader } from '@/components/layout/StandardHeader';
 import { RoleExperienceSection } from '@/components/demo-v2-questionnaire/sections/RoleExperienceSection';
 import { OrganizationDetailsSection } from '@/components/demo-v2-questionnaire/sections/OrganizationDetailsSection';
 import { LearningGapSection } from '@/components/demo-v2-questionnaire/sections/LearningGapSection';
@@ -515,16 +514,6 @@ export default function DemoV2QuestionnairePage(): React.JSX.Element {
 
   return (
     <div className="min-h-screen bg-[#020C1B]">
-      <StandardHeader
-        title="Static Questionnaire Demo (v2.0)"
-        backHref="/"
-        backLabel="Back to Dashboard"
-        backButtonStyle="icon-only"
-        showDarkModeToggle={false}
-        showUserAvatar={false}
-        size="compact"
-        user={undefined}
-      />
 
       {/* Hero Section */}
       <section className="relative overflow-hidden">

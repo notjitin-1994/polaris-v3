@@ -80,6 +80,11 @@ export interface StandardHeaderProps {
    * Override user object (useful for SSR contexts)
    */
   user?: User | null;
+
+  /**
+   * Custom container className for content alignment
+   */
+  containerClassName?: string;
 }
 
 export function StandardHeader({
@@ -97,6 +102,7 @@ export function StandardHeader({
   className = '',
   size = 'default',
   user: userProp,
+  containerClassName,
 }: StandardHeaderProps): React.JSX.Element {
   const auth = useAuth();
   const user = userProp ?? auth?.user ?? null;
@@ -116,10 +122,7 @@ export function StandardHeader({
 
       {/* Content */}
       <div
-        className={`relative ${responsiveClasses.headerContainer} ${isCompact ? 'py-2.5' : 'py-5'}`}
-        style={{
-          maxWidth: '1280px', // Explicit max-width for consistency
-        }}
+        className={`relative ${containerClassName || responsiveClasses.headerContainer} ${isCompact ? 'py-2.5' : 'py-5'}`}
       >
         <div className="flex items-center justify-between gap-4">
           {/* Left side: Back button + Title (inline for compact) */}

@@ -51,7 +51,8 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ toke
 
     // Verify blueprint has completed generation
     // We don't expose draft or errored blueprints
-    if (!blueprint.blueprint_json || !blueprint.blueprint_markdown) {
+    // Only require blueprint_json - markdown is optional
+    if (!blueprint.blueprint_json) {
       return NextResponse.json({ error: 'Blueprint is not ready for sharing' }, { status: 404 });
     }
 

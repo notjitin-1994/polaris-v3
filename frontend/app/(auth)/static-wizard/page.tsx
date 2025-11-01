@@ -7,7 +7,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { motion, AnimatePresence } from 'framer-motion';
 import ProtectedRoute from '@/components/auth/ProtectedRoute';
-import { StandardHeader } from '@/components/layout/StandardHeader';
 import { useAuth } from '@/contexts/AuthContext';
 import { RoleExperienceSection } from '@/components/demo-v2-questionnaire/sections/RoleExperienceSection';
 import { OrganizationDetailsSection } from '@/components/demo-v2-questionnaire/sections/OrganizationDetailsSection';
@@ -854,16 +853,6 @@ function StaticWizardContent(): React.JSX.Element {
   return (
     <div className="min-h-screen bg-[#020C1B]">
       {/* Header */}
-      <StandardHeader
-        title="Mission Parameters"
-        backHref="/"
-        backLabel="Back to Dashboard"
-        backButtonStyle="icon-only"
-        showDarkModeToggle={false}
-        showUserAvatar={false}
-        size="compact"
-        user={user}
-      />
 
       {/* Hero Section */}
       <section className="relative overflow-hidden">

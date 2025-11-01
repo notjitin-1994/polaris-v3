@@ -4,7 +4,6 @@ import { motion } from 'framer-motion';
 import { ArrowLeft, Calendar } from 'lucide-react';
 import Link from 'next/link';
 import ProtectedRoute from '@/components/auth/ProtectedRoute';
-import { Footer } from '@/components/layout/Footer';
 import { ProfileSection } from '@/components/settings/ProfileSection';
 import { AccountInfoSection } from '@/components/profile/AccountInfoSection';
 import { ActivitySection } from '@/components/profile/ActivitySection';
@@ -140,7 +139,6 @@ export default function ProfilePage() {
   return (
     <ProtectedRoute>
       <ProfileContent />
-      <Footer />
     </ProtectedRoute>
   );
 }

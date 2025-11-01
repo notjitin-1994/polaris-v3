@@ -245,7 +245,11 @@ async function callPerplexity(systemPrompt: string, userPrompt: string): Promise
 }
 
 /**
- * Detect if JSON appears truncated and try to close it properly
+ * Aggressively repair truncated JSON by finding the last complete structure
+ * Uses a 3-tier strategy:
+ * 1. Section-level repair (find last complete section)
+ * 2. Question-level repair (find last complete question)
+ * 3. Nuclear repair (just close everything)
  */
 function repairTruncatedJSON(jsonString: string): string {
   let repaired = jsonString;
@@ -256,11 +260,11 @@ function repairTruncatedJSON(jsonString: string): string {
   const openBrackets = (repaired.match(/\[/g) || []).length;
   const closeBrackets = (repaired.match(/]/g) || []).length;
 
-  // If we have unclosed brackets, try to close them
+  // If we have unclosed brackets, aggressively truncate to last valid structure
   if (openBraces > closeBraces || openBrackets > closeBrackets) {
     logger.warn(
       'dynamic_questions.json.truncation_detected',
-      'JSON appears truncated, attempting to close',
+      'JSON appears truncated, attempting aggressive repair',
       {
         openBraces,
         closeBraces,
@@ -270,63 +274,146 @@ function repairTruncatedJSON(jsonString: string): string {
       }
     );
 
-    // Find the last complete structural element
-    let lastValidIdx = repaired.length;
-    let inString = false;
-    let escapeNext = false;
+    // Strategy 1: Find last complete SECTION (not just question)
+    // Look for section pattern: { "id": "s#", ... }
+    const sectionPattern = /\{\s*"id"\s*:\s*"s\d+"\s*,\s*"title"\s*:/g;
+    const sectionMatches = Array.from(repaired.matchAll(sectionPattern));
 
-    // Scan backwards to find the last complete element
-    for (let i = repaired.length - 1; i >= 0; i--) {
-      const char = repaired[i];
+    if (sectionMatches.length > 0) {
+      logger.info('dynamic_questions.repair.sections_found', 'Found sections', {
+        count: sectionMatches.length,
+      });
 
-      if (escapeNext) {
-        escapeNext = false;
-        continue;
-      }
+      // Work backwards to find the last complete section
+      for (let i = sectionMatches.length - 1; i >= Math.max(0, sectionMatches.length - 3); i--) {
+        const startPos = sectionMatches[i].index || 0;
+        const sectionEndPos = findMatchingBrace(repaired, startPos);
 
-      if (char === '\\') {
-        escapeNext = true;
-        continue;
-      }
+        if (sectionEndPos > 0) {
+          // Found a complete section! Truncate here
+          repaired = repaired.substring(0, sectionEndPos + 1);
 
-      if (char === '"' && !escapeNext) {
-        inString = !inString;
-      }
+          logger.info('dynamic_questions.repair.section_truncation', 'Truncated to last complete section', {
+            sectionIndex: i,
+            truncatedAt: sectionEndPos,
+            preservedSections: i + 1,
+          });
 
-      if (!inString) {
-        // Found a complete object or array element
-        if (char === '}' || char === ']') {
-          lastValidIdx = i + 1;
-          break;
-        }
-        // Found a complete string value
-        if (char === '"') {
-          // Check if this is a complete property value (has colon before it)
-          let j = i - 1;
-          while (j >= 0 && /\s/.test(repaired[j])) j--;
-          if (j >= 0 && repaired[j] === ':') {
-            lastValidIdx = i + 1;
-            break;
+          // Close the sections array
+          repaired = repaired.trim();
+          if (!repaired.endsWith(']')) {
+            repaired += '\n  ]';
           }
+
+          // Add metadata and close root object
+          if (!repaired.includes('"metadata"')) {
+            repaired +=
+              ',\n  "metadata": {\n    "generatedAt": "' +
+              new Date().toISOString() +
+              '",\n    "truncationRepaired": true,\n    "sectionsCount": ' +
+              (i + 1) +
+              '\n  }';
+          }
+
+          // Close root object
+          if (!repaired.endsWith('}')) {
+            repaired += '\n}';
+          }
+
+          logger.info('dynamic_questions.repair.success', 'Successfully repaired with complete sections', {
+            originalLength: jsonString.length,
+            repairedLength: repaired.length,
+            sectionsPreserved: i + 1,
+          });
+
+          return repaired;
         }
       }
     }
 
-    // Truncate to last valid position
-    repaired = repaired.substring(0, lastValidIdx);
+    // Strategy 2: If no complete section found, try to salvage questions
+    // This is a fallback for severely truncated responses
+    logger.warn(
+      'dynamic_questions.repair.fallback',
+      'No complete sections found, attempting question-level repair'
+    );
 
-    // Remove trailing comma if present (but not within strings)
+    // Find last complete question
+    const questionPattern = /\{\s*"id"\s*:\s*"s\d+_q\d+"/g;
+    const questionMatches = Array.from(repaired.matchAll(questionPattern));
+
+    if (questionMatches.length > 0) {
+      for (let i = questionMatches.length - 1; i >= Math.max(0, questionMatches.length - 5); i--) {
+        const startPos = questionMatches[i].index || 0;
+        const questionEndPos = findMatchingBrace(repaired, startPos);
+
+        if (questionEndPos > 0) {
+          repaired = repaired.substring(0, questionEndPos + 1);
+
+          // Close questions array, section object, sections array, add metadata, close root
+          repaired = repaired.trim();
+          if (!repaired.endsWith(']')) {
+            repaired += '\n      ]';
+          }
+          if (!repaired.includes('}')) {
+            repaired += '\n    }';
+          }
+          if (!repaired.includes(']')) {
+            repaired += '\n  ]';
+          }
+          if (!repaired.includes('"metadata"')) {
+            repaired +=
+              ',\n  "metadata": {\n    "generatedAt": "' +
+              new Date().toISOString() +
+              '",\n    "truncationRepaired": true,\n    "partial": true\n  }';
+          }
+          if (!repaired.endsWith('}')) {
+            repaired += '\n}';
+          }
+
+          logger.info(
+            'dynamic_questions.repair.partial_success',
+            'Repaired with partial content',
+            {
+              originalLength: jsonString.length,
+              repairedLength: repaired.length,
+              questionsPreserved: i + 1,
+            }
+          );
+
+          return repaired;
+        }
+      }
+    }
+
+    // Strategy 3: Nuclear option - just close everything
+    logger.error(
+      'dynamic_questions.repair.nuclear',
+      'Could not find any complete structures, attempting nuclear repair'
+    );
+
+    repaired = repaired.trim();
+    // Remove any trailing incomplete content
+    const lastCompleteChar = Math.max(
+      repaired.lastIndexOf('}'),
+      repaired.lastIndexOf(']'),
+      repaired.lastIndexOf('"')
+    );
+    if (lastCompleteChar > 0) {
+      repaired = repaired.substring(0, lastCompleteChar + 1);
+    }
+
+    // Remove trailing commas
     repaired = repaired.replace(/,\s*$/, '');
 
-    // Recalculate bracket counts after truncation
-    const newOpenBrackets = (repaired.match(/\[/g) || []).length;
-    const newCloseBrackets = (repaired.match(/]/g) || []).length;
-    const newOpenBraces = (repaired.match(/{/g) || []).length;
-    const newCloseBraces = (repaired.match(/}/g) || []).length;
+    // Calculate and add missing closing brackets
+    const finalOpenBrackets = (repaired.match(/\[/g) || []).length;
+    const finalCloseBrackets = (repaired.match(/]/g) || []).length;
+    const finalOpenBraces = (repaired.match(/{/g) || []).length;
+    const finalCloseBraces = (repaired.match(/}/g) || []).length;
 
-    // Close unclosed brackets in the correct order (arrays before objects)
-    const bracketDiff = newOpenBrackets - newCloseBrackets;
-    const braceDiff = newOpenBraces - newCloseBraces;
+    const bracketDiff = finalOpenBrackets - finalCloseBrackets;
+    const braceDiff = finalOpenBraces - finalCloseBraces;
 
     for (let i = 0; i < bracketDiff; i++) {
       repaired += ']';
@@ -335,15 +422,56 @@ function repairTruncatedJSON(jsonString: string): string {
       repaired += '}';
     }
 
-    logger.info('dynamic_questions.json.truncation_repaired', 'Truncation repair applied', {
+    logger.warn('dynamic_questions.repair.nuclear_complete', 'Nuclear repair completed', {
       originalLength: jsonString.length,
       repairedLength: repaired.length,
-      removedChars: jsonString.length - lastValidIdx,
       bracketsAdded: bracketDiff + braceDiff,
     });
   }
 
   return repaired;
+}
+
+/**
+ * Find the matching closing brace for an opening brace at position
+ * Returns the position of the matching }, or -1 if not found
+ */
+function findMatchingBrace(str: string, startPos: number): number {
+  let depth = 0;
+  let inString = false;
+  let escapeNext = false;
+
+  for (let i = startPos; i < str.length; i++) {
+    const char = str[i];
+
+    if (escapeNext) {
+      escapeNext = false;
+      continue;
+    }
+
+    if (char === '\\') {
+      escapeNext = true;
+      continue;
+    }
+
+    if (char === '"' && !escapeNext) {
+      inString = !inString;
+      continue;
+    }
+
+    if (!inString) {
+      if (char === '{') {
+        depth++;
+      } else if (char === '}') {
+        depth--;
+        if (depth === 0) {
+          return i;
+        }
+      }
+    }
+  }
+
+  return -1; // No matching brace found
 }
 
 /**

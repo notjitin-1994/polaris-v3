@@ -33,9 +33,195 @@ export function stripMarkdownCodeFences(text: string): string {
 }
 
 /**
+ * Intelligently repair truncated JSON by finding the last complete structure
+ * Handles arrays and objects that were cut off mid-generation
+ * Enhanced to preserve as much valid data as possible
+ */
+function repairTruncatedJSON(jsonString: string): string {
+  let repaired = jsonString.trim();
+
+  // Count opening and closing brackets
+  const openBraces = (repaired.match(/{/g) || []).length;
+  const closeBraces = (repaired.match(/}/g) || []).length;
+  const openBrackets = (repaired.match(/\[/g) || []).length;
+  const closeBrackets = (repaired.match(/]/g) || []).length;
+
+  // If JSON is already balanced, return as-is
+  if (openBraces === closeBraces && openBrackets === closeBrackets) {
+    return repaired;
+  }
+
+  logger.warn('claude.validation.json_truncation_detected', 'JSON appears truncated, attempting repair', {
+    openBraces,
+    closeBraces,
+    openBrackets,
+    closeBrackets,
+    length: repaired.length,
+  });
+
+  // Strategy 1: Try to complete the last incomplete value
+  // Look for patterns that indicate where the JSON was cut off
+  const lastChars = repaired.slice(-100);
+
+  // Check if we're in the middle of a string value
+  const lastQuoteIndex = repaired.lastIndexOf('"');
+  const secondLastQuoteIndex = repaired.lastIndexOf('"', lastQuoteIndex - 1);
+
+  // If odd number of quotes after last colon/comma, we're mid-string
+  if (lastQuoteIndex > -1) {
+    const afterLastStructure = Math.max(
+      repaired.lastIndexOf(','),
+      repaired.lastIndexOf(':'),
+      repaired.lastIndexOf('{'),
+      repaired.lastIndexOf('[')
+    );
+    const quotesAfter = (repaired.slice(afterLastStructure).match(/"/g) || []).length;
+
+    if (quotesAfter % 2 === 1) {
+      // Close the string and remove any partial content after it
+      repaired = repaired.substring(0, lastQuoteIndex + 1);
+      logger.info('claude.validation.closed_incomplete_string', 'Closed incomplete string value');
+    }
+  }
+
+  // Strategy 2: Find the last complete key-value pair or array element
+  let bestValidPosition = -1;
+  let depth = { braces: 0, brackets: 0 };
+  let inString = false;
+  let escapeNext = false;
+  let lastCompleteValueEnd = -1;
+
+  for (let i = 0; i < repaired.length; i++) {
+    const char = repaired[i];
+
+    if (escapeNext) {
+      escapeNext = false;
+      continue;
+    }
+
+    if (char === '\\') {
+      escapeNext = true;
+      continue;
+    }
+
+    if (char === '"' && !escapeNext) {
+      inString = !inString;
+      if (!inString) {
+        // End of a string value
+        lastCompleteValueEnd = i;
+      }
+      continue;
+    }
+
+    if (!inString) {
+      if (char === '{') depth.braces++;
+      else if (char === '}') {
+        depth.braces--;
+        lastCompleteValueEnd = i;
+      }
+      else if (char === '[') depth.brackets++;
+      else if (char === ']') {
+        depth.brackets--;
+        lastCompleteValueEnd = i;
+      }
+      else if (char === ',' && depth.braces > 0) {
+        // Comma indicates end of a complete element
+        lastCompleteValueEnd = i - 1;
+      }
+
+      // If we're balanced at this point, mark it as a valid endpoint
+      if (depth.braces === 0 && depth.brackets === 0 && (char === '}' || char === ']')) {
+        bestValidPosition = i;
+      }
+    }
+  }
+
+  if (bestValidPosition > 0 && bestValidPosition < repaired.length - 1) {
+    logger.info('claude.validation.truncating_to_valid', 'Truncating to last valid JSON position', {
+      originalLength: repaired.length,
+      truncatedLength: bestValidPosition + 1,
+      removedChars: repaired.length - bestValidPosition - 1,
+    });
+    repaired = repaired.substring(0, bestValidPosition + 1);
+  } else if (lastCompleteValueEnd > 0 && lastCompleteValueEnd < repaired.length - 1) {
+    // Truncate to last complete value and close structures
+    logger.info('claude.validation.truncating_to_last_value', 'Truncating to last complete value', {
+      position: lastCompleteValueEnd,
+    });
+
+    repaired = repaired.substring(0, lastCompleteValueEnd + 1);
+
+    // Remove trailing comma if present
+    repaired = repaired.replace(/,\s*$/, '');
+
+    // Recount brackets after truncation
+    const finalOpenBraces = (repaired.match(/{/g) || []).length;
+    const finalCloseBraces = (repaired.match(/}/g) || []).length;
+    const finalOpenBrackets = (repaired.match(/\[/g) || []).length;
+    const finalCloseBrackets = (repaired.match(/]/g) || []).length;
+
+    // Add missing closing brackets in the correct order
+    // Track nesting to close in proper order
+    const toClose = [];
+    let tempDepth = { braces: 0, brackets: 0 };
+
+    for (let i = 0; i < repaired.length; i++) {
+      const char = repaired[i];
+      if (char === '{') {
+        toClose.push('}');
+        tempDepth.braces++;
+      } else if (char === '[') {
+        toClose.push(']');
+        tempDepth.brackets++;
+      } else if (char === '}') {
+        const idx = toClose.lastIndexOf('}');
+        if (idx > -1) toClose.splice(idx, 1);
+        tempDepth.braces--;
+      } else if (char === ']') {
+        const idx = toClose.lastIndexOf(']');
+        if (idx > -1) toClose.splice(idx, 1);
+        tempDepth.brackets--;
+      }
+    }
+
+    // Add the missing closures in reverse order
+    repaired += toClose.reverse().join('');
+
+    logger.info('claude.validation.added_closures', 'Added missing closures', {
+      added: toClose.reverse().join(''),
+    });
+  } else {
+    // Strategy 3: Clean up and close - last resort
+    logger.warn('claude.validation.emergency_repair', 'Using emergency repair strategy', {
+      missingBraces: openBraces - closeBraces,
+      missingBrackets: openBrackets - closeBrackets,
+    });
+
+    // Remove any trailing incomplete content
+    repaired = repaired.replace(/,\s*$/, ''); // Remove trailing comma
+    repaired = repaired.replace(/:\s*$/, ''); // Remove trailing colon
+    repaired = repaired.replace(/:\s*"[^"]*$/, '": ""'); // Complete incomplete string value
+    repaired = repaired.replace(/"\s*[^"]*$/, '"'); // Close unclosed string
+
+    // Add missing closing brackets
+    const bracketDiff = openBrackets - closeBrackets;
+    const braceDiff = openBraces - closeBraces;
+
+    for (let i = 0; i < bracketDiff; i++) {
+      repaired += ']';
+    }
+    for (let i = 0; i < braceDiff; i++) {
+      repaired += '}';
+    }
+  }
+
+  return repaired;
+}
+
+/**
  * Parse and validate JSON response
  * Throws ValidationError if response is not valid JSON
- * Enhanced to handle various edge cases
+ * Enhanced to handle truncation and various edge cases
  */
 export function parseAndValidateJSON<T = unknown>(text: string): T {
   if (!text || typeof text !== 'string') {
@@ -75,7 +261,7 @@ export function parseAndValidateJSON<T = unknown>(text: string): T {
     const trailingContent = text.substring(lastBrace + 1).trim();
     if (trailingContent) {
       logger.warn('claude.validation.removing_trailing', 'Removing trailing text', {
-        removedText: trailingContent,
+        removedText: trailingContent.substring(0, 200), // Limit logged content
       });
       text = text.substring(0, lastBrace + 1);
     }
@@ -86,18 +272,38 @@ export function parseAndValidateJSON<T = unknown>(text: string): T {
     const parsed = JSON.parse(text);
     return parsed as T;
   } catch (error) {
-    // Log more details for debugging
-    logger.error('claude.validation.json_parse_error', 'Failed to parse JSON', {
-      textLength: text.length,
-      textStart: text.substring(0, 100),
-      textEnd: text.substring(Math.max(0, text.length - 100)),
+    // JSON parse failed - attempt aggressive repair
+    logger.warn('claude.validation.attempting_repair', 'Initial JSON parse failed, attempting repair', {
       error: (error as Error).message,
+      textLength: text.length,
     });
 
-    throw new ValidationError('Response is not valid JSON', 'INVALID_JSON', {
-      textPreview: text.substring(0, 500),
-      error: (error as Error).message,
-    });
+    try {
+      const repairedText = repairTruncatedJSON(text);
+      const parsed = JSON.parse(repairedText);
+
+      logger.info('claude.validation.repair_success', 'Successfully repaired and parsed JSON', {
+        originalLength: text.length,
+        repairedLength: repairedText.length,
+      });
+
+      return parsed as T;
+    } catch (repairError) {
+      // Log more details for debugging
+      logger.error('claude.validation.json_parse_error', 'Failed to parse JSON after repair', {
+        textLength: text.length,
+        textStart: text.substring(0, 100),
+        textEnd: text.substring(Math.max(0, text.length - 100)),
+        originalError: (error as Error).message,
+        repairError: (repairError as Error).message,
+      });
+
+      throw new ValidationError('Response is not valid JSON and repair failed', 'INVALID_JSON', {
+        textPreview: text.substring(0, 500),
+        originalError: (error as Error).message,
+        repairError: (repairError as Error).message,
+      });
+    }
   }
 }
 

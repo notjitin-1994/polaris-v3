@@ -16,7 +16,6 @@ import {
   Bell,
 } from 'lucide-react';
 import { GlassCard } from '@/components/ui/GlassCard';
-import { StandardHeader } from '@/components/layout/StandardHeader';
 import { useAuth } from '@/contexts/AuthContext';
 
 /**
@@ -225,16 +224,6 @@ export default function AdminDashboardPage() {
   return (
     <div className="relative min-h-screen w-full bg-[#020C1B] text-[rgb(224,224,224)]">
       {/* Header */}
-      <StandardHeader
-        title="Admin Dashboard"
-        subtitle="System overview and management console"
-        showDecorativeLine={false}
-        sticky={false}
-        showDarkModeToggle={false}
-        showUserAvatar={false}
-        size="compact"
-        user={user}
-      />
 
       {/* Main Content */}
       <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">

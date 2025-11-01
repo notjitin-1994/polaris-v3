@@ -12,7 +12,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Telescope, CheckCircle, AlertCircle, Sparkles, Orbit } from 'lucide-react';
 import ProtectedRoute from '@/components/auth/ProtectedRoute';
 import { AuthProvider, useAuth } from '@/contexts/AuthContext';
-import { StandardHeader } from '@/components/layout/StandardHeader';
 import { createServiceLogger } from '@/lib/logging';
 
 const logger = createServiceLogger('ui');
@@ -337,16 +336,6 @@ function LoadingContent({ id }: { id: string }): React.JSX.Element {
       </div>
 
       {/* Header */}
-      <StandardHeader
-        title="Analyzing Mission Data"
-        backHref="/"
-        backLabel="Back to Dashboard"
-        backButtonStyle="icon-only"
-        showDarkModeToggle={false}
-        showUserAvatar={false}
-        size="compact"
-        user={user}
-      />
 
       {/* Main Content */}
       <main className="relative z-10 flex flex-1 items-center justify-center px-4 py-8 sm:px-6 lg:px-8">
