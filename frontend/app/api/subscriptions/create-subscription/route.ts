@@ -274,10 +274,11 @@ export async function POST(request: Request): Promise<Response> {
       });
 
       // Safely extract user data
-      const fullName = user.user_metadata?.full_name ||
-                      user.user_metadata?.name ||
-                      user.email?.split('@')[0] ||
-                      'User';
+      const fullName =
+        user.user_metadata?.full_name ||
+        user.user_metadata?.name ||
+        user.email?.split('@')[0] ||
+        'User';
 
       const profileData = {
         user_id: userId,
@@ -322,7 +323,7 @@ export async function POST(request: Request): Promise<Response> {
           {
             originalError: createError.message,
             errorCode: createError.code,
-            userId: userId
+            userId: userId,
           }
         );
       }
@@ -378,45 +379,39 @@ export async function POST(request: Request): Promise<Response> {
       if (!userProfile) {
         // Other profile error - provide more detailed error info
         console.error('[Razorpay] Failed to fetch user profile', {
-        requestId,
-        userId,
-        error: profileError,
-        errorCode: profileError.code,
-        errorDetails: profileError.details,
-        errorHint: profileError.hint,
-        errorMessage: profileError.message,
-      });
+          requestId,
+          userId,
+          error: profileError,
+          errorCode: profileError.code,
+          errorDetails: profileError.details,
+          errorHint: profileError.hint,
+          errorMessage: profileError.message,
+        });
 
-      // Try to handle common error cases
-      let errorMessage = 'Failed to retrieve user profile';
-      let statusCode = 500;
+        // Try to handle common error cases
+        let errorMessage = 'Failed to retrieve user profile';
+        let statusCode = 500;
 
-      if (profileError.code === 'PGRST116') {
-        // This should have been caught above, but handle it just in case
-        errorMessage = 'User profile not found';
-        statusCode = 404;
-      } else if (profileError.code === 'PGRST301') {
-        // Permission denied
-        errorMessage = 'Access denied to user profile';
-        statusCode = 403;
-      } else if (profileError.code === 'PGRST000') {
-        // Database error
-        errorMessage = 'Database connection error';
-        statusCode = 503;
-      }
+        if (profileError.code === 'PGRST116') {
+          // This should have been caught above, but handle it just in case
+          errorMessage = 'User profile not found';
+          statusCode = 404;
+        } else if (profileError.code === 'PGRST301') {
+          // Permission denied
+          errorMessage = 'Access denied to user profile';
+          statusCode = 403;
+        } else if (profileError.code === 'PGRST000') {
+          // Database error
+          errorMessage = 'Database connection error';
+          statusCode = 503;
+        }
 
-      return createErrorResponse(
-        'PROFILE_ERROR',
-        errorMessage,
-        statusCode,
-        requestId,
-        {
+        return createErrorResponse('PROFILE_ERROR', errorMessage, statusCode, requestId, {
           originalError: profileError.message,
           errorCode: profileError.code,
           errorDetails: profileError.details,
-          userId: userId
-        }
-      );
+          userId: userId,
+        });
       }
     }
 

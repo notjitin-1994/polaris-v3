@@ -514,7 +514,6 @@ export default function DemoV2QuestionnairePage(): React.JSX.Element {
 
   return (
     <div className="min-h-screen bg-[#020C1B]">
-
       {/* Hero Section */}
       <section className="relative overflow-hidden">
         <div className="relative mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 lg:py-12">

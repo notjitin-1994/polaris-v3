@@ -112,5 +112,10 @@ image.png
 
 # Task files
 tasks.json
-tasks/ 
+tasks/
 .env*.local
+
+# Files with exposed secrets (to be removed from history)
+frontend/env.new
+scripts/mcp-fix.sh
+blueprint_generator

@@ -39,22 +39,21 @@ export const GlobalLayout = memo(function GlobalLayout({
     console.log(`Navigate to: ${label}`);
   }
 
-
   return (
     <BlueprintSidebarProvider>
       {/* Offline Status Indicator */}
       <OfflineIndicator />
 
-      <div className={`bg-background text-foreground flex min-h-screen w-full flex-col ${className}`}>
+      <div
+        className={`bg-background text-foreground flex min-h-screen w-full flex-col ${className}`}
+      >
         {/* Desktop Sidebar */}
         <Sidebar user={user} onSignOut={signOut} />
 
         {/* Main Content Area with sidebar offset */}
         <div className="ml-16 flex min-h-screen flex-col md:ml-72 lg:ml-80">
           {/* Page Content */}
-          <main className="flex-1">
-            {children}
-          </main>
+          <main className="flex-1">{children}</main>
         </div>
       </div>
 

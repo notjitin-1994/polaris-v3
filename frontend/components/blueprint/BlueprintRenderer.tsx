@@ -6,11 +6,7 @@ import remarkGfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw';
 import rehypeSanitize from 'rehype-sanitize';
 import rehypeHighlight from 'rehype-highlight';
-import {
-  ChevronLeft,
-  ChevronRight,
-  List,
-} from 'lucide-react';
+import { ChevronLeft, ChevronRight, List } from 'lucide-react';
 import 'highlight.js/styles/tokyo-night-dark.css';
 import { MarkdownEditor } from './MarkdownEditor';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -188,9 +184,7 @@ export function BlueprintRenderer({
                     aria-label="Section navigation"
                   >
                     <List className="h-4 w-4" />
-                    <span className="hidden sm:inline">
-                      {currentSection.title}
-                    </span>
+                    <span className="hidden sm:inline">{currentSection.title}</span>
                     <span className="text-text-secondary">
                       {currentPage + 1} / {totalPages}
                     </span>
@@ -204,7 +198,7 @@ export function BlueprintRenderer({
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -10 }}
                         transition={{ duration: 0.2 }}
-                        className="absolute top-full left-0 right-0 z-10 mt-2 max-h-80 overflow-y-auto rounded-xl border border-white/10 bg-black/90 backdrop-blur-xl"
+                        className="absolute top-full right-0 left-0 z-10 mt-2 max-h-80 overflow-y-auto rounded-xl border border-white/10 bg-black/90 backdrop-blur-xl"
                       >
                         {sections.map((section, index) => (
                           <button

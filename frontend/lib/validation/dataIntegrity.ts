@@ -67,7 +67,9 @@ export function validateStaticAnswers(staticAnswers: any): ValidationResult {
 
     // Description is highly recommended but not strictly required
     if (!gap.description?.trim()) {
-      warnings.push('Learning gap description is highly recommended for accurate blueprint generation');
+      warnings.push(
+        'Learning gap description is highly recommended for accurate blueprint generation'
+      );
     }
 
     // Urgency is a numeric value (1-5) in V2
@@ -76,7 +78,11 @@ export function validateStaticAnswers(staticAnswers: any): ValidationResult {
     }
 
     // Check for minimum description length
-    if (gap.description && gap.description.trim().length > 0 && gap.description.trim().length < 20) {
+    if (
+      gap.description &&
+      gap.description.trim().length > 0 &&
+      gap.description.trim().length < 20
+    ) {
       warnings.push('Learning gap description seems too short. Consider providing more detail.');
     }
 
@@ -117,7 +123,9 @@ export function validateStaticAnswers(staticAnswers: any): ValidationResult {
   // Check for potential data truncation
   const jsonString = JSON.stringify(staticAnswers);
   if (jsonString.length > 50000) {
-    warnings.push(`Static answers data is very large (${jsonString.length} chars). Consider simplifying.`);
+    warnings.push(
+      `Static answers data is very large (${jsonString.length} chars). Consider simplifying.`
+    );
   }
 
   // Check if we have at least some meaningful data
@@ -197,9 +205,13 @@ export function validateDynamicAnswers(dynamicAnswers: any): ValidationResult {
   const completionRate = totalQuestions > 0 ? (nonEmptyAnswers / totalQuestions) * 100 : 0;
 
   if (completionRate < 50) {
-    errors.push(`Only ${completionRate.toFixed(1)}% of questions answered. Need at least 50% completion.`);
+    errors.push(
+      `Only ${completionRate.toFixed(1)}% of questions answered. Need at least 50% completion.`
+    );
   } else if (completionRate < 80) {
-    warnings.push(`Only ${completionRate.toFixed(1)}% of questions answered. Consider completing more for better results.`);
+    warnings.push(
+      `Only ${completionRate.toFixed(1)}% of questions answered. Consider completing more for better results.`
+    );
   }
 
   // Check for specific important questions
@@ -213,12 +225,13 @@ export function validateDynamicAnswers(dynamicAnswers: any): ValidationResult {
   ];
 
   for (const pattern of importantQuestionPatterns) {
-    const hasAnswer = answerKeys.some(key => {
+    const hasAnswer = answerKeys.some((key) => {
       if (pattern.test(key)) {
         const value = dynamicAnswers[key];
-        return value && (
-          (typeof value === 'string' && value.trim().length > 0) ||
-          (Array.isArray(value) && value.length > 0)
+        return (
+          value &&
+          ((typeof value === 'string' && value.trim().length > 0) ||
+            (Array.isArray(value) && value.length > 0))
         );
       }
       return false;
@@ -232,7 +245,9 @@ export function validateDynamicAnswers(dynamicAnswers: any): ValidationResult {
   // Check for potential data truncation
   const jsonString = JSON.stringify(dynamicAnswers);
   if (jsonString.length > 100000) {
-    warnings.push(`Dynamic answers data is very large (${jsonString.length} chars). May affect processing.`);
+    warnings.push(
+      `Dynamic answers data is very large (${jsonString.length} chars). May affect processing.`
+    );
   }
 
   logger.info('data-integrity.dynamic-validation', 'Dynamic answers validation complete', {
@@ -299,7 +314,7 @@ export function validateBlueprintResponse(blueprint: any): ValidationResult {
 
     if (value && typeof value === 'object') {
       // Check if section has actual content
-      const hasContent = Object.keys(value).some(k => {
+      const hasContent = Object.keys(value).some((k) => {
         const v = (value as any)[k];
         if (Array.isArray(v)) return v.length > 0;
         if (typeof v === 'string') return v.trim().length > 10;
@@ -324,7 +339,9 @@ export function validateBlueprintResponse(blueprint: any): ValidationResult {
     if (!Array.isArray(objectives) || objectives.length === 0) {
       errors.push('Learning objectives must be a non-empty array');
     } else if (objectives.length < 3) {
-      warnings.push('Consider adding more learning objectives (found only ' + objectives.length + ')');
+      warnings.push(
+        'Consider adding more learning objectives (found only ' + objectives.length + ')'
+      );
     }
   }
 

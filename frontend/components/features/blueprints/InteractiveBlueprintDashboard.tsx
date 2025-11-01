@@ -23,6 +23,7 @@ import {
   CheckCircle2,
   Edit,
 } from 'lucide-react';
+import { VisualJSONEditor } from '@/components/modals/VisualJSONEditor';
 import { ObjectivesInfographic } from './infographics/ObjectivesInfographic';
 import { TargetAudienceInfographic } from './infographics/TargetAudienceInfographic';
 import { AssessmentStrategyInfographic } from './infographics/AssessmentStrategyInfographic';
@@ -39,6 +40,7 @@ import { useMobileDetect } from '@/lib/hooks/useMobileDetect';
 
 interface InteractiveBlueprintDashboardProps {
   blueprint: BlueprintJSON;
+  blueprintId: string;
   isPublicView?: boolean;
 }
 
@@ -54,6 +56,7 @@ interface SectionDef {
 
 export function InteractiveBlueprintDashboard({
   blueprint,
+  blueprintId,
   isPublicView = false,
 }: InteractiveBlueprintDashboardProps): React.JSX.Element {
   const ref = React.useRef(null);
@@ -65,6 +68,12 @@ export function InteractiveBlueprintDashboard({
   );
   const sectionRefs = useRef<Record<string, HTMLDivElement | null>>({});
   const { shouldReduceAnimations } = useMobileDetect();
+
+  // JSON Editor Modal State
+  const [isEditorModalOpen, setIsEditorModalOpen] = useState(false);
+  const [selectedSectionId, setSelectedSectionId] = useState<string | null>(null);
+  const [selectedSectionTitle, setSelectedSectionTitle] = useState<string>('');
+  const [selectedSectionData, setSelectedSectionData] = useState<unknown>(null);
 
   useEffect(() => {
     setMounted(true);
@@ -271,6 +280,80 @@ export function InteractiveBlueprintDashboard({
 
   const collapseAll = () => {
     setExpandedSections(new Set());
+  };
+
+  // JSON Editor Modal Handlers
+  const handleOpenEditor = (sectionId: string, sectionTitle: string) => {
+    // Get the section data from blueprint based on section ID
+    const sectionDataMap: Record<string, unknown> = {
+      learning_objectives: blueprint.learning_objectives,
+      target_audience: blueprint.target_audience,
+      content_outline: blueprint.content_outline,
+      resources: blueprint.resources,
+      assessment_strategy: blueprint.assessment_strategy,
+      implementation_timeline: blueprint.implementation_timeline,
+      risk_mitigation: blueprint.risk_mitigation,
+      success_metrics: blueprint.success_metrics,
+      instructional_strategy: blueprint.instructional_strategy,
+      sustainability_plan: blueprint.sustainability_plan,
+    };
+
+    const sectionData = sectionDataMap[sectionId];
+    if (!sectionData) {
+      console.error(`Section data not found for ID: ${sectionId}`);
+      return;
+    }
+
+    setSelectedSectionId(sectionId);
+    setSelectedSectionTitle(sectionTitle);
+    setSelectedSectionData(sectionData);
+    setIsEditorModalOpen(true);
+  };
+
+  const handleCloseEditor = () => {
+    setIsEditorModalOpen(false);
+    setSelectedSectionId(null);
+    setSelectedSectionTitle('');
+    setSelectedSectionData(null);
+  };
+
+  const handleSaveEditorChanges = async (editedJSON: unknown) => {
+    if (!selectedSectionId) {
+      console.error('No section selected');
+      return;
+    }
+
+    try {
+      console.log('Saving changes for section:', selectedSectionId, editedJSON);
+
+      const response = await fetch('/api/blueprints/update-section', {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          blueprintId,
+          sectionId: selectedSectionId,
+          data: editedJSON,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to save changes');
+      }
+
+      const result = await response.json();
+      console.log('Save successful:', result);
+
+      // Refresh the page to show updated content
+      window.location.reload();
+    } catch (error) {
+      console.error('Error saving section changes:', error);
+      throw new Error(
+        error instanceof Error ? error.message : 'Failed to save changes. Please try again.'
+      );
+    }
   };
 
   // Animation variants - optimized for mobile performance
@@ -609,6 +692,7 @@ export function InteractiveBlueprintDashboard({
             section={sections.find((s) => s.id === 'learning_objectives')!}
             isExpanded={expandedSections.has('learning_objectives')}
             onToggle={() => toggleSection('learning_objectives')}
+            onEditClick={(sectionId, sectionTitle) => handleOpenEditor(sectionId, sectionTitle)}
             ref={(el) => {
               sectionRefs.current['objectives'] = el;
             }}
@@ -627,6 +711,7 @@ export function InteractiveBlueprintDashboard({
             section={sections.find((s) => s.id === 'target_audience')!}
             isExpanded={expandedSections.has('target_audience')}
             onToggle={() => toggleSection('target_audience')}
+            onEditClick={(sectionId, sectionTitle) => handleOpenEditor(sectionId, sectionTitle)}
             ref={(el) => {
               sectionRefs.current['target_audience'] = el;
             }}
@@ -642,6 +727,7 @@ export function InteractiveBlueprintDashboard({
             section={sections.find((s) => s.id === 'content_outline')!}
             isExpanded={expandedSections.has('content_outline')}
             onToggle={() => toggleSection('content_outline')}
+            onEditClick={(sectionId, sectionTitle) => handleOpenEditor(sectionId, sectionTitle)}
             ref={(el) => {
               sectionRefs.current['content_outline'] = el;
             }}
@@ -657,6 +743,7 @@ export function InteractiveBlueprintDashboard({
             section={sections.find((s) => s.id === 'resources')!}
             isExpanded={expandedSections.has('resources')}
             onToggle={() => toggleSection('resources')}
+            onEditClick={(sectionId, sectionTitle) => handleOpenEditor(sectionId, sectionTitle)}
             ref={(el) => {
               sectionRefs.current['resources'] = el;
             }}
@@ -676,6 +763,7 @@ export function InteractiveBlueprintDashboard({
             section={sections.find((s) => s.id === 'assessment_strategy')!}
             isExpanded={expandedSections.has('assessment_strategy')}
             onToggle={() => toggleSection('assessment_strategy')}
+            onEditClick={(sectionId, sectionTitle) => handleOpenEditor(sectionId, sectionTitle)}
             ref={(el) => {
               sectionRefs.current['assessment'] = el;
             }}
@@ -696,6 +784,7 @@ export function InteractiveBlueprintDashboard({
             section={sections.find((s) => s.id === 'implementation_timeline')!}
             isExpanded={expandedSections.has('implementation_timeline')}
             onToggle={() => toggleSection('implementation_timeline')}
+            onEditClick={(sectionId, sectionTitle) => handleOpenEditor(sectionId, sectionTitle)}
             ref={(el) => {
               sectionRefs.current['timeline'] = el;
             }}
@@ -714,6 +803,7 @@ export function InteractiveBlueprintDashboard({
             section={sections.find((s) => s.id === 'risk_mitigation')!}
             isExpanded={expandedSections.has('risk_mitigation')}
             onToggle={() => toggleSection('risk_mitigation')}
+            onEditClick={(sectionId, sectionTitle) => handleOpenEditor(sectionId, sectionTitle)}
             ref={(el) => {
               sectionRefs.current['risks'] = el;
             }}
@@ -732,6 +822,7 @@ export function InteractiveBlueprintDashboard({
             section={sections.find((s) => s.id === 'success_metrics')!}
             isExpanded={expandedSections.has('success_metrics')}
             onToggle={() => toggleSection('success_metrics')}
+            onEditClick={(sectionId, sectionTitle) => handleOpenEditor(sectionId, sectionTitle)}
             ref={(el) => {
               sectionRefs.current['metrics'] = el;
             }}
@@ -750,6 +841,7 @@ export function InteractiveBlueprintDashboard({
             section={sections.find((s) => s.id === 'instructional_strategy')!}
             isExpanded={expandedSections.has('instructional_strategy')}
             onToggle={() => toggleSection('instructional_strategy')}
+            onEditClick={(sectionId, sectionTitle) => handleOpenEditor(sectionId, sectionTitle)}
             ref={(el) => {
               sectionRefs.current['strategy'] = el;
             }}
@@ -772,6 +864,7 @@ export function InteractiveBlueprintDashboard({
             section={sections.find((s) => s.id === 'sustainability_plan')!}
             isExpanded={expandedSections.has('sustainability_plan')}
             onToggle={() => toggleSection('sustainability_plan')}
+            onEditClick={(sectionId, sectionTitle) => handleOpenEditor(sectionId, sectionTitle)}
             ref={(el) => {
               sectionRefs.current['sustainability'] = el;
             }}
@@ -785,6 +878,15 @@ export function InteractiveBlueprintDashboard({
           </ExpandableSection>
         )}
       </div>
+
+      {/* Visual JSON Editor Modal */}
+      <VisualJSONEditor
+        isOpen={isEditorModalOpen}
+        onClose={handleCloseEditor}
+        onSave={handleSaveEditorChanges}
+        sectionTitle={selectedSectionTitle}
+        sectionData={selectedSectionData}
+      />
     </motion.div>
   );
 }
@@ -796,10 +898,11 @@ const ExpandableSection = React.forwardRef<
     section: SectionDef;
     isExpanded: boolean;
     onToggle: () => void;
+    onEditClick?: (sectionId: string, sectionTitle: string) => void;
     children: React.ReactNode;
     isPublicView?: boolean;
   }
->(({ section, isExpanded, onToggle, children, isPublicView = false }, ref) => {
+>(({ section, isExpanded, onToggle, onEditClick, children, isPublicView = false }, ref) => {
   const Icon = section.icon;
 
   const handleModify = (e: React.MouseEvent | React.KeyboardEvent) => {
@@ -809,7 +912,9 @@ const ExpandableSection = React.forwardRef<
 
   const handleEdit = (e: React.MouseEvent | React.KeyboardEvent) => {
     e.stopPropagation();
-    console.log(`Edit ${section.title}`);
+    if (onEditClick) {
+      onEditClick(section.id, section.title);
+    }
   };
 
   return (

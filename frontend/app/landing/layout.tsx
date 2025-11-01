@@ -65,9 +65,7 @@ export default function LandingLayout({
       >
         <AuthProvider>
           <QueryProvider>
-            <GlobalLayout>
-              {children}
-            </GlobalLayout>
+            <GlobalLayout>{children}</GlobalLayout>
           </QueryProvider>
         </AuthProvider>
       </body>

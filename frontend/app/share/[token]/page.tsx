@@ -64,9 +64,11 @@ export default function SharedBlueprintPage({ params }: PageProps): React.JSX.El
   // Update document metadata when data is loaded
   useEffect(() => {
     if (data) {
-      const executiveSummary = typeof data.blueprint_json?.executive_summary === 'string'
-        ? data.blueprint_json.executive_summary
-        : data.blueprint_json?.executive_summary?.content || 'AI-generated learning blueprint by Smartslate Polaris';
+      const executiveSummary =
+        typeof data.blueprint_json?.executive_summary === 'string'
+          ? data.blueprint_json.executive_summary
+          : data.blueprint_json?.executive_summary?.content ||
+            'AI-generated learning blueprint by Smartslate Polaris';
 
       // Get first line of executive summary
       const description = executiveSummary.split('\n')[0].slice(0, 160);
@@ -151,7 +153,7 @@ export default function SharedBlueprintPage({ params }: PageProps): React.JSX.El
           </p>
           <a
             href="https://polaris.smartslate.io"
-            className="inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-semibold text-black transition-colors hover:bg-primary/90"
+            className="bg-primary hover:bg-primary/90 inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold text-black transition-colors"
           >
             Create Your Own Blueprint
           </a>

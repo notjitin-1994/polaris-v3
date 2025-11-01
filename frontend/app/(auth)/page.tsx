@@ -50,7 +50,6 @@ function DashboardContent() {
 
   return (
     <div className="relative flex min-h-screen w-full flex-col bg-[#020C1B] text-[rgb(224,224,224)]">
-
       {/* Main Content Area */}
       <div className="flex-1">
         {/* Hero Section */}

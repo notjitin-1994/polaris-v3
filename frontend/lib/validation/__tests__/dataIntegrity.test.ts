@@ -46,7 +46,8 @@ describe('Data Integrity Validation', () => {
           accessibility: [],
         },
         learningGap: {
-          description: 'Our sales team needs comprehensive training on the new CRM system to improve customer relationship management and increase sales efficiency',
+          description:
+            'Our sales team needs comprehensive training on the new CRM system to improve customer relationship management and increase sales efficiency',
           gapType: 'knowledge',
           urgency: 4,
           impact: 5,

@@ -6,11 +6,10 @@ import Image from 'next/image';
 import { Crown } from 'lucide-react';
 import { IconSidebarToggle, IconApps, IconEye, IconSun } from '@/components/layout/icons';
 
-interface SharePageSidebarProps {
-  // No props needed for always-visible sidebar
-}
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
+interface SharePageSidebarProps {}
 
-export function SharePageSidebar({}: SharePageSidebarProps) {
+export function SharePageSidebar(_props: SharePageSidebarProps) {
   const router = useRouter();
   const [sidebarCollapsed, setSidebarCollapsed] = React.useState(false);
 

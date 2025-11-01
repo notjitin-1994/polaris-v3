@@ -27,9 +27,10 @@ export default function SharedBlueprintView({ blueprint }: SharedBlueprintViewPr
   const normalizedBlueprint = blueprint.blueprint_json;
 
   // Extract executive summary for hero section
-  const executiveSummary = typeof normalizedBlueprint?.executive_summary === 'string'
-    ? normalizedBlueprint.executive_summary
-    : normalizedBlueprint?.executive_summary?.content || 'No executive summary available.';
+  const executiveSummary =
+    typeof normalizedBlueprint?.executive_summary === 'string'
+      ? normalizedBlueprint.executive_summary
+      : normalizedBlueprint?.executive_summary?.content || 'No executive summary available.';
 
   return (
     <>
@@ -47,7 +48,7 @@ export default function SharedBlueprintView({ blueprint }: SharedBlueprintViewPr
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ duration: 0.5, ease: "easeOut" }}
+            transition={{ duration: 0.5, ease: 'easeOut' }}
             className="space-y-8"
           >
             {/* Title Section - Clean Typography */}
@@ -60,14 +61,14 @@ export default function SharedBlueprintView({ blueprint }: SharedBlueprintViewPr
                 className="flex flex-wrap items-center justify-between gap-4"
               >
                 {/* Platform Banner */}
-                <div className="inline-flex items-center gap-2.5 rounded-full border border-primary/40 bg-white/5 pl-2 pr-4 py-1.5 text-sm shadow-[0_0_20px_rgba(167,218,219,0.3)]">
+                <div className="border-primary/40 inline-flex items-center gap-2.5 rounded-full border bg-white/5 py-1.5 pr-4 pl-2 text-sm shadow-[0_0_20px_rgba(167,218,219,0.3)]">
                   <motion.div
-                    className="relative flex-shrink-0 h-7 w-7"
+                    className="relative h-7 w-7 flex-shrink-0"
                     animate={{ rotate: 360 }}
                     transition={{
                       duration: 8,
                       repeat: Infinity,
-                      ease: "linear"
+                      ease: 'linear',
                     }}
                   >
                     <Image
@@ -78,14 +79,9 @@ export default function SharedBlueprintView({ blueprint }: SharedBlueprintViewPr
                     />
                   </motion.div>
                   <span className="text-text-secondary font-medium">
-                    Built by{' '}
-                    <span className="text-primary font-semibold">
-                      Smartslate Polaris
-                    </span>
-                    {' '}| Powered by{' '}
-                    <span className="text-yellow-400 font-semibold">
-                      Solara Learning Engine
-                    </span>
+                    Built by <span className="text-primary font-semibold">Smartslate Polaris</span>{' '}
+                    | Powered by{' '}
+                    <span className="font-semibold text-yellow-400">Solara Learning Engine</span>
                   </span>
                 </div>
 
@@ -96,19 +92,19 @@ export default function SharedBlueprintView({ blueprint }: SharedBlueprintViewPr
                     onClick={() => window.open('https://solara.smartslate.io', '_blank')}
                     onHoverStart={() => setIsSolaraButtonHovered(true)}
                     onHoverEnd={() => setIsSolaraButtonHovered(false)}
-                    className="relative flex items-center overflow-hidden rounded-full bg-primary hover:bg-primary/90 transition-colors shadow-lg"
+                    className="bg-primary hover:bg-primary/90 relative flex items-center overflow-hidden rounded-full shadow-lg transition-colors"
                     initial={{ width: '40px', height: '40px' }}
                     animate={{
                       width: isSolaraButtonHovered ? '250px' : '40px',
                     }}
                     transition={{
                       duration: 0.3,
-                      ease: [0.4, 0, 0.2, 1]
+                      ease: [0.4, 0, 0.2, 1],
                     }}
                   >
                     {/* Icon Container - Always Visible */}
                     <motion.div
-                      className="absolute left-0 top-0 flex h-10 w-10 flex-shrink-0 items-center justify-center"
+                      className="absolute top-0 left-0 flex h-10 w-10 flex-shrink-0 items-center justify-center"
                       animate={{
                         rotate: isSolaraButtonHovered ? -15 : 0,
                         y: isSolaraButtonHovered ? -2 : 0,
@@ -126,7 +122,7 @@ export default function SharedBlueprintView({ blueprint }: SharedBlueprintViewPr
                           animate={{ opacity: 1, x: 0 }}
                           exit={{ opacity: 0, x: -10 }}
                           transition={{ duration: 0.2, delay: 0.05 }}
-                          className="pl-10 pr-4 text-sm font-semibold text-black whitespace-nowrap"
+                          className="pr-4 pl-10 text-sm font-semibold whitespace-nowrap text-black"
                         >
                           Explore Solara Learning Engine
                         </motion.span>
@@ -139,19 +135,19 @@ export default function SharedBlueprintView({ blueprint }: SharedBlueprintViewPr
                     onClick={() => alert('Presentation mode coming soon!')}
                     onHoverStart={() => setIsPresentButtonHovered(true)}
                     onHoverEnd={() => setIsPresentButtonHovered(false)}
-                    className="relative flex items-center overflow-hidden rounded-full bg-primary hover:bg-primary/90 transition-colors shadow-lg"
+                    className="bg-primary hover:bg-primary/90 relative flex items-center overflow-hidden rounded-full shadow-lg transition-colors"
                     initial={{ width: '40px', height: '40px' }}
                     animate={{
                       width: isPresentButtonHovered ? '140px' : '40px',
                     }}
                     transition={{
                       duration: 0.3,
-                      ease: [0.4, 0, 0.2, 1]
+                      ease: [0.4, 0, 0.2, 1],
                     }}
                   >
                     {/* Icon Container - Always Visible */}
                     <motion.div
-                      className="absolute left-0 top-0 flex h-10 w-10 flex-shrink-0 items-center justify-center"
+                      className="absolute top-0 left-0 flex h-10 w-10 flex-shrink-0 items-center justify-center"
                       animate={{
                         scale: isPresentButtonHovered ? 1.1 : 1,
                       }}
@@ -168,7 +164,7 @@ export default function SharedBlueprintView({ blueprint }: SharedBlueprintViewPr
                           animate={{ opacity: 1, x: 0 }}
                           exit={{ opacity: 0, x: -10 }}
                           transition={{ duration: 0.2, delay: 0.05 }}
-                          className="pl-10 pr-4 text-sm font-semibold text-black whitespace-nowrap"
+                          className="pr-4 pl-10 text-sm font-semibold whitespace-nowrap text-black"
                         >
                           Present
                         </motion.span>
@@ -178,45 +174,45 @@ export default function SharedBlueprintView({ blueprint }: SharedBlueprintViewPr
 
                   {/* Animated Create New Blueprint Button */}
                   <motion.button
-                  onClick={() => window.open('https://polaris.smartslate.io', '_blank')}
-                  onHoverStart={() => setIsButtonHovered(true)}
-                  onHoverEnd={() => setIsButtonHovered(false)}
-                  className="relative flex items-center overflow-hidden rounded-full bg-primary hover:bg-primary/90 transition-colors shadow-lg"
-                  initial={{ width: '40px', height: '40px' }}
-                  animate={{
-                    width: isButtonHovered ? '210px' : '40px',
-                  }}
-                  transition={{
-                    duration: 0.3,
-                    ease: [0.4, 0, 0.2, 1]
-                  }}
-                >
-                  {/* Icon Container - Always Visible */}
-                  <motion.div
-                    className="absolute left-0 top-0 flex h-10 w-10 flex-shrink-0 items-center justify-center"
+                    onClick={() => window.open('https://polaris.smartslate.io', '_blank')}
+                    onHoverStart={() => setIsButtonHovered(true)}
+                    onHoverEnd={() => setIsButtonHovered(false)}
+                    className="bg-primary hover:bg-primary/90 relative flex items-center overflow-hidden rounded-full shadow-lg transition-colors"
+                    initial={{ width: '40px', height: '40px' }}
                     animate={{
-                      rotate: isButtonHovered ? 90 : 0,
+                      width: isButtonHovered ? '210px' : '40px',
                     }}
-                    transition={{ duration: 0.3 }}
+                    transition={{
+                      duration: 0.3,
+                      ease: [0.4, 0, 0.2, 1],
+                    }}
                   >
-                    <Plus className="h-5 w-5 text-black" strokeWidth={2.5} />
-                  </motion.div>
+                    {/* Icon Container - Always Visible */}
+                    <motion.div
+                      className="absolute top-0 left-0 flex h-10 w-10 flex-shrink-0 items-center justify-center"
+                      animate={{
+                        rotate: isButtonHovered ? 90 : 0,
+                      }}
+                      transition={{ duration: 0.3 }}
+                    >
+                      <Plus className="h-5 w-5 text-black" strokeWidth={2.5} />
+                    </motion.div>
 
-                  {/* Text - Animated */}
-                  <AnimatePresence>
-                    {isButtonHovered && (
-                      <motion.span
-                        initial={{ opacity: 0, x: -10 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        exit={{ opacity: 0, x: -10 }}
-                        transition={{ duration: 0.2, delay: 0.05 }}
-                        className="pl-10 pr-4 text-sm font-semibold text-black whitespace-nowrap"
-                      >
-                        Create New Blueprint
-                      </motion.span>
-                    )}
-                  </AnimatePresence>
-                </motion.button>
+                    {/* Text - Animated */}
+                    <AnimatePresence>
+                      {isButtonHovered && (
+                        <motion.span
+                          initial={{ opacity: 0, x: -10 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          exit={{ opacity: 0, x: -10 }}
+                          transition={{ duration: 0.2, delay: 0.05 }}
+                          className="pr-4 pl-10 text-sm font-semibold whitespace-nowrap text-black"
+                        >
+                          Create New Blueprint
+                        </motion.span>
+                      )}
+                    </AnimatePresence>
+                  </motion.button>
                 </div>
               </motion.div>
 
@@ -225,7 +221,7 @@ export default function SharedBlueprintView({ blueprint }: SharedBlueprintViewPr
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2, duration: 0.4 }}
-                className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-primary"
+                className="text-primary text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl"
               >
                 {blueprint.title || 'Learning Blueprint'}
               </motion.h1>
@@ -236,9 +232,7 @@ export default function SharedBlueprintView({ blueprint }: SharedBlueprintViewPr
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.3, duration: 0.4 }}
               >
-                <p className="text-text-secondary text-lg leading-relaxed">
-                  {executiveSummary}
-                </p>
+                <p className="text-text-secondary text-lg leading-relaxed">{executiveSummary}</p>
               </motion.div>
 
               {/* Metadata - Organization and Role Banners */}
@@ -250,14 +244,18 @@ export default function SharedBlueprintView({ blueprint }: SharedBlueprintViewPr
               >
                 {normalizedBlueprint?.metadata?.organization && (
                   <div className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-4 py-2">
-                    <span className="text-sm font-medium text-text-secondary">Organization:</span>
-                    <span className="text-sm font-semibold text-white">{normalizedBlueprint.metadata.organization}</span>
+                    <span className="text-text-secondary text-sm font-medium">Organization:</span>
+                    <span className="text-sm font-semibold text-white">
+                      {normalizedBlueprint.metadata.organization}
+                    </span>
                   </div>
                 )}
                 {normalizedBlueprint?.metadata?.role && (
                   <div className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-4 py-2">
-                    <span className="text-sm font-medium text-text-secondary">Role:</span>
-                    <span className="text-sm font-semibold text-white">{normalizedBlueprint.metadata.role}</span>
+                    <span className="text-text-secondary text-sm font-medium">Role:</span>
+                    <span className="text-sm font-semibold text-white">
+                      {normalizedBlueprint.metadata.role}
+                    </span>
                   </div>
                 )}
               </motion.div>
@@ -274,6 +272,7 @@ export default function SharedBlueprintView({ blueprint }: SharedBlueprintViewPr
           >
             <InteractiveBlueprintDashboard
               blueprint={normalizedBlueprint}
+              blueprintId={blueprint.id}
               isPublicView={true}
             />
           </motion.div>

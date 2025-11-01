@@ -293,11 +293,15 @@ function repairTruncatedJSON(jsonString: string): string {
           // Found a complete section! Truncate here
           repaired = repaired.substring(0, sectionEndPos + 1);
 
-          logger.info('dynamic_questions.repair.section_truncation', 'Truncated to last complete section', {
-            sectionIndex: i,
-            truncatedAt: sectionEndPos,
-            preservedSections: i + 1,
-          });
+          logger.info(
+            'dynamic_questions.repair.section_truncation',
+            'Truncated to last complete section',
+            {
+              sectionIndex: i,
+              truncatedAt: sectionEndPos,
+              preservedSections: i + 1,
+            }
+          );
 
           // Close the sections array
           repaired = repaired.trim();
@@ -320,11 +324,15 @@ function repairTruncatedJSON(jsonString: string): string {
             repaired += '\n}';
           }
 
-          logger.info('dynamic_questions.repair.success', 'Successfully repaired with complete sections', {
-            originalLength: jsonString.length,
-            repairedLength: repaired.length,
-            sectionsPreserved: i + 1,
-          });
+          logger.info(
+            'dynamic_questions.repair.success',
+            'Successfully repaired with complete sections',
+            {
+              originalLength: jsonString.length,
+              repairedLength: repaired.length,
+              sectionsPreserved: i + 1,
+            }
+          );
 
           return repaired;
         }
@@ -371,15 +379,11 @@ function repairTruncatedJSON(jsonString: string): string {
             repaired += '\n}';
           }
 
-          logger.info(
-            'dynamic_questions.repair.partial_success',
-            'Repaired with partial content',
-            {
-              originalLength: jsonString.length,
-              repairedLength: repaired.length,
-              questionsPreserved: i + 1,
-            }
-          );
+          logger.info('dynamic_questions.repair.partial_success', 'Repaired with partial content', {
+            originalLength: jsonString.length,
+            repairedLength: repaired.length,
+            questionsPreserved: i + 1,
+          });
 
           return repaired;
         }

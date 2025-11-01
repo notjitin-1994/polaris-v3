@@ -129,7 +129,10 @@ export class ClaudeClient {
           max_tokens: currentMaxTokens,
         };
 
-        const response = await withRetry(() => this.makeRequest(adjustedRequest), this.config.retries);
+        const response = await withRetry(
+          () => this.makeRequest(adjustedRequest),
+          this.config.retries
+        );
 
         const duration = Date.now() - startTime;
 
@@ -141,25 +144,33 @@ export class ClaudeClient {
           const newMaxTokens = Math.min(Math.ceil(currentMaxTokens * 1.5), maxAllowedTokens);
 
           if (newMaxTokens > currentMaxTokens && newMaxTokens <= maxAllowedTokens) {
-            logger.warn('claude.client.truncation_retry', 'Response truncated, retrying with higher limit', {
-              model: response.model,
-              currentMaxTokens,
-              newMaxTokens,
-              outputTokens: response.usage.output_tokens,
-              stopReason: response.stop_reason,
-              attempt: attempts,
-            });
+            logger.warn(
+              'claude.client.truncation_retry',
+              'Response truncated, retrying with higher limit',
+              {
+                model: response.model,
+                currentMaxTokens,
+                newMaxTokens,
+                outputTokens: response.usage.output_tokens,
+                stopReason: response.stop_reason,
+                attempt: attempts,
+              }
+            );
 
             currentMaxTokens = newMaxTokens;
             continue; // Retry with higher token limit
           } else {
             // Can't increase further, log and throw error
-            logger.error('claude.client.truncation_limit_reached', 'Response truncated at maximum token limit', {
-              model: response.model,
-              maxTokens: currentMaxTokens,
-              outputTokens: response.usage.output_tokens,
-              stopReason: response.stop_reason,
-            });
+            logger.error(
+              'claude.client.truncation_limit_reached',
+              'Response truncated at maximum token limit',
+              {
+                model: response.model,
+                maxTokens: currentMaxTokens,
+                outputTokens: response.usage.output_tokens,
+                stopReason: response.stop_reason,
+              }
+            );
 
             throw new ClaudeApiError(
               `Response was truncated at max_tokens (${currentMaxTokens}). The response is incomplete. ` +
@@ -199,7 +210,11 @@ export class ClaudeClient {
     }
 
     // Should not reach here, but throw error if it does
-    throw new ClaudeApiError('Failed to generate response after maximum attempts', 500, 'generation_failed');
+    throw new ClaudeApiError(
+      'Failed to generate response after maximum attempts',
+      500,
+      'generation_failed'
+    );
   }
 
   /**

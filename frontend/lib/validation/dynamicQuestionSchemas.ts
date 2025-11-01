@@ -306,21 +306,23 @@ export function createAnswerSchema(question: Question): z.ZodSchema {
         const validValues = question.options.map((opt) => opt.value);
         // Use a more flexible validation that accepts strings that look like valid options
         // This helps when options have been regenerated but user data is still valid
-        schema = z.array(z.string().refine(
-          (val) => {
-            // Accept exact matches
-            if (validValues.includes(val)) return true;
+        schema = z.array(
+          z.string().refine(
+            (val) => {
+              // Accept exact matches
+              if (validValues.includes(val)) return true;
 
-            // Accept values that look like valid option formats (preserving old data)
-            // This prevents data loss when options are regenerated
-            if (/^[a-z0-9_-]+$/i.test(val)) return true;
+              // Accept values that look like valid option formats (preserving old data)
+              // This prevents data loss when options are regenerated
+              if (/^[a-z0-9_-]+$/i.test(val)) return true;
 
-            return false;
-          },
-          (val) => ({
-            message: `"${val}" is not a valid option for this question`
-          })
-        ));
+              return false;
+            },
+            (val) => ({
+              message: `"${val}" is not a valid option for this question`,
+            })
+          )
+        );
       }
       break;
 
@@ -642,13 +644,13 @@ function sanitizeAnswer(answer: unknown, question: Question): unknown {
         // CRITICAL FIX: If all values look like valid option format but couldn't be matched,
         // it's likely the options changed after the user submitted. Keep the original values
         // to preserve user data rather than discarding it.
-        if (normalized.length === 0 && unmatched.every(v => /^[a-z0-9_-]+$/.test(v))) {
+        if (normalized.length === 0 && unmatched.every((v) => /^[a-z0-9_-]+$/.test(v))) {
           console.warn(
             `[sanitizeAnswer] All values appear valid but don't match current options. Preserving original values for question ${question.id}`,
             {
               questionId: question.id,
               preservedValues: unmatched,
-              reason: 'Options likely changed after submission'
+              reason: 'Options likely changed after submission',
             }
           );
           return stringArray; // Return original values to preserve user data

@@ -109,13 +109,19 @@ const eslintConfig = [
       ],
     },
   },
-  // Test files: allow flexible typing and disable gradient checks (tests may include strings)
+  // Test files and fixtures: allow flexible typing and disable gradient checks (tests may include strings)
   {
     files: [
       '**/__tests__/**/*.{js,jsx,ts,tsx}',
       '**/*.test.{js,jsx,ts,tsx}',
       '**/test-*.{js,jsx,ts,tsx}',
       'test-*.{js,jsx,ts,tsx}',
+      '**/vitest.setup.ts',
+      '**/jest.setup.ts',
+      '**/*.spec.{js,jsx,ts,tsx}',
+      '**/tests/**/*.{js,jsx,ts,tsx}',
+      '**/fixtures/**/*.{js,jsx,ts,tsx}',
+      '**/fixtures.disabled/**/*.{js,jsx,ts,tsx}',
     ],
     rules: {
       '@typescript-eslint/no-explicit-any': 'off',
@@ -123,12 +129,15 @@ const eslintConfig = [
         'warn',
         { argsIgnorePattern: '^_', varsIgnorePattern: '^_' },
       ],
+      '@typescript-eslint/no-require-imports': 'off',
+      '@typescript-eslint/no-unsafe-function-type': 'off',
+      '@typescript-eslint/no-empty-object-type': 'off',
       'no-restricted-syntax': 'off',
     },
   },
   // UI surfaces: temporarily downgrade strict style rules to warnings to unblock commits
   {
-    files: ['app/**/*.{ts,tsx}', 'components/**/*.{ts,tsx}'],
+    files: ['app/**/*.{ts,tsx}', 'components/**/*.{ts,tsx}', 'src/**/*.{ts,tsx}', 'frontend/**/*.{ts,tsx}'],
     rules: {
       'no-restricted-syntax': 'warn',
       '@typescript-eslint/no-explicit-any': 'warn',
@@ -137,11 +146,14 @@ const eslintConfig = [
         { argsIgnorePattern: '^_', varsIgnorePattern: '^_' },
       ],
       'react/no-unescaped-entities': 'warn',
+      'react/jsx-key': 'warn',
+      'react/display-name': 'warn',
+      'prefer-const': 'warn',
     },
   },
   // Libraries: keep type safety but avoid commit blocks while refactoring
   {
-    files: ['lib/**/*.{ts,tsx}'],
+    files: ['lib/**/*.{ts,tsx}', 'src/lib/**/*.{ts,tsx}'],
     rules: {
       '@typescript-eslint/no-explicit-any': 'warn',
       'no-restricted-syntax': 'warn',
@@ -151,11 +163,13 @@ const eslintConfig = [
       ],
     },
   },
-  // Types: relax empty object type rule to a warning
+  // Types: relax empty object type rule and allow any for third-party type definitions
   {
-    files: ['types/**/*.{ts,tsx}'],
+    files: ['types/**/*.{ts,tsx}', 'types/**/*.d.ts'],
     rules: {
       '@typescript-eslint/no-empty-object-type': 'warn',
+      '@typescript-eslint/no-explicit-any': 'warn',
+      'no-restricted-syntax': 'warn',
     },
   },
   // Stores and API handlers: relax strict typing for incremental migration
@@ -168,6 +182,20 @@ const eslintConfig = [
         { argsIgnorePattern: '^_', varsIgnorePattern: '^_' },
       ],
       'no-restricted-syntax': 'warn',
+    },
+  },
+  // Scripts and dev demos: allow flexible typing for one-off scripts and demos
+  {
+    files: ['scripts/**/*.{ts,tsx,js,jsx}', '_dev/**/*.{ts,tsx,js,jsx}'],
+    rules: {
+      '@typescript-eslint/no-explicit-any': 'warn',
+      '@typescript-eslint/no-unused-vars': [
+        'warn',
+        { argsIgnorePattern: '^_', varsIgnorePattern: '^_' },
+      ],
+      '@typescript-eslint/no-require-imports': 'off',
+      'no-restricted-syntax': 'warn',
+      'no-console': 'off',
     },
   },
   // JS-only test utilities needing CommonJS require

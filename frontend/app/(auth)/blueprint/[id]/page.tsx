@@ -19,6 +19,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import { RenameDialog } from '@/components/ui/RenameDialog';
+import { VisualJSONEditor } from '@/components/modals/VisualJSONEditor';
 import { InteractiveBlueprintDashboard } from '@/components/features/blueprints/InteractiveBlueprintDashboard';
 import { getSupabaseBrowserClient } from '@/lib/supabase/client';
 import { createBrowserBlueprintService } from '@/lib/db/blueprints.client';
@@ -70,6 +71,9 @@ export default function BlueprintPage({ params }: PageProps): React.JSX.Element 
   const [isShareButtonHovered, setIsShareButtonHovered] = useState(false);
   const [isDownloadButtonHovered, setIsDownloadButtonHovered] = useState(false);
   const [isPresentButtonHovered, setIsPresentButtonHovered] = useState(false);
+
+  // JSON Editor Modal State for Executive Summary
+  const [isExecutiveSummaryEditorOpen, setIsExecutiveSummaryEditorOpen] = useState(false);
 
   // Unwrap params and fetch data
   useEffect(() => {
@@ -206,6 +210,51 @@ export default function BlueprintPage({ params }: PageProps): React.JSX.Element 
     setToastMessage(message);
     setShowSuccessToast(true);
     setTimeout(() => setShowSuccessToast(false), 3000);
+  };
+
+  // Executive Summary JSON Editor Handlers
+  const handleOpenExecutiveSummaryEditor = () => {
+    setIsExecutiveSummaryEditorOpen(true);
+  };
+
+  const handleCloseExecutiveSummaryEditor = () => {
+    setIsExecutiveSummaryEditorOpen(false);
+  };
+
+  const handleSaveExecutiveSummary = async (editedJSON: unknown) => {
+    try {
+      console.log('Saving Executive Summary changes:', editedJSON);
+
+      const response = await fetch('/api/blueprints/update-section', {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          blueprintId: data.id,
+          sectionId: 'executive_summary',
+          data: editedJSON,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to save changes');
+      }
+
+      const result = await response.json();
+      console.log('Save successful:', result);
+
+      // Refresh the page data to show updated content
+      window.location.reload();
+
+      showToast('Executive Summary updated successfully!');
+    } catch (error) {
+      console.error('Error saving executive summary:', error);
+      throw new Error(
+        error instanceof Error ? error.message : 'Failed to save changes. Please try again.'
+      );
+    }
   };
 
   const _handleExportPDF = async () => {
@@ -695,7 +744,7 @@ export default function BlueprintPage({ params }: PageProps): React.JSX.Element 
                     <motion.button
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
-                      onClick={() => showToast('Edit section coming soon!')}
+                      onClick={handleOpenExecutiveSummaryEditor}
                       className="pressable border-primary bg-primary/10 text-primary hover:bg-primary/20 hover:border-primary inline-flex h-9 min-h-[44px] w-9 min-w-[44px] cursor-pointer touch-manipulation items-center justify-center rounded-full border-2 transition-all hover:shadow-[0_0_15px_rgba(167,218,219,0.6)] active:scale-95"
                       title="Edit Section"
                       aria-label="Edit executive summary section"
@@ -788,6 +837,7 @@ export default function BlueprintPage({ params }: PageProps): React.JSX.Element 
           {normalizedBlueprint ? (
             <InteractiveBlueprintDashboard
               blueprint={normalizedBlueprint as any}
+              blueprintId={data.id}
               isPublicView={false}
             />
           ) : (
@@ -830,6 +880,15 @@ export default function BlueprintPage({ params }: PageProps): React.JSX.Element 
           description="Give your blueprint a meaningful name"
           placeholder="Enter blueprint name..."
           maxLength={100}
+        />
+
+        {/* Visual JSON Editor Modal for Executive Summary */}
+        <VisualJSONEditor
+          isOpen={isExecutiveSummaryEditorOpen}
+          onClose={handleCloseExecutiveSummaryEditor}
+          onSave={handleSaveExecutiveSummary}
+          sectionTitle="Executive Summary"
+          sectionData={blueprintData?.executive_summary}
         />
       </div>
     </>

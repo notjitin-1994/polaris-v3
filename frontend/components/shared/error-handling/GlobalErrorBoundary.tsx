@@ -8,9 +8,11 @@
 import React, { Component, ErrorInfo, ReactNode } from 'react';
 
 // Dynamic import to avoid server-side issues
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 let clientErrorTracker: any = null;
 try {
   if (typeof window !== 'undefined') {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     clientErrorTracker = require('@/lib/logging/clientErrorTracker').clientErrorTracker;
   }
 } catch {

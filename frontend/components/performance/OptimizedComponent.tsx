@@ -17,6 +17,7 @@ interface OptimizationOptions {
   componentName?: string;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 interface OptimizedComponentProps {
   // Add any additional props here if needed
 }

@@ -105,7 +105,7 @@ export function logTransformation(
   afterSize: number,
   context: LogContext = {}
 ) {
-  const reduction = ((beforeSize - afterSize) / beforeSize * 100).toFixed(1);
+  const reduction = (((beforeSize - afterSize) / beforeSize) * 100).toFixed(1);
 
   logger.info(`transform.${operation}`, `Data transformation: ${operation}`, {
     ...context,
@@ -119,11 +119,7 @@ export function logTransformation(
 /**
  * Log error with full context
  */
-export function logError(
-  operation: string,
-  error: Error,
-  context: LogContext = {}
-) {
+export function logError(operation: string, error: Error, context: LogContext = {}) {
   logger.error(`error.${operation}`, error.message, {
     ...context,
     errorName: error.name,
@@ -169,11 +165,7 @@ export function logCache(
 /**
  * Log data integrity check
  */
-export function logIntegrityCheck(
-  dataType: string,
-  issues: string[],
-  context: LogContext = {}
-) {
+export function logIntegrityCheck(dataType: string, issues: string[], context: LogContext = {}) {
   const level = issues.length > 0 ? 'warn' : 'info';
 
   logger[level]('integrity.check', `Data integrity check for ${dataType}`, {
@@ -233,7 +225,7 @@ export class WorkflowTracer {
       success,
       totalDuration,
       totalSteps: this.steps.length,
-      steps: this.steps.map(s => ({
+      steps: this.steps.map((s) => ({
         step: s.step,
         duration: s.duration,
         hasError: !!s.error,

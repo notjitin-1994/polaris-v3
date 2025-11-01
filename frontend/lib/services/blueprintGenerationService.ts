@@ -23,7 +23,7 @@ import {
   validateStaticAnswers,
   validateDynamicAnswers,
   validateBlueprintResponse,
-  sanitizeForLLM
+  sanitizeForLLM,
 } from '@/lib/validation/dataIntegrity';
 import {
   WorkflowTracer,
@@ -32,7 +32,7 @@ import {
   logLLMResponse,
   logValidation,
   logTransformation,
-  logError as logDetailedError
+  logError as logDetailedError,
 } from '@/lib/logging/blueprintLogger';
 
 const logger = createServiceLogger('blueprint-generation');
@@ -92,23 +92,37 @@ export class BlueprintGenerationService {
     tracer.addStep('start', { industry: context.industry, role: context.role });
 
     // Log initial data
-    logDataFlow('input', {
-      staticAnswersSize: JSON.stringify(context.staticAnswers).length,
-      dynamicAnswersSize: JSON.stringify(context.dynamicAnswers).length,
-      objectivesCount: context.learningObjectives?.length || 0,
-    }, { blueprintId: context.blueprintId });
+    logDataFlow(
+      'input',
+      {
+        staticAnswersSize: JSON.stringify(context.staticAnswers).length,
+        dynamicAnswersSize: JSON.stringify(context.dynamicAnswers).length,
+        objectivesCount: context.learningObjectives?.length || 0,
+      },
+      { blueprintId: context.blueprintId }
+    );
 
     // Validate input data before proceeding
     tracer.addStep('validate-static');
     const staticValidation = validateStaticAnswers(context.staticAnswers);
-    logValidation('static-answers', staticValidation.isValid, staticValidation.errors, staticValidation.warnings, {
-      blueprintId: context.blueprintId,
-    });
-    if (!staticValidation.isValid) {
-      logger.error('blueprint.generation.invalid_static_answers', 'Static answers validation failed', {
+    logValidation(
+      'static-answers',
+      staticValidation.isValid,
+      staticValidation.errors,
+      staticValidation.warnings,
+      {
         blueprintId: context.blueprintId,
-        errors: staticValidation.errors,
-      });
+      }
+    );
+    if (!staticValidation.isValid) {
+      logger.error(
+        'blueprint.generation.invalid_static_answers',
+        'Static answers validation failed',
+        {
+          blueprintId: context.blueprintId,
+          errors: staticValidation.errors,
+        }
+      );
 
       return {
         success: false,
@@ -126,14 +140,24 @@ export class BlueprintGenerationService {
 
     tracer.addStep('validate-dynamic');
     const dynamicValidation = validateDynamicAnswers(context.dynamicAnswers);
-    logValidation('dynamic-answers', dynamicValidation.isValid, dynamicValidation.errors, dynamicValidation.warnings, {
-      blueprintId: context.blueprintId,
-    });
-    if (!dynamicValidation.isValid) {
-      logger.error('blueprint.generation.invalid_dynamic_answers', 'Dynamic answers validation failed', {
+    logValidation(
+      'dynamic-answers',
+      dynamicValidation.isValid,
+      dynamicValidation.errors,
+      dynamicValidation.warnings,
+      {
         blueprintId: context.blueprintId,
-        errors: dynamicValidation.errors,
-      });
+      }
+    );
+    if (!dynamicValidation.isValid) {
+      logger.error(
+        'blueprint.generation.invalid_dynamic_answers',
+        'Dynamic answers validation failed',
+        {
+          blueprintId: context.blueprintId,
+          errors: dynamicValidation.errors,
+        }
+      );
 
       return {
         success: false,
@@ -443,15 +467,19 @@ export class BlueprintGenerationService {
     // Additional validation for blueprint completeness
     const blueprintValidation = validateBlueprintResponse(validated);
     if (!blueprintValidation.isValid) {
-      logger.error('blueprint.generation.incomplete_response', 'Generated blueprint failed validation', {
-        blueprintId: context.blueprintId,
-        model,
-        errors: blueprintValidation.errors,
-        warnings: blueprintValidation.warnings,
-      });
+      logger.error(
+        'blueprint.generation.incomplete_response',
+        'Generated blueprint failed validation',
+        {
+          blueprintId: context.blueprintId,
+          model,
+          errors: blueprintValidation.errors,
+          warnings: blueprintValidation.warnings,
+        }
+      );
 
       // If critical sections are missing, throw error to trigger retry
-      if (blueprintValidation.errors.some(e => e.includes('Missing required sections'))) {
+      if (blueprintValidation.errors.some((e) => e.includes('Missing required sections'))) {
         throw new Error(`Incomplete blueprint generated: ${blueprintValidation.errors.join('; ')}`);
       }
     }

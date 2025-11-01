@@ -51,13 +51,17 @@ function repairTruncatedJSON(jsonString: string): string {
     return repaired;
   }
 
-  logger.warn('claude.validation.json_truncation_detected', 'JSON appears truncated, attempting repair', {
-    openBraces,
-    closeBraces,
-    openBrackets,
-    closeBrackets,
-    length: repaired.length,
-  });
+  logger.warn(
+    'claude.validation.json_truncation_detected',
+    'JSON appears truncated, attempting repair',
+    {
+      openBraces,
+      closeBraces,
+      openBrackets,
+      closeBrackets,
+      length: repaired.length,
+    }
+  );
 
   // Strategy 1: Try to complete the last incomplete value
   // Look for patterns that indicate where the JSON was cut off
@@ -86,7 +90,7 @@ function repairTruncatedJSON(jsonString: string): string {
 
   // Strategy 2: Find the last complete key-value pair or array element
   let bestValidPosition = -1;
-  let depth = { braces: 0, brackets: 0 };
+  const depth = { braces: 0, brackets: 0 };
   let inString = false;
   let escapeNext = false;
   let lastCompleteValueEnd = -1;
@@ -118,13 +122,11 @@ function repairTruncatedJSON(jsonString: string): string {
       else if (char === '}') {
         depth.braces--;
         lastCompleteValueEnd = i;
-      }
-      else if (char === '[') depth.brackets++;
+      } else if (char === '[') depth.brackets++;
       else if (char === ']') {
         depth.brackets--;
         lastCompleteValueEnd = i;
-      }
-      else if (char === ',' && depth.braces > 0) {
+      } else if (char === ',' && depth.braces > 0) {
         // Comma indicates end of a complete element
         lastCompleteValueEnd = i - 1;
       }
@@ -163,7 +165,7 @@ function repairTruncatedJSON(jsonString: string): string {
     // Add missing closing brackets in the correct order
     // Track nesting to close in proper order
     const toClose = [];
-    let tempDepth = { braces: 0, brackets: 0 };
+    const tempDepth = { braces: 0, brackets: 0 };
 
     for (let i = 0; i < repaired.length; i++) {
       const char = repaired[i];
@@ -273,10 +275,14 @@ export function parseAndValidateJSON<T = unknown>(text: string): T {
     return parsed as T;
   } catch (error) {
     // JSON parse failed - attempt aggressive repair
-    logger.warn('claude.validation.attempting_repair', 'Initial JSON parse failed, attempting repair', {
-      error: (error as Error).message,
-      textLength: text.length,
-    });
+    logger.warn(
+      'claude.validation.attempting_repair',
+      'Initial JSON parse failed, attempting repair',
+      {
+        error: (error as Error).message,
+        textLength: text.length,
+      }
+    );
 
     try {
       const repairedText = repairTruncatedJSON(text);

@@ -221,7 +221,9 @@ export function GlobalHeader(props: GlobalHeaderProps = {}) {
         className={cn(
           'relative z-50 w-full border-b transition-all duration-300',
           sticky && 'sticky top-0',
-          scrolled ? 'bg-background/95 backdrop-blur-md border-border/50' : 'bg-background border-border/30',
+          scrolled
+            ? 'bg-background/95 border-border/50 backdrop-blur-md'
+            : 'bg-background border-border/30',
           className
         )}
       >
@@ -230,11 +232,11 @@ export function GlobalHeader(props: GlobalHeaderProps = {}) {
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div className="flex h-16 items-center justify-between gap-4">
               {/* Left Side: Logo/Back Button + Title */}
-              <div className="flex items-center gap-4 min-w-0 flex-1">
+              <div className="flex min-w-0 flex-1 items-center gap-4">
                 {/* Mobile Menu Button */}
                 <button
                   onClick={() => setShowMobileMenu(!showMobileMenu)}
-                  className="lg:hidden p-2 rounded-lg hover:bg-muted transition-colors"
+                  className="hover:bg-muted rounded-lg p-2 transition-colors lg:hidden"
                   aria-label="Toggle menu"
                 >
                   {showMobileMenu ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
@@ -244,10 +246,10 @@ export function GlobalHeader(props: GlobalHeaderProps = {}) {
                 {showBackButton ? (
                   <Link
                     href={backHref}
-                    className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+                    className="text-muted-foreground hover:text-foreground flex items-center gap-2 transition-colors"
                   >
                     <ArrowLeft className="h-4 w-4" />
-                    <span className="hidden sm:inline text-sm font-medium">{backLabel}</span>
+                    <span className="hidden text-sm font-medium sm:inline">{backLabel}</span>
                   </Link>
                 ) : (
                   <div className="hidden lg:block">
@@ -257,11 +259,11 @@ export function GlobalHeader(props: GlobalHeaderProps = {}) {
 
                 {/* Title and Subtitle */}
                 <div className="min-w-0 flex-1">
-                  <h1 className="text-lg font-semibold text-foreground truncate">
+                  <h1 className="text-foreground truncate text-lg font-semibold">
                     {typeof title === 'string' ? title : title}
                   </h1>
                   {subtitle && (
-                    <p className="text-sm text-muted-foreground truncate hidden sm:block">
+                    <p className="text-muted-foreground hidden truncate text-sm sm:block">
                       {subtitle}
                     </p>
                   )}
@@ -273,7 +275,7 @@ export function GlobalHeader(props: GlobalHeaderProps = {}) {
                 {/* Search (Optional) */}
                 {showSearch && (
                   <button
-                    className="p-2 rounded-lg hover:bg-muted transition-colors"
+                    className="hover:bg-muted rounded-lg p-2 transition-colors"
                     aria-label="Search"
                   >
                     <Search className="h-5 w-5" />
@@ -283,11 +285,11 @@ export function GlobalHeader(props: GlobalHeaderProps = {}) {
                 {/* Notifications (Optional) */}
                 {showNotifications && (
                   <button
-                    className="relative p-2 rounded-lg hover:bg-muted transition-colors"
+                    className="hover:bg-muted relative rounded-lg p-2 transition-colors"
                     aria-label="Notifications"
                   >
                     <Bell className="h-5 w-5" />
-                    <span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-primary" />
+                    <span className="bg-primary absolute top-1 right-1 h-2 w-2 rounded-full" />
                   </button>
                 )}
 
@@ -302,14 +304,16 @@ export function GlobalHeader(props: GlobalHeaderProps = {}) {
                   <div className="relative">
                     <button
                       onClick={() => setShowUserDropdown(!showUserDropdown)}
-                      className="flex items-center gap-2 p-1.5 rounded-lg hover:bg-muted transition-colors"
+                      className="hover:bg-muted flex items-center gap-2 rounded-lg p-1.5 transition-colors"
                       aria-label="User menu"
                     >
                       <UserAvatar user={user} sizeClass="w-8 h-8" />
-                      <ChevronDown className={cn(
-                        "h-4 w-4 transition-transform hidden sm:block",
-                        showUserDropdown && "rotate-180"
-                      )} />
+                      <ChevronDown
+                        className={cn(
+                          'hidden h-4 w-4 transition-transform sm:block',
+                          showUserDropdown && 'rotate-180'
+                        )}
+                      />
                     </button>
 
                     {/* User Dropdown Menu */}
@@ -320,16 +324,16 @@ export function GlobalHeader(props: GlobalHeaderProps = {}) {
                           animate={{ opacity: 1, y: 0 }}
                           exit={{ opacity: 0, y: -10 }}
                           transition={{ duration: 0.15 }}
-                          className="absolute right-0 mt-2 w-56 rounded-lg border bg-background shadow-lg"
+                          className="bg-background absolute right-0 mt-2 w-56 rounded-lg border shadow-lg"
                         >
-                          <div className="p-3 border-b">
-                            <p className="font-semibold text-foreground">{getFirstName()}</p>
-                            <p className="text-sm text-muted-foreground truncate">{user.email}</p>
+                          <div className="border-b p-3">
+                            <p className="text-foreground font-semibold">{getFirstName()}</p>
+                            <p className="text-muted-foreground truncate text-sm">{user.email}</p>
                           </div>
                           <div className="p-1">
                             <Link
                               href="/profile"
-                              className="flex items-center gap-3 px-3 py-2 text-sm rounded-md hover:bg-muted transition-colors"
+                              className="hover:bg-muted flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors"
                               onClick={() => setShowUserDropdown(false)}
                             >
                               <User className="h-4 w-4" />
@@ -337,7 +341,7 @@ export function GlobalHeader(props: GlobalHeaderProps = {}) {
                             </Link>
                             <Link
                               href="/settings"
-                              className="flex items-center gap-3 px-3 py-2 text-sm rounded-md hover:bg-muted transition-colors"
+                              className="hover:bg-muted flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors"
                               onClick={() => setShowUserDropdown(false)}
                             >
                               <Settings className="h-4 w-4" />
@@ -348,7 +352,7 @@ export function GlobalHeader(props: GlobalHeaderProps = {}) {
                                 setShowUserDropdown(false);
                                 signOut();
                               }}
-                              className="flex w-full items-center gap-3 px-3 py-2 text-sm rounded-md hover:bg-muted text-destructive transition-colors"
+                              className="hover:bg-muted text-destructive flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors"
                             >
                               <LogOut className="h-4 w-4" />
                               Sign Out
@@ -363,7 +367,7 @@ export function GlobalHeader(props: GlobalHeaderProps = {}) {
                 {/* Quick Create Button */}
                 <Link
                   href="/static-wizard"
-                  className="hidden sm:flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
+                  className="bg-primary text-primary-foreground hover:bg-primary/90 hidden items-center gap-2 rounded-lg px-4 py-2 transition-colors sm:flex"
                 >
                   <Sparkles className="h-4 w-4" />
                   <span className="text-sm font-medium">Create</span>
@@ -380,17 +384,17 @@ export function GlobalHeader(props: GlobalHeaderProps = {}) {
                 animate={{ height: 'auto', opacity: 1 }}
                 exit={{ height: 0, opacity: 0 }}
                 transition={{ duration: 0.2 }}
-                className="lg:hidden border-t overflow-hidden"
+                className="overflow-hidden border-t lg:hidden"
               >
                 <div className="mx-auto max-w-7xl px-4 py-2 sm:px-6">
                   {navItems.map((item) => (
                     <Link
                       key={item.href}
                       href={item.href}
-                      className="flex items-center gap-3 px-3 py-2.5 text-sm rounded-lg hover:bg-muted transition-colors"
+                      className="hover:bg-muted flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors"
                       onClick={() => setShowMobileMenu(false)}
                     >
-                      <item.icon className="h-4 w-4 text-muted-foreground" />
+                      <item.icon className="text-muted-foreground h-4 w-4" />
                       <span>{item.label}</span>
                     </Link>
                   ))}
@@ -402,7 +406,7 @@ export function GlobalHeader(props: GlobalHeaderProps = {}) {
                           setShowMobileMenu(false);
                           signOut();
                         }}
-                        className="flex w-full items-center gap-3 px-3 py-2.5 text-sm rounded-lg hover:bg-muted text-destructive transition-colors"
+                        className="hover:bg-muted text-destructive flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors"
                       >
                         <LogOut className="h-4 w-4" />
                         <span>Sign Out</span>
