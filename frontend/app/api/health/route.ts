@@ -157,23 +157,24 @@ export async function GET(request: Request): Promise<NextResponse> {
 }
 
 /**
- * HEAD handler for health check (lightweight)
+ * HEAD handler for health check (ultra-lightweight for connectivity checks)
+ * This is called frequently by the offline queue manager, so it should be fast
  */
 export async function HEAD(request: Request): Promise<NextResponse> {
   try {
-    // Quick health check for HEAD requests
-    const healthCheck = await quickHealthCheck();
-
+    // Just check if the server is responding - don't run database checks
+    // This is for client-side connectivity monitoring, not full health checks
     const headers: Record<string, string> = {
-      'X-Health-Status': healthCheck.status,
-      'X-Health-Score': healthCheck.status === 'healthy' ? '100' : '0',
+      'X-Health-Status': 'healthy',
+      'X-Health-Score': '100',
+      'Cache-Control': 'no-cache, no-store, must-revalidate',
       'X-Content-Type-Options': 'nosniff',
       'X-Frame-Options': 'DENY',
       'X-XSS-Protection': '1; mode=block',
     };
 
     return new NextResponse(null, {
-      status: healthCheck.status === 'healthy' ? 200 : 503,
+      status: 200,
       headers,
     });
   } catch (error) {

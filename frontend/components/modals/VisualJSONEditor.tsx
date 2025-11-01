@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Dialog,
@@ -9,9 +9,28 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { X, Code2, ChevronDown, ChevronRight, Type, List, Hash } from 'lucide-react';
+import { Button, LoadingButton } from '@/components/ui/button';
+import {
+  Code2,
+  Eye,
+  Edit3,
+  Undo2,
+  Redo2,
+  Save,
+  AlertCircle,
+  CheckCircle2,
+  Sparkles,
+} from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Badge } from '@/components/ui/badge';
+import { useToast } from '@/hooks/use-toast';
+import { EditorPanel } from './VisualJSONEditor/EditorPanel';
+import { PreviewPanel } from './VisualJSONEditor/PreviewPanel';
+import { useEditorHistory } from './VisualJSONEditor/useEditorHistory';
+import { useAutoSave } from './VisualJSONEditor/useAutoSave';
+import { validateJSONStructure, ValidationError } from './VisualJSONEditor/validation';
+import type { JsonValue } from './VisualJSONEditor/types';
 
 interface VisualJSONEditorProps {
   isOpen: boolean;
@@ -21,20 +40,18 @@ interface VisualJSONEditorProps {
   sectionData: unknown;
 }
 
-type JsonValue = string | number | boolean | null | JsonObject | JsonArray;
-type JsonObject = { [key: string]: JsonValue };
-type JsonArray = JsonValue[];
-
 /**
  * VisualJSONEditor Component
  *
- * A brand-aligned visual editor for JSON data.
- * Features:
- * - Tree-like structure display
- * - Read-only keys (structure protected)
- * - Editable values only (content between "")
- * - Collapsible nested objects/arrays
- * - Type-aware inputs (text, number, textarea)
+ * World-class JSON editing experience with:
+ * - Smart field labels & rich text editing
+ * - Real-time preview with split view
+ * - Undo/Redo with visual history
+ * - Auto-save with draft management
+ * - Inline validation & helpful errors
+ * - Keyboard shortcuts (Cmd/Ctrl+S, Cmd/Ctrl+Z, etc.)
+ * - Touch-optimized & accessible (WCAG AA)
+ * - SmartSlate Polaris brand styling
  */
 export function VisualJSONEditor({
   isOpen,
@@ -43,62 +60,182 @@ export function VisualJSONEditor({
   sectionTitle,
   sectionData,
 }: VisualJSONEditorProps): React.JSX.Element {
+  const { toast } = useToast();
+
+  // Editor state
   const [editableData, setEditableData] = useState<JsonValue>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
+  const [validationErrors, setValidationErrors] = useState<ValidationError[]>([]);
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const [activeView, setActiveView] = useState<'edit' | 'preview'>('edit');
 
-  // Initialize editable data when modal opens or section data changes
+  // History management (undo/redo)
+  const {
+    state: historyState,
+    canUndo,
+    canRedo,
+    undo,
+    redo,
+    pushState,
+    reset: resetHistory,
+  } = useEditorHistory<JsonValue>();
+
+  // Auto-save functionality
+  const { isDraftSaved, saveStatus, triggerAutoSave } = useAutoSave({
+    data: editableData,
+    sectionTitle,
+    enabled: hasUnsavedChanges && isOpen,
+  });
+
+  // Initialize editable data when modal opens
   useEffect(() => {
     if (isOpen && sectionData) {
       try {
-        // Deep clone the data to avoid mutations
-        const cloned = JSON.parse(JSON.stringify(sectionData));
+        const cloned = JSON.parse(JSON.stringify(sectionData)) as JsonValue;
         setEditableData(cloned);
-        setError(null);
+        resetHistory(cloned);
+        setValidationErrors([]);
+        setHasUnsavedChanges(false);
       } catch (err) {
         console.error('Error cloning section data:', err);
-        setError('Failed to load section data');
-        setEditableData(null);
+        toast({
+          title: 'Error',
+          description: 'Failed to load section data',
+          variant: 'destructive',
+        });
       }
     }
-  }, [isOpen, sectionData]);
+  }, [isOpen, sectionData, resetHistory, toast]);
+
+  // Update from history
+  useEffect(() => {
+    if (historyState) {
+      setEditableData(historyState);
+    }
+  }, [historyState]);
+
+  // Validate data on change
+  useEffect(() => {
+    if (editableData !== null) {
+      const errors = validateJSONStructure(editableData);
+      setValidationErrors(errors);
+    }
+  }, [editableData]);
+
+  // Update data with history tracking
+  const updateData = useCallback(
+    (newData: JsonValue) => {
+      setEditableData(newData);
+      pushState(newData);
+      setHasUnsavedChanges(true);
+      triggerAutoSave();
+    },
+    [pushState, triggerAutoSave]
+  );
+
+  // Keyboard shortcuts
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const isCmdOrCtrl = e.metaKey || e.ctrlKey;
+
+      // Cmd/Ctrl + S: Save
+      if (isCmdOrCtrl && e.key === 's') {
+        e.preventDefault();
+        handleSave();
+      }
+
+      // Cmd/Ctrl + Z: Undo
+      if (isCmdOrCtrl && e.key === 'z' && !e.shiftKey && canUndo) {
+        e.preventDefault();
+        undo();
+        toast({
+          title: 'Undo',
+          description: 'Reverted to previous state',
+        });
+      }
+
+      // Cmd/Ctrl + Shift + Z or Cmd/Ctrl + Y: Redo
+      if ((isCmdOrCtrl && e.shiftKey && e.key === 'z') || (isCmdOrCtrl && e.key === 'y')) {
+        if (canRedo) {
+          e.preventDefault();
+          redo();
+          toast({
+            title: 'Redo',
+            description: 'Restored next state',
+          });
+        }
+      }
+
+      // Escape: Close (with confirmation if unsaved)
+      if (e.key === 'Escape' && hasUnsavedChanges) {
+        e.preventDefault();
+        handleClose();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, canUndo, canRedo, undo, redo, hasUnsavedChanges, toast]);
 
   const handleSave = async () => {
-    setIsLoading(true);
-    setError(null);
+    if (validationErrors.length > 0) {
+      toast({
+        title: 'Validation Errors',
+        description: 'Please fix all errors before saving',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    setIsSaving(true);
 
     try {
       await onSave(editableData);
-      onClose();
+      setHasUnsavedChanges(false);
+
+      toast({
+        title: (
+          <div className="flex items-center gap-2">
+            <CheckCircle2 className="h-5 w-5 text-green-400" />
+            <span>Changes saved successfully!</span>
+          </div>
+        ),
+        description: 'Your edits have been applied to the blueprint',
+      });
+
+      // Delay close to show success animation
+      setTimeout(() => {
+        onClose();
+      }, 500);
     } catch (err) {
       console.error('Error saving changes:', err);
-      setError(err instanceof Error ? err.message : 'Failed to save changes');
+      toast({
+        title: 'Save Failed',
+        description: err instanceof Error ? err.message : 'Failed to save changes',
+        variant: 'destructive',
+      });
     } finally {
-      setIsLoading(false);
+      setIsSaving(false);
     }
   };
 
-  // Update a value at a specific path in the data structure
-  const updateValue = (path: (string | number)[], newValue: JsonValue) => {
-    setEditableData((prev) => {
-      const cloned = JSON.parse(JSON.stringify(prev));
-      let current: any = cloned;
-
-      // Navigate to the parent of the target
-      for (let i = 0; i < path.length - 1; i++) {
-        current = current[path[i]];
-      }
-
-      // Update the target value
-      current[path[path.length - 1]] = newValue;
-
-      return cloned;
-    });
+  const handleClose = () => {
+    if (hasUnsavedChanges) {
+      const confirmed = window.confirm('You have unsaved changes. Are you sure you want to close?');
+      if (!confirmed) return;
+    }
+    onClose();
   };
 
+  // Responsive layout: Split view on desktop, tabs on mobile
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => !isLoading && !open && onClose()}>
-      <DialogContent className="max-h-[90vh] max-w-5xl border-0 bg-transparent p-0 shadow-none">
+    <Dialog open={isOpen} onOpenChange={(open) => !isSaving && !open && handleClose()}>
+      <DialogContent className="max-h-[95vh] max-w-[95vw] border-0 bg-transparent p-0 shadow-none md:max-w-7xl">
         <AnimatePresence>
           {isOpen && (
             <motion.div
@@ -106,17 +243,17 @@ export function VisualJSONEditor({
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 10 }}
               transition={{ type: 'spring', duration: 0.4, bounce: 0.3 }}
-              className="glass-card relative flex max-h-[90vh] flex-col overflow-hidden"
+              className="glass-card relative flex max-h-[95vh] flex-col overflow-hidden"
             >
               {/* Animated background glow */}
               <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
                 <motion.div
                   animate={{
                     scale: [1, 1.2, 1],
-                    opacity: [0.2, 0.3, 0.2],
+                    opacity: [0.15, 0.25, 0.15],
                   }}
                   transition={{
-                    duration: 4,
+                    duration: 5,
                     repeat: Infinity,
                     ease: 'easeInOut',
                   }}
@@ -125,77 +262,188 @@ export function VisualJSONEditor({
               </div>
 
               {/* Header */}
-              <div className="flex-shrink-0 border-b border-white/10 bg-white/5 px-6 py-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="from-primary via-primary-accent-light to-primary-accent flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br shadow-md">
-                      <Code2 className="h-5 w-5 text-black" />
+              <div className="flex-shrink-0 border-b border-white/10 bg-white/5 px-4 py-3 md:px-6 md:py-4">
+                <div className="flex items-center justify-between gap-4">
+                  <div className="flex min-w-0 items-center gap-3">
+                    <div className="from-primary via-primary-accent-light to-primary-accent hidden h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-gradient-to-br shadow-md md:flex">
+                      <Edit3 className="h-5 w-5 text-black" />
                     </div>
-                    <div>
-                      <DialogTitle className="text-foreground text-xl font-bold">
+                    <div className="min-w-0">
+                      <DialogTitle className="text-foreground truncate text-lg font-bold md:text-xl">
                         Edit Section
                       </DialogTitle>
-                      <DialogDescription className="text-text-secondary text-sm">
+                      <DialogDescription className="text-text-secondary truncate text-xs md:text-sm">
                         {sectionTitle}
                       </DialogDescription>
                     </div>
                   </div>
-                  <button
-                    onClick={onClose}
-                    disabled={isLoading}
-                    className="pressable inline-flex h-8 w-8 items-center justify-center rounded-lg text-white/50 transition-colors hover:bg-white/10 hover:text-white/80 disabled:cursor-not-allowed disabled:opacity-50"
-                    aria-label="Close dialog"
-                  >
-                    <X className="h-5 w-5" />
-                  </button>
+
+                  {/* Status badges */}
+                  <div className="flex flex-shrink-0 items-center gap-2">
+                    {hasUnsavedChanges && (
+                      <Badge
+                        variant="outline"
+                        className="hidden border-yellow-500/30 bg-yellow-500/10 text-yellow-400 md:inline-flex"
+                      >
+                        <AlertCircle className="mr-1 h-3 w-3" />
+                        Unsaved
+                      </Badge>
+                    )}
+                    {isDraftSaved && (
+                      <Badge
+                        variant="outline"
+                        className="hidden border-green-500/30 bg-green-500/10 text-green-400 md:inline-flex"
+                      >
+                        <CheckCircle2 className="mr-1 h-3 w-3" />
+                        Draft Saved
+                      </Badge>
+                    )}
+                    {validationErrors.length > 0 && (
+                      <Badge
+                        variant="outline"
+                        className="border-red-500/30 bg-red-500/10 text-red-400"
+                      >
+                        {validationErrors.length} Error{validationErrors.length > 1 ? 's' : ''}
+                      </Badge>
+                    )}
+                  </div>
+                </div>
+
+                {/* Toolbar */}
+                <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
+                  <div className="flex items-center gap-1 md:gap-2">
+                    {/* Undo/Redo */}
+                    <Button
+                      variant="ghost"
+                      size="small"
+                      onClick={undo}
+                      disabled={!canUndo || isSaving}
+                      className="min-w-[44px]"
+                      aria-label="Undo (Cmd+Z)"
+                      title="Undo (Cmd+Z)"
+                    >
+                      <Undo2 className="h-4 w-4" />
+                      <span className="ml-1 hidden md:inline">Undo</span>
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="small"
+                      onClick={redo}
+                      disabled={!canRedo || isSaving}
+                      className="min-w-[44px]"
+                      aria-label="Redo (Cmd+Shift+Z)"
+                      title="Redo (Cmd+Shift+Z)"
+                    >
+                      <Redo2 className="h-4 w-4" />
+                      <span className="ml-1 hidden md:inline">Redo</span>
+                    </Button>
+                  </div>
+
+                  {/* View toggle (mobile only) */}
+                  {isMobile && (
+                    <div className="flex items-center gap-1">
+                      <Button
+                        variant={activeView === 'edit' ? 'secondary' : 'ghost'}
+                        size="small"
+                        onClick={() => setActiveView('edit')}
+                        className="min-w-[44px]"
+                      >
+                        <Edit3 className="mr-1 h-4 w-4" />
+                        Edit
+                      </Button>
+                      <Button
+                        variant={activeView === 'preview' ? 'secondary' : 'ghost'}
+                        size="small"
+                        onClick={() => setActiveView('preview')}
+                        className="min-w-[44px]"
+                      >
+                        <Eye className="mr-1 h-4 w-4" />
+                        Preview
+                      </Button>
+                    </div>
+                  )}
                 </div>
               </div>
 
-              {/* Body - Scrollable */}
-              <div className="flex-1 overflow-y-auto p-6">
-                {error ? (
-                  <div className="flex items-start gap-2 rounded-lg border border-red-500/20 bg-red-500/10 px-3 py-2.5 text-sm text-red-400">
-                    <span>{error}</span>
+              {/* Body - Desktop: Split View, Mobile: Tabs */}
+              <div className="flex-1 overflow-hidden">
+                {isMobile ? (
+                  // Mobile: Single view with toggle
+                  <div className="h-full overflow-y-auto">
+                    {activeView === 'edit' ? (
+                      <EditorPanel
+                        data={editableData}
+                        onUpdate={updateData}
+                        validationErrors={validationErrors}
+                        sectionTitle={sectionTitle}
+                      />
+                    ) : (
+                      <PreviewPanel data={editableData} sectionTitle={sectionTitle} />
+                    )}
                   </div>
                 ) : (
-                  <div className="space-y-2">
-                    <JsonTreeNode data={editableData} path={[]} onUpdate={updateValue} level={0} />
+                  // Desktop: Split view
+                  <div className="grid h-full grid-cols-2 divide-x divide-white/10">
+                    {/* Editor */}
+                    <div className="overflow-y-auto">
+                      <EditorPanel
+                        data={editableData}
+                        onUpdate={updateData}
+                        validationErrors={validationErrors}
+                        sectionTitle={sectionTitle}
+                      />
+                    </div>
+
+                    {/* Preview */}
+                    <div className="overflow-y-auto bg-white/5">
+                      <PreviewPanel data={editableData} sectionTitle={sectionTitle} />
+                    </div>
                   </div>
                 )}
               </div>
 
               {/* Footer - Actions */}
-              <div className="flex-shrink-0 border-t border-white/10 bg-white/5 px-6 py-4">
-                <div className="flex justify-end gap-3">
-                  <Button
-                    variant="ghost"
-                    onClick={onClose}
-                    disabled={isLoading}
-                    className="text-foreground border-white/10 bg-white/5 hover:bg-white/10"
-                  >
-                    Cancel
-                  </Button>
-                  <Button
-                    onClick={handleSave}
-                    disabled={isLoading}
-                    className={cn(
-                      'min-w-32',
-                      'from-primary to-primary-accent-light bg-gradient-to-r',
-                      'font-semibold text-black',
-                      'hover:shadow-primary/30 hover:shadow-lg',
-                      'transition-all duration-300',
-                      'disabled:cursor-not-allowed disabled:opacity-50'
+              <div className="flex-shrink-0 border-t border-white/10 bg-white/5 px-4 py-3 md:px-6 md:py-4">
+                <div className="flex items-center justify-between gap-3">
+                  {/* Save status */}
+                  <div className="text-text-secondary text-xs md:text-sm">
+                    {saveStatus && (
+                      <span className="flex items-center gap-1">
+                        <Sparkles className="h-3 w-3 md:h-4 md:w-4" />
+                        {saveStatus}
+                      </span>
                     )}
-                  >
-                    {isLoading ? (
-                      <div className="flex items-center gap-2">
-                        <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
-                        <span>Saving...</span>
-                      </div>
-                    ) : (
-                      'Save Changes'
-                    )}
-                  </Button>
+                  </div>
+
+                  {/* Actions */}
+                  <div className="flex justify-end gap-2 md:gap-3">
+                    <Button
+                      variant="ghost"
+                      onClick={handleClose}
+                      disabled={isSaving}
+                      size="medium"
+                      className="text-foreground border-white/10 bg-white/5 hover:bg-white/10"
+                    >
+                      Cancel
+                    </Button>
+                    <LoadingButton
+                      onClick={handleSave}
+                      loading={isSaving}
+                      loadingText="Saving..."
+                      disabled={validationErrors.length > 0 || isSaving}
+                      size="medium"
+                      className={cn(
+                        'min-w-[100px] md:min-w-[120px]',
+                        'from-primary to-primary-accent-light bg-gradient-to-r',
+                        'font-semibold text-black',
+                        'hover:shadow-primary/30 hover:shadow-lg',
+                        'transition-all duration-300'
+                      )}
+                    >
+                      <Save className="mr-2 h-4 w-4" />
+                      Save Changes
+                    </LoadingButton>
+                  </div>
                 </div>
               </div>
             </motion.div>
@@ -203,178 +451,5 @@ export function VisualJSONEditor({
         </AnimatePresence>
       </DialogContent>
     </Dialog>
-  );
-}
-
-/**
- * JsonTreeNode Component
- * Renders a single node in the JSON tree with collapsible children
- */
-interface JsonTreeNodeProps {
-  data: JsonValue;
-  path: (string | number)[];
-  onUpdate: (path: (string | number)[], newValue: JsonValue) => void;
-  level: number;
-  propertyKey?: string;
-}
-
-function JsonTreeNode({ data, path, onUpdate, level, propertyKey }: JsonTreeNodeProps) {
-  const [isExpanded, setIsExpanded] = useState(level < 2); // Auto-expand first 2 levels
-
-  const indent = level * 20;
-
-  // Primitive value (string, number, boolean, null)
-  if (data === null || typeof data !== 'object') {
-    return (
-      <div className="flex items-center gap-2" style={{ paddingLeft: `${indent}px` }}>
-        {propertyKey && (
-          <span className="text-primary font-mono text-sm font-semibold">{propertyKey}:</span>
-        )}
-        <PrimitiveEditor value={data} onChange={(newValue) => onUpdate(path, newValue)} />
-      </div>
-    );
-  }
-
-  // Array
-  if (Array.isArray(data)) {
-    return (
-      <div style={{ paddingLeft: `${indent}px` }}>
-        <button
-          onClick={() => setIsExpanded(!isExpanded)}
-          className="flex w-full items-center gap-2 rounded px-2 py-1 text-left transition-colors hover:bg-white/5"
-        >
-          {isExpanded ? (
-            <ChevronDown className="h-4 w-4 text-white/50" />
-          ) : (
-            <ChevronRight className="h-4 w-4 text-white/50" />
-          )}
-          {propertyKey && (
-            <span className="text-primary font-mono text-sm font-semibold">{propertyKey}:</span>
-          )}
-          <List className="h-4 w-4 text-yellow-400" />
-          <span className="font-mono text-sm text-white/70">Array[{data.length}]</span>
-        </button>
-
-        {isExpanded && (
-          <div className="mt-1 space-y-1">
-            {data.map((item, index) => (
-              <JsonTreeNode
-                key={index}
-                data={item}
-                path={[...path, index]}
-                onUpdate={onUpdate}
-                level={level + 1}
-                propertyKey={`[${index}]`}
-              />
-            ))}
-          </div>
-        )}
-      </div>
-    );
-  }
-
-  // Object
-  const entries = Object.entries(data as JsonObject);
-  return (
-    <div style={{ paddingLeft: `${indent}px` }}>
-      <button
-        onClick={() => setIsExpanded(!isExpanded)}
-        className="flex w-full items-center gap-2 rounded px-2 py-1 text-left transition-colors hover:bg-white/5"
-      >
-        {isExpanded ? (
-          <ChevronDown className="h-4 w-4 text-white/50" />
-        ) : (
-          <ChevronRight className="h-4 w-4 text-white/50" />
-        )}
-        {propertyKey && (
-          <span className="text-primary font-mono text-sm font-semibold">{propertyKey}:</span>
-        )}
-        <Type className="h-4 w-4 text-blue-400" />
-        <span className="font-mono text-sm text-white/70">
-          {propertyKey || 'Object'} {'{' + entries.length + '}'}
-        </span>
-      </button>
-
-      {isExpanded && (
-        <div className="mt-1 space-y-1">
-          {entries.map(([key, value]) => (
-            <JsonTreeNode
-              key={key}
-              data={value}
-              path={[...path, key]}
-              onUpdate={onUpdate}
-              level={level + 1}
-              propertyKey={key}
-            />
-          ))}
-        </div>
-      )}
-    </div>
-  );
-}
-
-/**
- * PrimitiveEditor Component
- * Input field for editing primitive values (string, number, boolean, null)
- */
-interface PrimitiveEditorProps {
-  value: string | number | boolean | null;
-  onChange: (newValue: string | number | boolean | null) => void;
-}
-
-function PrimitiveEditor({ value, onChange }: PrimitiveEditorProps) {
-  const [localValue, setLocalValue] = useState(String(value ?? ''));
-
-  useEffect(() => {
-    setLocalValue(String(value ?? ''));
-  }, [value]);
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const newValue = e.target.value;
-    setLocalValue(newValue);
-
-    // Try to infer the type
-    if (value === null) {
-      onChange(newValue || null);
-    } else if (typeof value === 'boolean') {
-      onChange(newValue.toLowerCase() === 'true');
-    } else if (typeof value === 'number') {
-      const parsed = parseFloat(newValue);
-      onChange(isNaN(parsed) ? 0 : parsed);
-    } else {
-      onChange(newValue);
-    }
-  };
-
-  // Type indicator
-  const typeIcon = () => {
-    if (value === null) return <span className="text-xs text-white/30">null</span>;
-    if (typeof value === 'boolean') return <span className="text-xs text-purple-400">bool</span>;
-    if (typeof value === 'number') return <Hash className="h-3 w-3 text-green-400" />;
-    return <Type className="h-3 w-3 text-blue-400" />;
-  };
-
-  // Multi-line for long strings
-  const isLongString = typeof value === 'string' && value.length > 60;
-
-  return (
-    <div className="flex flex-1 items-center gap-2">
-      {typeIcon()}
-      {isLongString ? (
-        <textarea
-          value={localValue}
-          onChange={handleChange}
-          className="focus:border-primary/50 focus:ring-primary/20 flex-1 resize-none rounded border border-white/10 bg-white/5 px-3 py-2 font-mono text-sm text-white focus:ring-2 focus:outline-none"
-          rows={3}
-        />
-      ) : (
-        <input
-          type="text"
-          value={localValue}
-          onChange={handleChange}
-          className="focus:border-primary/50 focus:ring-primary/20 flex-1 rounded border border-white/10 bg-white/5 px-3 py-1.5 font-mono text-sm text-white focus:ring-2 focus:outline-none"
-        />
-      )}
-    </div>
   );
 }

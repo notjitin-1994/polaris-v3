@@ -106,7 +106,12 @@ class OfflineQueueManager {
     this.isOnline = false;
     this.notifyListeners();
 
-    if (clientErrorTracker && typeof clientErrorTracker.captureWarning === 'function') {
+    // Only log if there are queued requests (reduces noise)
+    if (
+      this.queue.length > 0 &&
+      clientErrorTracker &&
+      typeof clientErrorTracker.captureWarning === 'function'
+    ) {
       clientErrorTracker.captureWarning('Connection lost', {
         queuedRequests: this.queue.length,
       });

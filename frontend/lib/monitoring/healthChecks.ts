@@ -54,7 +54,7 @@ async function checkDatabaseHealth(): Promise<HealthCheckResult> {
   const startTime = Date.now();
 
   try {
-    const supabase = createClient();
+    const supabase = await createClient();
 
     // Test basic connection
     const { error: connectionError } = await supabase.from('user_profiles').select('id').limit(1);
@@ -348,7 +348,7 @@ async function checkSubscriptionServiceHealth(): Promise<HealthCheckResult> {
 
   try {
     const { createClient } = await import('@/lib/supabase/server');
-    const supabase = createClient();
+    const supabase = await createClient();
 
     // Check subscription-related tables
     const { data: subscriptionData, error: subscriptionError } = await supabase
