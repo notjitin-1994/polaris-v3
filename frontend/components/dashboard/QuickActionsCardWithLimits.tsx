@@ -26,10 +26,11 @@ const quickActions = [
     icon: Sparkles,
     title: 'Solara Learning Engine',
     description: 'Discover AI-powered learning insights',
-    href: '/solara',
-    color: 'from-yellow-400 to-yellow-600',
-    bgColor: 'bg-yellow-400/10',
-    borderColor: 'border-yellow-400/20',
+    href: 'https://solara.smartslate.io',
+    color: 'from-primary to-primary',
+    bgColor: 'bg-primary/10',
+    borderColor: 'border-primary/20',
+    isExternal: true,
   },
   {
     icon: FileText,
@@ -44,10 +45,11 @@ const quickActions = [
     icon: BookOpen,
     title: 'Learn More',
     description: 'Explore features and guides',
-    href: '/docs',
+    href: 'https://smartslate.io',
     color: 'from-primary to-primary',
     bgColor: 'bg-primary/10',
     borderColor: 'border-primary/20',
+    isExternal: true,
   },
 ];
 
@@ -202,6 +204,15 @@ export function QuickActionsCardWithLimits() {
                   <div onClick={() => handleActionClick(action)} className="h-full">
                     {content}
                   </div>
+                ) : action.isExternal ? (
+                  <a
+                    href={action.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block h-full"
+                  >
+                    {content}
+                  </a>
                 ) : (
                   <Link href={action.href} className="block h-full">
                     {content}
